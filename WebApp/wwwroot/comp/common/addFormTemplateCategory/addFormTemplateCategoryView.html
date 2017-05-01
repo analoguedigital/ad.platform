@@ -1,0 +1,15 @@
+﻿
+<div class="modal-header">
+    <h3 class="modal-title">Add a new form template category</h3>
+</div>
+<div class="modal-body">
+    <form name="addFormTemplateCategory">
+        <lm-form-group label="Title">
+            <input type="text" name="title" id="title" ng-model="ctrl.category.title" required/>
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ctrl.save(addFormTemplateCategory)">Save</button>
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+</div>

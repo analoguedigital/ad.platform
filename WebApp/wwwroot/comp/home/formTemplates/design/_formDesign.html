@@ -1,0 +1,41 @@
+﻿<div class="tabs-container">
+    <form name="surveyForm" novalidate>
+        <div class="errors">
+            <div ng-repeat="error in ctrl.errors | filter: {key: ''}">
+                {{error.value}}
+            </div>
+        </div>
+        <uib-tabset>
+            <uib-tab ng-repeat="pageNumber in ctrl.pageNumbers" heading="{{'Page '+ pageNumber}}">
+                <div ui-sortable ng-model="ctrl.formTemplate.metricGroups" class="metric-groups" data-page="{{pageNumber}}">
+                    <div ng-repeat="metricGroup in ctrl.formTemplate.metricGroups | filter: {page:pageNumber} | filter: {isDeleted: false} track by $index ">
+                        <div class="box">
+                            <div class="box-title">
+                                <h5>
+                                    {{metricGroup.title}}
+                                </h5>
+                                <div class="box-tools">
+                                    <a ng-click="ctrl.openEditGroup(metricGroup)"><i class="fa fa-pencil"></i></a>
+                                    <a title="delete" ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.deleteGroup(metricGroup)"><i class="fa fa-remove"></i></a>
+                                </div>
+                            </div>
+                            <div class="box-content">
+                                <div class="errors">
+                                    <div ng-repeat="error in ctrl.errors | filter: {key: metricGroup.id}">
+                                        {{error.value}}
+                                    </div>
+                                </div>
+                                <p class="help-block">{{metricGroup.helpContext}}</p>
+                                <div ui-sortable="ctrl.metricsDraggableOptions" ng-model="metricGroup.metrics" class="metrics" ng-include="'comp/home/formTemplates/design/_metricGroup.html'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
+            <span style="padding:10px 20px;display:inline-block">
+                <a ng-click="ctrl.addPage()"><i class="fa fa-plus"></i></a>
+            </span>
+        </uib-tabset>
+    </form>
+</div>

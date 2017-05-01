@@ -1,0 +1,25 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5><i class="fa fa-info-circle"></i> Details</h5>
+        <div class="box-tools">
+            <a ng-click="ctrl.openEditForm()"><i class="fa fa-pencil"></i></a>
+        </div>
+    </div>
+    <div class="box-content">
+        <form class="form" name="formDetails">
+            <lm-form-group label="Title: ">
+                {{ctrl.formTemplate.title}}
+            </lm-form-group>
+            <lm-form-group label="Code: ">
+                {{ctrl.formTemplate.code}}
+            </lm-form-group>
+            <lm-form-group label="Category: ">
+                {{ctrl.formTemplate.formTemplateCategory.title}}
+            </lm-form-group>
+            <lm-form-group label="Description: ">
+                {{ctrl.formTemplate.description}}
+            </lm-form-group>
+
+        </form>
+    </div>
+</div>

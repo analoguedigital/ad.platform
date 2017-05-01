@@ -1,0 +1,10 @@
+﻿<div class="row">
+    <div class="col-md-8">
+        <div class="form-group">
+            <label class="checkbox" ng-repeat="fValue in formValues" ng-show="getText(fValue.guidValue) != ''">
+                <input type="checkbox" ng-model="fValue.boolValue">
+                {{getText(fValue.guidValue)}}
+            </label>
+        </div>
+    </div>
+</div>

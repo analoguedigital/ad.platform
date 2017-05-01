@@ -1,0 +1,27 @@
+﻿
+<div class="modal-header">
+    <h3 class="modal-title">Data list item</h3>
+</div>
+<div class="modal-body">
+    <form name="dataListItemForm">
+        <lm-form-group label="Text">
+            <input type="text" name="text" id="text" ng-model="dataListItem.text" />
+        </lm-form-group>
+        <lm-form-group label="Value">
+            <input type="number" name="value" id="value" ng-model="dataListItem.value" />
+        </lm-form-group>
+        <div class="hr-line-dashed"></div>
+        <lm-form-group ng-repeat="relationship in dataList.relationships" ng-cloak label="{{relationship.name}}">
+            <select name="relationship" ng-model="attributes[relationship.id].valueId"
+                    ng-options="i.id as i.text for i in relationship.dataList.items| orderBy:'order'"></select>
+        </lm-form-group>
+        <lm-form-group label="Description">
+            <div text-angular ng-model="dataListItem.description"></div>
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button ng-show="isAddMode" class="btn btn-primary" type="button" ng-click="saveAndClose()">Add</button>
+    <button ng-show="isAddMode" class="btn btn-warning" type="button" ng-click="close()">Cancel</button>
+    <button ng-show="!isAddMode" class="btn btn-warning" type="button" ng-click="close()">Close</button>
+</div>

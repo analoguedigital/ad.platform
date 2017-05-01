@@ -1,0 +1,70 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="organisationform" class="form-horizontal" novalidate>
+                <lm-form-group label="Name: ">
+                    <input type="text" id="name" name="name" ng-model="organisation.name" required/>
+                </lm-form-group>
+                
+    
+
+                <div ng-if="isInsertMode">
+                    <br/>
+                    <br />
+                    <h5>Root user's details</h5>
+                    <div class="hr-line-dashed"></div>
+
+                    <lm-form-group ng-if="isInsertMode" label="Email: ">
+                        <input type="email" id="email" name="email" ng-model="organisation.rootUser.email" required />
+                    </lm-form-group>
+                    <lm-form-group ng-if="isInsertMode" label="Password: ">
+                        <input type="password" id="password" name="password" ng-model="organisation.rootUser.password" required />
+                    </lm-form-group>
+                    <lm-form-group ng-if="isInsertMode" label="Confirm Password: ">
+                        <input type="password" id="confirmPassword" name="confirmPassword" ng-model="organisation.rootUser.confirmPassword" required />
+                    </lm-form-group>
+                    
+                </div>
+
+                <br />
+                <br />
+                <h5>Contacts details</h5>
+                <div class="hr-line-dashed"></div>
+                <lm-form-group label="Address Line 1: ">
+                    <input type="text" id="addressLine1" name="addressLine1" ng-model="organisation.addressLine1" />
+                </lm-form-group>
+                <lm-form-group label="Address Line 2: ">
+                    <input type="text" id="addressLine2" name="addressLine2" ng-model="organisation.addressLine2" />
+                </lm-form-group>
+                <lm-form-group label="Town ">
+                    <input type="text" id="town" name="town" ng-model="organisation.town" />
+                </lm-form-group>
+                <lm-form-group label="County ">
+                    <input type="text" id="county" name="county" ng-model="organisation.county" />
+                </lm-form-group>
+                <lm-form-group label="Postcode: ">
+                    <input type="text" id="postcode" name="postcode" ng-model="organisation.postcode" />
+                </lm-form-group>
+
+                <lm-form-group label="Telephone number ">
+                    <input type="text" id="telNumber" name="telNumber" ng-model="organisation.telNumber" />
+                </lm-form-group>
+
+                <lm-form-group ng-if="errors !== undefined" class="">
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{errors}}
+                        <a class="alert-link pull-right" ng-click="clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="submit(organisationform)">Submit</button>
+                </lm-form-group>
+                <a ui-sref="home.organisations.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+        </div>
+    </div>
+</div>

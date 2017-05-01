@@ -1,0 +1,21 @@
+﻿.student-chart {
+    .box-content{padding:0}
+    .popover{min-width:400px}
+    table {
+        & { border-spacing: 2px; border-collapse: separate; }
+        th, td { width: 8%; text-align: center; vertical-align: middle !important;background-color:#eee;padding:16px 2px !important}
+        td {
+            &{}
+            &.stage {
+                & { background-color: lightgreen; color: #555; padding: 35% 5px 5px 10px !important; }
+                .caption { font-size: 180%; width: 30px; white-space: nowrap; display: block; -webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3); }
+            }
+            &.achievement {
+                & { font-size: 80%; cursor: pointer; color: #222; position: relative; }
+                &:hover { background-color: lightblue; }
+                .number-of-evidence-items { position: absolute; top: 0; left: 0; }
+                .number-of-targets { position: absolute; bottom: 0; right: 0; }
+            }
+        }
+    }
+}

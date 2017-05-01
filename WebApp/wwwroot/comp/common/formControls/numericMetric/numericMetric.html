@@ -1,0 +1,12 @@
+<div class="row" ng-controller="numericMetricController">
+    <div class="col-md-8">
+        <div class="form-group item item-input">
+            <input class="form-control" type="number" name="{{inputName}}" ng-required="metric.mandatory" ng-model="formValue.numericValue" min="{{metric.minVal}}" max="{{metric.maxVal}}">
+        </div>
+    </div>
+    <div class="col-md-4 text-danger errors" ng-messages="{{inputErrorsKey}}">
+        <div ng-message="required"><span translate>This is required</span></div>
+        <div ng-message="min" ng-if="metric.minVal"><span translate>The value must be bigger than {{metric.minVal}} </span></div>
+        <div ng-message="max" ng-if="metric.maxVal"><span translate>The value must be less than {{metric.maxVal}} </span></div>
+    </div>
+</div>

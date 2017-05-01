@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="LightMethods.Survey.Models.Entities.Entity" Collapsed="true">
+    <Position X="5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAACAAAAAgAAAAAAAgAAAAAAAAEAEAAAAAiA=</HashCode>
+      <FileName>Entities\Entity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.Organisation" Collapsed="true">
+    <Position X="10.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAEAgAAAAAgEAAAgAQAAAAAAAgAhAAAAAEQAAA=</HashCode>
+      <FileName>Entities\Organisation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.OrgUser" Collapsed="true">
+    <Position X="2.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAEAEAAQAAAAEAAAQgAAABAAABAIgAQIAEAAAAAA=</HashCode>
+      <FileName>Entities\OrgUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.OrgUserType" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Entities\OrgUserType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.SuperUser" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\SuperUser.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.User" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACCACAAAUEAAAgAAAAAAAAAACAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.Project">
+    <Position X="8.5" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAqgAEAAAAAAAACAAEAQAAQIBAAQAAACQAIAGEAICAA=</HashCode>
+      <FileName>Entities\Project.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.Assignment">
+    <Position X="4" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAQAAQAAAAAAAgAAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Entities\Assignment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.ContactNumberType">
+    <Position X="0.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Entities\ContactNumberType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.AddressType">
+    <Position X="13.5" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAAAEAAAAAAQAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Entities\AddressType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="LightMethods.Survey.Models.Entities.ContactNumber">
+    <Position X="2.25" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAQAAAAEAAAA=</HashCode>
+      <FileName>Entities\ContactNumber.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="LightMethods.Survey.Models.Entities.IAddress">
+    <Position X="12.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAgAAAAAAAAAAgAQAAAYAAAAAAAAAAAQQAAA=</HashCode>
+      <FileName>Entities\Interfaces\IAddress.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="LightMethods.Survey.Models.Entities.IAdult">
+    <Position X="10.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CABAAAAAAQAAAAAAAAAAAAAAAACAAAAAAAgAAgAACAA=</HashCode>
+      <FileName>Entities\Interfaces\IAdult.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="LightMethods.Survey.Models.Entities.IEnumEntity">
+    <Position X="14.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAECAAAAAAAAAAAAAAAAAAQAAAAAAAAAAgAAAAAAAAA=</HashCode>
+      <FileName>Entities\Interfaces\IEnumEntity.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

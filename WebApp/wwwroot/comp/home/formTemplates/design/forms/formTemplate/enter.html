@@ -1,0 +1,22 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Free text metric</h3>
+</div>
+<div class="modal-body">
+    <form name="formTemplateForm" class="form-horizontal" novalidate>
+        <lm-form-group label="Category: ">
+            <select id="category" name="category" ng-model="ctrl.formTemplate.formTemplateCategory" ng-options="category as category.title for category in ctrl.categories track by category.id" required></select>
+        </lm-form-group>
+        <lm-form-group label="Code: ">
+            <input type="text" id="code" name="code" ng-model="ctrl.formTemplate.code" required />
+        </lm-form-group>
+        <lm-form-group label="Title: ">
+            <input type="text" id="title" name="title" ng-model="ctrl.formTemplate.title" required />
+        </lm-form-group>
+        <lm-form-group label="Description: ">
+            <textarea rows="3" id="description" name="description" ng-model="ctrl.formTemplate.description" required />
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+</div>

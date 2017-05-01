@@ -1,0 +1,51 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="projectform" class="form-horizontal" novalidate>
+                <lm-form-group label="Number: ">
+                    <input type="text" id="number" name="number" ng-model="project.number" />
+                </lm-form-group>
+                <lm-form-group label="Name: ">
+                    <input type="text" id="name" name="name" ng-model="project.name" required/>
+                </lm-form-group>
+                <lm-form-group label="Start date: ">
+                    <div class="input-group">
+                        <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="startDateCalendar.isOpen" type="text" id="startDate" name="startDate" ng-model="project.startDate" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
+                        </span>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="End date: ">
+                    <div class="input-group">
+                        <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="endDateCalendar.isOpen" type="text" id="endDate" name="endDate" ng-model="project.endDate" />
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
+                        </span>
+                    </div>
+                </lm-form-group>
+
+                <lm-form-group label="Notes: ">
+                    <textarea rows="3" id="notes" name="notes" ng-model="project.notes" />
+                </lm-form-group>
+                <lm-form-group-checkbox label="Archived">
+                    <input type="checkbox" id="archived" name="archived" ng-model="project.isArchived" />
+                </lm-form-group-checkbox>
+                <lm-form-group ng-if="errors !== undefined" class="">
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{errors}}
+                        <a class="alert-link pull-right" ng-click="clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="submit(projectform)">Submit</button>
+                </lm-form-group>
+                <a ui-sref="home.projects.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+        </div>
+    </div>
+</div>

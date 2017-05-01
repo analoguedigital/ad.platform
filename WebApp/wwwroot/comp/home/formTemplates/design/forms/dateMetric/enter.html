@@ -1,0 +1,34 @@
+﻿
+<div class="modal-header">
+    <h3 class="modal-title">Date metric</h3>
+</div>
+<div class="modal-body">
+    <form name="dateForm">
+        <lm-form-group label="Description">
+            <textarea name="description" id="description" ng-model="metric.description" />
+        </lm-form-group>
+        <lm-form-group label="Short title">
+            <input type="text" name="shortTitle" id="shortTitle" ng-model="metric.shortTitle" />
+        </lm-form-group>
+        <div class="hr-line-dashed"></div>
+        <h3>Display settings</h3>
+        <div class="row">
+            <lm-form-group label="Section title" class="col-xs-6">
+                <input type="text" name="sectionTitle" id="sectionTitle" ng-model="metric.sectionTitle" />
+            </lm-form-group>
+
+        </div>
+        <div class="hr-line-dashed"></div>
+        <h3>Validation</h3>
+        <div class="row">
+            <lm-form-group label="Mandatory" class="col-xs-4">
+                <select name="mandatory" id="mandatory" ng-model="metric.mandatory"
+                    ng-options="o.v as o.n for o in [{ n: 'No', v: false }, { n: 'Yes', v: true }]">
+                </select>
+            </lm-form-group>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
+</div>

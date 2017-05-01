@@ -1,0 +1,30 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>{{ctrl.project.name}} assignments</h5>
+        </div>
+        <div class="box-content">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Users</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="user in ctrl.userAssignments">
+                        <td>{{user.name}}</td>
+                        <td>
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins">
+                                <input type="checkbox" id="isAssigned_{{user.userId}}" ng-model="user.isAssigned" ng-change="ctrl.updateAssignment(user)">
+                                <label for="isAssigned_{{user.userId}}"></label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <a ui-sref="home.projects.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+        </div>
+    </div>
+</div>

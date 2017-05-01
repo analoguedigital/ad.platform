@@ -1,0 +1,88 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content no-gutter animated fadeInRight datalist-edit-view">
+    <div ng-class="{'col-md-8': !ctrl.isAddMode}">
+        <div class="wrapper-right-padding">
+            <div class="box">
+                <div class="box-title">
+                    <h5>Details</h5>
+                </div>
+                <div class="box-content">
+                    <form name="dataListForm" novalidate>
+                        <lm-form-group label="Name: ">
+                            <input type="text" id="name" name="name" ng-model="ctrl.dataList.name" required />
+                        </lm-form-group>
+                        <lm-form-group label="Items: ">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <th>Text</th>
+                                        <th>Value</th>
+                                        <th ng-repeat="relationship in ctrl.dataList.relationships">{{relationship.name}}</th>
+                                        <th>Edit</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                    <tbody ui-sortable="ctrl.dataListItemsDraggableOptions" ng-model="ctrl.dataList.items">
+                                        <tr ng-repeat="item in ctrl.dataList.items | filter:{'isDeleted':false} track by $index">
+                                            <td>{{item.text}}</td>
+                                            <td>{{item.value}}</td>
+                                            <td ng-repeat="relationship in ctrl.dataList.relationships">{{ctrl.getRelationValue(item, relationship).text}}</td>
+                                            <td><a ng-click="ctrl.openEditItem(item)"><i class="fa fa-pencil"></i><span class="hidden-xs"></span></a></td>
+                                            <td>
+                                                <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.deleteItem(item)">
+                                                    <i class="fa fa-remove"></i><span class="hidden-xs"></span>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="btn btn-default" ng-click="ctrl.openAddItem()"><i class="fa fa-plus"></i> Add</button>
+                        </lm-form-group>
+                        <lm-form-group ng-if="ctrl.errors !== undefined">
+                            <div class="alert alert-danger animated fadeInDown">
+                                {{ctrl.errors}}
+                                <a class="alert-link pull-right" ng-click="ctrl.clearErrors()"><i class="fa fa-times"></i></a>
+                            </div>
+                        </lm-form-group>
+                        <lm-form-group>
+                            <button type="submit" class="btn btn-primary" ng-click="ctrl.submit(dataListForm)">Submit</button>
+                        </lm-form-group>
+                        <a ui-sref="home.datalists.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4" ng-show="!ctrl.isAddMode">
+
+        <div class="box relationships">
+            <div class="box-title">
+                <h5><i class="fa fa-link"></i> Relationships</h5>
+            </div>
+            <div class="box-content">
+                <ul class="list-group elements-list">
+                    <li class="list-group-item" ng-repeat="relationship in ctrl.dataList.relationships">
+                        <a class="text-info" ng-click="ctrl.openEditRelationship(relationship)">{{relationship.name}}</a> ({{relationship.dataList.name}}) <a ng-bootbox-confirm="Are you sure you want to delete the linked column?" ng-bootbox-confirm-action="ctrl.deleteRelationship(relationship)" class="btn btn-xs btn-white pull-right"><i class="fa fa-times"></i> Delete </a>
+                    </li>
+                </ul>
+                <button ng-click="ctrl.openAddRelationship()" class="btn btn-primary btn-block m-t"><i class="fa fa-plus"></i> Add a new linked column</button>
+            </div>
+        </div>
+
+        <div class="box relationships" ng-show="ctrl.references.length > 0">
+            <div class="box-title">
+                <h5><i class="fa fa-arrows-h"></i> Referenced by</h5>
+            </div>
+            <div class="box-content">
+                <ul>
+                    <li ng-repeat="reference in ctrl.references">
+                        {{reference.name}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+

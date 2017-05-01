@@ -1,0 +1,57 @@
+﻿
+<div class="modal-body tabs-container">
+    <uib-tabset active="activeTab">
+
+        <uib-tab index="0" heading="Targets">
+            <div class="tab-content">
+                <div class="tab-pane active">
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <tr>
+                                <th>Week Target Date</th>
+                                <th>Description</th>
+                                <th>How achieved</th>
+                                <th>How other will help</th>
+                            </tr>
+                            <tr ng-repeat="target in targets">
+                                <td>{{::target.weekTargetDate | date : 'dd/MM/yyyy': d}}</td>
+                                <td>{{::target.description}}</td>
+                                <td>{{::target.howAchieved}}</td>
+                                <td>{{::target.howOthersHelp}}</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </uib-tab>
+        <uib-tab index="1" heading="Evidence">
+            <div class="tab-content">
+                <div class="tab-pane active">
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <tr>
+                                <th>Date</th>
+                                <th>Comments</th>
+                                <th>Attachments</th>
+                            </tr>
+                            <tr ng-repeat="evidence in evidences">
+                                <td>{{::evidence.date | date : 'dd/MM/yyyy': d}}</td>
+                                <td>{{::evidence.comments}}</td>
+                                <td>
+                                    <span ng-repeat="attachment in evidence.attachments">
+                                        <a href="{{attachment.url}}" target="_blank">{{::attachment.fileName}}</a> &nbsp;
+                                    </span>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </uib-tab>
+    </uib-tabset>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
+</div>

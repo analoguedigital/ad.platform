@@ -1,0 +1,114 @@
+﻿
+module App.Services {
+    "use strict";
+
+    export interface IUserContext {
+        user: Models.IUser;
+        orgUser: Models.IOrgUser;
+    }
+
+    export interface IUserContextService {
+        current: IUserContext;
+        login(loginData: ILoginData): ng.IPromise<void>;
+        logout(): void;
+        userIsInAnyRoles(role: string[]): boolean;
+        initialize(): ng.IPromise<IUserContext>;
+    }
+
+    export class UserContextService implements IUserContextService {
+
+        LOCAL_STORAGE_KEY: string = 'userContext';
+
+        public current: IUserContext = null;
+
+        public role_system_admin = 'System administrator';
+        public role_org_admin = 'Organisation administrator';
+
+        static $inject: string[] = ['$q', 'httpService', 'authService', 'orgUserResource'];
+        constructor(
+            private $q: ng.IQService,
+            private httpService: IHttpService,
+            private authService: IAuthService,
+            private orgUserResource: Resources.IOrgUserResource) {
+
+            this.current = <IUserContext>{ user: null, orgUser: null };
+
+        }
+
+        public initialize(): ng.IPromise<IUserContext> {
+
+            var defer = this.$q.defer();
+
+            if (this.authService.authContext.isAuth) {
+                this.setCurrentUser(this.authService.getExistingAuthData()).then(() => {
+                    defer.resolve(this.current);
+                });
+            } else {
+                defer.resolve(this.current);
+            }
+
+            return defer.promise;
+        }
+
+        public userIsInAnyRoles(roles: string[]): boolean {
+            return _.intersection(this.current.user.roles, roles).length > 0;
+        }
+
+        login(loginData: ILoginData): ng.IPromise<void> {
+            var defer = this.$q.defer<void>();
+
+            this.httpService.getAuthenticationToken(loginData)
+                .then((response) => {
+                    // user is authenicated 
+                    var authenticationData = new App.Services.AuthData(response.access_token, loginData.email);
+                    this.authService.loginUser(authenticationData);
+                    this.setCurrentUser(authenticationData).then(() => {
+                        defer.resolve();
+                    });
+                }, (err) => {
+                    // user is not authenicated 
+                    this.authService.logOutUser();
+                    this.logout();
+                    defer.reject(err);
+                });
+
+            return defer.promise;
+        }
+
+        logout() {
+            this.authService.logOutUser();
+            this.current.user = null;
+            this.current.orgUser = null;
+
+        }
+
+        setCurrentUser(authenticationData: AuthData): ng.IPromise<void> {
+            var deferred = this.$q.defer<void>();
+
+            this.httpService.getUserInfo()
+                .then((userinfo) => {
+                    this.current.user = <Models.IUser>{
+                        email: authenticationData.email,
+                        id: userinfo.userId,
+                        roles: userinfo.roles
+                    };
+                    if (userinfo.organisationId !== null) {
+                        this.orgUserResource.get({ id: this.current.user.id }).$promise.then((orguser: Models.IOrgUser) => {
+                            this.current.orgUser = orguser;
+                            deferred.resolve();
+                        });
+                    } else {
+                        deferred.resolve();
+                    }
+                }, (err) => {
+                    deferred.reject(err);
+                });
+
+            return deferred.promise;
+
+        }
+
+    }
+
+    angular.module("app").service("userContextService", UserContextService);
+}

@@ -1,0 +1,65 @@
+﻿
+<div class="modal-header">
+    <h3 class="modal-title">Multiple choice metric</h3>
+</div>
+<div class="modal-body">
+    <form name="multipleChoiceForm">
+        <lm-form-group label="Description">
+            <textarea name="description" id="description" ng-model="metric.description" />
+        </lm-form-group>
+        <lm-form-group label="Short title">
+            <input type="text" name="shortTitle" id="shortTitle" ng-model="metric.shortTitle" />
+        </lm-form-group>
+        <div class="hr-line-dashed"></div>
+        <h3>Data</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <label><input type="radio" ng-model="metric.isAdHoc" ng-value="false" /> From a data list</label>
+                <select class="form-control" ng-if="!metric.isAdHoc" name="viewType" id="viewType" ng-model="metric.dataListId"
+                        ng-options="d.id as d.name for d in globalDataLists"></select>
+            </div>
+            <div class="col-md-6">
+                <label><input type="radio" ng-model="metric.isAdHoc" ng-value="true" ng-change="changeIsAdHoc()"/> Ad-hoc list</label>
+                <div ui-sortable ng-show="metric.isAdHoc">
+                    <div class="row" ng-repeat="adhocItem in metric.adHocItems | filter:{'isDeleted':false} track by $index">
+                        <div class="form-group form-group-sm">
+                            <div class="col-xs-7">
+                                <input class="form-control" type="text" ng-model="adhocItem.text" />
+                            </div>
+                            <div class="col-xs-2"> value:</div>
+                            <div class="col-xs-2">
+                                <input class="form-control" type="text" ng-model="adhocItem.value" />
+                            </div>
+                            <div class="col-xs-1">
+                                <a ng-click="removeAdhocItem(adhocItem)"><i class="fa fa-remove"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <a ng-click="addAdhocItem()">Add another...</a>
+                </div>
+            </div>
+        </div>
+        <div class="hr-line-dashed"></div>
+        <h3>Display settings</h3>
+        <div class="row">
+            <lm-form-group label="Section title" class="col-xs-6">
+                <input type="text" name="sectionTitle" id="sectionTitle" ng-model="metric.sectionTitle" />
+            </lm-form-group>
+            <lm-form-group label="View mode" class="col-xs-6">
+                <select name="viewType" id="viewType" ng-model="metric.viewType"
+                        ng-options="o.v as o.n for o in [{ n: 'Dropdown', v: 'Dropdown' }, { n: 'Radio buttons', v: 'RadioButtonList' },{ n: 'Checkboxes', v: 'CheckBoxList' }]"></select>
+            </lm-form-group>
+        </div>
+        <div class="hr-line-dashed"></div>
+        <h3>Validation</h3>
+        <div class="row">
+            <lm-form-group label="Mandatory" class="col-xs-4">
+                <select name="mandatory" id="mandatory" ng-model="metric.mandatory"
+                        ng-options="o.v as o.n for o in [{ n: 'No', v: false }, { n: 'Yes', v: true }]"></select>
+            </lm-form-group>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
+</div>

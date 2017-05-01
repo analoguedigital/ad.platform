@@ -1,0 +1,99 @@
+﻿<!--<div class="main fill">
+    <div class="wrapper fill">
+        <div class="side-bar" style="background-color:yellow">
+            <div ng-include="'comp/common/navigation.html'"></div>
+        </div>
+        <div class="content" style="background-color:red">Body</div>
+    </div>
+</div>-->
+<!-- Wrapper-->
+<div id="wrapper" class="main">
+
+    <!-- Navigation -->
+    <div ng-include="'comp/common/navigation/navigationView.html'" ng-controller="navigationController"></div>
+
+    <!-- Page wraper -->
+    <!-- ng-class with current state name give you the ability to extended customization your view -->
+    <div id="page-wrapper" class="gray-bg {{$state.current.name}}">
+
+        <!-- Page wrapper -->
+        <div ng-include="'comp/common/topnavbar/topnavbarView.html'" ng-controller="topnavbarController"></div>
+
+        <!-- Main view  -->
+        <div ui-view></div>
+
+        <!-- Footer -->
+        <div ng-include="'comp/common/footer/footerView.html'" ng-controller="footerController"></div>
+
+    </div>
+    <!-- End page wrapper-->
+
+</div>
+<!-- End wrapper-->
+
+<script>
+    $(document).ready(function () {
+
+
+        // Full height of sidebar
+        function fix_height() {
+
+            var heightWithoutNavbar = $("body > #wrapper").height() - 61;
+            $(".sidebard-panel").css("min-height", heightWithoutNavbar + "px");
+
+            var navbarHeigh = $('nav.navbar-default').height();
+            var wrapperHeigh = $('#page-wrapper').height();
+
+            if (navbarHeigh > wrapperHeigh) {
+                $('#page-wrapper').css("min-height", navbarHeigh + "px");
+                $('#wrapper').css("max-height", navbarHeigh + "px");
+            }
+
+            if (navbarHeigh < wrapperHeigh) {
+                $('#page-wrapper').css("min-height", $(window).height() + "px");
+                $('#wrapper').css("max-height", $(window).height() + "px");
+            }
+
+            if ($('body').hasClass('fixed-nav')) {
+                $('#page-wrapper').css("min-height", $(window).height() - 60 + "px");
+                $('#wrapper').css("max-height", $(window).height() - 60 + "px");
+            }
+
+        }
+
+        $(window).bind("load resize scroll", function () {
+            fix_height();
+        })
+
+        // Move right sidebar top after scroll
+        $(window).scroll(function () {
+            if ($(window).scrollTop() > 0 && !$('body').hasClass('fixed-nav')) {
+                $('#right-sidebar').addClass('sidebar-top');
+            } else {
+                $('#right-sidebar').removeClass('sidebar-top');
+            }
+        });
+
+        setTimeout(function () {
+            fix_height();
+        });
+
+        if ($(this).width() < 769) {
+            $('body').addClass('body-small');
+        } else {
+            $('body').removeClass('body-small');
+        }
+
+    });
+
+    // Minimalize menu when screen is less than 768px
+    $(window).bind("load resize", function () {
+        if ($(this).width() < 769) {
+            $('body').addClass('body-small');
+        } else {
+            $('body').removeClass('body-small');
+        }
+    })
+
+
+</script>

@@ -1,0 +1,82 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using LightMethods.Survey.Models.Entities;
+using System.ComponentModel.DataAnnotations;
+using LightMethods.Survey.Models.DTO;
+using AppHelper;
+
+namespace LightMethods.Survey.Models.DAL
+{
+    public class OrganisationRepository : Repository<Organisation>
+    {
+        internal OrganisationRepository(UnitOfWork uow)
+            : base(uow)
+        { }
+
+        public Organisation CreateOrganisation(CreateOrganisation dto)
+        {
+            var org = new Organisation()
+            {
+                Name = dto.Name,
+                TelNumber = dto.TelNumber,
+                AddressLine1 = dto.AddressLine1,
+                AddressLine2 = dto.AddressLine2,
+                Town = dto.Town,
+                County = dto.County,
+                Postcode = dto.Postcode,
+                DefaultLanguageId = dto.DefaultLanguageId,
+                DefaultCalendarId = dto.DefaultCalendarId,
+                IsActive = true
+            };
+
+            var rootUser = new OrgUser()
+            {
+                Organisation = org,
+                IsRootUser = true,
+                UserName = dto.RootUserEmail,
+                Email =  dto.RootUserEmail,
+                TypeId = OrgUserTypesRepository.Administrator.Id
+            };
+
+            CurrentUOW.OrganisationRepository.InsertOrUpdate(org);
+
+            using (var tran = CurrentUOW.Context.Database.BeginTransaction())
+            {
+                CurrentUOW.Save();
+
+                var identityResult = CurrentUOW.UserManager.CreateSync(rootUser, dto.RootPassword);
+                if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.ToString(". "));
+
+                foreach (var role in OrgUserTypesRepository.Administrator.GetRoles())
+                {
+                    identityResult = CurrentUOW.UserManager.AddToRoleSync(rootUser.Id, role);
+                    if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.ToString(". "));
+                }
+
+                org.RootUser = rootUser;
+                CurrentUOW.Save();
+
+                // if user manager created the application user successfully
+                tran.Commit();
+            }
+
+            return org;
+
+        }
+
+        public void ChangeStatus(Guid id)
+        {
+            var org = this.Find(id);
+            org.IsActive = !org.IsActive;
+            InsertOrUpdate(org);
+            Context.SaveChanges();
+        }
+
+        public Organisation FindByName(string name)
+        {
+            return All.Where(o => o.Name == name).SingleOrDefault();
+        }
+    }
+}
