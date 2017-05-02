@@ -9,8 +9,9 @@ module App.Resources {
     SurveyResource.$inject = ["$resource"];
     export function SurveyResource($resource: ng.resource.IResourceService): ISurveyResource {
 
-        return <ISurveyResource>$resource('/api/surveys/:id', { id: '@id' }, { 
+        return <ISurveyResource>$resource('/api/surveys/:id', { id: '@id' }, {
             'get': {
+                method: 'GET',
                 interceptor: {
                     response: (response) => {
                         _.each(response.data.formValues, (formValue: any) => {
