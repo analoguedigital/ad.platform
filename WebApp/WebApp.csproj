@@ -217,7 +217,6 @@
     <Content Include="wwwroot\comp\home\surveys\summary\surveysSummaryView.html" />
     <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
     <Content Include="wwwroot\comp\login\loginView.html" />
-    <Content Include="wwwroot\favicon.png" />
     <Content Include="wwwroot\index.html" />
   </ItemGroup>
   <ItemGroup>

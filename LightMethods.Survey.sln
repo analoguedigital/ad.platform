@@ -1,17 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{37D3C74C-EA51-419E-8014-FB272F0A6396}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHelper", "AppHelper\AppHelper.csproj", "{B935E61F-651B-471B-ACDF-F4ED7C52DD16}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UITesting", "UITesting", "{91DC3E76-48FE-434D-AA7F-1CC1ED8E7F35}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITests", "UITests\UITests.csproj", "{6077AFDB-CF9B-47A8-A75E-A2A8C2A0BB4B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UITestFramework", "UITestFramework\UITestFramework.csproj", "{CC3B102D-E3B4-4410-A9AA-2B8E9DB1ACC2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{EC00646C-5983-4B52-B074-D8FBBEF28534}"
 EndProject
@@ -34,16 +28,6 @@ Global
 		{B935E61F-651B-471B-ACDF-F4ED7C52DD16}.Publish|Any CPU.Build.0 = Publish|Any CPU
 		{B935E61F-651B-471B-ACDF-F4ED7C52DD16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B935E61F-651B-471B-ACDF-F4ED7C52DD16}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6077AFDB-CF9B-47A8-A75E-A2A8C2A0BB4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6077AFDB-CF9B-47A8-A75E-A2A8C2A0BB4B}.Publish|Any CPU.ActiveCfg = Release|Any CPU
-		{6077AFDB-CF9B-47A8-A75E-A2A8C2A0BB4B}.Publish|Any CPU.Build.0 = Release|Any CPU
-		{6077AFDB-CF9B-47A8-A75E-A2A8C2A0BB4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6077AFDB-CF9B-47A8-A75E-A2A8C2A0BB4B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CC3B102D-E3B4-4410-A9AA-2B8E9DB1ACC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CC3B102D-E3B4-4410-A9AA-2B8E9DB1ACC2}.Publish|Any CPU.ActiveCfg = Release|Any CPU
-		{CC3B102D-E3B4-4410-A9AA-2B8E9DB1ACC2}.Publish|Any CPU.Build.0 = Release|Any CPU
-		{CC3B102D-E3B4-4410-A9AA-2B8E9DB1ACC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CC3B102D-E3B4-4410-A9AA-2B8E9DB1ACC2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EC00646C-5983-4B52-B074-D8FBBEF28534}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EC00646C-5983-4B52-B074-D8FBBEF28534}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC00646C-5983-4B52-B074-D8FBBEF28534}.Publish|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,9 +37,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{6077AFDB-CF9B-47A8-A75E-A2A8C2A0BB4B} = {91DC3E76-48FE-434D-AA7F-1CC1ED8E7F35}
-		{CC3B102D-E3B4-4410-A9AA-2B8E9DB1ACC2} = {91DC3E76-48FE-434D-AA7F-1CC1ED8E7F35}
 	EndGlobalSection
 EndGlobal
