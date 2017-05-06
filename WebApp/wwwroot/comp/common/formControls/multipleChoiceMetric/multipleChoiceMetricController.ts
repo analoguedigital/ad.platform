@@ -18,9 +18,10 @@ module App {
         static $inject: string[] = ['$scope', 'dataListItemResource'];
         constructor(private $scope: IMultipleChoiceMetricControllerScope, private dataListItemResource: Resources.IDataListItemResource) {
 
-          //  $scope.$watch('metric', () => { this.activate(); }, true);
+            this.$scope.items = [];
+            $scope.$watch('metric', () => { this.activate(); }, true);
             $scope.getText = (id) => { return this.getText(id); };
-
+     
         }
 
         activate() {
