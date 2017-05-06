@@ -24,7 +24,7 @@ namespace LightMethods.Survey.Models.Migrations
         {
             base.Seed(context);
             AddBasicData(context);
-            //AddSampleData(context);
+            AddSampleData(context);
         }
 
         public void AddBasicData(SurveyContext context)
@@ -108,6 +108,9 @@ namespace LightMethods.Survey.Models.Migrations
 
         private void AddSampleData(SurveyContext context)
         {
+            var userManager = new ApplicationUserManager(new ApplicationUserStore(context));
+            var roleManager = new ApplicationRoleManager(new ApplicationRoleStore(context));
+
             try
             {
                 Project CurrentProject = null;
@@ -128,38 +131,34 @@ namespace LightMethods.Survey.Models.Migrations
                 };
 
                 context.Organisations.AddOrUpdate(org);
-                var user = new OrgUser() { Id = Guid.Parse("b3c19356-d11d-48f2-a3a8-69392a7b4e7b"), OrganisationId = org.Id, IsRootUser = true, UserName = "admin1@test.t", TypeId = OrgUserTypesRepository.Administrator.Id, LastLogin = new DateTime(2015, 1, 1) };
-                context.OrgUsers.AddOrUpdate(user);
+                var user = new OrgUser() { Id = Guid.Parse("b3c19356-d11d-48f2-a3a8-69392a7b4e7b"), OrganisationId = org.Id, IsRootUser = true,  Email = "admin@test.t", UserName = "admin@test.t", TypeId = OrgUserTypesRepository.Administrator.Id, LastLogin = new DateTime(2015, 1, 1) };
+                userManager.AddOrUpdateUser(user, "Test1234");
+                userManager.AddToRole(user.Id, Role.ORG_ADMINSTRATOR);
                 context.SaveChanges();
                 org.RootUser = user;
                 context.SaveChanges();
 
+
+
                 CurrentProject = new Project() { Id = Guid.Parse("cb7f09a2-1823-4f60-820e-3fedc462fe76"), Number = "123", Name = "Test Project 1", StartDate = new DateTime(2015, 1, 1), Flagged = true, OrganisationId = org.Id };
                 context.Projects.AddOrUpdate(CurrentProject);
                 context.SaveChanges();
-
-                context.OrgUsers.AddOrUpdate(new OrgUser() { Id = Guid.Parse("c766000d-ea9c-4717-bed8-40b025cfb6a3"), LastLogin = new DateTime(2015, 1, 1), UserName = "manager@test.t", TypeId = OrgUserTypesRepository.Manager.Id, OrganisationId = org.Id, CurrentProjectId = CurrentProject.Id });
-                context.OrgUsers.AddOrUpdate(new OrgUser() { Id = Guid.Parse("66ab31c7-2b67-4360-b520-d763ae317ffe"), LastLogin = new DateTime(2015, 1, 1), UserName = "teamuser1@test.t", TypeId = OrgUserTypesRepository.TeamUser.Id, OrganisationId = org.Id });
-                context.OrgUsers.AddOrUpdate(new OrgUser() { Id = Guid.Parse("614856e8-bc43-45f5-ba1b-452b13630e24"), LastLogin = new DateTime(2015, 1, 1), UserName = "teamuser2@test.t", TypeId = OrgUserTypesRepository.TeamUser.Id, OrganisationId = org.Id });
-                context.OrgUsers.AddOrUpdate(new OrgUser() { Id = Guid.Parse("94e3602b-01fc-455d-a7c6-01c02fbdc45e"), LastLogin = new DateTime(2015, 1, 1), UserName = "extuser1@test.t", TypeId = OrgUserTypesRepository.ExternalUser.Id, OrganisationId = org.Id });
-                context.OrgUsers.AddOrUpdate(new OrgUser() { Id = Guid.Parse("d7464eb5-0ae5-4707-ae9d-88ca4f7f5ecd"), LastLogin = new DateTime(2015, 1, 1), UserName = "extuser2@test.t", TypeId = OrgUserTypesRepository.ExternalUser.Id, OrganisationId = org.Id });
+                
+                var dataList = new DataList() { Id = Guid.Parse("884505e1-97c8-4602-8c00-f75ae08d99ab"), OrganisationId = org.Id, Name = "Colors" };
+                context.DataLists.AddOrUpdate(dataList);
                 context.SaveChanges();
 
-                //var dataList = new DataList() { Id = Guid.Parse("884505e1-97c8-4602-8c00-f75ae08d99ab"), OrganisationId = org.Id, Name = "Colors" };
-                //context.DataLists.AddOrUpdate(dataList);
-                //context.SaveChanges();
-
-                //context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("0a138f19-2e98-4030-b9e9-78527043c1c2"), DataListId = dataList.Id, Text = "Black", Value = 0, Order = 1 });
-                //context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("32d75f9b-7da6-43b5-8f3f-b7830dc6e5f7"), DataListId = dataList.Id, Text = "White", Value = 1, Order = 2 });
-                //context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("298cdd84-4cd1-481f-875e-c2c9adce43bc"), DataListId = dataList.Id, Text = "Blue", Value = 2, Order = 3 });
-                //context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("8e63ad2d-6872-4e6d-86e6-55782450f991"), DataListId = dataList.Id, Text = "Red", Value = 3, Order = 4 });
-                //context.SaveChanges();
+                context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("0a138f19-2e98-4030-b9e9-78527043c1c2"), DataListId = dataList.Id, Text = "Black", Value = 0, Order = 1 });
+                context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("32d75f9b-7da6-43b5-8f3f-b7830dc6e5f7"), DataListId = dataList.Id, Text = "White", Value = 1, Order = 2 });
+                context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("298cdd84-4cd1-481f-875e-c2c9adce43bc"), DataListId = dataList.Id, Text = "Blue", Value = 2, Order = 3 });
+                context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("8e63ad2d-6872-4e6d-86e6-55782450f991"), DataListId = dataList.Id, Text = "Red", Value = 3, Order = 4 });
+                context.SaveChanges();
 
                 var cat = new FormTemplateCategory() { Id = Guid.Parse("5e7d5a6f-6838-4e09-bcee-e07778c26f44"), Title = "First category", OrganisationId = org.Id };
                 context.FormTemplateCategories.AddOrUpdate(cat);
                 context.SaveChanges();
 
-                var template = new FormTemplate() { Id = Guid.Parse("52692cf5-fd17-4fc6-b72b-b65b7e8d4e98"), ProjectId = CurrentProject.Id, Code = "101", Title = "First Form", Description = "This is the first from.", Version = 1.0, FormTemplateCategoryId = cat.Id, IsPublished = true };
+                var template = new FormTemplate() { Id = Guid.Parse("52692cf5-fd17-4fc6-b72b-b65b7e8d4e98"), ProjectId = CurrentProject.Id, Code = "101", Title = "First Form", Description = "This is the first from.", Version = 1.0, FormTemplateCategoryId = cat.Id, IsPublished = true, OrganisationId = org.Id, CreatedById = user.Id };
                 context.FormTemplates.AddOrUpdate(template);
                 context.SaveChanges();
 
@@ -210,19 +209,19 @@ namespace LightMethods.Survey.Models.Migrations
 
                 context.SaveChanges();
 
-                //var data = new FilledForm() { Id = Guid.Parse("390f8abc-dc99-411a-a22f-8cf43313337a"), FormTemplateId = template.Id, ProjectId = CurrentProject.Id, FilledById = user.Id };
-                //context.FilledForms.AddOrUpdate(data);
+                var data = new FilledForm() { Id = Guid.Parse("390f8abc-dc99-411a-a22f-8cf43313337a"), FormTemplateId = template.Id, ProjectId = CurrentProject.Id, FilledById = user.Id };
+                context.FilledForms.AddOrUpdate(data);
 
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("24bacf38-52ee-40e5-916c-a3f81a84eea5"), FilledFormId = data.Id, MetricId = metric1.Id, TextValue = "answer 1" });
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("cdb38534-f412-4397-aa1e-51a587db402f"), FilledFormId = data.Id, MetricId = metric2.Id, TextValue = "answer 2" });
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("b3d3dc58-5467-42ac-8d2a-3e327635a72d"), FilledFormId = data.Id, MetricId = metric3.Id, TextValue = "answer 3" });
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("d3efb64f-8bf1-4916-9dd0-07fc11ec171e"), FilledFormId = data.Id, MetricId = metric4.Id, TextValue = "answer 4" });
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("9a0e941e-f28a-4bf3-9a23-edeecf4368df"), FilledFormId = data.Id, MetricId = metric5.Id, TextValue = "answer 5" });
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("a00e12d0-92a5-4737-9dd3-b83f8a71e320"), FilledFormId = data.Id, MetricId = metric6.Id, NumericValue = 3 });
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("b2f46bdc-f987-4a2d-bcc7-bb7c4f592f21"), FilledFormId = data.Id, MetricId = metric7.Id, DateValue = DateTime.Now });
-                //context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("747a6bbf-c439-40e4-a76e-d03b68ed1614"), FilledFormId = data.Id, MetricId = metric8.Id, BoolValue = true });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("24bacf38-52ee-40e5-916c-a3f81a84eea5"), FilledFormId = data.Id, MetricId = metric1.Id, TextValue = "answer 1" });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("cdb38534-f412-4397-aa1e-51a587db402f"), FilledFormId = data.Id, MetricId = metric2.Id, TextValue = "answer 2" });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("b3d3dc58-5467-42ac-8d2a-3e327635a72d"), FilledFormId = data.Id, MetricId = metric3.Id, TextValue = "answer 3" });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("d3efb64f-8bf1-4916-9dd0-07fc11ec171e"), FilledFormId = data.Id, MetricId = metric4.Id, TextValue = "answer 4" });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("9a0e941e-f28a-4bf3-9a23-edeecf4368df"), FilledFormId = data.Id, MetricId = metric5.Id, TextValue = "answer 5" });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("a00e12d0-92a5-4737-9dd3-b83f8a71e320"), FilledFormId = data.Id, MetricId = metric6.Id, NumericValue = 3 });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("b2f46bdc-f987-4a2d-bcc7-bb7c4f592f21"), FilledFormId = data.Id, MetricId = metric7.Id, DateValue = DateTime.Now });
+                context.FormValues.AddOrUpdate(new FormValue() { Id = Guid.Parse("747a6bbf-c439-40e4-a76e-d03b68ed1614"), FilledFormId = data.Id, MetricId = metric8.Id, BoolValue = true });
 
-                //context.SaveChanges();
+                context.SaveChanges();
 
                 var reportCat = new ReportTemplateCategory() { Id = Guid.Parse("00b2ea95-dcaf-480a-b470-6d012a5f1d6e"), OrganisationId = org.Id, Title = "First report category" };
                 context.ReportTemplateCategories.AddOrUpdate(reportCat);
