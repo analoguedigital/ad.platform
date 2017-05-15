@@ -77,7 +77,13 @@ namespace WebApi
                 });
             Mapper.CreateMap<MultipleChoiceMetricDTO, MultipleChoiceMetric>();
             Mapper.CreateMap<NumericMetric, NumericMetricDTO>().ReverseMap();
-            Mapper.CreateMap<RateMetric, RateMetricDTO>().ReverseMap();
+            Mapper.CreateMap<RateMetricDTO, RateMetric>();
+            Mapper.CreateMap<RateMetric, RateMetricDTO>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.IsAdHoc = src.DataList?.IsAdHoc ?? false;
+                    dest.AdHocItems = src.DataList?.IsAdHoc ?? false ? src.DataList.Items.Select(i => Mapper.Map<DataListItemDTO>(i)).ToList() : Enumerable.Empty<DataListItemDTO>().ToList();
+                });
             Mapper.CreateMap<Attachment, AttachmentDTO>().ReverseMap();
             Mapper.CreateMap<AttachmentMetric, AttachmentMetricDTO>();
             Mapper.CreateMap<AttachmentMetricDTO, AttachmentMetric>()

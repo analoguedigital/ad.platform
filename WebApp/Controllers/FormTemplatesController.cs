@@ -120,10 +120,19 @@ namespace WebApi.Controllers
                         UnitOfWork.MetricsRepository.Delete(metric);
                     }
                     else
-                    { // Insert or update
+                    {   // Insert or update
                         metric.FormTemplateId = form.Id;
                         metric.MetricGroup = group;
                         metric.Order = metricOrder++;
+
+                        // Validate metric
+                        var validationResult = metric.Validate();
+                        if (validationResult.Any())
+                        {
+                            validationResult.ToList().ForEach(res => ModelState.AddModelError(metric.Id.ToString(), res.ErrorMessage));
+                            return BadRequest(ModelState);
+                        }
+
                         UnitOfWork.MetricsRepository.InsertOrUpdate(metric);
                     }
                 }

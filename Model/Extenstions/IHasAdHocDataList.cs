@@ -19,8 +19,7 @@ namespace LightMethods.Survey.Models.Entities
             if (!newIsAdHoc)
                 return;
 
-
-            var dbDataList = oldDataList.IsAdHoc ? oldDataList : null;
+            var dbDataList = (oldDataList?.IsAdHoc ?? false) ? oldDataList : null;
             if (dbDataList == null)
             {
                 dbDataList = new DataList() { Name = string.Empty, OrganisationId = org.Id };

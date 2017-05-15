@@ -55,7 +55,12 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual IEnumerable<ValidationResult> ValidateValue(FormValue value)
         {
-            return new List<ValidationResult>();
+            return Enumerable.Empty<ValidationResult>();
+        }
+
+        public virtual IEnumerable<ValidationResult> Validate()
+        {
+            return Enumerable.Empty<ValidationResult>();
         }
 
         public void MoveUp()

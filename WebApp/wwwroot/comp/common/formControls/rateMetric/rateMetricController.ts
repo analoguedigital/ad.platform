@@ -18,23 +18,44 @@ module App {
 
         constructor(private $scope: IRateMetricControllerScope) {
             this.activate();
-            $scope.$watch('metric', () => { this.activate(); });
+            //$scope.$watch('metric', () => { this.activate(); });
         }
-        
+
         activate() {
-            this.$scope.sliderOptions = {
-                floor: 1,
-                ceil: this.$scope.metric.maxValue,
-                showTicks: true,
-            };
+            if (!this.$scope.metric.isAdHoc) {
+                // basic slider (min/max bound)
+                this.$scope.sliderOptions = {
+                    floor: 1,
+                    ceil: this.$scope.metric.maxValue,
+                    showTicks: true
+                };
+            } else {
+                // ad-hoc data list. sort values first.
+                var items = this.$scope.metric.adHocItems;
+                items.sort((a, b) => a.value - b.value);
+
+                let steps = this.$scope.metric.adHocItems.map((val) => {
+                    return {
+                        value: val.value,
+                        legend: val.text
+                    };
+                });
+
+                this.$scope.sliderOptions = {
+                    showTicks: true,
+                    showTicksValues: true,
+                    stepsArray: steps
+                };
+            }
 
             if (_.isEmpty(this.$scope.formValues)) {
                 this.$scope.formValue = this.$scope.ctrl.addFormValue(this.$scope.metric, this.$scope.dataListItem, this.$scope.rowNumber);
-                this.$scope.formValue.numericValue = 0;
+                this.$scope.formValue.numericValue = this.$scope.metric.defaultValue;
             }
             else {
                 this.$scope.formValue = this.$scope.formValues[0];
             }
+
         }
     }
 

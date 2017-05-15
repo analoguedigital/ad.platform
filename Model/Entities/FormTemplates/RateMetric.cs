@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using AppHelper;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LightMethods.Survey.Models.Entities
 {
-    public class RateMetric : Metric, IMeasureableMetric
+    public class RateMetric : Metric, IMeasureableMetric, IHasDataList, IHasAdHocDataList
     {
         [Required]
         [Display(Name = "Min value")]
@@ -16,6 +17,12 @@ namespace LightMethods.Survey.Models.Entities
         [Required]
         [Display(Name = "Max value")]
         public int MaxValue { get; set; }
+
+        public int? DefaultValue { get; set; }
+
+        public virtual DataList DataList { set; get; }
+        [Column("RateMetricDataListId")]
+        public Guid? DataListId { set; get; }
 
         public RateMetric()
         {
@@ -26,6 +33,25 @@ namespace LightMethods.Survey.Models.Entities
         {
             if (Mandatory && value.NumericValue == null)
                 yield return new ValidationResult("{0} is required.".FormatWith(ShortTitle));
+        }
+
+        public override IEnumerable<ValidationResult> Validate()
+        {
+            return base.Validate()
+                .Concat(ValidateDataList());
+        }
+
+        public IEnumerable<ValidationResult> ValidateDataList()
+        {
+            if (this.DataListId != null)
+            {
+                var items = this.DataList.AllItems.Select(x => x.Value).ToList();
+                if (!items.Any())
+                    yield return new ValidationResult("Ad-hoc list is empty. Add list items first.");
+
+                if (items.Count != items.Distinct().Count())
+                    yield return new ValidationResult("Ad-hoc items cannot contain duplicate values");
+            }
         }
 
         public override string GetStringValue(FormValue value)
@@ -41,6 +67,8 @@ namespace LightMethods.Survey.Models.Entities
             var clone = BaseClone<RateMetric>(template, metricGroup);
             clone.MaxValue = MaxValue;
             clone.MinValue = MinValue;
+            clone.DataList = DataList.IsAdHoc ? DataList.Clone() : null; // Create a new datalist only if it is an ad-hoc
+            clone.DataListId = DataList.IsAdHoc ? null : DataListId;
             return clone;
         }
     }

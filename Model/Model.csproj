@@ -356,6 +356,14 @@
     <Compile Include="Migrations\201705061424528_Fix_migration_issues.Designer.cs">
       <DependentUpon>201705061424528_Fix_migration_issues.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705091810189_Add_rateMetric_dataList.cs" />
+    <Compile Include="Migrations\201705091810189_Add_rateMetric_dataList.Designer.cs">
+      <DependentUpon>201705091810189_Add_rateMetric_dataList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705120615544_Add_rateMetric_defaultValue.cs" />
+    <Compile Include="Migrations\201705120615544_Add_rateMetric_defaultValue.Designer.cs">
+      <DependentUpon>201705120615544_Add_rateMetric_defaultValue.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -456,6 +464,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705061424528_Fix_migration_issues.resx">
       <DependentUpon>201705061424528_Fix_migration_issues.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705091810189_Add_rateMetric_dataList.resx">
+      <DependentUpon>201705091810189_Add_rateMetric_dataList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705120615544_Add_rateMetric_defaultValue.resx">
+      <DependentUpon>201705120615544_Add_rateMetric_defaultValue.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

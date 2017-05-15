@@ -191,7 +191,7 @@ namespace LightMethods.Survey.Models.DAL
 
             modelBuilder.Entity<Project>()
                 .HasRequired<Organisation>(u => u.Organisation)
-                .WithMany(o=>o.Projects)
+                .WithMany(o => o.Projects)
                 .HasForeignKey(p => p.OrganisationId)
                 .WillCascadeOnDelete(false);
 
@@ -299,6 +299,12 @@ namespace LightMethods.Survey.Models.DAL
 
             modelBuilder.Entity<MultipleChoiceMetric>()
                 .HasRequired<DataList>(m => m.DataList)
+                .WithMany()
+                .HasForeignKey(m => m.DataListId)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<RateMetric>()
+                .HasOptional<DataList>(m => m.DataList)
                 .WithMany()
                 .HasForeignKey(m => m.DataListId)
                 .WillCascadeOnDelete(false);

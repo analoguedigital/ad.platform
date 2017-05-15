@@ -11,6 +11,47 @@
             <input type="text" name="shortTitle" id="shortTitle" ng-model="metric.shortTitle" />
         </lm-form-group>
         <div class="hr-line-dashed"></div>
+        <h3>Values</h3>
+        <div class="row">
+            <div class="col-md-6">
+                <label><input type="radio" ng-model="metric.isAdHoc" ng-value="false" ng-change="changeIsAdHoc()" /> Numeric range</label>
+                <div class="row" ng-show="!metric.isAdHoc">
+                    <lm-form-group label="Minimum value" class="col-xs-6">
+                        <input type="number" name="minValue" id="minValue" ng-model="metric.minValue" />
+                    </lm-form-group>
+                    <lm-form-group label="Maximum value" class="col-xs-6">
+                        <input type="number" name="maxValue" id="maxValue" ng-model="metric.maxValue" />
+                    </lm-form-group>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label><input type="radio" ng-model="metric.isAdHoc" ng-value="true" ng-change="changeIsAdHoc()" /> List of values</label>
+                <div ui-sortable ng-show="metric.isAdHoc">
+                    <div class="row" ng-repeat="adhocItem in metric.adHocItems | filter:{'isDeleted':false} track by $index">
+                        <div class="form-group form-group-sm">
+                            <div class="col-xs-7">
+                                <input class="form-control" type="text" ng-model="adhocItem.text" />
+                            </div>
+                            <div class="col-xs-2"> value:</div>
+                            <div class="col-xs-2">
+                                <input class="form-control" type="text" ng-model="adhocItem.value" />
+                            </div>
+                            <div class="col-xs-1">
+                                <a ng-click="removeAdhocItem(adhocItem)"><i class="fa fa-remove"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <a ng-click="addAdhocItem()">Add another...</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Default Value <small>optional</small></h3>
+                <input class="form-control" type="number" ng-model="metric.defaultValue" />
+            </div>
+        </div>
+        <div class="hr-line-dashed"></div>
         <h3>Display settings</h3>
         <div class="row">
             <lm-form-group label="Section title" class="col-xs-6">
@@ -23,15 +64,7 @@
         <div class="row">
             <lm-form-group label="Mandatory" class="col-xs-4">
                 <select name="mandatory" id="mandatory" ng-model="metric.mandatory"
-                    ng-options="o.v as o.n for o in [{ n: 'No', v: false }, { n: 'Yes', v: true }]">
-                </select>
-            </lm-form-group>
-
-            <lm-form-group label="Minimum value" class="col-xs-4">
-                <input type="number" name="minValue" id="minValue" ng-model="metric.minValue" />
-            </lm-form-group>
-            <lm-form-group label="Maximum value" class="col-xs-4">
-                <input type="number" name="maxValue" id="maxValue" ng-model="metric.maxValue" />
+                        ng-options="o.v as o.n for o in [{ n: 'No', v: false }, { n: 'Yes', v: true }]"></select>
             </lm-form-group>
         </div>
     </form>
