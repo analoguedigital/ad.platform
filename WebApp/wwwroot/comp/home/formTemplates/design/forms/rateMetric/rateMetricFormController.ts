@@ -51,12 +51,34 @@ module App {
         }
 
         close() {
-            if (this.$scope.metric.isAdHoc && this.$scope.metric.adHocItems.length > 0) {
+            // ad-hoc list cannot contain duplicate values.
+            if (this.$scope.metric.isAdHoc && this.$scope.metric.adHocItems.length) {
                 var adHocItems = this.$scope.metric.adHocItems
                     .map((item) => { return item.value });
                 var hasDuplicates = _.uniq(adHocItems).length !== adHocItems.length;
                 if (hasDuplicates) {
                     this.toastr.error('Ad-hoc list cannot contain duplicate values!', 'Error', { closeButton: true });
+                    return false;
+                }
+            }
+
+            // validate default value.
+            let defaultValue = this.$scope.metric.defaultValue;
+
+            if (this.$scope.metric.isAdHoc) {
+                let values = this.$scope.metric.adHocItems
+                    .map(item => { return item.value });
+
+                if (values.indexOf(defaultValue) === -1) {
+                    this.toastr.error('Default value must be set to one of possible values.');
+                    return false;
+                }
+            } else {
+                let minValue = this.$scope.metric.minValue;
+                let maxValue = this.$scope.metric.maxValue;
+
+                if (defaultValue < minValue || defaultValue > maxValue) {
+                    this.toastr.error('Default value must fall within the min/max range', 'Error', { closeButton: true });
                     return false;
                 }
             }

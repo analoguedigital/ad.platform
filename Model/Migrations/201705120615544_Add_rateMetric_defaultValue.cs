@@ -8,6 +8,7 @@ namespace LightMethods.Survey.Models.Migrations
         public override void Up()
         {
             AddColumn("dbo.Metrics", "DefaultValue", c => c.Int());
+            Sql("UPDATE dbo.Metrics SET DefaultValue = MinValue");
         }
         
         public override void Down()

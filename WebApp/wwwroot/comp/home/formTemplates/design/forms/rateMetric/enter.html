@@ -29,12 +29,12 @@
                 <div ui-sortable ng-show="metric.isAdHoc">
                     <div class="row" ng-repeat="adhocItem in metric.adHocItems | filter:{'isDeleted':false} track by $index">
                         <div class="form-group form-group-sm">
-                            <div class="col-xs-7">
+                            <div class="col-xs-6">
                                 <input class="form-control" type="text" ng-model="adhocItem.text" />
                             </div>
                             <div class="col-xs-2"> value:</div>
-                            <div class="col-xs-2">
-                                <input class="form-control" type="text" ng-model="adhocItem.value" />
+                            <div class="col-xs-3">
+                                <input class="form-control" type="number" ng-model="adhocItem.value" />
                             </div>
                             <div class="col-xs-1">
                                 <a ng-click="removeAdhocItem(adhocItem)"><i class="fa fa-remove"></i></a>

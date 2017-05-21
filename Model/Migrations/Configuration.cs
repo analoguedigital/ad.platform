@@ -197,7 +197,7 @@ namespace LightMethods.Survey.Models.Migrations
                 category3.AddMetric(metric5);
                 context.FreeTextMetrics.AddOrUpdate(metric5);
 
-                var metric6 = new RateMetric() { Id = Guid.Parse("ae9399eb-80b2-4944-be22-55b561f10bc5"), ShortTitle = "r1", Description = "What is the rate1", MinValue = 1, MaxValue = 5, Order = category1.GetMaxMetricOrder() };
+                var metric6 = new RateMetric() { Id = Guid.Parse("ae9399eb-80b2-4944-be22-55b561f10bc5"), ShortTitle = "r1", Description = "What is the rate1", MinValue = 1, MaxValue = 5, DefaultValue = 1, Order = category1.GetMaxMetricOrder() };
                 category1.AddMetric(metric6);
                 context.RateMetrics.AddOrUpdate(metric6);
 

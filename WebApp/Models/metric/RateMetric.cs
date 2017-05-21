@@ -12,7 +12,7 @@ namespace WebApi.Models
         public int MinValue { get; set; }
 
         public int MaxValue { get; set; }
-        public int? DefaultValue { get; set; }
+        public int DefaultValue { get; set; }
 
         public Guid? DataListId { set; get; }
         public bool IsAdHoc { set; get; }

@@ -18,7 +18,7 @@ namespace LightMethods.Survey.Models.Entities
         [Display(Name = "Max value")]
         public int MaxValue { get; set; }
 
-        public int? DefaultValue { get; set; }
+        public int DefaultValue { get; set; }
 
         public virtual DataList DataList { set; get; }
         [Column("RateMetricDataListId")]
@@ -38,7 +38,8 @@ namespace LightMethods.Survey.Models.Entities
         public override IEnumerable<ValidationResult> Validate()
         {
             return base.Validate()
-                .Concat(ValidateDataList());
+                .Concat(ValidateDataList())
+                .Concat(ValidateDefaultValue());
         }
 
         public IEnumerable<ValidationResult> ValidateDataList()
@@ -50,7 +51,24 @@ namespace LightMethods.Survey.Models.Entities
                     yield return new ValidationResult("Ad-hoc list is empty. Add list items first.");
 
                 if (items.Count != items.Distinct().Count())
-                    yield return new ValidationResult("Ad-hoc items cannot contain duplicate values");
+                    yield return new ValidationResult("Ad-hoc items cannot contain duplicate values.");
+            }
+        }
+
+        public IEnumerable<ValidationResult> ValidateDefaultValue()
+        {
+
+            if (this.DataListId == null)
+            {
+                // numeric range
+                if (this.DefaultValue < this.MinValue || this.DefaultValue > this.MaxValue)
+                    yield return new ValidationResult("Default value must fall within the min/max range.");
+            }
+            else
+            {
+                // ad-hoc list
+                if(!this.DataList.Items.Select(i=>i.Value).Contains(DefaultValue))
+                    yield return new ValidationResult("Default value must be set to one of possible values.");
             }
         }
 
@@ -67,6 +85,7 @@ namespace LightMethods.Survey.Models.Entities
             var clone = BaseClone<RateMetric>(template, metricGroup);
             clone.MaxValue = MaxValue;
             clone.MinValue = MinValue;
+            clone.DefaultValue = DefaultValue;
             clone.DataList = DataList.IsAdHoc ? DataList.Clone() : null; // Create a new datalist only if it is an ad-hoc
             clone.DataListId = DataList.IsAdHoc ? null : DataListId;
             return clone;
