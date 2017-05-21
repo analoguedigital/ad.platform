@@ -199,6 +199,7 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDetails.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
+    <Content Include="wwwroot\comp\home\surveys\new\_formDetails.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metricGroup.html" />

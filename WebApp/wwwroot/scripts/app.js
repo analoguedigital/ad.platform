@@ -21,6 +21,7 @@ var App;
         "ngFileUpload",
         "textAngular",
         "rzModule",
-        "toastr"
+        "toastr",
+        "angularMoment"
     ]);
 })(App || (App = {}));
