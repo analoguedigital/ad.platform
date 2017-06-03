@@ -160,6 +160,17 @@
     </Content>
     <Content Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryView.html" />
     <Content Include="wwwroot\comp\common\footer\footerView.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\attachmentMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\dateMetric\dateMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\dichotomousMetric\dichotomousMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\freeTextMetric\freeTextMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\multipleChoiceMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\multipleChoiceMetric_check.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\multipleChoiceMetric_radio.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\numericMetric\numericMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\rateMetric\rateMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\timeMetric\timeMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\_metric\metric.html" />
     <Content Include="wwwroot\comp\common\formControls\timeMetric\timeMetric.html" />
     <Content Include="wwwroot\comp\common\formControls\dateMetric\dateMetric.html" />
     <Content Include="wwwroot\comp\common\formControls\dichotomousMetric\dichotomousMetric.html" />
@@ -211,6 +222,9 @@
     <Content Include="wwwroot\comp\home\organisations\organisationsView.html" />
     <Content Include="wwwroot\comp\home\projects\edit\projectEditView.html" />
     <Content Include="wwwroot\comp\home\projects\projectsView.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\survey.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
     <Content Include="wwwroot\comp\home\users\usersView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\allSurveysView.html" />
@@ -335,6 +349,9 @@
     <Content Include="wwwroot\comp\home\dashboard\updates\_updates.scss" />
     <Content Include="wwwroot\comp\home\dashboard\students\chart\_studentChart.scss" />
     <Content Include="wwwroot\comp\home\dataLists\edit\_dataListEdit.scss" />
+    <Content Include="wwwroot\comp\home\surveys\view\_survey.scss" />
+    <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\_attachmentMetric.scss" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\_multipleChoiceMetric.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

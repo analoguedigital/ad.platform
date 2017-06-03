@@ -16,6 +16,7 @@
                         <th>Completed by</th>
                         <th></th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,6 +24,11 @@
                         <td>{{survey.surveyDate | date : 'dd/MM/yyyy': d}}</td>
                         <td>{{survey.serial}}</td>
                         <td>{{survey.filledBy}}</td>
+                        <td>
+                            <a ui-sref="home.surveys.view({surveyId: survey.id})">
+                                <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
+                            </a>
+                        </td>
                         <td>
                             <a ui-sref="home.surveys.edit({surveyId: survey.id})"><i class="fa fa-pencil"></i><span class="hidden-xs"> Edit</span></a>
                         </td>

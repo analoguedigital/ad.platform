@@ -117,6 +117,39 @@
 
                 },
                 ncyBreadcrumb: { label: 'Edit' }
+            })
+            .state("home.surveys.view", {
+                url: "/view/:surveyId",
+                templateUrl: "comp/home/surveys/view/survey.html",
+                controller: "newSurveyController",
+                controllerAs: "ctrl",
+                resolve: {
+                    formTemplate:
+                    ['$stateParams', 'formTemplateResource', 'surveyResource',
+                        ($stateParams,
+                            formTemplateResource: App.Resources.IFormTemplateResource,
+                            surveyResource: App.Resources.ISurveyResource) => {
+
+                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise
+                                .then((survey) => {
+                                    return formTemplateResource.get({ id: survey.formTemplateId }).$promise.then((data) => {
+                                        return data;
+                                    });
+                                });
+                        }],
+                    survey:
+                    ['$stateParams', 'surveyResource',
+                        ($stateParams,
+                            surveyResource: App.Resources.ISurveyResource) => {
+
+                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise.then((data) => {
+                                return data;
+                            });
+                        }],
+                    project: () => { return null; }
+
+                },
+                ncyBreadcrumb: { label: 'View' }
             });
     }
 })();

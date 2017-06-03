@@ -16,19 +16,28 @@ module App {
         dataListItem: Models.IDataListItem;
         formValues: Models.IFormValue[];
         formValue: Models.IFormValue;
+        isViewMode: boolean;
     }
 
     class MetricController implements IMetricController {
 
-        static $inject: string[] = ["$scope"];
 
-        constructor(private $scope: IMetricControllerScope) {
+        static readonly surveyViewRouteName: string = "home.surveys.view";
+
+        static $inject: string[] = ["$scope", "$state"];
+        constructor(
+            private $scope: IMetricControllerScope,
+            private $state: angular.ui.IStateService) {
 
             this.activate();
             $scope.$watch('metric', () => { this.activate(); });
         }
 
         activate() {
+
+            if (this.$state.current.name == MetricController.surveyViewRouteName) {
+                this.$scope.isViewMode = true;
+            }
 
             var relatedFormValues: Models.IFormValue[] = [];
 

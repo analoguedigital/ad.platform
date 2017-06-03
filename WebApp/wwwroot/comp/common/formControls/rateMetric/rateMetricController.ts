@@ -56,6 +56,10 @@ module App {
                 this.$scope.formValue = this.$scope.formValues[0];
             }
 
+            if (this.$scope.isViewMode) {
+                this.$scope.sliderOptions.readOnly = true;
+            }
+
         }
     }
 

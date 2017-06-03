@@ -1,0 +1,9 @@
+﻿<div class="row">
+    <div class="col-md-8">
+        <p>
+            <span ng-repeat="item in items | orderBy:'order' track by $index" class="checkbox-value">
+                <i class="fa fa-check" ng-show="item.id === formValue.guidValue"></i> {{getText(item.id)}}
+            </span>
+        </p>
+    </div>
+</div>
