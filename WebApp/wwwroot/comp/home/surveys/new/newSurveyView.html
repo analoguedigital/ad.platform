@@ -18,8 +18,9 @@
                                 {{error.value}}
                             </div>
                         </div>
-                        <uib-tabset>
-                            <uib-tab index="$index + 1" ng-repeat="tab in ctrl.tabs" active="tab.active">
+                        
+                        <uib-tabset active="ctrl.activeTabIndex">
+                            <uib-tab ng-repeat="tab in ctrl.tabs">
                                 <div class="metric-groups">
                                     <div class="content" ng-repeat="metricGroup in ctrl.formTemplate.metricGroups | filter: {page:tab.number} | filter: {isDeleted: false} track by $index ">
                                         <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/surveys/new/_metricGroup.html'"></div>
@@ -35,10 +36,10 @@
                                     <a ui-sref="home.surveys.list.summary({projectId: ctrl.survey.projectId})" class="btn btn-default">Cancel</a>
                                 </li>
                                 <li>
-                                    <a ng-hide="ctrl.tabs[0].active" ng-click="ctrl.previous()" class="btn btn-default">Previous</a>
+                                    <a ng-show="ctrl.activeTabIndex > 0" ng-click="ctrl.previous()" class="btn btn-default">Previous</a>
                                 </li>
                                 <li>
-                                    <a ng-hide="ctrl.tabs[ctrl.tabs.length - 1].active" ng-click="ctrl.next()" class="btn btn-primary">Next</a>
+                                    <a ng-show="ctrl.activeTabIndex + 1 < ctrl.tabs.length" ng-click="ctrl.next()" class="btn btn-primary">Next</a>
                                 </li>
                                 <li>
                                     <a ng-click="ctrl.submit(surveyForm)" class="btn btn-primary">Submit</a>

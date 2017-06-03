@@ -21,7 +21,7 @@ module App {
         pages: _.Dictionary<Models.IMetricGroup[]>;
         tabs: any[];
         //survey: Models.ISurvey;
-        activeTabIndex: number;
+        activeTabIndex: number = 0;
 
         static $inject: string[] = ["$state", "surveyResource", "formTemplate", "project", "survey"];
 
@@ -47,10 +47,10 @@ module App {
 
         activate() {
             var pageGroups = _.groupBy(this.formTemplate.metricGroups, (mg) => { return mg.page });
-            this.tabs = _.map(Object.keys(pageGroups), (pageNumber) => { return { number: pageNumber, title: "Page " + pageNumber, active: false }; });
+            this.tabs = _.map(Object.keys(pageGroups), (pageNumber) => { return { number: pageNumber, title: "Page " + pageNumber }; });
             this.tabs[0].active = true;
         }
-
+        
         addFormValue(metric, rowDataListItem, rowNumber) {
             var formValue = <Models.IFormValue>{};
             formValue.textValue = '';
@@ -63,19 +63,17 @@ module App {
         };
 
         next() {
-            if (this.tabs[this.tabs.length - 1].active)
+            if (this.activeTabIndex + 1 == this.tabs.length)
                 return;
 
-            var activeTab = _.find(this.tabs, { "active": true });
-            this.tabs[activeTab.number].active = true;
+            this.activeTabIndex += 1;
         }
 
         previous() {
-            if (this.tabs[0].active)
+            if (this.activeTabIndex == 0)
                 return;
 
-            var activeTab = _.find(this.tabs, { "active": true });
-            this.tabs[activeTab.number - 2].active = true;
+            this.activeTabIndex -= 1;
         }
 
         submit(form: ng.IFormController) {
