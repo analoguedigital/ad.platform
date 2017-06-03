@@ -126,7 +126,22 @@ module App {
                     var pageGroups = _.groupBy(formTemplate.metricGroups, (mg) => { return mg.page });
                     this.pageNumbers = Object.keys(pageGroups);
 
-                    this.metricGroupResource.get({ 'formTemplateId': this.formTemplate.id, 'id': '00000000-0000-0000-0000-000000000000' }, (group) => { this.metricGroupControl.push(group); });
+                    if (this.pageNumbers.length < 1) {
+                        this.addPage();
+                    }
+
+                    this.metricGroupResource.get({ 'formTemplateId': this.formTemplate.id, 'id': '00000000-0000-0000-0000-000000000000' }, (group) => {
+                        this.metricGroupControl.push(group);
+
+                        if (this.formTemplate.metricGroups.length < 1) {
+                            // init with a default metric group.
+                            let g: Models.IMetricGroup = _.cloneDeep(group);
+                            g.title = "First Metric Group";
+                            g.helpContext = "Drag & drop the metrics you want to add to get started!";
+                            this.formTemplate.metricGroups.push(g);
+                        }
+                    });
+
                     this.newMetricResource.createFreeText((metric) => { this.freeTextControl.push(metric); });
                     this.newMetricResource.createNumeric((metric) => { this.numericControl.push(metric); });
                     this.newMetricResource.createRate((metric) => { this.rateControl.push(metric); });
@@ -135,7 +150,6 @@ module App {
                     this.newMetricResource.createDichotomous((metric) => { this.dichotomousControl.push(metric); });
                     this.newMetricResource.createMultipleChoice((metric) => { this.multipleChoiceControl.push(metric); });
                     this.newMetricResource.createAttachment((metric) => { this.attachmentControl.push(metric); });
-
                 });
         }
 
