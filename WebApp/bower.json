@@ -29,7 +29,7 @@
     "pace": "1.0.2",
     "animate-sass": "0.6.4",
     "textAngular": "1.5.1",
-    "awesome-bootstrap-checkbox": "0.3.7",
+    "awesome-bootstrap-checkbox": "^0.3.7",
     "angular-toastr": "2.1.1",
     "moment": "^2.18.1",
     "angular-moment": "^1.0.1"

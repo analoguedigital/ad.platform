@@ -56,7 +56,7 @@ module App {
                 this.$scope.formValue = this.$scope.formValues[0];
             }
 
-            if (this.$scope.isViewMode) {
+            if (this.$scope.isViewMode || this.$scope.isPrintMode) {
                 this.$scope.sliderOptions.readOnly = true;
             }
 

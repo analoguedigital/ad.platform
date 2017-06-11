@@ -1,0 +1,18 @@
+﻿<div class="metric-group">
+    <div class="metric-group-header">
+        <h2>{{metricGroup.title}}</h2>
+        <a class="animated flipInX" title="delete group" ng-bootbox-confirm="Are you sure you want to delete this metric group?" ng-bootbox-confirm-action="ctrl.deleteGroup(metricGroup)"><i class="fa fa-remove"></i></a>
+    </div>
+
+    <fieldset class="body">
+        <div class="metrics">
+            <div class="metric" ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false} track by $index ">
+                <div class="metric-header animated flipInX">
+                    <a title="delete" ng-bootbox-confirm="Are you sure you want to delete this metric?" ng-bootbox-confirm-action="ctrl.deleteMetric(metric)"><i class="fa fa-remove"></i></a>
+                </div>
+                <div class="metric-body" ng-include="'comp/common/formControlsViews/_metric/metric.html'" ng-controller="metricController"></div>
+                <div class="hr-line-dashed"></div>
+            </div>
+        </div>
+    </fieldset>
+</div>

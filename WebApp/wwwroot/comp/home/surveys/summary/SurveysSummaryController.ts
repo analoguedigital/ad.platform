@@ -7,6 +7,7 @@ module App {
         project: Models.IProject;
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
+        printSelected: () => void;
         activate: () => void;
     }
 
@@ -15,9 +16,10 @@ module App {
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
 
-        static $inject: string[] = ['project', 'formTemplateResource', 'surveyResource'];
+        static $inject: string[] = ['$state', 'project', 'formTemplateResource', 'surveyResource'];
 
         constructor(
+            public $state: ng.ui.IStateService,
             public project: Models.IProject,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource) {
@@ -44,6 +46,14 @@ module App {
                 () => { this.load(); },
                 (err) => { console.log(err); });
         }
+
+        printSelected() {
+            let selectedSurveys = this.surveys.filter((survey) => survey.isChecked == true);
+            let result = selectedSurveys.map((survey) => { return survey.id; });
+
+            this.$state.go('home.surveys.print-multiple', { selectedSurveys: result });
+        }
+        
     }
 
     angular.module("app").controller("surveysSummaryController", SurveysSummaryController);

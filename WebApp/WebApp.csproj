@@ -222,6 +222,10 @@
     <Content Include="wwwroot\comp\home\organisations\organisationsView.html" />
     <Content Include="wwwroot\comp\home\projects\edit\projectEditView.html" />
     <Content Include="wwwroot\comp\home\projects\projectsView.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\print-multiple.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\print-single.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\surveys\view\survey.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_metricGroupRepeater.html" />
@@ -352,6 +356,7 @@
     <Content Include="wwwroot\comp\home\surveys\view\_survey.scss" />
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\_attachmentMetric.scss" />
     <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\_multipleChoiceMetric.scss" />
+    <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -408,6 +413,8 @@
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\new\metricGroupRepeaterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\edit\formTemplateEditController.ts" />

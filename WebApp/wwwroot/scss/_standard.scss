@@ -18,6 +18,9 @@ table.table {
     th[st-sort] { cursor: pointer; }
 }
 
+.table-checkbox {
+    margin: 0;
+}
 
 .breadcrumb { background-color: #ffffff; padding: 0; margin-bottom: 0;
     li a { color: inherit; }

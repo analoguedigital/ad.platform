@@ -147,9 +147,56 @@
                             });
                         }],
                     project: () => { return null; }
-
                 },
                 ncyBreadcrumb: { label: 'View' }
+            })
+
+            .state("printMaster", {
+                abstract: true,
+                url: "/surveys/print",
+                template: "<ui-view/>"
+            })
+
+            .state("home.surveys.print-single", {
+                parent: "printMaster",
+                url: "/:surveyId",
+                templateUrl: "comp/home/surveys/print/print-single.html",
+                controller: "printSurveyController",
+                controllerAs: "ctrl",
+                resolve: {
+                    formTemplate:
+                    ['$stateParams', 'formTemplateResource', 'surveyResource',
+                        ($stateParams,
+                            formTemplateResource: App.Resources.IFormTemplateResource,
+                            surveyResource: App.Resources.ISurveyResource) => {
+
+                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise
+                                .then((survey) => {
+                                    return formTemplateResource.get({ id: survey.formTemplateId }).$promise.then((data) => {
+                                        return data;
+                                    });
+                                });
+                        }],
+                    survey:
+                    ['$stateParams', 'surveyResource',
+                        ($stateParams,
+                            surveyResource: App.Resources.ISurveyResource) => {
+
+                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise.then((data) => {
+                                return data;
+                            });
+                        }]
+                }
+            })
+
+            .state("home.surveys.print-multiple", {
+                parent: "printMaster",
+                params: {
+                    selectedSurveys: null
+                },
+                templateUrl: "comp/home/surveys/print/print-multiple.html",
+                controller: "printSurveysController",
+                controllerAs: "ctrl"
             });
     }
 })();
