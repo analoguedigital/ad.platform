@@ -64,35 +64,10 @@ namespace WebApi
             }
 
             var orgUser = result as LightMethods.Survey.Models.Entities.OrgUser;
-            var accessTypeString = context.Request.Headers[ACCESS_TYPE_HEADER_NAME];
-            AccessTypes accessType;
-
-            var accessGranted = false;
-            if (Enum.TryParse(accessTypeString, out accessType))
+            if (orgUser == null)
             {
-                switch (accessType)
-                {
-                    case AccessTypes.WebApp:
-                        accessGranted = orgUser.IsWebUser;
-                        break;
-                    case AccessTypes.MobileApp:
-                        accessGranted = orgUser.IsMobileUser;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                context.SetError("invalid_grant", "The access type header is missing!");
-                return;
-            }
-
-            if (accessGranted)
-            {
+                // this isn't a OrgUser (SuperUser or something else)
                 var identity = await result.GenerateUserIdentityAsync(UserManager);
-                //var identity = new ClaimsIdentity(result.ge,context.Options.AuthenticationType);
-
                 identity.AddClaim(new Claim("email", result.Email));
                 identity.AddClaim(new Claim("sub", context.UserName));
                 identity.AddClaim(new Claim("role", "user"));
@@ -101,8 +76,45 @@ namespace WebApi
             }
             else
             {
-                context.SetError("invalid_grant", "You do not have access to this software.");
-                return;
+                // we have a OrgUser. validate access type.
+                var accessTypeString = context.Request.Headers[ACCESS_TYPE_HEADER_NAME];
+                AccessTypes accessType;
+
+                var accessGranted = false;
+                if (Enum.TryParse(accessTypeString, out accessType))
+                {
+                    switch (accessType)
+                    {
+                        case AccessTypes.WebApp:
+                            accessGranted = orgUser.IsWebUser;
+                            break;
+                        case AccessTypes.MobileApp:
+                            accessGranted = orgUser.IsMobileUser;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    context.SetError("invalid_grant", "The access type header is missing or invalid.");
+                    return;
+                }
+
+                if (accessGranted)
+                {
+                    var identity = await result.GenerateUserIdentityAsync(UserManager);
+                    identity.AddClaim(new Claim("email", result.Email));
+                    identity.AddClaim(new Claim("sub", context.UserName));
+                    identity.AddClaim(new Claim("role", "user"));
+
+                    context.Validated(identity);
+                }
+                else
+                {
+                    context.SetError("invalid_grant", "You do not have access to this software.");
+                    return;
+                }
             }
         }
     }
