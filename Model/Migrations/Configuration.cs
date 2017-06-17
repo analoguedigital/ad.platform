@@ -131,7 +131,7 @@ namespace LightMethods.Survey.Models.Migrations
                 };
 
                 context.Organisations.AddOrUpdate(org);
-                var user = new OrgUser() { Id = Guid.Parse("b3c19356-d11d-48f2-a3a8-69392a7b4e7b"), OrganisationId = org.Id, IsRootUser = true, Email = "admin@test.t", UserName = "admin@test.t", TypeId = OrgUserTypesRepository.Administrator.Id, LastLogin = new DateTime(2015, 1, 1) };
+                var user = new OrgUser() { Id = Guid.Parse("b3c19356-d11d-48f2-a3a8-69392a7b4e7b"), OrganisationId = org.Id, IsRootUser = true, Email = "admin@test.t", UserName = "admin@test.t", TypeId = OrgUserTypesRepository.Administrator.Id, LastLogin = new DateTime(2015, 1, 1), IsWebUser = true, IsMobileUser = true };
                 userManager.AddOrUpdateUser(user, "Test1234");
 
                 OrgUserTypesRepository.Administrator.GetRoles().ToList().ForEach(role => userManager.AddToRole(user.Id, role));
