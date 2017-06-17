@@ -14,6 +14,7 @@ namespace WebApi
 
     public class AuthorizationServerProvider : OAuthAuthorizationServerProvider
     {
+        private const string ACCESS_TYPE_HEADER_NAME = "Access-Type";
 
         HttpContext HttpContext { get { return HttpContext.Current; } }
 
@@ -24,12 +25,19 @@ namespace WebApi
                 return ServiceContext.UserManager;
             }
         }
+
+        public enum AccessTypes
+        {
+            WebApp = 0,
+            MobileApp = 1
+        }
+
         public override Task MatchEndpoint(OAuthMatchEndpointContext context)
         {
             if (context.IsTokenEndpoint && context.Request.Method == "OPTIONS")
             {
                 context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
-                context.OwinContext.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "content-type","timezoneoffset" });
+                context.OwinContext.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "content-type", "timezoneoffset" });
                 context.OwinContext.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "*" });
                 context.RequestCompleted();
                 return Task.FromResult(0);
@@ -49,22 +57,53 @@ namespace WebApi
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
             var result = await UserManager.FindAsync(context.UserName, context.Password);
-
             if (result == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;
             }
 
-            var identity = await result.GenerateUserIdentityAsync(UserManager);
-            //var identity = new ClaimsIdentity(result.ge,context.Options.AuthenticationType);
-            
-            identity.AddClaim(new Claim("email", result.Email));
-            identity.AddClaim(new Claim("sub", context.UserName));
-            identity.AddClaim(new Claim("role", "user"));
+            var orgUser = result as LightMethods.Survey.Models.Entities.OrgUser;
+            var accessTypeString = context.Request.Headers[ACCESS_TYPE_HEADER_NAME];
+            AccessTypes accessType;
 
-            context.Validated(identity);
+            var accessGranted = false;
+            if (Enum.TryParse(accessTypeString, out accessType))
+            {
+                switch (accessType)
+                {
+                    case AccessTypes.WebApp:
+                        accessGranted = orgUser.IsWebUser;
+                        break;
+                    case AccessTypes.MobileApp:
+                        accessGranted = orgUser.IsMobileUser;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                context.SetError("invalid_grant", "The access type header is missing!");
+                return;
+            }
 
+            if (accessGranted)
+            {
+                var identity = await result.GenerateUserIdentityAsync(UserManager);
+                //var identity = new ClaimsIdentity(result.ge,context.Options.AuthenticationType);
+
+                identity.AddClaim(new Claim("email", result.Email));
+                identity.AddClaim(new Claim("sub", context.UserName));
+                identity.AddClaim(new Claim("role", "user"));
+
+                context.Validated(identity);
+            }
+            else
+            {
+                context.SetError("invalid_grant", "You do not have access to this software.");
+                return;
+            }
         }
     }
 }
