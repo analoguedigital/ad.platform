@@ -12,4 +12,16 @@
         order: number;
         isDeleted: boolean;
     }
+
+    export const MetricTypes = {
+        NumericMetric: 'numericmetric',
+        FreeTextMetric: 'freetextmetric',
+        RateMetric: 'ratemetric',
+        DateMetric: 'datemetric',
+        TimeMetric: 'timemetric',
+        MultipleChoiceMetric: 'multiplechoicemetric',
+        DichotomousMetric: 'dichotomousmetric',
+        AttachmentMetric: 'attachmentmetric'
+    }
+
 }

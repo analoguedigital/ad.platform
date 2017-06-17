@@ -29,6 +29,7 @@ namespace WebApi.Models
         public bool IsPublished { set; get; }
 
         public string Colour { set; get; }
+        public string DescriptionFormat { get; set; }
 
         public Guid? CalendarDateMetricId { set; get; }
 

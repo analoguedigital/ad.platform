@@ -9,7 +9,11 @@ module App.Models {
         title: string;
         projectName: string;
         description: string;
+        colour: string;
         formTemplateCategory: IFormTemplateCategory;
         metricGroups: IMetricGroup[];
+        isChecked: boolean;
+        calendarDateMetricId: string;
+        descriptionFormat: string;
     }
 }

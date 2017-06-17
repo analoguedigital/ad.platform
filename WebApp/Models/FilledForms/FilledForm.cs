@@ -29,5 +29,9 @@ namespace WebApi.Models
 
         public IEnumerable<FilledFormLocationDTO> Locations { set; get; }
 
+        public string Description { get; set; }
+
+        public DateTime Date { get; set; }
+
     }
 }

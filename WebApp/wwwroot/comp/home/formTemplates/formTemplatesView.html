@@ -1,5 +1,21 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
 <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box" ng-show="ctrl.errors.length">
+        <div class="box-title">
+            <h5>Errors ({{ctrl.errors.length}})</h5>
+            <div class="box-tools">
+                <a ng-click="ctrl.clearErrors()"><i class="fa fa-eraser"></i> Clear</a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="errors">
+                <div ng-repeat="error in ctrl.errors | filter: {key: ''}">
+                    {{error.value}}
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="box">
         <div class="box-title">
             <h5>All your form templates {{selectedProjectId}}</h5>

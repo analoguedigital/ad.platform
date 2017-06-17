@@ -5,7 +5,8 @@
     angular.module("app")
         .run(addRouteStateInfoToRootScope)
         .run(configAuthenticationCheck)
-        .run(initializeUserContextService);
+        .run(initializeUserContextService)
+        .run(configAngularMoment);
 
     addRouteStateInfoToRootScope.$inject = ["$rootScope", "$state", "$stateParams"];
     function addRouteStateInfoToRootScope(
@@ -46,4 +47,10 @@
     function initializeUserContextService(userContextService: App.Services.IUserContextService) {
         userContextService.initialize();
     }
+
+    configAngularMoment.$inject = ["amMoment", "$locale"];
+    function configAngularMoment(amMoment, $locale) {
+        amMoment.changeLocale($locale.id);
+    }
+
 })();

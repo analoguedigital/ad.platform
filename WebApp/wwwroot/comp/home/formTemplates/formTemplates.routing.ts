@@ -19,6 +19,7 @@
                 url: "",
                 templateUrl: "comp/home/formtemplates/formtemplatesView.html",
                 controller: "formTemplatesController",
+                controllerAs: 'ctrl',
                 ncyBreadcrumb: { label: 'Form templates' }
             })
             .state("home.formtemplates.design", {

@@ -154,6 +154,19 @@ module App {
         }
 
         openEditForm() {
+            // gate date metric for CalendarDateMetric dropdown.
+            let metricOptions = [];
+            _.forEach(this.formTemplate.metricGroups, (mg) => {
+                _.forEach(mg.metrics, (m) => {
+                    if (_.toLower(m.type) == "datemetric") {
+                        metricOptions.push({
+                            id: m.id,
+                            title: m.shortTitle
+                        });
+                    }
+                });
+            });
+
             var modalInstance = this.$uibModal.open({
                 animation: true,
                 templateUrl: 'comp/home/formtemplates/design/forms/formTemplate/enter.html',
@@ -163,6 +176,9 @@ module App {
                 resolve: {
                     formTemplate: () => {
                         return this.formTemplate;
+                    },
+                    metricOptions: () => {
+                        return metricOptions;
                     }
                 }
             });

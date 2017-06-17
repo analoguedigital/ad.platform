@@ -19,9 +19,10 @@ module App {
         categories: Models.IFormTemplateCategory[];
         errors: string;
 
-        static $inject: string[] = ["formTemplateResource", "formTemplateCategoryResource", "$state", "$stateParams", "$uibModal"];
+        static $inject: string[] = ["$scope", "formTemplateResource", "formTemplateCategoryResource", "$state", "$stateParams", "$uibModal"];
 
         constructor(
+            private $scope: ng.IScope,
             private formTemplateResource: Resources.IFormTemplateResource,
             private formTemplateCategoryResource: Resources.IFormTemplateCategoryResource,
             private $state: ng.ui.IStateService,
@@ -70,7 +71,6 @@ module App {
         }
 
         addCategory() {
-            
             var modalInstance = this.$uibModal.open({
                 animation: true,
                 templateUrl: 'comp/common/addFormTemplateCategory/addFormTemplateCategoryView.html',

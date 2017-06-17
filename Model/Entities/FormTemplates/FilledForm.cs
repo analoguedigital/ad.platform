@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using LightMethods.Survey.Models.DAL;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -34,6 +35,84 @@ namespace LightMethods.Survey.Models.Entities
         public virtual ICollection<FilledFormLocation> Locations { set; get; }
 
         public virtual ICollection<FormValue> FormValues { set; get; }
+
+        [NotMapped]
+        private string _description = string.Empty;
+        public string Description
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(this._description))
+                    return this._description;
+
+                var format = this.FormTemplate.DescriptionFormat;
+                if (string.IsNullOrEmpty(format))
+                    return string.Empty;
+
+                var regex = new Regex(@"\{\{([^}]*)\}\}");
+                var matches = regex.Matches(format);
+                var names = new List<string>();
+                foreach (var match in matches)
+                {
+                    var rgx = new Regex("{{({?}?[^{}])*}}");
+                    var item = rgx.Match(match.ToString());
+                    var name = item.Value.Replace("{{", "").Replace("}}", "");
+                    names.Add(name);
+                }
+
+                var metrics = new List<Metric>();
+                foreach (var metricGroup in this.FormTemplate.MetricGroups)
+                {
+                    foreach (var metric in metricGroup.Metrics)
+                    {
+                        if (names.Contains(metric.ShortTitle.ToLower()))
+                            metrics.Add(metric);
+                    }
+                }
+
+                if (metrics.Any())
+                {
+                    var values = new List<string>();
+                    foreach (var metric in metrics)
+                    {
+                        var formValue = this.FormValues.Where(fm => fm.MetricId == metric.Id).FirstOrDefault();
+                        if (formValue != null)
+                            values.Add(formValue.ToString());
+                    }
+
+                    this._description = string.Join(" - ", values);
+                    return this._description;
+                }
+
+                return string.Empty;
+            }
+        }
+
+        [NotMapped]
+        public DateTime Date
+        {
+            get
+            {
+                if (this.FormTemplate.CalendarDateMetricId.HasValue)
+                {
+                    foreach (var metricGroup in this.FormTemplate.MetricGroups)
+                    {
+                        var metric = metricGroup.Metrics.Where(m => m.Id == this.FormTemplate.CalendarDateMetricId).FirstOrDefault();
+                        if (metric != null)
+                        {
+                            var formValue = this.FormValues.Where(fv => fv.MetricId == metric.Id).FirstOrDefault();
+                            if (formValue != null)
+                            {
+                                if (formValue.DateValue.HasValue)
+                                    return formValue.DateValue.Value;
+                            }
+                        }
+                    }
+                }
+
+                return this.SurveyDate;
+            }
+        }
 
         public FilledForm()
         {

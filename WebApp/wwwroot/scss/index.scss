@@ -121,11 +121,13 @@ $fa-font-path: "../lib/Font-Awesome/fonts";
 // MODULES
 @import "../comp/login/_login";
 @import "../comp/home/_main";
-@import "../comp/home/formTemplates/design/_design.scss";
-@import "../comp/home/surveys/new/_survey.scss";
+@import "../comp/home/formTemplates/design/_design";
+@import "../comp/home/surveys/new/_survey";
 @import "../comp/common/formControls/attachmentMetric/attachmentMetric";
 @import "../comp/home/dashboard/updates/updates";
 @import "../comp/home/dashboard/students/chart/studentChart";
-@import "../comp/home/dataLists/edit/_dataListEdit.scss";
+@import "../comp/home/dataLists/edit/_dataListEdit";
 @import "../comp/common/formControlsViews/multipleChoiceMetric/_multipleChoiceMetric";
 @import "../comp/home/surveys/print/_print";
+@import "../comp/home/projects/summary/_summary";
+

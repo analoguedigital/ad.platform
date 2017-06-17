@@ -19,7 +19,12 @@
             <lm-form-group label="Description: ">
                 {{ctrl.formTemplate.description}}
             </lm-form-group>
-
+            <lm-form-group label="Desc. Format: ">
+                {{ctrl.formTemplate.descriptionFormat}}
+            </lm-form-group>
+            <lm-form-group label="Colour: " ng-if="ctrl.formTemplate.colour.length">
+                <div class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></div>
+            </lm-form-group>
         </form>
     </div>
 </div>

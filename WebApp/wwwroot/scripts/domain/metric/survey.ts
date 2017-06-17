@@ -16,6 +16,7 @@
         formValues: IFormValue[];
         isSubmitted: boolean;
         isChecked: boolean;
+        description: string;
     }
 
     export interface IPosition {

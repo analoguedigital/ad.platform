@@ -2,6 +2,11 @@
 module App {
     "use strict";
 
+    interface Error {
+        key: string;
+        value: string;
+    }
+
     interface IFormTemplatesControllerScope extends angular.IScope {
         title: string;
         searchTerm: string;
@@ -25,13 +30,15 @@ module App {
     }
 
     class FormTemplatesController implements IFormTemplatesController {
-        static $inject: string[] = ["$scope", "formTemplateResource", "projectResource"];
+        errors: Error[] = [];
+        static $inject: string[] = ["$scope", "formTemplateResource", "projectResource", "$ngBootbox"];
 
         constructor(
             private $scope: IFormTemplatesControllerScope,
             private formResource: Resources.IFormTemplateResource,
-            private projectResource: Resources.IProjectResource) {
-
+            private projectResource: Resources.IProjectResource,
+            private $ngBootbox: BootboxStatic) {
+            
             $scope.title = "Form Templates";
             $scope.selectedProjectId = null;
             this.$scope.$watch('selectedProjectId', () => { this.load(); });
@@ -50,6 +57,7 @@ module App {
             this.formResource.query().$promise.then((forms) => {
                 this.$scope.forms = _.filter(forms, { 'projectId': this.$scope.selectedProjectId });
                 this.$scope.displayedForms = [].concat(this.$scope.forms);
+                this.errors = [];
             });
         }
 
@@ -68,7 +76,22 @@ module App {
         publish(template: Models.IFormTemplate) {
             this.formResource.publish({ id: template.id },
                 () => { this.load(); },
-                (err) => { console.log(err); });
+                (reason) => {
+                    this.errors = [];
+                    for (var key in reason.data.modelState) {
+                        for (var i = 0; i < reason.data.modelState[key].length; i++) {
+                            this.errors.push(<Error>{ key: key, value: reason.data.modelState[key][i] });
+                        }
+                    }
+
+                    console.log(this.errors);
+
+                    this.$ngBootbox.alert("Something went wrong! please check errors and try again.");
+                });
+        }
+
+        clearErrors() {
+            this.errors = [];
         }
     }
 

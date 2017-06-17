@@ -1,0 +1,67 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5>Toolbox</h5>
+    </div>
+    <div class="box-content">
+        <form>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" ng-model="ctrl.searchTerm" placeholder="Search" />
+                </div>
+            </div>
+
+            <div class="toolbox-heading">
+                <i class="fa fa-calendar"></i> Date Range
+            </div>
+
+            <!-- date range -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
+                            </span>
+                            <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
+                            </span>
+                            <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a ng-click="ctrl.clearSearch()">Clear all</a>
+                </div>
+            </div>
+
+            <div class="toolbox-heading">
+                <i class="fa fa-list"></i> Threads
+            </div>
+
+            <!-- threads -->
+            <div>
+                <div class="checkbox checkbox-default" ng-repeat="template in ctrl.formTemplates track by $index">
+                    <input type="checkbox" id="{{template.id}}" ng-model="template.isChecked" ng-change="ctrl.threadsChanged()" />
+                    <label for="{{template.id}}">{{template.title}}</label>
+                </div>
+
+                <a ng-click="ctrl.clearThreads()">Clear all</a>
+            </div>
+
+            <div class="toolbox-buttons">
+                <button class="btn btn-info btn-block" ng-click="ctrl.clearAll()">Clear</button>
+                <button class="btn btn-info btn-block" ng-click="ctrl.print()">Print</button>
+            </div>
+        </form>
+    </div>
+</div>

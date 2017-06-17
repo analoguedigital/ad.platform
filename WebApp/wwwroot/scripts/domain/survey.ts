@@ -14,6 +14,8 @@ module App.Models {
         public formTemplateId: string;
         public formValues: FormValue[];
         public isSubmitted: boolean;
+        public description: string;
+        public date: Date;
 
         constructor(filledById: string, projectId: string, formTemplateId: string) {
 
@@ -26,6 +28,7 @@ module App.Models {
             this.filledById = filledById;
             this.projectId = projectId;
             this.formTemplateId = formTemplateId;
+            this.description = '';
         }
     }
 }

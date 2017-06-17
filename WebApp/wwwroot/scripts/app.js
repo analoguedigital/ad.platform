@@ -22,6 +22,10 @@ var App;
         "textAngular",
         "rzModule",
         "toastr",
-        "angularMoment"
+        "angularMoment",
+        "chart.js",
+        "uiGmapgoogle-maps",
+        "minicolors",
+        "ngTagsInput"
     ]);
 })(App || (App = {}));

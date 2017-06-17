@@ -150,6 +150,14 @@ namespace WebApi.Controllers
             try
             {
                 ModelState.Clear();
+
+                var result = form.Validate(new ValidationContext(form));
+                if (result.Any())
+                {
+                    result.ToList().ForEach(res => ModelState.AddModelError(id.ToString(), res.ErrorMessage));
+                    return BadRequest(ModelState);
+                }
+
                 UnitOfWork.Save();
             }
             catch (System.Data.Entity.Validation.DbEntityValidationException ex)
@@ -253,7 +261,13 @@ namespace WebApi.Controllers
             if (template == null)
                 return NotFound();
 
-            template.IsPublished = true;
+            var result = template.Publish();
+            if (result.Any())
+            {
+                result.ToList().ForEach(res => ModelState.AddModelError(id.ToString(), res.ErrorMessage));
+                return BadRequest(ModelState);
+            }
+
             UnitOfWork.FormTemplatesRepository.InsertOrUpdate(template);
             UnitOfWork.Save();
             return Ok();

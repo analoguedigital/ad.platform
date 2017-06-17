@@ -4,11 +4,15 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class FormTemplate : Entity
     {
+        private Regex _descriptionFormatRegex = new Regex(@"\{\{([^}]*)\}\}");
+        private Regex _descriptionFormatValueRegex = new Regex("{{({?}?[^{}])*}}");
+
         [Required]
         public Guid OrganisationId { get; set; }
         public virtual Organisation Organisation { get; set; }
@@ -31,7 +35,7 @@ namespace LightMethods.Survey.Models.Entities
         [DataType(DataType.MultilineText)]
         public string Description { set; get; }
 
-        [Display(Name ="Created by")]
+        [Display(Name = "Created by")]
         public OrgUser CreatedBy { set; get; }
         public Guid CreatedById { set; get; }
 
@@ -44,6 +48,10 @@ namespace LightMethods.Survey.Models.Entities
         public bool IsLastVersion { set; get; }
 
         public string Colour { set; get; }
+
+        [Display(Name = "Desc. Format")]
+        [MaxLength(150)]
+        public string DescriptionFormat { get; set; }
 
         public Guid? CalendarDateMetricId { set; get; }
         public virtual Metric CalendarDateMetric { set; get; }
@@ -89,9 +97,13 @@ namespace LightMethods.Survey.Models.Entities
             return MetricGroups.Max(g => g.Page);
         }
 
-        public void Publish()
+        public IEnumerable<ValidationResult> Publish()
         {
-            IsPublished = true;
+            var result = this.ValidateDescriptionFormat();
+            if (!result.Any())
+                IsPublished = true;
+
+            return result;
         }
 
         public FormTemplate Clone()
@@ -114,5 +126,35 @@ namespace LightMethods.Survey.Models.Entities
 
             return clone;
         }
+
+        private IEnumerable<ValidationResult> ValidateDescriptionFormat()
+        {
+            var format = this.DescriptionFormat;
+            if (!string.IsNullOrEmpty(format))
+            {
+                var matches = this._descriptionFormatRegex.Matches(format);
+                var names = new List<string>();
+                foreach (var match in matches)
+                {
+                    var item = this._descriptionFormatValueRegex.Match(match.ToString());
+                    var name = item.Value.Replace("{{", "").Replace("}}", "");
+                    names.Add(name);
+                }
+
+                var metrics = new List<Metric>();
+                foreach (var metricGroup in this.MetricGroups)
+                {
+                    foreach (var metric in metricGroup.Metrics)
+                    {
+                        if (names.Contains(metric.ShortTitle.ToLower()))
+                            metrics.Add(metric);
+                    }
+                }
+
+                if (names.Count != metrics.Count)
+                    yield return new ValidationResult("Description Format is not valid. Correct the format string and try again.");
+            }
+        }
+
     }
 }

@@ -15,6 +15,23 @@
         <lm-form-group label="Description: ">
             <textarea rows="3" id="description" name="description" ng-model="ctrl.formTemplate.description" required />
         </lm-form-group>
+        <lm-form-group label="Colour: ">
+            <input id="colour" name="colour" type="text" class="form-control" minicolors="minicolorSettings" ng-model="ctrl.formTemplate.colour" />
+        </lm-form-group>
+        <lm-form-group label="Calendar Date: ">
+            <select id="calendar-date-metric" name="calendar-date-metric" ng-model="ctrl.formTemplate.calendarDateMetricId">
+                <option>Choose a date metric</option>
+                <option ng-repeat="opt in ctrl.metricOptions track by opt.id" value="{{opt.id}}">{{opt.title}}</option>
+            </select>
+        </lm-form-group>
+        <lm-form-group label="Desc. Format: ">
+            <tags-input ng-model="ctrl.selectedTags" on-tag-added="ctrl.updateDescriptionFormat()" on-tag-removed="ctrl.updateDescriptionFormat()">
+                <auto-complete source="ctrl.loadTags($query)"></auto-complete>
+            </tags-input>
+
+            <h6>Format Preview</h6>
+            <strong>{{ctrl.getDescriptionFormat()}}</strong>
+        </lm-form-group>
     </form>
 </div>
 <div class="modal-footer">

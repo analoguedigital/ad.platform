@@ -364,6 +364,10 @@
     <Compile Include="Migrations\201705120615544_Add_rateMetric_defaultValue.Designer.cs">
       <DependentUpon>201705120615544_Add_rateMetric_defaultValue.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706092222340_Add_formTemplate_descriptionFormat.cs" />
+    <Compile Include="Migrations\201706092222340_Add_formTemplate_descriptionFormat.Designer.cs">
+      <DependentUpon>201706092222340_Add_formTemplate_descriptionFormat.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -470,6 +474,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705120615544_Add_rateMetric_defaultValue.resx">
       <DependentUpon>201705120615544_Add_rateMetric_defaultValue.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706092222340_Add_formTemplate_descriptionFormat.resx">
+      <DependentUpon>201706092222340_Add_formTemplate_descriptionFormat.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

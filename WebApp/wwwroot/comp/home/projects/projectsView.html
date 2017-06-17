@@ -26,6 +26,7 @@
                             <th class="hidden-xs" st-sort="startDate">Start date</th>
                             <th></th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,6 +34,7 @@
                             <td>{{project.number}}</td>
                             <td><a ui-sref="home.projects.edit({id:project.id})">{{project.name}}</a></td>
                             <td class="hidden-xs">{{project.startDate | date : "dd/MM/yyyy": d}}</td>
+                            <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
                             <td><a ui-sref="home.projects.assignments({id:project.id})"><i class="fa fa-chain"></i><span class="hidden-xs"> assign</span></a></td>
                             <td>
                                 <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(project.id)">

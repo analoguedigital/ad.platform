@@ -210,6 +210,12 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDetails.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\projectSummaryView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_chart.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_locations.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_recordings.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_formDetails.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroupRepeater.html" />
@@ -319,6 +325,8 @@
     </None>
     <Content Include="wwwroot\scripts\directives\lmFormGroupCheckbox\template.html" />
     <Content Include="wwwroot\scripts\directives\lmFormGroup\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmLocations\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmPieChart\template.html" />
     <Content Include="wwwroot\scss\index.scss" />
     <Content Include="wwwroot\scss\Template\_badgets_labels.scss" />
     <Content Include="wwwroot\scss\Template\_base.scss" />
@@ -357,6 +365,7 @@
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\_attachmentMetric.scss" />
     <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\_multipleChoiceMetric.scss" />
     <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
+    <Content Include="wwwroot\comp\home\projects\summary\_summary.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -413,6 +422,8 @@
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryModels.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
@@ -439,6 +450,8 @@
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmAccess\lmAccess.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmLocations\lmLocations.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmPieChart\lmPieChart.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\achievementSummary.ts" />
