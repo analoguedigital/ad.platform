@@ -18,7 +18,7 @@
                                 {{error.value}}
                             </div>
                         </div>
-                        
+
                         <uib-tabset active="ctrl.activeTabIndex">
                             <uib-tab ng-repeat="tab in ctrl.tabs">
                                 <div class="metric-groups">
@@ -52,6 +52,7 @@
         </div>
     </div>
     <div class="col-lg-3">
-        <div ng-include="'comp/home/surveys/new/_formDetails.html'"></div>
+        <ng-include src="'comp/home/surveys/new/_formDetails.html'"></ng-include>
+        <ng-include src="'comp/home/surveys/new/_locations.html'"></ng-include>
     </div>
 </div>

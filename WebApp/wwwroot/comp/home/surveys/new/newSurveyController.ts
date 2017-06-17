@@ -1,4 +1,4 @@
-
+declare var google: any;
 module App {
     "use strict";
 
@@ -10,6 +10,7 @@ module App {
         title: string;
         pages: _.Dictionary<Models.IMetricGroup[]>;
         tabs: any[];
+        locations: any[];
         survey: Models.ISurvey;
         activeTabIndex: number;
         activate: () => void;
@@ -20,12 +21,14 @@ module App {
         title: string = "Forms";
         pages: _.Dictionary<Models.IMetricGroup[]>;
         tabs: any[];
+        locations: any[];
         //survey: Models.ISurvey;
         activeTabIndex: number = 0;
 
-        static $inject: string[] = ["$state", "surveyResource", "formTemplate", "project", "survey"];
+        static $inject: string[] = ["$scope", "$state", "surveyResource", "formTemplate", "project", "survey"];
 
         constructor(
+            private $scope: INewSurveyScope,
             private $state: ng.ui.IStateService,
             private surveyResource: Resources.ISurveyResource,
             public formTemplate: Models.IFormTemplate,
@@ -49,8 +52,45 @@ module App {
             var pageGroups = _.groupBy(this.formTemplate.metricGroups, (mg) => { return mg.page });
             this.tabs = _.map(Object.keys(pageGroups), (pageNumber) => { return { number: pageNumber, title: "Page " + pageNumber }; });
             this.tabs[0].active = true;
+
+            this.getLocations();
         }
-        
+
+        getLocations() {
+            let positions = [];
+            _.forEach(this.survey.locations, (loc: Models.IPosition) => {
+                positions.push(loc);
+            });
+
+            this.locations = [];
+            if (positions.length) {
+                _.forEach(positions, (pos: Models.IPosition, index) => {
+                    this.locations.push({
+                        center: { latitude: pos.latitude, longitude: pos.longitude },
+                        zoom: 10,
+                        options: { scrollwheel: false },
+                        marker: {
+                            id: index + 1,
+                            coords: { latitude: pos.latitude, longitude: pos.longitude },
+                            options: { draggable: false, title: pos.event },
+                            events: {
+                                click: (marker, eventName, args) => {
+                                    let position = marker.getPosition();
+                                    let lat = position.lat();
+                                    let lon = position.lng();
+                                    console.log(`lat: ${lat} lon: ${lon}`);
+
+                                    let infoWindow = new google.maps.InfoWindow;
+                                    infoWindow.setContent(marker.title);
+                                    infoWindow.open(this.$scope.map, marker);
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
         addFormValue(metric, rowDataListItem, rowNumber) {
             var formValue = <Models.IFormValue>{};
             formValue.textValue = '';

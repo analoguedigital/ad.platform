@@ -1,0 +1,10 @@
+﻿<div class="box">
+    <div class="box-title">Locations</div>
+    <div class="box-content">
+        <div class="map-wrap" ng-repeat="location in ctrl.locations track by $index">
+            <ui-gmap-google-map center="location.center" zoom="location.zoom" options="location.options" draggable="false">
+                <ui-gmap-marker coords="location.marker.coords" options="location.marker.options" events="location.marker.events" idKey="location.marker.id"></ui-gmap-marker>
+            </ui-gmap-google-map>
+        </div>
+    </div>
+</div>
