@@ -27,7 +27,7 @@ module App.Services {
             var deferred = this.$q.defer();
             var data = "grant_type=password&username=" + loginData.email + "&password=" + loginData.password;
 
-            this.$http.post(this.serviceBase + 'token', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Access-Type': '0' } })
+            this.$http.post(this.serviceBase + 'token', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
                 .then((value) => {
                     deferred.resolve(value.data);
                 }, (err) => {
