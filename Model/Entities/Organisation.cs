@@ -63,6 +63,12 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual ICollection<DataList> DataLists { set; get; }
 
+        public bool SubscriptionEnabled { get; set; }
+
+        public decimal? SubscriptionMonthlyRate { get; set; }
+
+        public virtual ICollection<PromotionCode> PromotionCodes { get; set; }
+
         public Organisation()
         {
             IsActive = true;

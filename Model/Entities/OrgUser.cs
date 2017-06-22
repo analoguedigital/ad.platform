@@ -34,6 +34,10 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual ICollection<Assignment> Assignments { get; set; }
 
+        public virtual ICollection<PaymentRecord> Payments { get; set; }
+
+        public virtual ICollection<Subscription> Subscriptions { get; set; }
+
         public OrgUser()
         {
             IsRootUser = false;
