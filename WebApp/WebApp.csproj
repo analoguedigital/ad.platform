@@ -486,7 +486,10 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\survey.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\organisation.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\orgUserType.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\paymentRecord.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\promotionCode.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\subscription.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\user.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\survey.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\custom\MBS\achievementsSummaryResource.ts" />
@@ -504,6 +507,8 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\organisationResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\paymentResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\surveyResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\services\authInterceptorService.ts" />
