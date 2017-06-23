@@ -217,6 +217,9 @@
     <Content Include="wwwroot\comp\home\projects\summary\_recordings.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
+    <Content Include="wwwroot\comp\home\subscriptions\redeemCode\redeemCode.html" />
+    <Content Include="wwwroot\comp\home\subscriptions\subscriptionsView.html" />
+    <Content Include="wwwroot\comp\home\subscriptions\_payments.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_formDetails.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_locations.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroup.html" />
@@ -431,6 +434,9 @@
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryModels.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\subscriptions\redeemCode\redeemCodeController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\subscriptions\subscriptions.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\subscriptions\subscriptionsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />

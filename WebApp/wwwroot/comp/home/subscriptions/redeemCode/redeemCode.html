@@ -1,0 +1,17 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Redeem Code</h3>
+</div>
+<div class="modal-body">
+    <form name="redeemCodeForm">
+        <lm-form-group label="Email:">
+            <span>{{ctrl.user.email}}</span>
+        </lm-form-group>
+        <lm-form-group label="Promotion Code:">
+            <input type="text" name="code" id="code" ng-model="ctrl.model.code" required />
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.processCode(redeemCodeForm)">Redeem Code</button>
+</div>

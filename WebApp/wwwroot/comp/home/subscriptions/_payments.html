@@ -1,0 +1,22 @@
+﻿<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th class="text-center">Date</th>
+                <th class="text-center">Amount</th>
+                <th class="text-center">Reference</th>
+                <th class="text-center">Promotion Code</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="payment in ctrl.payments track by $index">
+                <td class="text-center">{{payment.date | amDateFormat: 'DD/MM/YYYY'}}</td>
+                <td class="text-center">{{payment.amount}}&pound;</td>
+                <td class="text-center">{{payment.reference}}</td>
+                <td class="text-center">{{payment.promotionCode}}</td>
+                <td>{{payment.note}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

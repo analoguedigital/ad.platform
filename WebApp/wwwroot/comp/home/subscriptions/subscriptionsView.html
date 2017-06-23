@@ -1,0 +1,28 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Subscriptions</h5>
+        </div>
+        <div class="box-content">
+            <p ng-if="ctrl.subscriptionExpiry.expiryDate">Your subscription ends on <strong>{{ctrl.subscriptionExpiry.expiryDate | amDateFormat: 'DD/MM/YYYY'}}</strong>.</p>
+            <p ng-if="ctrl.subscriptionExpiry.expiryDate == null">You do not have any subscriptions.</p>
+
+            <button class="btn btn-info">
+                <i class="fa fa-credit-card"></i> Add Payment Method
+            </button>
+
+            <button class="btn btn-primary" ng-click="ctrl.redeemCode()">
+                <i class="fa fa-gift"></i> Redeem Code
+            </button>
+        </div>
+    </div>
+    <div class="box">
+        <div class="box-title">
+            <h5>Payments</h5>
+        </div>
+        <div class="box-content">
+            <ng-include src="'comp/home/subscriptions/_payments.html'"></ng-include>
+        </div>
+    </div>
+</div>
