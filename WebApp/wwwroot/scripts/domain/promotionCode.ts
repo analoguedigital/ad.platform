@@ -24,4 +24,21 @@
             this.dateUpdated = _.now();
         }
     }
+
+    export interface IPromotionCode extends ng.resource.IResource<IPromotionCode> {
+        id: string;
+        title: string;
+        code: string;
+        amount: number;
+        isRedeemed: boolean;
+        paymentRecordId: string;
+        organisationId: string;
+        dateCreated: number;
+        dateUpdated: number;
+    }
+
+    export interface IRedeemCodeResponse {
+        success: boolean;
+        message: string;
+    }
 }

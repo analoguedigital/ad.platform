@@ -276,6 +276,7 @@
     <Compile Include="Controllers\OrgUserTypesController.cs" />
     <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Controllers\PromotionCodesController.cs" />
     <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\OrgUsersController.cs" />
@@ -514,6 +515,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\paymentResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\promotionCodeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\surveyResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectResource.ts" />
