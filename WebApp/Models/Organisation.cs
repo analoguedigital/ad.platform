@@ -28,5 +28,9 @@ namespace WebApi.Models
         public Guid DefaultLanguageId { set; get; }
 
         public Guid DefaultCalendarId { set; get; }
+
+        public bool SusbcriptionEnabled { get; set; }
+
+        public decimal? SubscriptionMonthlyRate { get; set; }
     }
 }
