@@ -33,7 +33,12 @@ module App {
         }
 
         activate() {
+            this.load();
+        }
+
+        load() {
             let userId = this.userContext.current.user.id;
+
             this.paymentResource.query({ userId: userId }).$promise
                 .then((payments) => { this.payments = payments; });
 
@@ -44,9 +49,7 @@ module App {
                 (res: Models.ISubscriptionExpiry) => {
                     this.subscriptionExpiry = res;
                 },
-                (err) => {
-                    console.error(err);
-                });
+                (err) => { console.error(err); });
         }
 
         redeemCode() {
@@ -58,7 +61,11 @@ module App {
                 resolve: {
                     user: () => { return null; }
                 }
-            }).result.then(() => { }, (err) => { });
+            }).result.then(
+                (res: Models.IRedeemCodeResponse) => {
+                    if (res.success) { this.load(); }
+                },
+                (err) => { });
         }
     }
 
