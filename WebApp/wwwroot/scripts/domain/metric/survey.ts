@@ -28,6 +28,7 @@
     }
 
     export interface IFormValue {
+        id: string;
         metricId: string;
         rowNumber: number;
         rowDataListItemId: string;

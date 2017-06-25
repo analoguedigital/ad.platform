@@ -46,13 +46,14 @@
         threads: Models.IFormTemplate[] = [];
         records: Models.ISurvey[] = [];
 
-        static $inject: string[] = ["$scope", "$state", "$q", "$stateParams", "projectResource", "formTemplateResource", "surveyResource", "project", "toastr"];
-        
+        static $inject: string[] = ["$scope", "$state", "$q", "$stateParams", "projectSummaryPrintSessionResource", "projectResource", "formTemplateResource", "surveyResource", "project", "toastr"];
+
         constructor(
             private $scope: ng.IScope,
             private $state: ng.ui.IStateService,
             private $q: ng.IQService,
             private $stateParams: ng.ui.IStateParamsService,
+            private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
             private projectResource: Resources.IProjectResource,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
@@ -233,13 +234,13 @@
                 return false;
             }
 
-            if (surveys.length == 1) {
-                this.$state.go("home.surveys.print-single", { surveyId: surveys[0].id });
-            } else {
-                let result = [];
-                angular.forEach(surveys, (survey) => { result.push(survey.id); });
-                this.$state.go("home.surveys.print-multiple", { selectedSurveys: result });
-            }
+            let printSession = <Models.IProjectSummaryPrintSession>{};
+            printSession.projectId = this.project.id;
+            printSession.surveyIds = _.map(surveys, (survey) => { return survey.id; });
+
+            this.projectSummaryPrintSessionResource.save(printSession).$promise.then((session) => {
+                this.$state.go("home.projects.summaryPrint", { sessionId: session.id });
+            });
         }
 
         selectAll() {

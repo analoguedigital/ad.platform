@@ -48,6 +48,29 @@
                         }]
                 },
                 ncyBreadcrumb: { label: 'Summary', parent: 'home.projects.list' }
+            })
+
+            .state("projectSummaryPrintMaster", {
+                abstract: true,
+                url: "/projects/summary/print",
+                template: "<ui-view/>"
+            })
+
+            .state("home.projects.summaryPrint", {
+                parent:"projectSummaryPrintMaster",
+                url: "/:sessionId",
+                templateUrl: "comp/home/projects/summary/print/projectSummaryPrintView.html",
+                controller: "projectSummaryPrintController",
+                controllerAs: "ctrl",
+                resolve: {
+                    session: ['$stateParams','projectSummaryPrintSessionResource',
+                        ($stateParams, projectSummaryPrintSessionResource: App.Resources.IProjectSummaryPrintSessionResource) => {
+                            return projectSummaryPrintSessionResource.get({ id: $stateParams['sessionId'] }).$promise.then((data) => {
+                                return data;
+                            });
+                        }]
+                },
+                ncyBreadcrumb: { label: '', parent: 'home.projects.summary' }
             });
     }
 })();

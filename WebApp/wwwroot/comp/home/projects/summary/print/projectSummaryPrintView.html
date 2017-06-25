@@ -1,0 +1,22 @@
+﻿<div class="survey-print summary-print">
+    <br />
+    <button class="btn btn-default hidden-print" ng-click="ctrl.resetView()">
+        <i class="fa fa-refresh"></i> Reset View
+    </button>
+    <button class="btn btn-default hidden-print" ng-click="ctrl.generatePDF()">
+        <i class="fa fa-file-pdf-o"></i> Generate PDF
+    </button>
+
+    <div ng-repeat="survey in ctrl.surveys track by $index" ng-init="formTemplate = ctrl.getFormTemplate(survey.formTemplateId)">
+        <h1>{{formTemplate.title}} <span ng-show="survey.serial !== null"> (#{{survey.serial}})</span></h1>
+        <hr />
+        <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
+            <div class="metric-groups">
+                <div class="content" ng-repeat="metricGroup in formTemplate.metricGroups | filter: {isDeleted: false} track by $index ">
+                    <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroup.html'"></div>
+                    <div ng-if="metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroupRepeater.html'"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

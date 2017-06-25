@@ -1,0 +1,12 @@
+﻿
+.summary-print {
+    .delete-icon { display: none; position: absolute; top: 40%; left: 48%; z-index: 10 }
+    .metrics {
+        & { }
+        .metric {
+            &:hover { background-color: #eee; opacity: 0.4;
+                .delete-icon { display: block }
+            }
+        }
+    }
+}

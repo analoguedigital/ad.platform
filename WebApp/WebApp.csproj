@@ -137,6 +137,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="wnvhtmltopdf, Version=14.2.0.0, Culture=neutral, PublicKeyToken=b12703d35a33ff98, processorArchitecture=MSIL">
+      <HintPath>..\packages\wnvhtmlconvert.14.2\lib\net40\wnvhtmltopdf.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
@@ -211,6 +214,9 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDetails.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\projects\summary\projectSummaryView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_chart.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_locations.html" />
@@ -263,6 +269,7 @@
     <Compile Include="Controllers\CustomControllers\MBS\Models\Target.cs" />
     <Compile Include="Controllers\CustomControllers\MBS\Models\Evidence.cs" />
     <Compile Include="Controllers\CustomControllers\MBS\Models\Update.cs" />
+    <Compile Include="Controllers\ProjectSummaryPrintSessionController.cs" />
     <Compile Include="Controllers\DataListsController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\FormTemplateCategoriesController.cs" />
@@ -278,6 +285,7 @@
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\IdentityModels.cs" />
     <Compile Include="Models\ChangePasswordDTO.cs" />
+    <Compile Include="Models\ProjectSummaryPrintSession.cs" />
     <Compile Include="Models\DataList.cs" />
     <Compile Include="Models\DataListItem.cs" />
     <Compile Include="Models\DataListItemAttr.cs" />
@@ -368,6 +376,7 @@
     <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\_multipleChoiceMetric.scss" />
     <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
     <Content Include="wwwroot\comp\home\projects\summary\_summary.scss" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_projectSummaryPrintView.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -424,6 +433,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryModels.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
@@ -482,6 +492,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\organisation.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\orgUserType.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\projectSummarySession.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\user.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\survey.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\custom\MBS\achievementsSummaryResource.ts" />
@@ -499,6 +510,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\organisationResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\projectSummaryPrintSessionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\surveyResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\services\authInterceptorService.ts" />
