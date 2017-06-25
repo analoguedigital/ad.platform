@@ -127,7 +127,9 @@ namespace LightMethods.Survey.Models.Migrations
                     Postcode = "EC23 4AD",
                     DefaultLanguageId = LanguagesRepository.Persian.Id,
                     DefaultCalendarId = CalendarsRepository.Persian.Id,
-                    IsActive = true
+                    IsActive = true,
+                    SubscriptionEnabled = true,
+                    SubscriptionMonthlyRate = 6M
                 };
 
                 context.Organisations.AddOrUpdate(org);
