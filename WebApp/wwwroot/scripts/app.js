@@ -30,7 +30,6 @@ var App;
         "chart.js",
         "uiGmapgoogle-maps",
         "minicolors",
-        "ngTagsInput",
-        "currencyFormat"
+        "ngTagsInput"
     ]);
 })(App || (App = {}));
