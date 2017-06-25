@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,34 +14,29 @@ namespace WebApi.Controllers
 {
     public class SubscriptionsController : BaseApiController
     {
-        SubscriptionsRepository Subscriptions { get { return UnitOfWork.SubscriptionsRepository; } }
+        private SubscriptionService SubscriptionService { get; set; }
 
-        [Route("api/subscriptions/{userId:guid}")]
-        [ResponseType(typeof(IEnumerable<SubscriptionDTO>))]
-        public IHttpActionResult Get(Guid userId)
+        public SubscriptionsController()
         {
-            var subscriptions = this.Subscriptions.AllAsNoTracking
-                .Where(s => s.OrgUserId == userId)
-                .ToList();
+            this.SubscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
+        }
+
+        [Route("api/subscriptions")]
+        [ResponseType(typeof(IEnumerable<SubscriptionDTO>))]
+        public IHttpActionResult Get()
+        {
+            var subscriptions = this.SubscriptionService.GetUserSubscriptions();
             var result = subscriptions.Select(s => Mapper.Map<SubscriptionDTO>(s));
 
             return Ok(result);
         }
 
-        [Route("api/subscriptions/getExpiry/{userId:guid}")]
-        [ResponseType(typeof(SubscriptionExpiryDTO))]
-        public IHttpActionResult GetExpiry(Guid userId)
+        [Route("api/subscriptions/getLatest")]
+        [ResponseType(typeof(LatestSubscriptionDTO))]
+        public IHttpActionResult GetLatest()
         {
-            var result = new SubscriptionExpiryDTO();
-            var subscriptions = this.Subscriptions.AllAsNoTracking
-                .Where(s => s.OrgUserId == userId)
-                .ToList();
-
-            var lastSubscription = subscriptions.LastOrDefault();
-            if (lastSubscription != null)
-                result.ExpiryDate = lastSubscription.EndDate;
-
-            return Ok(result);
+            var latestSubscription = this.SubscriptionService.GetLatest();
+            return Ok(new LatestSubscriptionDTO { Date = latestSubscription });
         }
     }
 }

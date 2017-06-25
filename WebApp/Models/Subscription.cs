@@ -24,8 +24,8 @@ namespace WebApi.Models
         public OrgUserDTO OrgUser { get; set; }
     }
 
-    public class SubscriptionExpiryDTO
+    public class LatestSubscriptionDTO
     {
-        public DateTime? ExpiryDate { get; set; }
+        public DateTime? Date { get; set; }
     }
 }
