@@ -5,7 +5,7 @@
             <h5>Subscriptions</h5>
         </div>
         <div class="box-content">
-            <p ng-if="ctrl.subscriptionExpiry.expiryDate">Your subscription ends on <strong>{{ctrl.subscriptionExpiry.expiryDate | amDateFormat: 'DD/MM/YYYY'}}</strong>.</p>
+            <p ng-if="ctrl.subscriptionExpiry.expiryDate">Your next renewal is on <strong>{{ctrl.subscriptionExpiry.expiryDate | amDateFormat: 'DD/MM/YYYY'}}</strong>.</p>
             <p ng-if="ctrl.subscriptionExpiry.expiryDate == null">You do not have any subscriptions.</p>
 
             <button class="btn btn-info">
