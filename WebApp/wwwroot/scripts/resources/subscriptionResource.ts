@@ -2,14 +2,14 @@
     "use strict";
 
     export interface ISubscriptionResource extends ng.resource.IResourceClass<Models.ISubscription> {
-        getExpiry(params: Object, success: Function, error?: Function): Models.ISubscriptionExpiry;
+        getLatest(success: Function, error?: Function);
     }
 
     SubscriptionResource.$inject = ["$resource"];
     export function SubscriptionResource($resource: ng.resource.IResourceService): ISubscriptionResource {
-        return <ISubscriptionResource>$resource('/api/subscriptions/:userId', { userId: '@userId' }, {
+        return <ISubscriptionResource>$resource('/api/subscriptions', null, {
             'get': { method: 'GET', isArray: true },
-            'getExpiry': { method: 'GET', url: '/api/subscriptions/getExpiry/:userId', params: { userId: '@userId' } }
+            'getLatest': { method: 'GET', url: '/api/subscriptions/getLatest' }
         });
     }
 
