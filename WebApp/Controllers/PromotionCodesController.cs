@@ -18,16 +18,6 @@ namespace WebApi.Controllers
         SubscriptionsRepository Subscriptions { get { return UnitOfWork.SubscriptionsRepository; } }
         PaymentsRepository Payments { get { return UnitOfWork.PaymentsRepository; } }
 
-        [Route("api/promotionCodes")]
-        [ResponseType(typeof(IEnumerable<PromotionCodeDTO>))]
-        public IHttpActionResult Get()
-        {
-            var promotionCodes = this.PromotionCodes.AllAsNoTracking.ToList();
-            var result = promotionCodes.Select(pc => Mapper.Map<PromotionCodeDTO>(pc));
-
-            return Ok(result);
-        }
-
         [HttpPost]
         [Route("api/promotionCodes/redeemCode/{userId:guid}/{code}")]
         [ResponseType(typeof(RedeemCodeResponse))]

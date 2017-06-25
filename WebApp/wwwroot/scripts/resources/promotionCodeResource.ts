@@ -8,7 +8,6 @@
     PromotionCodeResource.$inject = ["$resource"];
     export function PromotionCodeResource($resource: ng.resource.IResourceService): IPromotionCodeResource {
         return <IPromotionCodeResource>$resource('/api/promotionCodes/', null, {
-            'get': { method: 'GET', isArray: true },
             'redeemCode': { method: 'POST', url: '/api/promotionCodes/redeemCode/:userId/:code', params: { userId: '@userId', code: '@code' } }
         });
     }
