@@ -34,13 +34,27 @@ namespace LightMethods.Survey.Models.Services
 
         public DateTime? GetLatest()
         {
+            return this.GetLatest(this.User.Id);
+        }
+
+        public DateTime? GetLatest(Guid userId)
+        {
             var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking
-                .Where(s => s.OrgUserId == this.User.Id);
+                .Where(s => s.OrgUserId == userId);
 
             if (subscriptions.Any())
                 return subscriptions.Max(s => s.EndDate);
 
             return null;
+        }
+
+        public bool HasValidSubscription(Guid userId)
+        {
+            var latestSubscription = this.GetLatest(userId);
+            if (latestSubscription.HasValue && latestSubscription.Value > DateTime.Now)
+                return true;
+
+            return false;
         }
 
         public RedeemCodeStatus RedeemCode(string code)

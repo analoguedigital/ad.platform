@@ -15,5 +15,6 @@ namespace LightMethods.Survey.Models.Entities
         public const string ORG_USER_MANAGMENT = "Users manager";
         public const string ORG_PROJECT_MANAGMENT = "Project manager";
         public const string ORG_TEMPLATES_MANAGMENT = "Form templates manager";
+        public const string RESTRICTED_USER = "Restricted user";
     }
 }
