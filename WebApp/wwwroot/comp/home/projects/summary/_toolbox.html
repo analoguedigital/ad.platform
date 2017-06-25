@@ -17,7 +17,7 @@
 
             <!-- date range -->
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-btn">
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 col-sm-6 col-xs-12">
                     <div class="form-group">
                         <div class="input-group">
                             <span class="input-group-btn">
@@ -44,12 +44,12 @@
                 </div>
             </div>
 
+            <!-- threads -->
             <div class="toolbox-heading">
                 <i class="fa fa-list"></i> Threads
             </div>
 
-            <!-- threads -->
-            <div>
+            <div id="threads-container">
                 <div class="checkbox checkbox-default" ng-repeat="template in ctrl.formTemplates track by $index">
                     <input type="checkbox" id="{{template.id}}" ng-model="template.isChecked" ng-change="ctrl.threadsChanged()" />
                     <label for="{{template.id}}">{{template.title}}</label>
@@ -59,8 +59,18 @@
             </div>
 
             <div class="toolbox-buttons">
-                <button class="btn btn-info btn-block" ng-click="ctrl.clearAll()">Clear</button>
-                <button class="btn btn-info btn-block" ng-click="ctrl.print()">Print</button>
+                <div class="btn-group btn-group-justified" role="group">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default" ng-click="ctrl.clearAll()">
+                            <i class="fa fa-eraser"></i> Clear
+                        </button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default" ng-click="ctrl.print()">
+                            <i class="fa fa-print"></i> Print
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>

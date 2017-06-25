@@ -1,4 +1,6 @@
-﻿.project-summary {
+﻿$break-small: 360px;
+
+.project-summary {
     .toolbox-heading {
         margin-top: 15px;
         background: #f9f9f9;
@@ -30,5 +32,13 @@
     .template-name {
         position: relative;
         padding-left: 20px;
+    }
+
+    .chart-center {
+        margin: auto;
+
+        @media screen and (max-width: $break-small) {
+            width: 100%;
+        }
     }
 }

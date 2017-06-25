@@ -7,14 +7,10 @@
         endDate: Date;
         startDateCalendar: any;
         endDateCalendar: any;
-        chartLabels: string[];
-        chartData: number[];
-        chartColors: string[];
-        markers: any[];
+        locationCount: number;
 
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        locations: ProjectSummaryController.Models.ISurveyLocation[];
         threads: Models.IFormTemplate[];
         records: Models.ISurvey[];
 
@@ -35,14 +31,10 @@
         endDate: Date;
         startDateCalendar = { isOpen: false };
         endDateCalendar = { isOpen: false };
-        chartLabels: string[] = [];
-        chartData: number[] = [];
-        chartColors: string[] = [];
-        markers: any[] = [];
+        locationCount: number;
 
         formTemplates: Models.IFormTemplate[] = [];
         surveys: Models.ISurvey[] = [];
-        locations: ProjectSummaryController.Models.ISurveyLocation[] = [];
         threads: Models.IFormTemplate[] = [];
         records: Models.ISurvey[] = [];
 
@@ -72,11 +64,11 @@
         bindWatchers() {
             this.$scope.$watch('ctrl.searchTerm', _.debounce((newValue, oldValue) => {
                 this.$scope.$apply(() => {
-                    if ((oldValue == undefined && newValue) || (oldValue && newValue.length < 1)) {
+                    if ((oldValue == undefined && newValue) || (oldValue && newValue.length < 1) || (oldValue && oldValue.length && newValue.length)) {
                         this.applyFilters();
                     }
                 });
-            }, 1500));
+            }, 1000));
 
             this.$scope.$watch('ctrl.startDate', _.debounce((newValue, oldValue) => {
                 this.$scope.$apply(() => {
@@ -84,7 +76,7 @@
                         this.applyFilters();
                     }
                 });
-            }, 1500));
+            }, 1000));
 
             this.$scope.$watch('ctrl.endDate', _.debounce((newValue, oldValue) => {
                 this.$scope.$apply(() => {
@@ -92,7 +84,7 @@
                         this.applyFilters();
                     }
                 });
-            }, 1500));
+            }, 1000));
         }
 
         load() {
@@ -137,6 +129,14 @@
 
                     if (_.includes(survey.description, this.searchTerm))
                         collectedRecords.push(survey);
+
+                    _.forEach(survey.formValues, (fm) => {
+                        if (fm.textValue && fm.textValue.length) {
+                            if (_.includes(fm.textValue, this.searchTerm)) {
+                                collectedRecords.push(survey);
+                            }
+                        }
+                    });
                 });
             }
 
@@ -169,39 +169,7 @@
             });
 
             // this will be the displayed record
-            this.records = _.uniq(resultRecords);
-
-            // generate chart data
-            this.chartLabels = [];
-            this.chartData = [];
-            this.chartColors = [];
-            angular.forEach(this.threads, (t) => {
-                if (_.filter(this.records, (r) => { return r.formTemplateId == t.id }).length) {
-                    this.chartLabels.push(t.title);
-                    this.chartColors.push(t.colour);
-
-                    let records = _.filter(this.records, (s) => { return s.formTemplateId == t.id; });
-                    this.chartData.push(records.length);
-                }
-            });
-
-            // extract locations
-            this.locations = [];
-            angular.forEach(this.records, (r) => {
-                angular.forEach(r.locations, (l) => {
-                    let location: ProjectSummaryController.Models.ISurveyLocation = {
-                        accuracy: l.accuracy,
-                        error: l.error,
-                        event: l.event,
-                        latitude: l.latitude,
-                        longitude: l.longitude,
-                        description: r.description,
-                        color: this.getTemplateColour(r.formTemplateId)
-                    };
-
-                    this.locations.push(location);
-                });
-            });
+            this.records = _.uniqBy(resultRecords, (rec: Models.ISurvey) => { return rec.id });
         }
 
         threadsChanged() {
@@ -224,7 +192,9 @@
             this.startDate = undefined;
             this.endDate = undefined;
             angular.forEach(this.formTemplates, (t) => { t.isChecked = false });
-            this.applyFilters();
+
+            this.threads = [];
+            this.records = [];
         }
 
         print() {

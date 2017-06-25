@@ -2,6 +2,6 @@
 .survey-print { background: white; padding: 0 20px; margin-bottom: 20px;
     .metric-groups { }
     .metrics {
-        .metric { background-color: white; position: relative; padding: 10px; }
+        .metric { background-color: white; position: relative; padding: 10px; break-inside: avoid; }
     }
 }

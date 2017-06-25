@@ -4,6 +4,15 @@
         <i class="fa fa-refresh"></i> Reset View
     </button>
 
+    <div class="row charts-row">
+        <div class="col-md-6">
+            <lm-locations form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" location-count="ctrl.locationCount"></lm-locations>
+        </div>
+        <div class="col-md-6">
+            <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys"></lm-pie-chart>
+        </div>
+    </div>
+
     <div ng-repeat="survey in ctrl.surveys track by $index" ng-init="formTemplate = ctrl.getFormTemplate(survey.formTemplateId)">
         <h1>{{formTemplate.title}} <span ng-show="survey.serial !== null"> (#{{survey.serial}})</span></h1>
         <hr />

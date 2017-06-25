@@ -9,6 +9,9 @@
         title: string;
         formTemplates: Array<Models.IFormTemplate>;
         surveys: Array<Models.ISurvey>;
+        uniqFormTemplates: Models.IFormTemplate[];
+        locationCount: number;
+
         activate: () => void;
     }
 
@@ -16,6 +19,8 @@
         title: string = "Forms";
         formTemplates: Array<Models.IFormTemplate> = [];
         surveys: Array<Models.ISurvey> = [];
+        uniqFormTemplates: Models.IFormTemplate[];
+        locationCount: number;
 
         static $inject: string[] = ["$state", "$stateParams", "$q", "formTemplateResource", "surveyResource"];
         constructor(
@@ -52,6 +57,7 @@
             this.$q.all(promises).then(() => {
                 this.surveys = surveys;
                 this.formTemplates = formTemplates;
+                this.uniqFormTemplates = _.uniqBy(this.formTemplates, (t) => { return t.id });
             });
         }
 
@@ -62,7 +68,7 @@
         deleteMetric(metric: Models.IMetric) {
             metric.isDeleted = true;
         }
-        
+
         deleteGroup(group: Models.IMetricGroup) {
             group.isDeleted = true;
         }

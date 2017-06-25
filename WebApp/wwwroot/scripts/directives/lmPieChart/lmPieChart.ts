@@ -7,6 +7,8 @@
 
     interface IlmPieChartScope extends ng.IScope {
         id: string;
+        formTemplates: Models.IFormTemplate[];
+        surveys: Models.ISurvey[];
         data: number[];
         labels: string[];
         colors: string[];
@@ -26,12 +28,11 @@
             link: link,
             scope: {
                 id: '@',
-                data: '=',
-                labels: '=',
-                colors: '='
+                formTemplates: '=',
+                surveys: '='
             }
         };
-
+        
         function link(scope: IlmPieChartScope,
             element: ng.IAugmentedJQuery,
             attrs: IlmPieChartAttributes,
@@ -40,14 +41,30 @@
 
             scope.options = {
                 type: 'pie',
-                responsive: true,
+                responsive: false,
                 maintainAspectRatio: true,
                 showTooltips: true,
                 legend: {
                     display: true,
                     position: 'bottom'
                 }
-            }
+            };
+
+            scope.$watchGroup(['formTemplates', 'surveys'], () => {
+                scope.data = [];
+                scope.labels = [];
+                scope.colors = [];
+
+                angular.forEach(scope.formTemplates, (template) => {
+                    if (_.filter(scope.surveys, (survey) => { return survey.formTemplateId == template.id }).length) {
+                        scope.labels.push(template.title);
+                        scope.colors.push(template.colour);
+
+                        let records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId == template.id; });
+                        scope.data.push(records.length);
+                    }
+                }); 
+            });
         }
     }
 

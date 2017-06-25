@@ -11,6 +11,8 @@ namespace LightMethods.Survey.Models.Entities
 {
     public class FilledForm : Entity, IValidatableObject
     {
+        private Regex descriptionFormatPattern = new Regex(@"\{\{([^}]*)\}\}");
+
         [Required]
         [Index]
         public Guid FormTemplateId { get; set; }
@@ -49,31 +51,25 @@ namespace LightMethods.Survey.Models.Entities
                 if (string.IsNullOrEmpty(format))
                     return string.Empty;
 
-                var regex = new Regex(@"\{\{([^}]*)\}\}");
-                var matches = regex.Matches(format);
+                var matches = this.descriptionFormatPattern.Matches(format);
                 var names = new List<string>();
-                foreach (var match in matches)
-                {
-                    var rgx = new Regex("{{({?}?[^{}])*}}");
-                    var item = rgx.Match(match.ToString());
-                    var name = item.Value.Replace("{{", "").Replace("}}", "");
-                    names.Add(name);
-                }
+                foreach (Match match in matches)
+                    names.Add(match.Groups[1].Value);
 
-                var metrics = new List<Metric>();
+                var foundMetrics = new List<Metric>();
                 foreach (var metricGroup in this.FormTemplate.MetricGroups)
                 {
                     foreach (var metric in metricGroup.Metrics)
                     {
                         if (names.Contains(metric.ShortTitle.ToLower()))
-                            metrics.Add(metric);
+                            foundMetrics.Add(metric);
                     }
                 }
 
-                if (metrics.Any())
+                if (foundMetrics.Any())
                 {
                     var values = new List<string>();
-                    foreach (var metric in metrics)
+                    foreach (var metric in foundMetrics)
                     {
                         var formValue = this.FormValues.Where(fm => fm.MetricId == metric.Id).FirstOrDefault();
                         if (formValue != null)

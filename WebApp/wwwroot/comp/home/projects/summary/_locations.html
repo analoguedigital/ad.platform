@@ -1,9 +1,8 @@
 ﻿<div class="box">
     <div class="box-title">
-        <h5 ng-if="ctrl.locations.length == 0">Locations</h5>
-        <h5 ng-if="ctrl.locations.length">Locations ({{ctrl.locations.length}})</h5>
+        <h5>Locations <span ng-if="ctrl.locationCount">({{ctrl.locationCount}})</span></h5>
     </div>
     <div class="box-content">
-        <lm-locations id="survey-locations" locations="ctrl.locations"></lm-locations>
+        <lm-locations id="survey-locations" form-templates="ctrl.threads" surveys="ctrl.records" location-count="ctrl.locationCount"></lm-locations>
     </div>
 </div>

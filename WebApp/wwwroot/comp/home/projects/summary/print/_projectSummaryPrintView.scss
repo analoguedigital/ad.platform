@@ -1,4 +1,7 @@
 ﻿
+$break-medium: 991px;
+$break-small: 360px;
+
 .summary-print {
     .delete-icon { display: none; position: absolute; top: 40%; left: 48%; z-index: 10 }
     .metrics {
@@ -8,5 +11,13 @@
                 .delete-icon { display: block }
             }
         }
+    }
+    .charts-row { margin-top: 15px; }
+    .angular-google-map-container { height: 350px; }
+
+    .chart-center {
+        margin: auto;
+        @media screen and (max-width: $break-small) { width: 100%; }
+        @media screen and (max-width: $break-medium) { margin-top: 15px; }
     }
 }

@@ -134,24 +134,20 @@ namespace LightMethods.Survey.Models.Entities
             {
                 var matches = this._descriptionFormatRegex.Matches(format);
                 var names = new List<string>();
-                foreach (var match in matches)
-                {
-                    var item = this._descriptionFormatValueRegex.Match(match.ToString());
-                    var name = item.Value.Replace("{{", "").Replace("}}", "");
-                    names.Add(name);
-                }
+                foreach (Match match in matches)
+                    names.Add(match.Groups[1].Value);
 
-                var metrics = new List<Metric>();
+                var foundMetrics = new List<Metric>();
                 foreach (var metricGroup in this.MetricGroups)
                 {
                     foreach (var metric in metricGroup.Metrics)
                     {
                         if (names.Contains(metric.ShortTitle.ToLower()))
-                            metrics.Add(metric);
+                            foundMetrics.Add(metric);
                     }
                 }
 
-                if (names.Count != metrics.Count)
+                if (names.Count != foundMetrics.Count)
                     yield return new ValidationResult("Description Format is not valid. Correct the format string and try again.");
             }
         }
