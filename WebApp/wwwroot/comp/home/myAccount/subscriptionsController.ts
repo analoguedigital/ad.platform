@@ -9,7 +9,7 @@ module App {
     interface ISubscriptionsController {
         payments: Models.IPaymentRecord[];
         subscriptions: Models.ISubscription[];
-        subscriptionExpiry: Models.ISubscriptionExpiry;
+        latestSubscription?: Date;
 
         activate: () => void;
         redeemCode: () => void;
@@ -18,7 +18,7 @@ module App {
     class SubscriptionsController implements ISubscriptionsController {
         payments: Models.IPaymentRecord[] = [];
         subscriptions: Models.ISubscription[] = [];
-        subscriptionExpiry: Models.ISubscriptionExpiry;
+        latestSubscription?: Date;
 
         static $inject: string[] = ["$scope", "$uibModal", "paymentResource", "userContextService", "subscriptionResource"];
         constructor(
@@ -43,14 +43,10 @@ module App {
             this.paymentResource.query().$promise
                 .then((payments) => { this.payments = payments; });
 
-            this.subscriptionResource.query({ userId: userId }).$promise
-                .then((subscriptions) => { this.subscriptions = subscriptions; });
-
-            this.subscriptionResource.getExpiry({ userId: userId },
-                (res: Models.ISubscriptionExpiry) => {
-                    this.subscriptionExpiry = res;
-                },
-                (err) => { console.error(err); });
+            this.subscriptionResource.getLatest(
+                (res) => {
+                    this.latestSubscription = res.date;
+                });
         }
 
         redeemCode() {
@@ -58,14 +54,9 @@ module App {
                 animation: true,
                 templateUrl: 'comp/home/myAccount/redeemCode/redeemCode.html',
                 controller: 'redeemCodeController',
-                controllerAs: 'ctrl',
-                resolve: {
-                    user: () => { return null; }
-                }
+                controllerAs: 'ctrl'
             }).result.then(
-                (res: Models.IRedeemCodeResponse) => {
-                    if (res.success) { this.load(); }
-                },
+                (res) => { this.load(); },
                 (err) => { });
         }
     }
