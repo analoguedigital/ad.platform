@@ -12,7 +12,9 @@
         <tbody>
             <tr ng-repeat="payment in ctrl.payments track by $index">
                 <td class="text-center">{{payment.date | amDateFormat: 'DD/MM/YYYY'}}</td>
-                <td class="text-center">{{payment.amount}}&pound;</td>
+                <td class="text-center">
+                    <span ng-bind-html="payment.amount | currencyFormat: isoCode : 0"></span>
+                </td>
                 <td class="text-center">{{payment.reference}}</td>
                 <td class="text-center">{{payment.promotionCode.code}}</td>
                 <td>{{payment.note}}</td>

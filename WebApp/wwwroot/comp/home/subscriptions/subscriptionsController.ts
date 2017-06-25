@@ -29,6 +29,7 @@ module App {
             private subscriptionResource: Resources.ISubscriptionResource) {
 
             $scope.title = "Subscriptions";
+            $scope.isoCode = 'GBP';
             this.activate();
         }
 
