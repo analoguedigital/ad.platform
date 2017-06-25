@@ -461,6 +461,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\app.config.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\app.run.ts" />
     <Content Include="wwwroot\scripts\app.js" />
+    <TypeScriptCompile Include="wwwroot\scripts\app.route.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmAccess\lmAccess.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />

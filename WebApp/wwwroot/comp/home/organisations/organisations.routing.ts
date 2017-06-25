@@ -15,17 +15,19 @@
                 url: "/organisations",
                 template: "<ui-view />"
             })
-            .state("home.organisations.list", {
+            .state("home.organisations.list", <App.Models.IAppRoute>{
                 url: "",
                 templateUrl: "comp/home/organisations/organisationsView.html",
                 controller: "organisationsController",
-                ncyBreadcrumb: { label: 'Organisations' }
+                ncyBreadcrumb: { label: 'Organisations' },
+                module: "private"
             })
-            .state("home.organisations.edit", {
+            .state("home.organisations.edit", <App.Models.IAppRoute>{
                 url: "/edit/:id",
                 templateUrl: "comp/home/organisations/edit/organisationEditView.html",
                 controller: "organisationEditController",
-                ncyBreadcrumb: { label: 'Edit', parent: 'home.organisations.list' }
+                ncyBreadcrumb: { label: 'Edit', parent: 'home.organisations.list' },
+                module: "private"
             }) ;
     }
 })();

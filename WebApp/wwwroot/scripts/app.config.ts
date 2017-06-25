@@ -17,7 +17,7 @@
                 template: "<ui-view />",
                 controller: "indexController"
             })
-            .state("home", {
+            .state("home", <App.Models.IAppRoute>{
                 abstract: true,
                 url: "",
                 templateUrl: "comp/home/homeView.html",
@@ -25,17 +25,18 @@
                 params: { authenticationRequired: true },
                 resolve: {
                     userContext: ['userContextService', (userContextService) => { return userContextService.initialize(); }]
-                }
+                },
+                module: "public"
             })
-            .state("login", {
+            .state("login", <App.Models.IAppRoute>{
                 parent: "index",
                 url: "/login",
                 templateUrl: "comp/login/loginView.html",
                 controller: "loginController",
                 params: { authenticationRequired: false },
                 ncyBreadcrumb: { label: 'Login' },
-                data: { bodyCssClass: "login-page" }
-
+                data: { bodyCssClass: "login-page" },
+                module: "public"
             });
 
 

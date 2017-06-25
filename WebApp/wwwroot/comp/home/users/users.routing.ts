@@ -1,5 +1,4 @@
-﻿
-((): void => {
+﻿((): void => {
     "use strict";
 
     angular.module("app")
@@ -15,18 +14,20 @@
                 url: "/users",
                 template: "<ui-view />"
             })
-            .state("home.users.list", {
+            .state("home.users.list", <App.Models.IAppRoute>{
                 url: "",
                 templateUrl: "comp/home/users/usersView.html",
                 controller: "usersController",
-                ncyBreadcrumb: { label: 'Users' }
+                ncyBreadcrumb: { label: 'Users' },
+                module: "private"
             })
-            .state("home.users.edit", {
+            .state("home.users.edit", <App.Models.IAppRoute>{
                 url: "/edit/:id",
                 templateUrl: "comp/home/users/edit/userEditView.html",
                 controller: "userEditController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Edit', parent: 'home.users.list' }
+                ncyBreadcrumb: { label: 'Edit', parent: 'home.users.list' },
+                module: "private"
             });
     }
 })();

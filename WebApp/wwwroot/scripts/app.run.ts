@@ -4,8 +4,8 @@
 
     angular.module("app")
         .run(addRouteStateInfoToRootScope)
-        .run(configAuthenticationCheck)
         .run(initializeUserContextService)
+        .run(configAuthenticationCheck)
         .run(configAngularMoment);
 
     addRouteStateInfoToRootScope.$inject = ["$rootScope", "$state", "$stateParams"];
@@ -22,11 +22,12 @@
         $rootScope.$stateParams = $stateParams;
     }
 
-    configAuthenticationCheck.$inject = ["$rootScope", "$state", "authService"];
+    configAuthenticationCheck.$inject = ["$rootScope", "$state", "authService", "userContextService"];
     function configAuthenticationCheck(
         $rootScope: ng.IRootScopeService,
         $state: ng.ui.IStateService,
-        authService: App.Services.IAuthService) {
+        authService: App.Services.IAuthService,
+        userContextService: App.Services.UserContextService) {
 
         $rootScope.$on("$stateChangeStart",
             function (
@@ -39,6 +40,14 @@
                 if (toParams["authenticationRequired"] && !authService.authContext.isAuth) {
                     $state.transitionTo("login");
                     event.preventDefault();
+                }
+
+                let _toState = <App.Models.IAppRoute>toState;
+                if (_toState.module == "private") {
+                    if (userContextService.current.user && userContextService.userIsRestricted()) {
+                        event.preventDefault();
+                        $state.transitionTo("home.subscriptions.list");
+                    }
                 }
             });
     }

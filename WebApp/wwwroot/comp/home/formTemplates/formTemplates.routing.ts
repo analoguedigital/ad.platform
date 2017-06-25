@@ -15,26 +15,29 @@
                 url: "/formtemplates",
                 template: "<ui-view />"
             })
-            .state("home.formtemplates.list", {
+            .state("home.formtemplates.list", <App.Models.IAppRoute>{
                 url: "",
                 templateUrl: "comp/home/formtemplates/formtemplatesView.html",
                 controller: "formTemplatesController",
                 controllerAs: 'ctrl',
-                ncyBreadcrumb: { label: 'Form templates' }
+                ncyBreadcrumb: { label: 'Form templates' },
+                module: "private"
             })
-            .state("home.formtemplates.design", {
+            .state("home.formtemplates.design", <App.Models.IAppRoute>{
                 url: "/design/:id",
                 templateUrl: "comp/home/formtemplates/design/formDesignView.html",
                 controller: "formDesignController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Design', parent: 'home.formtemplates.list' }
+                ncyBreadcrumb: { label: 'Design', parent: 'home.formtemplates.list' },
+                module: "private"
             })
-            .state("home.formtemplates.edit", {
+            .state("home.formtemplates.edit", <App.Models.IAppRoute>{
                 url: "/edit/:id",
                 templateUrl: "comp/home/formtemplates/edit/formTemplateEditView.html",
                 controller: "formTemplateEditController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Edit', parent: 'home.formtemplates.list' }
+                ncyBreadcrumb: { label: 'Edit', parent: 'home.formtemplates.list' },
+                module: "private"
             });
     }
 })();

@@ -15,26 +15,29 @@
                 url: "/projects",
                 template: "<ui-view />"
             })
-            .state("home.projects.list", {
+            .state("home.projects.list", <App.Models.IAppRoute>{
                 url: "",
                 templateUrl: "comp/home/projects/projectsView.html",
                 controller: "projectsController",
-                ncyBreadcrumb: { label: 'Directory' }
+                ncyBreadcrumb: { label: 'Directory' },
+                module: "private"
             })
-            .state("home.projects.edit", {
+            .state("home.projects.edit", <App.Models.IAppRoute>{
                 url: "/edit/:id",
                 templateUrl: "comp/home/projects/edit/projectEditView.html",
                 controller: "projectEditController",
-                ncyBreadcrumb: { label: 'Edit', parent: 'home.projects.list' }
+                ncyBreadcrumb: { label: 'Edit', parent: 'home.projects.list' },
+                module: "private"
             })
-            .state("home.projects.assignments", {
+            .state("home.projects.assignments", <App.Models.IAppRoute>{
                 url: "/assignments/:id",
                 templateUrl: "comp/home/projects/assignments/projectAssignmentsView.html",
                 controller: "projectAssignmentsController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Assignments', parent: 'home.projects.list' }
+                ncyBreadcrumb: { label: 'Assignments', parent: 'home.projects.list' },
+                module: "private"
             })
-            .state("home.projects.summary", {
+            .state("home.projects.summary", <App.Models.IAppRoute>{
                 url: "/summary/:id",
                 templateUrl: "comp/home/projects/summary/projectSummaryView.html",
                 controller: "projectSummaryController",
@@ -47,7 +50,8 @@
                             });
                         }]
                 },
-                ncyBreadcrumb: { label: 'Summary', parent: 'home.projects.list' }
+                ncyBreadcrumb: { label: 'Summary', parent: 'home.projects.list' },
+                module: "private"
             });
     }
 })();

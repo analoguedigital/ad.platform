@@ -17,7 +17,7 @@
                 controller: "dashboardController",
                 ncyBreadcrumb: { label: 'Dashboard' }
             })
-            .state("home.dashboard.layout", {
+            .state("home.dashboard.layout", <App.Models.IAppRoute>{
                 url: "/",
                 views: {
                     "students": { templateUrl: "comp/home/dashboard/students/studentsView.html", controller: "studentsController" },
@@ -27,9 +27,10 @@
                         controllerAs: "ctrl",
                     }
                 },
-                ncyBreadcrumb: { label: 'Dashboard' }
+                ncyBreadcrumb: { label: 'Dashboard' },
+                module: "private"
             })
-            .state("home.studentChart", {
+            .state("home.studentChart", <App.Models.IAppRoute>{
                 url: "/chart/:projectId",
                 templateUrl: "comp/home/dashboard/students/chart/studentChartView.html",
                 controller: "studentChartController",
@@ -43,7 +44,8 @@
                             });
                         }]
                 },
-                ncyBreadcrumb: { label: 'Emotional and Social Development Chart' }
+                ncyBreadcrumb: { label: 'Emotional and Social Development Chart' },
+                module: "private"
             });
     }
 })();
