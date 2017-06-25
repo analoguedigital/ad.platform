@@ -391,6 +391,7 @@
     <Compile Include="Services\Identity\EmailService.cs" />
     <Compile Include="Services\Identity\SmsService.cs" />
     <Compile Include="Services\Identity\ApplicationUserStore.cs" />
+    <Compile Include="Services\SubscriptionService.cs" />
     <Compile Include="Services\SurveyProvider.cs" />
   </ItemGroup>
   <ItemGroup>
