@@ -33,8 +33,4 @@
         dateCreated: number;
         dateUpdated: number;
     }
-
-    export interface ISubscriptionExpiry {
-        expiryDate: Date;
-    }
 }

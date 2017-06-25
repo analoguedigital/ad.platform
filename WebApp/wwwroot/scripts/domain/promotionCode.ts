@@ -36,9 +36,4 @@
         dateCreated: number;
         dateUpdated: number;
     }
-
-    export interface IRedeemCodeResponse {
-        success: boolean;
-        message: string;
-    }
 }
