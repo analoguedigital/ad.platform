@@ -5,8 +5,11 @@
             <h5>Subscriptions</h5>
         </div>
         <div class="box-content">
-            <p ng-if="ctrl.latestSubscription">Your next renewal is on <strong>{{ctrl.latestSubscription | amDateFormat: 'DD/MM/YYYY HH:mm a'}}</strong></p>
-            <p ng-if="ctrl.latestSubscription == null">You do not have any subscriptions.</p>
+            <div class="alert alert-warning" role="alert" ng-if="ctrl.isRestricted">
+                <strong>Warning!</strong> You do not have an active subscription! Setup your payment method, or redeem a promotion code.
+            </div>
+
+            <p ng-if="ctrl.latestSubscription">Your next renewal is on <strong>{{ctrl.latestSubscription | amDateFormat: 'DD/MM/YYYY'}}</strong></p>
 
             <button class="btn btn-info">
                 <i class="fa fa-credit-card"></i> Add Payment Method

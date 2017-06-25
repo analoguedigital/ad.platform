@@ -10,6 +10,7 @@ module App {
         payments: Models.IPaymentRecord[];
         subscriptions: Models.ISubscription[];
         latestSubscription?: Date;
+        isRestricted: boolean;
 
         activate: () => void;
         redeemCode: () => void;
@@ -19,6 +20,7 @@ module App {
         payments: Models.IPaymentRecord[] = [];
         subscriptions: Models.ISubscription[] = [];
         latestSubscription?: Date;
+        isRestricted: boolean;
 
         static $inject: string[] = ["$scope", "$uibModal", "paymentResource", "userContextService", "subscriptionResource"];
         constructor(
@@ -34,6 +36,7 @@ module App {
 
         activate() {
             this.load();
+            this.isRestricted = this.userContext.userIsRestricted();
         }
 
         load() {
@@ -55,7 +58,7 @@ module App {
                 controller: 'redeemCodeController',
                 controllerAs: 'ctrl'
             }).result.then(
-                (res) => { this.load(); },
+                (res) => { location.reload(true); },
                 (err) => { });
         }
     }
