@@ -56,7 +56,7 @@ module App {
         redeemCode() {
             var modalInstance = this.$uibModal.open({
                 animation: true,
-                templateUrl: 'comp/home/subscriptions/redeemCode/redeemCode.html',
+                templateUrl: 'comp/home/myAccount/redeemCode/redeemCode.html',
                 controller: 'redeemCodeController',
                 controllerAs: 'ctrl',
                 resolve: {

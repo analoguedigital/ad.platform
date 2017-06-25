@@ -15,7 +15,7 @@
             })
             .state("home.subscriptions.list", {
                 url: "",
-                templateUrl: "comp/home/subscriptions/subscriptionsView.html",
+                templateUrl: "comp/home/myAccount/subscriptionsView.html",
                 controller: "subscriptionsController",
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Subscriptions and Payments' }
