@@ -12,6 +12,7 @@ module App.Services {
         login(loginData: ILoginData): ng.IPromise<void>;
         logout(): void;
         userIsInAnyRoles(role: string[]): boolean;
+        userIsRestricted(): boolean;
         initialize(): ng.IPromise<IUserContext>;
     }
 
@@ -108,6 +109,10 @@ module App.Services {
 
         }
 
+        userIsRestricted() {
+            var restrictedUserRole = "Restricted user";
+            return this.userIsInAnyRoles(new Array(restrictedUserRole));
+        }
     }
 
     angular.module("app").service("userContextService", UserContextService);
