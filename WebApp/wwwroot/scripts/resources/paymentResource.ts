@@ -7,7 +7,7 @@
 
     PaymentResource.$inject = ["$resource"];
     export function PaymentResource($resource: ng.resource.IResourceService): IPaymentResource {
-        return <IPaymentResource>$resource('/api/payments/:userId', { userId: '@userId' }, {
+        return <IPaymentResource>$resource('/api/payments', null, {
             'get': { method: 'GET', isArray: true }
         });
     }

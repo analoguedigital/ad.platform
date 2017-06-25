@@ -15,12 +15,12 @@ namespace WebApi.Controllers
     {
         PaymentsRepository Payments { get { return UnitOfWork.PaymentsRepository; } }
 
-        [Route("api/payments/{userId:guid}")]
+        [Route("api/payments")]
         [ResponseType(typeof(IEnumerable<PaymentRecordDTO>))]
-        public IHttpActionResult Get(Guid userId)
+        public IHttpActionResult Get()
         {
             var payments = this.Payments.AllAsNoTracking
-                .Where(p => p.OrgUserId == userId)
+                .Where(p => p.OrgUserId == this.CurrentOrgUser.Id)
                 .ToList();
             var result = payments.Select(p => Mapper.Map<PaymentRecordDTO>(p));
 

@@ -40,7 +40,7 @@ module App {
         load() {
             let userId = this.userContext.current.user.id;
 
-            this.paymentResource.query({ userId: userId }).$promise
+            this.paymentResource.query().$promise
                 .then((payments) => { this.payments = payments; });
 
             this.subscriptionResource.query({ userId: userId }).$promise
