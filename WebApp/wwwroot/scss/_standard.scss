@@ -1,6 +1,6 @@
 ﻿/// <reference path="../lib/bootstrap-sass/assets/stylesheets/_bootstrap.scss" />
 
-body { background-color: $gray; overflow-y: hidden; }
+body { background-color: $gray; }
 
 .panel {
     @extend .panel-default;

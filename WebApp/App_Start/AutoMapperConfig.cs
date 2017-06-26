@@ -84,7 +84,10 @@ namespace WebApi
                     dest.IsAdHoc = src.DataList?.IsAdHoc ?? false;
                     dest.AdHocItems = src.DataList?.IsAdHoc ?? false ? src.DataList.Items.Select(i => Mapper.Map<DataListItemDTO>(i)).ToList() : Enumerable.Empty<DataListItemDTO>().ToList();
                 });
-            Mapper.CreateMap<Attachment, AttachmentDTO>().ReverseMap();
+            Mapper.CreateMap<AttachmentDTO, Attachment>();
+            Mapper.CreateMap<Attachment, AttachmentDTO>()
+                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name;});
+                
             Mapper.CreateMap<AttachmentMetric, AttachmentMetricDTO>();
             Mapper.CreateMap<AttachmentMetricDTO, AttachmentMetric>()
                 .ForMember(m => m.AllowedAttachmentTypes, opt => opt.Ignore());

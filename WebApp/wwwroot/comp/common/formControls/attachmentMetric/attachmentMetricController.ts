@@ -52,6 +52,10 @@ module App {
             else {
                 this.$scope.formValue = this.$scope.formValues[0];
             }
+
+            setTimeout(() => {
+                this.$scope.$broadcast('angular-xGallerify.refresh');
+            }, 1000);
         }
 
         uploadFiles() {

@@ -25,7 +25,7 @@ module App {
 
 
         static readonly surveyViewRouteName: string = "home.surveys.view";
-        static readonly surveyPrintRouteNames: string[] = ["home.surveys.print-single", "home.surveys.print-multiple"];
+        static readonly surveyPrintRouteNames: string[] = ["home.surveys.print-single", "home.surveys.print-multiple", "home.projects.summaryPrint"];
 
         survey: Models.ISurvey;
 
