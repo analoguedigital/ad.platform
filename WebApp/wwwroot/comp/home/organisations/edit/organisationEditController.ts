@@ -59,6 +59,9 @@ module App {
                     });
             }
             else {
+                if (!this.$scope.organisation.subscriptionEnabled)
+                    this.$scope.organisation.subscriptionMonthlyRate = null;
+
                 this.organisationResource.update(
                     this.$scope.organisation,
                     () => { this.$state.go('home.organisations.list'); },
