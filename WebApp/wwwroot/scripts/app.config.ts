@@ -5,7 +5,8 @@
     angular.module("app")
         .config(ConfigRoutes)
         .config(ConfigHttpProvider)
-        .config(ConfigDateTransformer);
+        .config(ConfigDateTransformer)
+        .config(ConfigLoadingBar);
 
     ConfigRoutes.$inject = ["$stateProvider", "$urlRouterProvider"];
     function ConfigRoutes($stateProvider: angular.ui.IStateProvider,
@@ -80,5 +81,10 @@
                 convertDateStringsToDates(value);
             }
         }
+    }
+
+    ConfigLoadingBar.$inject = ["cfpLoadingBarProvider"];
+    function ConfigLoadingBar(cfpLoadingBarProvider) {
+        cfpLoadingBarProvider.includeSpinner = false;
     }
 })();
