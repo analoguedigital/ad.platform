@@ -29,7 +29,7 @@ namespace WebApi.Models
 
         public Guid DefaultCalendarId { set; get; }
 
-        public bool SusbcriptionEnabled { get; set; }
+        public bool SubscriptionEnabled { get; set; }
 
         public decimal? SubscriptionMonthlyRate { get; set; }
     }
