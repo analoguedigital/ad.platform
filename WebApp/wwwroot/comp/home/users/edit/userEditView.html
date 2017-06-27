@@ -26,6 +26,16 @@
                 <lm-form-group label="Confirm password:" ng-if="ctrl.isInsertMode">
                     <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.user.confirmPassword" required />
                 </lm-form-group>
+                <lm-form-group label="Access Type:">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" id="chk-web-user" name="chk-web-user" ng-model="ctrl.user.isWebUser" />
+                        <label for="chk-web-user">Web User</label>
+                    </div>
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" id="chk-mobile-user" name="chk-mobile-user" ng-model="ctrl.user.isMobileUser" />
+                        <label for="chk-mobile-user">Mobile User</label>
+                    </div>
+                </lm-form-group>
                 <lm-form-group ng-if="ctrl.errors !== undefined" class="">
                     <div class="alert alert-danger animated fadeInDown">
                         {{ctrl.errors}}

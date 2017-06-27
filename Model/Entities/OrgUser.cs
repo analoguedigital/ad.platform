@@ -34,6 +34,10 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual ICollection<Assignment> Assignments { get; set; }
 
+        public bool IsWebUser { get; set; }
+
+        public bool IsMobileUser { get; set; }
+
         public OrgUser()
         {
             IsRootUser = false;

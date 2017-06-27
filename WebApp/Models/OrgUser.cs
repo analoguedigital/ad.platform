@@ -29,5 +29,9 @@ namespace WebApi.Models
 
         public string ConfirmPassword { get; set; }
 
+        public bool IsWebUser { get; set; }
+
+        public bool IsMobileUser { get; set; }
+
     }
 }

@@ -20,6 +20,8 @@ module App.Models {
         surname: string;
         type: IOrgUserType;
         isRootUser: boolean;
+        isWebUser: boolean;
+        isMobileUser: boolean;
     }
        
 
