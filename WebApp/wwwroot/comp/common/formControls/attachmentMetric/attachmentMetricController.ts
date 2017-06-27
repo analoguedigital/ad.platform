@@ -17,7 +17,7 @@ module App {
         abort: any;
         abortForOneFile: any;
         validateFile: any;
-        deleteAttachment: (attachment: Models.IAttachment) => void;
+        deleteAttachment: ($event: ng.IAngularEvent, attachment: Models.IAttachment) => void;
         deleteFile: (index: number) => void;
     }
 
@@ -39,7 +39,7 @@ module App {
             $scope.abort = () => { this.abort(); };
             $scope.abortForOneFile = (index) => { this.abortForOneFile(index); };
             $scope.validateFile = ($file) => { this.validateFile($file); };
-            $scope.deleteAttachment = (attachment) => { this.deleteAttachment(attachment); };
+            $scope.deleteAttachment = ($event, attachment) => { this.deleteAttachment($event, attachment); };
             $scope.deleteFile = (index) => { this.deleteFile(index); };
 
             this.activate();
@@ -51,6 +51,17 @@ module App {
             }
             else {
                 this.$scope.formValue = this.$scope.formValues[0];
+
+                let ctrl: any = this.$scope.ctrl;
+                if (ctrl.session) {
+                    angular.forEach(this.$scope.formValue.attachments,
+                        (att) => {
+                            if (ctrl.session.removedItemIds.indexOf(att.id) !== -1)
+                            {
+                                att.isDeleted = true;
+                            }
+                        });
+                }
             }
 
             setTimeout(() => {
@@ -107,8 +118,21 @@ module App {
             $file.$error = "eelo";
         }
 
-        deleteAttachment(attachment: Models.IAttachment) {
-            _.find(this.$scope.formValue.attachments, { 'id': attachment.id }).isDeleted = true;
+        deleteAttachment($event: ng.IAngularEvent, attachment: Models.IAttachment) {
+            if (!this.$scope.isViewMode) {
+                _.find(this.$scope.formValue.attachments, { 'id': attachment.id }).isDeleted = true;
+
+                let ctrl: any = this.$scope.ctrl;
+                if (ctrl.session) {
+                    ctrl.session.removedItemIds.push(attachment.id);
+                }
+
+                setTimeout(() => {
+                    this.$scope.$broadcast('angular-xGallerify.refresh');
+                }, 10);
+
+                $event.stopPropagation();
+            }
         }
 
         deleteFile(index: number) {
