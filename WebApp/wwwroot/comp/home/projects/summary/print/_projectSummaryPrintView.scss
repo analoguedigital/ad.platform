@@ -3,27 +3,53 @@ $break-medium: 991px;
 $break-small: 360px;
 
 .summary-print {
-    .delete-icon { display: none; position: absolute; top: 40%; left: 48%; z-index: 10 }
+    .delete-icon {
+        display: none;
+        position: absolute;
+        top: 40%;
+        left: 48%;
+        z-index: 10
+    }
+
     .metrics {
-        & { }
         .metric:not(.AttachmentMetric) {
-            &:hover { background-color: #eee; opacity: 0.4;
-                .delete-icon { display: block }
+            &:hover {
+                background-color: #eee;
+                opacity: 0.4;
+
+                .delete-icon {
+                    display: block
+                }
             }
         }
 
         .metric.AttachmentMetric {
             img {
-                &:hover { background-color: #eee; opacity: 0.4; }
+                &:hover {
+                    background-color: #eee;
+                    opacity: 0.4;
+                }
             }
         }
     }
-    .charts-row { margin-top: 15px; }
-    .angular-google-map-container { height: 350px; }
+
+    .charts-row {
+        margin-top: 15px;
+    }
+
+    .angular-google-map-container {
+        height: 350px;
+    }
 
     .chart-center {
         margin: auto;
-        @media screen and (max-width: $break-small) { width: 100%; }
-        @media screen and (max-width: $break-medium) { margin-top: 15px; }
+
+        @media screen and (max-width: $break-small) {
+            width: 100%;
+        }
+
+        @media screen and (max-width: $break-medium) {
+            margin-top: 15px;
+        }
     }
 }

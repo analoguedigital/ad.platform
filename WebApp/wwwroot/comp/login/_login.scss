@@ -1,7 +1,13 @@
 ﻿/// <reference path="../../lib/bootstrap-sass/assets/stylesheets/_bootstrap.scss" />
 
-.login { margin-top: 10%; }
+.login {
+    margin-top: 10%;
+}
 
-.login-page { background-color: #2f4050;
-    h2, .copyright { color: #f4f4f4; }
+.login-page {
+    background-color: #2f4050;
+
+    h2, .copyright {
+        color: #f4f4f4;
+    }
 }

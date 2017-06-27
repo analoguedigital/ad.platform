@@ -1,34 +1,76 @@
 ﻿.form-design {
-    & {}
-    .metric-groups{
-        & { min-height: 200px; }
+    .metric-groups {
+        & {
+            min-height: 200px;
+        }
     }
+
     .metrics {
-        & { min-height: 100px; }
-        .metric { background-color: white; position: relative;
+        & {
+            min-height: 100px;
+        }
+
+        .metric {
+            background-color: white;
+            position: relative;
+
             &:hover {
-                &{border: 1px dashed silver;}
-                .metric-header { display: block; }
-                .metric-body {  }
+                & {
+                    border: 1px dashed silver;
+                }
+
+                .metric-header {
+                    display: block;
+                }
+
+                .metric-body {
+                }
             }
 
             &:active {
-                & { box-shadow: 0 0 15px #eee; }
+                & {
+                    box-shadow: 0 0 15px #eee;
+                }
             }
 
             .metric-header {
-                & { display: none; background-color: #fafafa; z-index: 100; position: absolute; top: 1px; right: 11px; border: 1px solid #ddd; border-top: 0; text-align: right; padding: 0 5px; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px; }
-                a { padding: 6px 15px; display: inline-block; color: gray; }
+                & {
+                    display: none;
+                    background-color: #fafafa;
+                    z-index: 100;
+                    position: absolute;
+                    top: 1px;
+                    right: 11px;
+                    border: 1px solid #ddd;
+                    border-top: 0;
+                    text-align: right;
+                    padding: 0 5px;
+                    border-bottom-left-radius: 5px;
+                    border-bottom-right-radius: 5px;
+                }
+
+                a {
+                    padding: 6px 15px;
+                    display: inline-block;
+                    color: gray;
+                }
             }
-            .metric-body { padding: 10px; border: 1px dashed white; }
+
+            .metric-body {
+                padding: 10px;
+                border: 1px dashed white;
+            }
         }
     }
 
     .color-block {
-        width: 28px; height: 28px; border-radius: 5px;
+        width: 28px;
+        height: 28px;
+        border-radius: 5px;
     }
 
     .add-page-block {
-        padding: 10px 20px; display:inline-block;
+        padding: 10px 20px;
+        display: inline-block;
     }
 }
