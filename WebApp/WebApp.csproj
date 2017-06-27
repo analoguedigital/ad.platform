@@ -223,8 +223,8 @@
     <Content Include="wwwroot\comp\home\projects\summary\_recordings.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
-    <Content Include="wwwroot\comp\home\surveys\new\_formDetails.html" />
-    <Content Include="wwwroot\comp\home\surveys\new\_locations.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_formDetails.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_locations.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metricGroup.html" />
