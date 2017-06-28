@@ -17,6 +17,7 @@ namespace LightMethods.Survey.Models.Services
             NotFound,
             AlreadyRedeemed,
             SubscriptionDisabled,
+            SubscriptionRateNotSet,
             OK
         }
 
@@ -71,6 +72,9 @@ namespace LightMethods.Survey.Models.Services
 
             if (!this.User.Organisation.SubscriptionEnabled)
                 return RedeemCodeStatus.SubscriptionDisabled;
+
+            if (!this.User.Organisation.SubscriptionMonthlyRate.HasValue)
+                return RedeemCodeStatus.SubscriptionRateNotSet;
 
             // register payment record
             var payment = new PaymentRecord

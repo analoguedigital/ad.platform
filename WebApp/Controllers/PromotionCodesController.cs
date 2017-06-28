@@ -28,13 +28,17 @@ namespace WebApi.Controllers
         public IHttpActionResult Redeem(string code)
         {
             var result = this.SubscriptionService.RedeemCode(code);
-            if (result == SubscriptionService.RedeemCodeStatus.OK)
-                return Ok();
-
-            if (result == SubscriptionService.RedeemCodeStatus.SubscriptionDisabled)
-                return Content(HttpStatusCode.Forbidden, "Subscriptions are disabled. Contact your administrator.");
-
-            return NotFound();
+            switch (result)
+            {
+                case SubscriptionService.RedeemCodeStatus.SubscriptionDisabled:
+                    return Content(HttpStatusCode.Forbidden, "Subscriptions are disabled. Contact your administrator.");
+                case SubscriptionService.RedeemCodeStatus.SubscriptionRateNotSet:
+                    return Content(HttpStatusCode.Forbidden, "Subscription Rate is not set. Contact your administrator.");
+                case SubscriptionService.RedeemCodeStatus.OK:
+                    return Ok();
+                default:
+                    return NotFound();
+            }   
         }
     }
 }
