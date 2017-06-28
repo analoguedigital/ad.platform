@@ -225,6 +225,9 @@
     <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_formDetails.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_locations.html" />
+    <Content Include="wwwroot\comp\home\myAccount\redeemCode\redeemCode.html" />
+    <Content Include="wwwroot\comp\home\myAccount\subscriptionsView.html" />
+    <Content Include="wwwroot\comp\home\myAccount\_payments.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\surveys\new\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metricGroup.html" />
@@ -278,7 +281,10 @@
     <Compile Include="Controllers\MetricsController.cs" />
     <Compile Include="Controllers\OrganisationsController.cs" />
     <Compile Include="Controllers\OrgUserTypesController.cs" />
+    <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Controllers\PromotionCodesController.cs" />
+    <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\OrgUsersController.cs" />
     <Compile Include="Models\Account\AccountBindingModels.cs" />
@@ -312,10 +318,13 @@
     <Compile Include="Models\Metric\RateMetric.cs" />
     <Compile Include="Models\Organisation.cs" />
     <Compile Include="Models\OrgUserType.cs" />
+    <Compile Include="Models\PaymentRecord.cs" />
     <Compile Include="Models\Project.cs" />
     <Compile Include="Models\ProjectAssignment.cs" />
+    <Compile Include="Models\PromotionCode.cs" />
     <Compile Include="Models\response\SaveReponse.cs" />
     <Compile Include="Models\OrgUser.cs" />
+    <Compile Include="Models\Subscription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
@@ -436,6 +445,9 @@
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryModels.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\redeemCode\redeemCodeController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptions.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptionsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
@@ -459,6 +471,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\app.config.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\app.run.ts" />
     <Content Include="wwwroot\scripts\app.js" />
+    <TypeScriptCompile Include="wwwroot\scripts\app.route.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmAccess\lmAccess.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />
@@ -491,8 +504,11 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\survey.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\organisation.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\orgUserType.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\paymentRecord.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\projectSummarySession.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\promotionCode.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\subscription.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\user.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\survey.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\custom\MBS\achievementsSummaryResource.ts" />
@@ -511,6 +527,9 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectSummaryPrintSessionResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\paymentResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\promotionCodeResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\surveyResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\services\authInterceptorService.ts" />

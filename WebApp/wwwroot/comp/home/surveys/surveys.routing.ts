@@ -15,14 +15,15 @@
                 url: "/surveys",
                 template: "<ui-view />"
             })
-            .state("home.surveys.list", {
+            .state("home.surveys.list", <App.Models.IAppRoute>{
                 url: "",
                 templateUrl: "comp/home/surveys/surveysView.html",
                 controller: "surveysController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Forms' }
+                ncyBreadcrumb: { label: 'Forms' },
+                module: "private"
             })
-            .state("home.surveys.list.summary", {
+            .state("home.surveys.list.summary", <App.Models.IAppRoute>{
                 url: "/:projectId",
                 templateUrl: "comp/home/surveys/summary/surveysSummaryView.html",
                 controller: "surveysSummaryController",
@@ -36,9 +37,10 @@
                             });
                         }]
                 },
-                ncyBreadcrumb: { label: 'Summary' }
+                ncyBreadcrumb: { label: 'Summary' },
+                module: "private"
             })
-            .state("home.surveys.new", {
+            .state("home.surveys.new", <App.Models.IAppRoute>{
                 url: "/:projectId/new/:formTemplateId",
                 templateUrl: "comp/home/surveys/new/newSurveyView.html",
                 controller: "newSurveyController",
@@ -59,9 +61,10 @@
                         }],
                     survey: () => { return null; }
                 },
-                ncyBreadcrumb: { label: 'New' }
+                ncyBreadcrumb: { label: 'New' },
+                module: "private"
             })
-            .state("home.surveys.list.all", {
+            .state("home.surveys.list.all", <App.Models.IAppRoute>{
                 url: "/:projectId/all/:formTemplateId",
                 templateUrl: "comp/home/surveys/all/allSurveysView.html",
                 controller: "allSurveysController",
@@ -83,9 +86,10 @@
                         }]
 
                 },
-                ncyBreadcrumb: { label: 'All' }
+                ncyBreadcrumb: { label: 'All' },
+                module: "private"
             })
-            .state("home.surveys.edit", {
+            .state("home.surveys.edit", <App.Models.IAppRoute> {
                 url: "/edit/:surveyId",
                 templateUrl: "comp/home/surveys/new/newSurveyView.html",
                 controller: "newSurveyController",
@@ -116,9 +120,10 @@
                     project: () => { return null; }
 
                 },
-                ncyBreadcrumb: { label: 'Edit' }
+                ncyBreadcrumb: { label: 'Edit' },
+                module: "private"
             })
-            .state("home.surveys.view", {
+            .state("home.surveys.view", <App.Models.IAppRoute>{
                 url: "/view/:surveyId",
                 templateUrl: "comp/home/surveys/view/survey.html",
                 controller: "newSurveyController",
@@ -148,7 +153,8 @@
                         }],
                     project: () => { return null; }
                 },
-                ncyBreadcrumb: { label: 'View' }
+                ncyBreadcrumb: { label: 'View' },
+                module: "private"
             })
 
             .state("printMaster", {
@@ -157,7 +163,7 @@
                 template: "<ui-view/>"
             })
 
-            .state("home.surveys.print-single", {
+            .state("home.surveys.print-single", <App.Models.IAppRoute>{
                 parent: "printMaster",
                 url: "/:surveyId",
                 templateUrl: "comp/home/surveys/print/print-single.html",
@@ -186,17 +192,19 @@
                                 return data;
                             });
                         }]
-                }
+                },
+                module: "private"
             })
 
-            .state("home.surveys.print-multiple", {
+            .state("home.surveys.print-multiple", <App.Models.IAppRoute>{
                 parent: "printMaster",
                 params: {
                     selectedSurveys: null
                 },
                 templateUrl: "comp/home/surveys/print/print-multiple.html",
                 controller: "printSurveysController",
-                controllerAs: "ctrl"
+                controllerAs: "ctrl",
+                module: "private"
             });
     }
 })();

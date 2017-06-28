@@ -433,6 +433,42 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
+        private PaymentsRepository _PaymentsRepository;
+        public PaymentsRepository PaymentsRepository
+        {
+            get
+            {
+                if (this._PaymentsRepository == null)
+                    this._PaymentsRepository = new PaymentsRepository(this);
+
+                return this._PaymentsRepository;
+            }
+        }
+
+        private PromotionCodesRepository _PromotionCodesRepository;
+        public PromotionCodesRepository PromotionCodesRepository
+        {
+            get
+            {
+                if (this._PromotionCodesRepository == null)
+                    this._PromotionCodesRepository = new PromotionCodesRepository(this);
+
+                return this._PromotionCodesRepository;
+            }
+        }
+
+        private SubscriptionsRepository _SubscriptionsRepository;
+        public SubscriptionsRepository SubscriptionsRepository
+        {
+            get
+            {
+                if (this._SubscriptionsRepository == null)
+                    this._SubscriptionsRepository = new SubscriptionsRepository(this);
+
+                return this._SubscriptionsRepository;
+            }
+        }
+
         public void Save(bool disableValidation = false)
         {
             if (disableValidation)

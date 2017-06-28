@@ -9,8 +9,19 @@
                 <lm-form-group label="Name: ">
                     <input type="text" id="name" name="name" ng-model="organisation.name" required/>
                 </lm-form-group>
-                
-    
+                <lm-form-group label="Subscription Enabled: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="subscription-enabled" ng-model="organisation.subscriptionEnabled" />
+                        <label for="subscription-enabled"></label>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Monthly Rate: " ng-if="organisation.subscriptionEnabled == true">
+                    <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-gbp"></i></span>
+                        <input type="number" id="subscriptionMonthlyRate" name="subscriptionMonthlyRate" ng-model="organisation.subscriptionMonthlyRate" required />
+                    </div>
+                </lm-form-group>
+
 
                 <div ng-if="isInsertMode">
                     <br/>

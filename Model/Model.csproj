@@ -112,7 +112,10 @@
     <Compile Include="DAL\FormTemplates\AttachmentsRepository.cs" />
     <Compile Include="DAL\FormTemplates\AttachmentMetricsRepository.cs" />
     <Compile Include="DAL\FormTemplates\TimeMetricsRepository.cs" />
+    <Compile Include="DAL\PaymentsRepository.cs" />
+    <Compile Include="DAL\PromotionCodesRepository.cs" />
     <Compile Include="DAL\RolesRepository.cs" />
+    <Compile Include="DAL\SubscriptionsRepository.cs" />
     <Compile Include="DTO\ExportToExcel.cs" />
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
@@ -120,6 +123,9 @@
     <Compile Include="Entities\FormTemplates\TimeMetric.cs" />
     <Compile Include="Entities\FormTemplates\FilledFormLocation.cs" />
     <Compile Include="Entities\FormTemplates\IHasAdHocDataList.cs" />
+    <Compile Include="Entities\PaymentRecord.cs" />
+    <Compile Include="Entities\PromotionCode.cs" />
+    <Compile Include="Entities\Subscription.cs" />
     <Compile Include="Enums\MultipleChoiceViewType.cs" />
     <Compile Include="Extenstions\%40EntityExtensions.cs" />
     <Compile Include="DAL\CalendarsRepository.cs" />
@@ -372,6 +378,10 @@
     <Compile Include="Migrations\201706172156121_Add_userAccess_fields.Designer.cs">
       <DependentUpon>201706172156121_Add_userAccess_fields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201706221853557_Add_subscription_models.cs" />
+    <Compile Include="Migrations\201706221853557_Add_subscription_models.Designer.cs">
+      <DependentUpon>201706221853557_Add_subscription_models.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -385,6 +395,7 @@
     <Compile Include="Services\Identity\EmailService.cs" />
     <Compile Include="Services\Identity\SmsService.cs" />
     <Compile Include="Services\Identity\ApplicationUserStore.cs" />
+    <Compile Include="Services\SubscriptionService.cs" />
     <Compile Include="Services\SurveyProvider.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -484,6 +495,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201706172156121_Add_userAccess_fields.resx">
       <DependentUpon>201706172156121_Add_userAccess_fields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201706221853557_Add_subscription_models.resx">
+      <DependentUpon>201706221853557_Add_subscription_models.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

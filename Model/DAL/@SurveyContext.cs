@@ -47,6 +47,9 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<Settings> Settings { set; get; }
         public DbSet<Language> Languages { set; get; }
         public DbSet<Calendar> Calendars { set; get; }
+        public DbSet<PromotionCode> PromotionCodes { get; set; }
+        public DbSet<PaymentRecord> PaymentRecords { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
 
         #endregion
 
@@ -311,9 +314,17 @@ namespace LightMethods.Survey.Models.DAL
 
             modelBuilder.Entity<OrganisationWorker>().ToTable("OrganisationWorkers");
 
+            modelBuilder.Entity<Organisation>()
+                .HasMany(x => x.PromotionCodes)
+                .WithRequired(x => x.Organisation)
+                .HasForeignKey(x => x.OrganisationId)
+                .WillCascadeOnDelete();
+
             OnDocumentModelCreating(modelBuilder);
 
             OnFormTemplateCreating(modelBuilder);
+
+            OnSubscriptionModelCreating(modelBuilder);
         }
 
         private void OnFormTemplateCreating(DbModelBuilder modelBuilder)
@@ -406,6 +417,73 @@ namespace LightMethods.Survey.Models.DAL
 
             modelBuilder.Entity<CommentaryDocument>()
                 .ToTable("CommentaryDocuments");
+        }
+
+        private void OnSubscriptionModelCreating(DbModelBuilder modelBuilder)
+        {
+            // configure PromotionCode
+            modelBuilder.Entity<PromotionCode>()
+                .Property(x => x.Title)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            modelBuilder.Entity<PromotionCode>()
+                .Property(x => x.Code)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .IsRequired();
+
+            modelBuilder.Entity<PromotionCode>()
+                .HasRequired(x => x.Organisation)
+                .WithMany(x => x.PromotionCodes)
+                .HasForeignKey(x => x.OrganisationId)
+                .WillCascadeOnDelete();
+
+            modelBuilder.Entity<PromotionCode>()
+                .HasOptional(x => x.PaymentRecord)
+                .WithOptionalPrincipal(x => x.PromotionCode)
+                .WillCascadeOnDelete(false);
+
+            // configure PaymentRecord
+            modelBuilder.Entity<PaymentRecord>()
+                .Property(x => x.Reference)
+                .HasMaxLength(50);
+
+            modelBuilder.Entity<PaymentRecord>()
+                .Property(x => x.Note);
+
+            modelBuilder.Entity<PaymentRecord>()
+                .HasRequired(x => x.OrgUser)
+                .WithMany(x => x.Payments)
+                .HasForeignKey(x => x.OrgUserId)
+                .WillCascadeOnDelete();
+
+            modelBuilder.Entity<PaymentRecord>()
+                .HasMany(x => x.Subscriptions)
+                .WithRequired(x => x.PaymentRecord)
+                .HasForeignKey(x => x.PaymentRecordId)
+                .WillCascadeOnDelete();
+
+            modelBuilder.Entity<PaymentRecord>()
+                .HasOptional(x => x.PromotionCode)
+                .WithOptionalDependent(x => x.PaymentRecord)
+                .WillCascadeOnDelete(false);
+
+            // configure Subscription
+            modelBuilder.Entity<Subscription>()
+                .Property(x => x.Note);
+
+            modelBuilder.Entity<Subscription>()
+                .HasRequired(x => x.PaymentRecord)
+                .WithMany(x => x.Subscriptions)
+                .HasForeignKey(x => x.PaymentRecordId)
+                .WillCascadeOnDelete();
+
+            modelBuilder.Entity<Subscription>()
+                .HasRequired(x => x.OrgUser)
+                .WithMany(x => x.Subscriptions)
+                .HasForeignKey(x => x.OrgUserId)
+                .WillCascadeOnDelete(false);
         }
     }
 }

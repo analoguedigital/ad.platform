@@ -15,6 +15,7 @@ module App.Models {
         postcode: string;
         defaultLanguageId: string;
         defaultCalendarId: string;
-
+        subscriptionEnabled: boolean;
+        subscriptionMonthlyRate?: number;
     }
 }

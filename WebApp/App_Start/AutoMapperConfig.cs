@@ -120,6 +120,10 @@ namespace WebApi
             Mapper.CreateMap<OrgUserType, OrgUserTypeDTO>().ReverseMap();
 
             Mapper.CreateMap<DataList, GetDataListsResItemDto>();
+
+            Mapper.CreateMap<PaymentRecord, PaymentRecordDTO>().ReverseMap();
+            Mapper.CreateMap<PromotionCode, PromotionCodeDTO>().ReverseMap();
+            Mapper.CreateMap<Subscription, SubscriptionDTO>().ReverseMap();
         }
     }
 }

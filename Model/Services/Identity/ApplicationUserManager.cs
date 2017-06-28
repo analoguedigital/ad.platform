@@ -137,5 +137,18 @@ namespace LightMethods.Survey.Models.Services.Identity
         {
             return this.AddToRoles(userId, roles);
         }
+
+        public override Task<IList<string>> GetRolesAsync(Guid userId)
+        {
+            var orgUser = this.FindById(userId) as OrgUser;
+            if (orgUser != null)
+            {
+                var subscriptionService = new SubscriptionService(orgUser, new UnitOfWork(new SurveyContext()));
+                if (!subscriptionService.HasValidSubscription(userId))
+                    return Task.FromResult<IList<string>>(new List<string>(new string[] { Role.RESTRICTED_USER }));
+            }
+
+            return base.GetRolesAsync(userId);
+        }
     }
 }
