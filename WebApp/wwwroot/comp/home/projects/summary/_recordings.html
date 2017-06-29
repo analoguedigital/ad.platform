@@ -1,6 +1,6 @@
 ﻿<div class="box">
     <div class="box-title">
-        <h5>Recordings ({{ctrl.records.length}} records across {{ctrl.getThreadsCount()}} threads)</h5>
+        <h5>Recordings ({{ctrl.displayedSurveys.length}} records across {{ctrl.getThreadsCount()}} threads)</h5>
         <div class="box-tools">
             <a title="Select All" ng-click="ctrl.selectAll()"><i class="fa fa-check-square-o"></i> Select All</a>
             <a title="Select None" ng-click="ctrl.selectNone()"><i class="fa fa-eraser"></i> Clear</a>
@@ -19,19 +19,19 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="record in ctrl.records track by record.id">
+                    <tr ng-repeat="survey in ctrl.displayedSurveys track by survey.id">
                         <td class="text-center">
                             <div class="checkbox table-checkbox">
-                                <input type="checkbox" id="record-{{record.id}}" ng-model="record.isChecked" />
-                                <label for="record-{{record.id}}"></label>
+                                <input type="checkbox" id="record-{{survey.id}}" ng-model="survey.isChecked" />
+                                <label for="record-{{survey.id}}"></label>
                             </div>
                         </td>
-                        <td>{{record.serial}}</td>
-                        <td>{{record.date | amDateFormat: 'DD/MM/YYYY'}}</td>
-                        <td>{{record.description}}</td>
+                        <td>{{survey.serial}}</td>
+                        <td>{{survey.date | amDateFormat: 'DD/MM/YYYY'}}</td>
+                        <td>{{survey.description}}</td>
                         <td valign="middle">
-                            <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(record.formTemplateId)}"></span>
-                            <span class="template-name">{{ctrl.getFormTemplate(record.formTemplateId)}}</span>
+                            <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(survey.formTemplateId)}"></span>
+                            <span class="template-name">{{ctrl.getFormTemplate(survey.formTemplateId)}}</span>
                         </td>
                     </tr>
                 </tbody>

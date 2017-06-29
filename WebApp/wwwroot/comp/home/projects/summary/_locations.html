@@ -3,6 +3,6 @@
         <h5>Locations <span ng-if="ctrl.locationCount">({{ctrl.locationCount}})</span></h5>
     </div>
     <div class="box-content">
-        <lm-locations id="survey-locations" form-templates="ctrl.threads" surveys="ctrl.records" location-count="ctrl.locationCount"></lm-locations>
+        <lm-locations id="survey-locations" form-templates="ctrl.selectedTemplates" surveys="ctrl.displayedSurveys" location-count="ctrl.locationCount"></lm-locations>
     </div>
 </div>

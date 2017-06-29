@@ -11,8 +11,9 @@
 
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        threads: Models.IFormTemplate[];
-        records: Models.ISurvey[];
+
+        displayedSurveys: Models.ISurvey[];
+        selectedTemplates: Models.IFormTemplate[];
 
         activate: () => void;
         clearSearch: () => void;
@@ -35,10 +36,13 @@
 
         formTemplates: Models.IFormTemplate[] = [];
         surveys: Models.ISurvey[] = [];
-        threads: Models.IFormTemplate[] = [];
-        records: Models.ISurvey[] = [];
+        displayedSurveys: Models.ISurvey[] = [];
+        selectedTemplates: Models.IFormTemplate[] = [];
 
-        static $inject: string[] = ["$scope", "$state", "$q", "$stateParams", "projectSummaryPrintSessionResource", "projectResource", "formTemplateResource", "surveyResource", "project", "toastr"];
+        static $inject: string[] = ["$scope", "$state", "$q", "$stateParams",
+            "projectSummaryPrintSessionResource", "projectResource",
+            "formTemplateResource", "surveyResource", "project",
+            "toastr", "projectSummaryService"];
 
         constructor(
             private $scope: ng.IScope,
@@ -50,7 +54,8 @@
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private project: Models.IProject,
-            private toastr: any) {
+            private toastr: any,
+            private projectSummaryService: Services.IProjectSummaryService) {
             this.activate();
         }
 
@@ -97,79 +102,22 @@
 
                 _.map(this.formTemplates, (t) => { t.isChecked = true });
 
+                this.projectSummaryService.formTemplates = this.formTemplates;
+                this.projectSummaryService.surveys = this.surveys;
+
                 this.applyFilters();
             });
         }
 
         applyFilters() {
-            // the recordings table is bound to this collection
-            this.records = [];
+            this.projectSummaryService.query = this.searchTerm;
+            this.projectSummaryService.fromDate = this.startDate;
+            this.projectSummaryService.toDate = this.endDate;
 
-            // select checked threads
-            this.threads = _.filter(this.formTemplates, (t) => { return t.isChecked == true });
-
-            // extract thread surveys
-            let surveys = [];
-            angular.forEach(this.threads, (t) => {
-                let filledForms = _.filter(this.surveys, (s) => { return s.formTemplateId == t.id });
-                angular.forEach(filledForms, (form) => { surveys.push(form); });
+            this.projectSummaryService.filter().then((result: Services.IProjectSummaryServiceResultView) => {
+                this.displayedSurveys = result.surveys;
+                this.selectedTemplates = result.templates;
             });
-
-            // apply filters and collect surveys
-            let collectedRecords = [];
-            let resultRecords = [];
-
-            // search term
-            if (this.searchTerm == undefined || this.searchTerm.length < 1) {
-                collectedRecords = surveys;
-            } else {
-                _.forEach(surveys, (survey: Models.ISurvey) => {
-                    if (_.includes(survey.serial.toString(), this.searchTerm))
-                        collectedRecords.push(survey);
-
-                    if (_.includes(survey.description, this.searchTerm))
-                        collectedRecords.push(survey);
-
-                    _.forEach(survey.formValues, (fm) => {
-                        if (fm.textValue && fm.textValue.length) {
-                            if (_.includes(fm.textValue, this.searchTerm)) {
-                                collectedRecords.push(survey);
-                            }
-                        }
-                    });
-                });
-            }
-
-            // date range filter
-            angular.forEach(collectedRecords, (survey: Models.ISurvey, index) => {
-                // has start date
-                let _surveyDate = survey.surveyDate.setHours(0, 0, 0, 0);
-
-                if (this.startDate == undefined && this.endDate == undefined) {
-                    resultRecords.push(survey);
-                }
-
-                if (this.startDate && this.endDate == undefined) {
-                    if (_surveyDate >= this.startDate.setHours(0, 0, 0, 0)) {
-                        resultRecords.push(survey);
-                    }
-                }
-
-                // has end date
-                if (this.endDate && this.startDate == undefined) {
-                    if (_surveyDate <= this.endDate.setHours(0, 0, 0, 0))
-                        resultRecords.push(survey);
-                }
-
-                // has date range
-                if (this.startDate && this.endDate) {
-                    if (_surveyDate >= this.startDate.setHours(0, 0, 0, 0) && _surveyDate <= this.endDate.setHours(0, 0, 0, 0))
-                        resultRecords.push(survey);
-                }
-            });
-
-            // this will be the displayed record
-            this.records = _.uniqBy(resultRecords, (rec: Models.ISurvey) => { return rec.id });
         }
 
         threadsChanged() {
@@ -192,13 +140,10 @@
             this.startDate = undefined;
             this.endDate = undefined;
             angular.forEach(this.formTemplates, (t) => { t.isChecked = false });
-
-            this.threads = [];
-            this.records = [];
         }
 
         print() {
-            let surveys = _.filter(this.records, (r) => { return r.isChecked });
+            let surveys = _.filter(this.displayedSurveys, (r) => { return r.isChecked });
             if (surveys.length < 1) {
                 this.toastr.info('Select desired records first', 'Print Surveys');
                 return false;
@@ -214,11 +159,15 @@
         }
 
         selectAll() {
-            _.map(this.records, (r) => { r.isChecked = true; });
+            _.forEach(this.displayedSurveys, (survey) => {
+                survey.isChecked = true;
+            });
         }
 
         selectNone() {
-            _.map(this.records, (r) => { r.isChecked = false; });
+            _.forEach(this.displayedSurveys, (survey) => {
+                survey.isChecked = false;
+            });
         }
 
         getFormTemplate(id: string) {
@@ -238,7 +187,7 @@
         }
 
         getThreadsCount() {
-            let templates = _.uniq(_.map(this.records, (r) => { return r.formTemplateId }));
+            let templates = _.uniq(_.map(this.displayedSurveys, (r) => { return r.formTemplateId }));
             return templates.length;
         }
 
