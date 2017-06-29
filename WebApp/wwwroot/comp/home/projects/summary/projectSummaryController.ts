@@ -1,6 +1,15 @@
 ﻿module App {
     "use strict";
 
+    interface IProjectSummaryControllerScope extends ng.IScope {
+        tableSearchTerm: string;
+        safeSurveys: Models.ISurvey[];
+        displayedSurveys: Models.ISurvey[];
+        currentPage: number;
+        numberOfPages: number;
+        pageSize: number;
+    }
+
     interface IProjectSummaryController {
         searchTerm: string;
         startDate: Date;
@@ -45,7 +54,7 @@
             "toastr", "projectSummaryService"];
 
         constructor(
-            private $scope: ng.IScope,
+            private $scope: IProjectSummaryControllerScope,
             private $state: ng.ui.IStateService,
             private $q: ng.IQService,
             private $stateParams: ng.ui.IStateParamsService,
@@ -105,6 +114,8 @@
                 this.projectSummaryService.formTemplates = this.formTemplates;
                 this.projectSummaryService.surveys = this.surveys;
 
+                this.$scope.safeSurveys = this.surveys;
+
                 this.applyFilters();
             });
         }
@@ -117,6 +128,8 @@
             this.projectSummaryService.filter().then((result: Services.IProjectSummaryServiceResultView) => {
                 this.displayedSurveys = result.surveys;
                 this.selectedTemplates = result.templates;
+
+                this.$scope.displayedSurveys = this.displayedSurveys;
             });
         }
 
