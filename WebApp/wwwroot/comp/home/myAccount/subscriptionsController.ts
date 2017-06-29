@@ -3,11 +3,16 @@ module App {
     "use strict";
 
     interface ISubscriptionsControllerScope extends ng.IScope {
+        payments: Models.IPaymentRecord[];
+        displayedPayments: Models.IPaymentRecord[];
 
+        searchTerm: string;
+        currentPage: number;
+        numberOfPages: number;
+        pageSize: number;
     }
 
     interface ISubscriptionsController {
-        payments: Models.IPaymentRecord[];
         subscriptions: Models.ISubscription[];
         latestSubscription?: Date;
         isRestricted: boolean;
@@ -17,7 +22,6 @@ module App {
     }
 
     class SubscriptionsController implements ISubscriptionsController {
-        payments: Models.IPaymentRecord[] = [];
         subscriptions: Models.ISubscription[] = [];
         latestSubscription?: Date;
         isRestricted: boolean;
@@ -43,7 +47,10 @@ module App {
             let userId = this.userContext.current.user.id;
 
             this.paymentResource.query().$promise
-                .then((payments) => { this.payments = payments; });
+                .then((payments) => {
+                    this.$scope.payments = payments;
+                    this.$scope.displayedPayments = [].concat(this.$scope.payments);
+                });
 
             this.subscriptionResource.getLatest(
                 (res) => {
