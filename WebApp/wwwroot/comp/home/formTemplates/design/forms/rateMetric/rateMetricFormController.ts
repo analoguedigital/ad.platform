@@ -83,6 +83,14 @@ module App {
                 }
             }
 
+            // normalize min/max values
+            if (this.$scope.metric.isAdHoc && this.$scope.metric.adHocItems.length) {
+                let min = _.minBy(this.$scope.metric.adHocItems, (item) => { return item.value; });
+                let max = _.maxBy(this.$scope.metric.adHocItems, (item) => { return item.value; });
+                this.$scope.metric.minValue = min.value;
+                this.$scope.metric.maxValue = max.value;
+            }
+
             this.$uibModalInstance.dismiss('cancel');
         };
     }

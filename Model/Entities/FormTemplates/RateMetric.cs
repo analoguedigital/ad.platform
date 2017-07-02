@@ -58,7 +58,7 @@ namespace LightMethods.Survey.Models.Entities
         public IEnumerable<ValidationResult> ValidateDefaultValue()
         {
 
-            if (this.DataListId == null)
+            if (!this.DataList.Items.Any())
             {
                 // numeric range
                 if (this.DefaultValue < this.MinValue || this.DefaultValue > this.MaxValue)
