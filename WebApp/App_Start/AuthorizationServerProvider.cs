@@ -46,7 +46,6 @@ namespace WebApi
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
             var result = await UserManager.FindAsync(context.UserName, context.Password);
@@ -56,11 +55,10 @@ namespace WebApi
                 return;
             }
 
-            var orgUser = result as LightMethods.Survey.Models.Entities.OrgUser;
-            if (orgUser != null)
+            if (result is OrgUser)
             {
-                if (OrgUserHasAccess(orgUser))
-                    await GenerateUserIdentity(context, orgUser);
+                if (OrgUserHasAccess(result as OrgUser))
+                    await GenerateUserIdentity(context, result as OrgUser);
                 else
                 {
                     context.SetError("invalid_grant", "You do not have access to this software.");
@@ -83,10 +81,16 @@ namespace WebApi
 
         private bool OrgUserHasAccess(OrgUser user)
         {
-            if (this.HttpContext.Request.UrlReferrer.Host == this.HttpContext.Request.Url.Host)
-                if (user.IsWebUser) return true;
+            Uri referer = this.HttpContext.Request.UrlReferrer;
+            if (referer != null)
+            {
+                if (referer.Host == this.HttpContext.Request.Url.Host)
+                    return user.IsWebUser;
 
-            return false;
+                return false;
+            }
+
+            return user.IsMobileUser;
         }
     }
 }
