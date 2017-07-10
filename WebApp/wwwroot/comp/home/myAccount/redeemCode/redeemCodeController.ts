@@ -40,6 +40,10 @@
                     if (err.status == 404) {
                         this.toastr.error('Promotion Code is not valid!');
                     }
+
+                    if (err.status == 403) {
+                        this.toastr.error(err.data);
+                    }
                 });
         }
 

@@ -1,22 +1,33 @@
-﻿<div class="table-responsive">
-    <table class="table table-hover">
-        <thead>
-            <tr>
-                <th class="text-center">Date</th>
-                <th class="text-center">Amount</th>
-                <th class="text-center">Reference</th>
-                <th class="text-center">Promotion Code</th>
-                <th>Note</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="payment in ctrl.payments track by $index">
-                <td class="text-center">{{payment.date | amDateFormat: 'DD/MM/YYYY'}}</td>
-                <td class="text-center">{{payment.amount | currency : '&pound;'}}</td>
-                <td class="text-center">{{payment.reference}}</td>
-                <td class="text-center">{{payment.promotionCode.code}}</td>
-                <td>{{payment.note}}</td>
-            </tr>
-        </tbody>
-    </table>
+﻿<div st-table="displayedPayments" st-safe-src="payments">
+    <div>
+        <form name="search-form" class="form-inline">
+            <lm-form-group label="Search: ">
+                <input st-search type="text" id="search" name="search" ng-model="ctrl.searchTerm" />
+            </lm-form-group>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Amount</th>
+                    <th class="text-center">Reference</th>
+                    <th class="text-center">Promotion Code</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="payment in displayedPayments track by $index">
+                    <td class="text-center">{{payment.date | amDateFormat: 'DD/MM/YYYY'}}</td>
+                    <td class="text-center">{{payment.amount | currency : '&pound;'}}</td>
+                    <td class="text-center">{{payment.reference}}</td>
+                    <td class="text-center">{{payment.promotionCode.code}}</td>
+                    <td>{{payment.note}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
 </div>
