@@ -1,41 +1,52 @@
 ﻿<div class="box">
     <div class="box-title">
-        <h5>Recordings ({{ctrl.records.length}} records across {{ctrl.getThreadsCount()}} threads)</h5>
+        <h5>Recordings ({{ctrl.displayedSurveys.length}} records across {{ctrl.getThreadsCount()}} threads)</h5>
         <div class="box-tools">
             <a title="Select All" ng-click="ctrl.selectAll()"><i class="fa fa-check-square-o"></i> Select All</a>
             <a title="Select None" ng-click="ctrl.selectNone()"><i class="fa fa-eraser"></i> Clear</a>
         </div>
     </div>
     <div class="box-content">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th class="text-center" width="60"></th>
-                        <th>Serial</th>
-                        <th>Date</th>
-                        <th>Description</th>
-                        <th valign="middle"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="record in ctrl.records track by record.id">
-                        <td class="text-center">
-                            <div class="checkbox table-checkbox">
-                                <input type="checkbox" id="record-{{record.id}}" ng-model="record.isChecked" />
-                                <label for="record-{{record.id}}"></label>
-                            </div>
-                        </td>
-                        <td>{{record.serial}}</td>
-                        <td>{{record.date | amDateFormat: 'DD/MM/YYYY'}}</td>
-                        <td>{{record.description}}</td>
-                        <td valign="middle">
-                            <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(record.formTemplateId)}"></span>
-                            <span class="template-name">{{ctrl.getFormTemplate(record.formTemplateId)}}</span>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys">
+            <div>
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" ng-model="tableSearchTerm" />
+                    </lm-form-group>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center" width="60"></th>
+                            <th>Serial</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th valign="middle"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="survey in ctrl.displayedSurveys track by survey.id">
+                            <td class="text-center">
+                                <div class="checkbox table-checkbox">
+                                    <input type="checkbox" id="record-{{survey.id}}" ng-model="survey.isChecked" />
+                                    <label for="record-{{survey.id}}"></label>
+                                </div>
+                            </td>
+                            <td>{{survey.serial}}</td>
+                            <td>{{survey.date | amDateFormat: 'DD/MM/YYYY'}}</td>
+                            <td>{{survey.description}}</td>
+                            <td valign="middle">
+                                <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(survey.formTemplateId)}"></span>
+                                <span class="template-name">{{ctrl.getFormTemplate(survey.formTemplateId)}}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
         </div>
     </div>
 </div>

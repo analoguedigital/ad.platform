@@ -448,6 +448,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\redeemCode\redeemCodeController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptions.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptionsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryService.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
