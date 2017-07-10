@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="css/index.css" />
     <!--<link href="lib/bootstrap-rtl/dist/css/bootstrap-rtl.css" rel="stylesheet" />-->
 </head>
-<body ng-controller="indexController" ng-class="bodyCssClass">
+<body ng-controller="indexController" class="{{$state.current.data.bodyCssClass}}">
 
     <!--[if lt IE 10]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>

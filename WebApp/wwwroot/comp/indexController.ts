@@ -16,15 +16,11 @@ module App {
 
     class IndexController implements IIndexController {
 
-        static $inject: string[] = ["$scope", "$rootScope", "$state", "userContextService"];
+        static $inject: string[] = ["$scope", "userContextService"];
         constructor(private $scope: IIndexControllerScope,
-            private $rootScope: IIndexControllerRootScope,
-            private $state: angular.ui.IStateService,
             userContext: App.Services.IUserContextService) {
 
             $scope.title = "Index";
-            if ($state.current.data)
-                $rootScope.bodyCssClass = $state.current.data.bodyCssClass;
 
             this.activate(userContext.current.user !== null);
         }
