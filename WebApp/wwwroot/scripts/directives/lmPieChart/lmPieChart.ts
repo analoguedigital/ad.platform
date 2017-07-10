@@ -13,6 +13,7 @@
         labels: string[];
         colors: string[];
         options: any;
+        animation: string;
     }
 
     interface IlmPieChartAttributes extends ng.IAttributes {
@@ -29,26 +30,42 @@
             scope: {
                 id: '@',
                 formTemplates: '=',
-                surveys: '='
+                surveys: '=',
+                animation: '@'
             }
         };
-        
+
         function link(scope: IlmPieChartScope,
             element: ng.IAugmentedJQuery,
             attrs: IlmPieChartAttributes,
             ctrl: any,
             transclude: ng.ITranscludeFunction) {
 
-            scope.options = {
-                type: 'pie',
-                responsive: false,
-                maintainAspectRatio: true,
-                showTooltips: true,
-                legend: {
-                    display: true,
-                    position: 'bottom'
-                }
-            };
+            let animationEnabled: boolean = false;
+            if (scope.animation && scope.animation == 'true') {
+                scope.options = {
+                    type: 'pie',
+                    responsive: false,
+                    maintainAspectRatio: true,
+                    showTooltips: true,
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                };
+            } else {
+                scope.options = {
+                    type: 'pie',
+                    responsive: false,
+                    maintainAspectRatio: true,
+                    showTooltips: true,
+                    animation: false,
+                    legend: {
+                        display: true,
+                        position: 'bottom'
+                    }
+                };
+            }
 
             scope.$watchGroup(['formTemplates', 'surveys'], () => {
                 scope.data = [];
@@ -63,7 +80,7 @@
                         let records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId == template.id; });
                         scope.data.push(records.length);
                     }
-                }); 
+                });
             });
         }
     }
