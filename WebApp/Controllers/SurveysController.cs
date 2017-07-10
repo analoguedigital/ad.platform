@@ -179,6 +179,7 @@ namespace WebApi.Controllers
                         Trace.TraceInformation("Property: {0} Error: {1}", validationError.PropertyName, validationError.ErrorMessage);
                     }
                 }
+                throw dbEx;
             }
 
             return BadRequest();
