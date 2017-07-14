@@ -3,6 +3,7 @@
         <p>{{dateToString(formValue.dateValue)}}</p>
     </div>
     <div class="col-md-12" ng-if="!isPersian">
-        <p>{{formValue.dateValue | amDateFormat:'L'}}</p>
+        <p ng-show="metric.hasTimeValue === null">{{formValue.dateValue | amDateFormat:'L'}}</p>
+        <p ng-show="metric.hasTimeValue">{{formValue.dateValue | amDateFormat:'DD/MM/YYYY hh:mm a'}}</p>
     </div>
 </div>
