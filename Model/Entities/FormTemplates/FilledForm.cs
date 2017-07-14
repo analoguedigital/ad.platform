@@ -85,6 +85,9 @@ namespace LightMethods.Survey.Models.Entities
         }
 
         [NotMapped]
+        public bool DateHasTimeValue { get; set; }
+
+        [NotMapped]
         public DateTime Date
         {
             get
@@ -100,7 +103,12 @@ namespace LightMethods.Survey.Models.Entities
                             if (formValue != null)
                             {
                                 if (formValue.DateValue.HasValue)
+                                {
+                                    var dateMetric = metric as DateMetric;
+                                    this.DateHasTimeValue = dateMetric.HasTimeValue.HasValue && dateMetric.HasTimeValue.Value;
+
                                     return formValue.DateValue.Value;
+                                }
                             }
                         }
                     }
