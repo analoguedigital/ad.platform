@@ -17,6 +17,8 @@ namespace LightMethods.Survey.Models.Entities
         [NotMapped]
         public DateTime? Value { set; get; }
 
+        public bool? HasTimeValue { get; set; }
+
         public DateMetric()
         {
         }
