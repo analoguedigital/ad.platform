@@ -25,7 +25,7 @@
             </select>
         </lm-form-group>
         <lm-form-group label="Desc. Format: ">
-            <tags-input ng-model="ctrl.selectedTags" on-tag-added="ctrl.updateDescriptionFormat()" on-tag-removed="ctrl.updateDescriptionFormat()">
+            <tags-input ng-model="ctrl.selectedTags" on-tag-added="ctrl.updateDescriptionFormat()" on-tag-removed="ctrl.updateDescriptionFormat()" replace-spaces-with-dashes="false">
                 <auto-complete source="ctrl.loadTags($query)"></auto-complete>
             </tags-input>
 
