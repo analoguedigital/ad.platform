@@ -16,6 +16,7 @@ module App.Models {
         public isSubmitted: boolean;
         public description: string;
         public date: Date;
+        public dateHasTimeValue: boolean;
 
         constructor(filledById: string, projectId: string, formTemplateId: string) {
 
