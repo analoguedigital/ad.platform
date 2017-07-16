@@ -203,7 +203,7 @@ namespace LightMethods.Survey.Models.Migrations
                 category1.AddMetric(metric6);
                 context.RateMetrics.AddOrUpdate(metric6);
 
-                var metric7 = new DateMetric() { Id = Guid.Parse("68ce9679-14b5-4e00-97d6-38ad6db54f54"), ShortTitle = "d1", Description = "Date of Event", Order = category1.GetMaxMetricOrder() };
+                var metric7 = new DateMetric() { Id = Guid.Parse("68ce9679-14b5-4e00-97d6-38ad6db54f54"), ShortTitle = "d1", Description = "Date of Event", Order = category1.GetMaxMetricOrder(), HasTimeValue = false };
                 category1.AddMetric(metric7);
                 context.DateMetrics.AddOrUpdate(metric7);
 

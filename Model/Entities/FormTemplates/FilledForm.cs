@@ -105,7 +105,7 @@ namespace LightMethods.Survey.Models.Entities
                                 if (formValue.DateValue.HasValue)
                                 {
                                     var dateMetric = metric as DateMetric;
-                                    this.DateHasTimeValue = dateMetric.HasTimeValue.HasValue && dateMetric.HasTimeValue.Value;
+                                    this.DateHasTimeValue = dateMetric.HasTimeValue;
 
                                     return formValue.DateValue.Value;
                                 }
