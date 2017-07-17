@@ -4,6 +4,6 @@ namespace WebApi.Models
 {
     public class DateMetricDTO : MetricDTO
     {
-        public bool? HasTimeValue { get; set; }
+        public bool HasTimeValue { get; set; }
     }
 }

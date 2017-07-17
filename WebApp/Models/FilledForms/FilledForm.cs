@@ -33,7 +33,5 @@ namespace WebApi.Models
 
         public DateTime Date { get; set; }
 
-        public bool DateHasTimeValue { get; set; }
-
     }
 }

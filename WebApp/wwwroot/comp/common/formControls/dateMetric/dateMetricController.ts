@@ -44,7 +44,7 @@ module App {
             }
 
             if (this.$scope.metric.hasTimeValue)
-                this.$scope.dateTimeFormat = "dd/MM/yyyy HH:mm A";  
+                this.$scope.dateTimeFormat = "dd/MM/yyyy HH:mm a";  
         }
     }
 
