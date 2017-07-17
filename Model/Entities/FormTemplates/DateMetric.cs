@@ -31,8 +31,13 @@ namespace LightMethods.Survey.Models.Entities
 
         public override string GetStringValue(FormValue value)
         {
-            if(value.DateValue.HasValue)
-                return value.DateValue.Value.ToString("dd/MM/yyyy");
+            if (value.DateValue.HasValue)
+            {
+                if (value.DateValue.Value.TimeOfDay == TimeSpan.Zero)
+                    return value.DateValue.Value.ToString("dd/MM/yyyy");
+                else
+                    return value.DateValue.Value.ToString("dd/MM/yyyy hh:mm tt");
+            }
 
             return string.Empty;
         }

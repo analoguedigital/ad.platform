@@ -43,8 +43,8 @@ module App {
                 this.$scope.formValue = this.$scope.formValues[0];
             }
 
-            if (this.$scope.metric.hasTimeValue !== null && this.$scope.metric.hasTimeValue === true)
-                this.$scope.dateTimeFormat = "dd/MM/yyyy HH:mm";
+            if (this.$scope.metric.hasTimeValue)
+                this.$scope.dateTimeFormat = "dd/MM/yyyy HH:mm A";  
         }
     }
 
