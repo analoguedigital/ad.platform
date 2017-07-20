@@ -48,37 +48,40 @@ namespace LightMethods.Survey.Models.Entities
                 if (!string.IsNullOrEmpty(this._description))
                     return this._description;
 
-                var format = this.FormTemplate.DescriptionFormat;
-                if (string.IsNullOrEmpty(format))
-                    return string.Empty;
-
-                var matches = this.descriptionFormatPattern.Matches(format);
-                var names = new List<string>();
-                foreach (Match match in matches)
-                    names.Add(match.Groups[1].Value);
-
-                var foundMetrics = new List<Metric>();
-                foreach (var metricGroup in this.FormTemplate.MetricGroups)
+                if (this.FormTemplate != null)
                 {
-                    foreach (var metric in metricGroup.Metrics)
-                    {
-                        if (names.Contains(metric.ShortTitle.ToLower()))
-                            foundMetrics.Add(metric);
-                    }
-                }
+                    var format = this.FormTemplate.DescriptionFormat;
+                    if (string.IsNullOrEmpty(format))
+                        return string.Empty;
 
-                if (foundMetrics.Any())
-                {
-                    var values = new List<string>();
-                    foreach (var metric in foundMetrics)
+                    var matches = this.descriptionFormatPattern.Matches(format);
+                    var names = new List<string>();
+                    foreach (Match match in matches)
+                        names.Add(match.Groups[1].Value);
+
+                    var foundMetrics = new List<Metric>();
+                    foreach (var metricGroup in this.FormTemplate.MetricGroups)
                     {
-                        var formValue = this.FormValues.Where(fm => fm.MetricId == metric.Id).FirstOrDefault();
-                        if (formValue != null)
-                            values.Add(formValue.ToString());
+                        foreach (var metric in metricGroup.Metrics)
+                        {
+                            if (names.Contains(metric.ShortTitle.ToLower()))
+                                foundMetrics.Add(metric);
+                        }
                     }
 
-                    this._description = string.Join(" - ", values);
-                    return this._description;
+                    if (foundMetrics.Any())
+                    {
+                        var values = new List<string>();
+                        foreach (var metric in foundMetrics)
+                        {
+                            var formValue = this.FormValues.Where(fm => fm.MetricId == metric.Id).FirstOrDefault();
+                            if (formValue != null)
+                                values.Add(formValue.ToString());
+                        }
+
+                        this._description = string.Join(" - ", values);
+                        return this._description;
+                    }
                 }
 
                 return string.Empty;
@@ -90,7 +93,7 @@ namespace LightMethods.Survey.Models.Entities
         {
             get
             {
-                if (this.FormTemplate.CalendarDateMetricId.HasValue)
+                if (this.FormTemplate != null && this.FormTemplate.CalendarDateMetricId.HasValue)
                 {
                     foreach (var metricGroup in this.FormTemplate.MetricGroups)
                     {
