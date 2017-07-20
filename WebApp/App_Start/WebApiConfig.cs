@@ -35,7 +35,7 @@ namespace WebApi
                 new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
 
             formatter.SerializerSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
-            formatter.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Local;
+            formatter.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
         }
     }
 }
