@@ -391,6 +391,7 @@
     <Compile Include="Entities\SuperUser.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Services\DataTableProvider.cs" />
+    <Compile Include="Services\DateTimeService.cs" />
     <Compile Include="Services\FormDataProvider.cs" />
     <Compile Include="Services\Identity\ApplicationRoleManager.cs" />
     <Compile Include="Services\Identity\ApplicationRoleStore.cs" />
