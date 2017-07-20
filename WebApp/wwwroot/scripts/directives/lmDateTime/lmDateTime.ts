@@ -24,21 +24,15 @@ module App {
             }
         };
 
-
         function link(
             scope: IlmDateTimeScope,
             element: ng.IAugmentedJQuery,
             ctrl: any) {
 
-            let dateValue = new Date(scope.value);
-            let hours = dateValue.getHours();
-            let minutes = dateValue.getMinutes();
-            let result: string;
-
-            if (hours > 0 || minutes > 0)
-                result = moment(scope.value).format('DD/MM/YYYY hh:mm A');
-            else
-                result = moment(scope.value).format('DD/MM/YYYY');
+            var hours = scope.value.getHours();
+            var minutes = scope.value.getMinutes();
+            let formatString = (hours > 0 || minutes > 0) ? 'L LT' : 'L';
+            let result = moment(scope.value).format(formatString);
 
             scope.resultString = result;
         }

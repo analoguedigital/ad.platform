@@ -10,24 +10,11 @@ module App.Resources {
     export function SurveyResource($resource: ng.resource.IResourceService): ISurveyResource {
 
         return <ISurveyResource>$resource('/api/surveys/:id', { id: '@id' }, {
-            'get': {
-                method: 'GET',
-                interceptor: {
-                    response: (response) => {
-                        _.each(response.data.formValues, (formValue: any) => {
-                            if (formValue.dateValue !== undefined && formValue.dateValue !== null && formValue.dateValue !== '') {
-                                formValue.dateValue = new Date(formValue.dateValue);
-                            }
-                        });
-                        return response.data;
-                    }
-                }
-            },
+            'get': { method: 'GET' },
             'update': { method: 'PUT' }
         });
 
     }
-
 
     angular.module("app").factory("surveyResource", SurveyResource);
 }
