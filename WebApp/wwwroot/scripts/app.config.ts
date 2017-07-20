@@ -72,8 +72,18 @@
             var match;
             // Check for string properties which look like dates.
             if (typeof value === "string" && (match = value.match(regexIso8601))) {
-                var utcDate = match[0];
-                var localDate = moment.utc(utcDate).local().toDate();
+                var dateValue = match[0];   // ISO-8601 string
+
+                var utcDate = moment.utc(dateValue);
+                var hours = utcDate.hour();
+                var minutes = utcDate.minutes();
+                var localDate = utcDate.local().toDate();
+
+                if (hours === 0 && minutes === 0) {
+                    localDate.setHours(0);
+                    localDate.setMinutes(0);
+                }
+
                 input[key] = localDate;
             } else if (typeof value === "object") {
                 // Recurse into object
