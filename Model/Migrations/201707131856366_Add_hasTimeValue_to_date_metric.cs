@@ -8,7 +8,7 @@ namespace LightMethods.Survey.Models.Migrations
         public override void Up()
         {
             AddColumn("dbo.Metrics", "HasTimeValue", c => c.Boolean());
-            Sql("UPDATE dbo.Metrics SET HasTimeValue = 0");
+            Sql("UPDATE dbo.Metrics SET HasTimeValue = 0 WHERE Discriminator = 'DateMetric'");
         }
 
         public override void Down()
