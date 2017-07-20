@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.DTO
 {
@@ -21,8 +22,9 @@ namespace LightMethods.Survey.Models.DTO
 
         public ExportToExcel()
         {
-            StartDate = DateTime.Now.AddMonths(-1);
-            EndDate = DateTime.Now;
+            StartDate = DateTimeService.UtcNow.AddMonths(-1);
+            EndDate = DateTimeService.UtcNow;
+
         }
     }
 }

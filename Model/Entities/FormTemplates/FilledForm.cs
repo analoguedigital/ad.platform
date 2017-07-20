@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using LightMethods.Survey.Models.DAL;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
+using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -112,7 +113,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public FilledForm()
         {
-            SurveyDate = DateTime.Now;
+            SurveyDate = DateTimeService.UtcNow;
             FormValues = new List<FormValue>();
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public static void Archive(this IArchivable obj)
         {
-            obj.DateArchived = DateTime.Now;
+            obj.DateArchived = DateTimeService.UtcNow;
         }
 
         public static IEnumerable<T> NotArchived<T>(this IEnumerable<T> objects) where T : IArchivable

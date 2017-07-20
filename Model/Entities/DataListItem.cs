@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -50,7 +51,7 @@ namespace LightMethods.Survey.Models.Entities
                 Value = Value,
                 Order = Order,
 // TODO: ATTRibues
-                DateArchived = DateArchived.HasValue ? DateTime.Now : (DateTime?)null
+                DateArchived = DateArchived.HasValue ? DateTimeService.UtcNow : (DateTime?)null
             };
 
         }

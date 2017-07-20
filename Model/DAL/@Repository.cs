@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using LightMethods.Survey.Models.Entities;
 using AppHelper;
 using AutoMapper;
+using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.DAL
 {
@@ -79,7 +80,7 @@ namespace LightMethods.Survey.Models.DAL
                 // New entity
                 entity.Id = Guid.NewGuid();
                 if (entity is Entity)
-                    (entity as Entity).DateCreated = (entity as Entity).DateUpdated = DateTime.Now;
+                    (entity as Entity).DateCreated = (entity as Entity).DateUpdated = DateTimeService.UtcNow;
 
                 Entities.Add(entity);
 
@@ -93,7 +94,7 @@ namespace LightMethods.Survey.Models.DAL
                     Context.Entry(entity).State = EntityState.Modified;
 
                 if (entity is Entity && entry.State == EntityState.Modified)
-                    (entity as Entity).DateUpdated = DateTime.Now;
+                    (entity as Entity).DateUpdated = DateTimeService.UtcNow;
 
             }
         }
@@ -149,7 +150,7 @@ namespace LightMethods.Survey.Models.DAL
             {
                 Map(newSet.Single(i => i.Id == d.Id), d);
                 if (d is Entity && Context.Entry(d).State == EntityState.Modified)
-                    (d as Entity).DateUpdated = DateTime.Now;
+                    (d as Entity).DateUpdated = DateTimeService.UtcNow;
             });
             
             itemsToDelete.ForEach(d => Delete(d));
