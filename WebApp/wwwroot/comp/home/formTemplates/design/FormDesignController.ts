@@ -154,12 +154,25 @@ module App {
         }
 
         openEditForm() {
-            // gate date metric for CalendarDateMetric dropdown.
-            let metricOptions = [];
+            // get calendarDate metrics
+            let calendarDateMetrics = [];
             _.forEach(this.formTemplate.metricGroups, (mg) => {
                 _.forEach(mg.metrics, (m) => {
                     if (_.toLower(m.type) == "datemetric") {
-                        metricOptions.push({
+                        calendarDateMetrics.push({
+                            id: m.id,
+                            title: m.shortTitle
+                        });
+                    }
+                });
+            });
+
+            // get timelineBar metrics
+            let timelineBarMetrics = [];
+            _.forEach(this.formTemplate.metricGroups, (mg) => {
+                _.forEach(mg.metrics, (m) => {
+                    if (_.toLower(m.type) == "ratemetric") {
+                        timelineBarMetrics.push({
                             id: m.id,
                             title: m.shortTitle
                         });
@@ -177,8 +190,11 @@ module App {
                     formTemplate: () => {
                         return this.formTemplate;
                     },
-                    metricOptions: () => {
-                        return metricOptions;
+                    calendarDateMetrics: () => {
+                        return calendarDateMetrics;
+                    },
+                    timelineBarMetrics: () => {
+                        return timelineBarMetrics;
                     }
                 }
             });
