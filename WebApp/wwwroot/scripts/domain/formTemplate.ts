@@ -15,5 +15,6 @@ module App.Models {
         isChecked: boolean;
         calendarDateMetricId: string;
         descriptionFormat: string;
+        timelineBarMetricId: string;
     }
 }
