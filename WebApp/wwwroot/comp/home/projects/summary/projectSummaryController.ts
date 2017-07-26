@@ -1,4 +1,7 @@
-﻿module App {
+﻿declare var moment: any;
+declare var Chart: any;
+
+module App {
     "use strict";
 
     interface IProjectSummaryControllerScope extends ng.IScope {
