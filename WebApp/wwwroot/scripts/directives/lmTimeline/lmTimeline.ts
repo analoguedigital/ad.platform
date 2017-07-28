@@ -20,8 +20,8 @@
         
     }
 
-    lmTimeline.$inject = [];
-    function lmTimeline(): IlmTimeline {
+    lmTimeline.$inject = ['$rootScope'];
+    function lmTimeline($rootScope: ng.IRootScopeService): IlmTimeline {
         return {
             restrict: "E",
             replace: true,
@@ -101,8 +101,6 @@
                 });
 
                 scope.chartDatasets = datasets;
-
-                renderTimelineChart();
             }
 
             function renderTimelineChart() {
@@ -174,8 +172,29 @@
                 scope.timelineChart = new Chart(ctx, config);
             }
 
+            scope.nextMonth = function () {
+                scope.currentDate = moment(scope.currentDate).add(1, 'months').toDate();
+            }
+
+            scope.previousMonth = function () {
+                scope.currentDate = moment(scope.currentDate).subtract(1, 'months').toDate();
+            }
+
             scope.$watchGroup(['formTemplates', 'surveys'], () => {
-                generateTimelineData();    
+                generateTimelineData();
+                renderTimelineChart();
+            });
+
+            scope.$watch('currentDate', () => {
+                generateTimelineData();
+                renderTimelineChart();
+            });
+
+            $rootScope.$on('timeline-next-month', () => {
+                scope.nextMonth();
+            });
+            $rootScope.$on('timeline-previous-month', () => {
+                scope.previousMonth();
             });
         }
     }

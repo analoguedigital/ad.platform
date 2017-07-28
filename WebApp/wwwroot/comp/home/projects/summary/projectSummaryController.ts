@@ -51,13 +51,14 @@ module App {
         displayedSurveys: Models.ISurvey[] = [];
         selectedTemplates: Models.IFormTemplate[] = [];
 
-        static $inject: string[] = ["$scope", "$state", "$q", "$stateParams",
+        static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
             "formTemplateResource", "surveyResource", "project",
             "toastr", "projectSummaryService"];
 
         constructor(
             private $scope: IProjectSummaryControllerScope,
+            private $rootScope: ng.IRootScopeService,
             private $state: ng.ui.IStateService,
             private $q: ng.IQService,
             private $stateParams: ng.ui.IStateParamsService,
@@ -213,6 +214,14 @@ module App {
 
         openEndDateCalendar() {
             this.endDateCalendar.isOpen = true;
+        }
+
+        timelineNextMonth() {
+            this.$rootScope.$broadcast('timeline-next-month');
+        }
+
+        timelinePreviousMonth() {
+            this.$rootScope.$broadcast('timeline-previous-month');
         }
 
     }
