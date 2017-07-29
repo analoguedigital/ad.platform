@@ -2,11 +2,11 @@
     <div class="box-title">
         <h5>Timeline</h5>
         <div class="box-tools">
-            <a title="Previous Month" ng-click="ctrl.timelinePreviousMonth()"><i class="fa fa-arrow-left"></i></a>
-            <a title="Next Month" ng-click="ctrl.timelineNextMonth()"><i class="fa fa-arrow-right"></i></a>
+            <a title="Previous Month" ng-click="ctrl.timelinePreviousMonth()">{{months[(today.getMonth()+11)%12]}} <i class="fa fa-arrow-left"></i></a>
+            <a title="Next Month" ng-click="ctrl.timelineNextMonth()"><i class="fa fa-arrow-right"></i> {{months[((today.getMonth()+1)%12)]}}</a>
         </div>
     </div>
-    <div class="box-content">
-        <lm-timeline form-templates="ctrl.selectedTemplates" surveys="ctrl.displayedSurveys" height="300"></lm-timeline>
+    <div class="box-content timeline-box">
+        <lm-timeline form-templates="ctrl.selectedTemplates" surveys="ctrl.displayedSurveys" height="300" background-color="#333"></lm-timeline>
     </div>
 </div>

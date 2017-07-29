@@ -11,6 +11,9 @@ module App {
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
+
+        today: Date;
+        months: string[];
     }
 
     interface IProjectSummaryController {
@@ -69,11 +72,14 @@ module App {
             private project: Models.IProject,
             private toastr: any,
             private projectSummaryService: Services.IProjectSummaryService) {
+
             this.activate();
         }
 
         activate() {
             this.$scope.title = this.project.name;
+            this.$scope.today = new Date();
+            this.$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
             this.bindWatchers();
             this.load();
@@ -217,10 +223,12 @@ module App {
         }
 
         timelineNextMonth() {
+            this.$scope.today = moment(this.$scope.today).add(1, 'months').toDate();
             this.$rootScope.$broadcast('timeline-next-month');
         }
 
         timelinePreviousMonth() {
+            this.$scope.today = moment(this.$scope.today).subtract(1, 'months').toDate();
             this.$rootScope.$broadcast('timeline-previous-month');
         }
 
