@@ -30,6 +30,8 @@ module App {
         displayedSurveys: Models.ISurvey[];
         selectedTemplates: Models.IFormTemplate[];
 
+        timelineSnapshotView: boolean;
+
         activate: () => void;
         clearSearch: () => void;
         clearThreads: () => void;
@@ -53,6 +55,7 @@ module App {
         surveys: Models.ISurvey[] = [];
         displayedSurveys: Models.ISurvey[] = [];
         selectedTemplates: Models.IFormTemplate[] = [];
+        timelineSnapshotView: boolean;
 
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
@@ -80,6 +83,14 @@ module App {
             this.$scope.title = this.project.name;
             this.$scope.today = new Date();
             this.$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            this.$rootScope.$on('timeline-in-snapshot-view', () => {
+                this.timelineSnapshotView = true;
+            });
+
+            this.$rootScope.$on('timeline-in-month-view', () => {
+                this.timelineSnapshotView = false;
+            });
 
             this.bindWatchers();
             this.load();
