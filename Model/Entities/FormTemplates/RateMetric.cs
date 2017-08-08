@@ -57,8 +57,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public IEnumerable<ValidationResult> ValidateDefaultValue()
         {
-
-            if (!this.DataList.Items.Any())
+            if (this.DataList == null)
             {
                 // numeric range
                 if (this.DefaultValue < this.MinValue || this.DefaultValue > this.MaxValue)
@@ -67,7 +66,7 @@ namespace LightMethods.Survey.Models.Entities
             else
             {
                 // ad-hoc list
-                if(!this.DataList.Items.Select(i=>i.Value).Contains(DefaultValue))
+                if (!this.DataList.Items.Select(i => i.Value).Contains(DefaultValue))
                     yield return new ValidationResult("Default value must be set to one of possible values.");
             }
         }

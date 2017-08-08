@@ -25,11 +25,12 @@ module App {
         //survey: Models.ISurvey;
         activeTabIndex: number = 0;
 
-        static $inject: string[] = ["$scope", "$state", "surveyResource", "formTemplate", "project", "survey"];
+        static $inject: string[] = ["$scope", "$state", "$timeout", "surveyResource", "formTemplate", "project", "survey"];
 
         constructor(
             private $scope: INewSurveyScope,
             private $state: ng.ui.IStateService,
+            private $timeout: ng.ITimeoutService,
             private surveyResource: Resources.ISurveyResource,
             public formTemplate: Models.IFormTemplate,
             public project: Models.IProject,
@@ -52,6 +53,10 @@ module App {
             var pageGroups = _.groupBy(this.formTemplate.metricGroups, (mg) => { return mg.page });
             this.tabs = _.map(Object.keys(pageGroups), (pageNumber) => { return { number: pageNumber, title: "Page " + pageNumber }; });
             this.tabs[0].active = true;
+
+            this.$timeout(() => {
+                this.$scope.$broadcast('rzSliderForceRender');
+            }, 100);
 
             this.getLocations();
         }
