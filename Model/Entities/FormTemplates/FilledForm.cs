@@ -71,15 +71,20 @@ namespace LightMethods.Survey.Models.Entities
 
                     if (foundMetrics.Any())
                     {
-                        var values = new List<string>();
+                        var descFormat = this.FormTemplate.DescriptionFormat;
+
                         foreach (var metric in foundMetrics)
                         {
                             var formValue = this.FormValues.Where(fm => fm.MetricId == metric.Id).FirstOrDefault();
                             if (formValue != null)
-                                values.Add(formValue.ToString());
+                        {
+                            var src = "{{" + metric.ShortTitle.ToLower() + "}}";
+                            descFormat = descFormat.Replace(src, formValue.ToString());
+                        }
                         }
 
-                        this._description = string.Join(" - ", values);
+                    this._description = descFormat;
+
                         return this._description;
                     }
                 }
