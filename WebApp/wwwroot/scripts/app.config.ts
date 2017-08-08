@@ -72,11 +72,19 @@
             var match;
             // Check for string properties which look like dates.
             if (typeof value === "string" && (match = value.match(regexIso8601))) {
-                // Assume that Date.parse can parse ISO 8601 strings, or has been shimmed in older browsers to do so.
-                var milliseconds = Date.parse(match[0]);
-                if (!isNaN(milliseconds)) {
-                    input[key] = new Date(milliseconds);
+                var dateValue = match[0];   // ISO-8601 string
+
+                var utcDate = moment.utc(dateValue);
+                var hours = utcDate.hour();
+                var minutes = utcDate.minutes();
+                var localDate = utcDate.local().toDate();
+
+                if (hours === 0 && minutes === 0) {
+                    localDate.setHours(0);
+                    localDate.setMinutes(0);
                 }
+
+                input[key] = localDate;
             } else if (typeof value === "object") {
                 // Recurse into object
                 convertDateStringsToDates(value);

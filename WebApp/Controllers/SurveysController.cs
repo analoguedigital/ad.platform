@@ -149,6 +149,18 @@ namespace WebApi.Controllers
             {
                 UnitOfWork.FilledFormsRepository.InsertOrUpdate(filledForm);
 
+                foreach (var val in filledForm.FormValues.Where(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is DateMetric))
+                {
+                    var dateMetric = val.Metric as DateMetric;
+                    var _test = val.DateValue.Value.ToString();
+
+                    if (val.DateValue.HasValue && !dateMetric.HasTimeValue)
+                    {
+                        var dateValue = val.DateValue.Value;
+                        val.DateValue = new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, 0, 0, 0).AddDays(1);
+                    }
+                }
+
                 foreach (var val in filledForm.FormValues.Where(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is AttachmentMetric))
                 {
                     if (val.TextValue == string.Empty) continue;
@@ -222,6 +234,16 @@ namespace WebApi.Controllers
                     dbrecord.TextValue = val.TextValue;
                     dbrecord.GuidValue = val.GuidValue;
                     dbrecord.RowNumber = val.RowNumber;
+
+                    if (dbrecord.Metric is DateMetric)
+                    {
+                        var dateMetric = dbrecord.Metric as DateMetric;
+                        if (dbrecord.DateValue.HasValue && !dateMetric.HasTimeValue)
+                        {
+                            var dateValue = dbrecord.DateValue.Value;
+                            dbrecord.DateValue = new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, 0, 0, 0).AddDays(1);
+                        }
+                    }
 
                     if (dbrecord.Metric is AttachmentMetric)
                     {

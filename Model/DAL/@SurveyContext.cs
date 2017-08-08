@@ -7,6 +7,7 @@ using System.Data.Entity.Core;
 using LightMethods.Survey.Models.Entities;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity.EntityFramework;
+using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.DAL
 {
@@ -150,13 +151,13 @@ namespace LightMethods.Survey.Models.DAL
 
                         if (item.Entity is Entity)
                         {
-                            (item.Entity as Entity).DateCreated = DateTime.Now;
-                            (item.Entity as Entity).DateUpdated = DateTime.Now;
+                            (item.Entity as Entity).DateCreated = DateTimeService.UtcNow;
+                            (item.Entity as Entity).DateUpdated = DateTimeService.UtcNow;
                         }
                     }
                     else if (item.State == EntityState.Modified && item.Entity is Entity)
                     {
-                        (item.Entity as Entity).DateUpdated = DateTime.Now;
+                        (item.Entity as Entity).DateUpdated = DateTimeService.UtcNow;
                     }
                 }
             }

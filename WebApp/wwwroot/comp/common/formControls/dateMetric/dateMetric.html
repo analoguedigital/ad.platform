@@ -5,7 +5,8 @@
     </div>
     <div class="col-md-8 " ng-if="!isPersian">
         <div class="input-group">
-            <input datepicker-options="{}" uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="calendar.isOpen" class="form-control" type="text" name="{{inputName}}" ng-required="metric.mandatory" ng-model="formValue.dateValue" />
+            <input type="text" name="{{inputName}}" class="form-control" datetime-picker="{{dateTimeFormat}}" 
+                   ng-model="formValue.dateValue" is-open="calendar.isOpen" ng-required="metric.mandatory" enable-time="metric.hasTimeValue" />
             <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="openCalendar()"><i class="fa fa-calendar"></i></button>
             </span>

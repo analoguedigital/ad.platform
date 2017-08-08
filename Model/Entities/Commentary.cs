@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using LightMethods.Survey.Models.DTO;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -35,8 +36,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public Commentary()
         {
-            Date = DateTime.Now;
-            DateCreated = DateTime.Now;
+            Date = DateTimeService.UtcNow;
+            DateCreated = DateTimeService.UtcNow;
         }
     }
 }

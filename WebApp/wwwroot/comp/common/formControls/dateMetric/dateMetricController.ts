@@ -13,6 +13,7 @@ module App {
 
         calendar: any;
         isPersian: boolean;
+        dateTimeFormat: string;
 
         openCalendar: () => void;
     }
@@ -25,6 +26,8 @@ module App {
         constructor(private $scope: IDateMetricContrllerScope) {
             $scope.calendar = { isOpen: false };
             $scope.openCalendar = () => { this.openCalendar(); }
+            $scope.dateTimeFormat = "dd/MM/yyyy";
+
             this.activate();
         }
 
@@ -39,6 +42,9 @@ module App {
             else {
                 this.$scope.formValue = this.$scope.formValues[0];
             }
+
+            if (this.$scope.metric.hasTimeValue)
+                this.$scope.dateTimeFormat = "dd/MM/yyyy HH:mm a";  
         }
     }
 

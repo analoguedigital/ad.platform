@@ -36,7 +36,7 @@
                                 </div>
                             </td>
                             <td>{{survey.serial}}</td>
-                            <td>{{survey.date | amDateFormat: 'DD/MM/YYYY'}}</td>
+                            <td><lm-date-time value="survey.date"></lm-date-time></td>
                             <td>{{survey.description}}</td>
                             <td valign="middle">
                                 <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(survey.formTemplateId)}"></span>

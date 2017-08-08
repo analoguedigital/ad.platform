@@ -20,6 +20,7 @@ using WebApi.Results;
 using LightMethods.Survey.Models.Entities;
 using WebApi.Controllers;
 using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Services;
 
 namespace WebApi.Models
 {
@@ -363,7 +364,7 @@ namespace WebApi.Models
             var project = new Project()
             {
                 Name = model.Email,
-                StartDate = DateTime.Now,
+                StartDate = DateTimeService.UtcNow,
                 OrganisationId = organisation.Id,
             };
             

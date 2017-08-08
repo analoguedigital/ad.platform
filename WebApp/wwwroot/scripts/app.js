@@ -14,6 +14,7 @@ var App;
         "ui.bootstrap.tabs",
         "ui.bootstrap.modal",
         "ui.bootstrap.popover",
+        "ui.bootstrap.datetimepicker",
         "ngAnimate",
         "ngSanitize",
         "ui.router",

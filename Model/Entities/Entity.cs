@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -32,8 +33,7 @@ namespace LightMethods.Survey.Models.Entities
         public Entity()
         {
             Id = Guid.Empty;
-
-            DateCreated = DateUpdated = DateTime.Now;
+            DateCreated = DateUpdated = DateTimeService.UtcNow;
         }
 
         public virtual IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

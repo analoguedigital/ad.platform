@@ -53,7 +53,7 @@ namespace LightMethods.Survey.Models.Services
         public bool HasValidSubscription(Guid userId)
         {
             var latestSubscription = this.GetLatest(userId);
-            if (latestSubscription.HasValue && latestSubscription.Value > DateTime.Now)
+            if (latestSubscription.HasValue && latestSubscription.Value > DateTimeService.UtcNow)
                 return true;
 
             return false;
@@ -79,7 +79,7 @@ namespace LightMethods.Survey.Models.Services
             // register payment record
             var payment = new PaymentRecord
             {
-                Date = DateTime.Now,
+                Date = DateTimeService.UtcNow,
                 Amount = promotionCode.Amount,
                 Note = "Promotion Code Redeemed",
                 PromotionCode = promotionCode,
@@ -103,7 +103,7 @@ namespace LightMethods.Survey.Models.Services
         {
             var monthlyRate = this.User.Organisation.SubscriptionMonthlyRate;
             var subscriptionCount = Math.Floor(payment.Amount / monthlyRate.Value);
-            var latestSubscription = this.GetLatest() ?? DateTime.Now;
+            var latestSubscription = this.GetLatest() ?? DateTimeService.UtcNow;
 
             for (var index = 0; index < subscriptionCount; index++)
             {
