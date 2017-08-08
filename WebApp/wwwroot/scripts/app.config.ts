@@ -1,4 +1,5 @@
-﻿
+﻿declare var Chart: any;
+
 ((): void => {
     "use strict";
 
@@ -96,4 +97,5 @@
     function ConfigLoadingBar(cfpLoadingBarProvider) {
         cfpLoadingBarProvider.includeSpinner = false;
     }
+
 })();

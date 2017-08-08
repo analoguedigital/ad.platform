@@ -1,4 +1,7 @@
-﻿module App {
+﻿declare var moment: any;
+declare var Chart: any;
+
+module App {
     "use strict";
 
     interface IProjectSummaryControllerScope extends ng.IScope {
@@ -8,6 +11,9 @@
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
+
+        today: Date;
+        months: string[];
     }
 
     interface IProjectSummaryController {
@@ -23,6 +29,8 @@
 
         displayedSurveys: Models.ISurvey[];
         selectedTemplates: Models.IFormTemplate[];
+
+        timelineSnapshotView: boolean;
 
         activate: () => void;
         clearSearch: () => void;
@@ -47,14 +55,16 @@
         surveys: Models.ISurvey[] = [];
         displayedSurveys: Models.ISurvey[] = [];
         selectedTemplates: Models.IFormTemplate[] = [];
+        timelineSnapshotView: boolean;
 
-        static $inject: string[] = ["$scope", "$state", "$q", "$stateParams",
+        static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
             "formTemplateResource", "surveyResource", "project",
             "toastr", "projectSummaryService"];
 
         constructor(
             private $scope: IProjectSummaryControllerScope,
+            private $rootScope: ng.IRootScopeService,
             private $state: ng.ui.IStateService,
             private $q: ng.IQService,
             private $stateParams: ng.ui.IStateParamsService,
@@ -65,11 +75,22 @@
             private project: Models.IProject,
             private toastr: any,
             private projectSummaryService: Services.IProjectSummaryService) {
+
             this.activate();
         }
 
         activate() {
             this.$scope.title = this.project.name;
+            this.$scope.today = new Date();
+            this.$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            this.$rootScope.$on('timeline-in-snapshot-view', () => {
+                this.timelineSnapshotView = true;
+            });
+
+            this.$rootScope.$on('timeline-in-month-view', () => {
+                this.timelineSnapshotView = false;
+            });
 
             this.bindWatchers();
             this.load();
@@ -210,6 +231,16 @@
 
         openEndDateCalendar() {
             this.endDateCalendar.isOpen = true;
+        }
+
+        timelineNextMonth() {
+            this.$scope.today = moment(this.$scope.today).add(1, 'months').toDate();
+            this.$rootScope.$broadcast('timeline-next-month');
+        }
+
+        timelinePreviousMonth() {
+            this.$scope.today = moment(this.$scope.today).subtract(1, 'months').toDate();
+            this.$rootScope.$broadcast('timeline-previous-month');
         }
 
     }

@@ -21,7 +21,13 @@
         <lm-form-group label="Calendar Date: ">
             <select id="calendar-date-metric" name="calendar-date-metric" ng-model="ctrl.formTemplate.calendarDateMetricId">
                 <option>Choose a date metric</option>
-                <option ng-repeat="opt in ctrl.metricOptions track by opt.id" value="{{opt.id}}">{{opt.title}}</option>
+                <option ng-repeat="opt in ctrl.calendarDateMetrics track by opt.id" value="{{opt.id}}">{{opt.title}}</option>
+            </select>
+        </lm-form-group>
+        <lm-form-group label="Timeline Bar: ">
+            <select id="timeline-bar-metric" name="timeline-bar-metric" ng-model="ctrl.formTemplate.timelineBarMetricId">
+                <option>Choose a rate metric</option>
+                <option ng-repeat="opt in ctrl.timelineBarMetrics track by opt.id" value="{{opt.id}}">{{opt.title}}</option>
             </select>
         </lm-form-group>
         <lm-form-group label="Desc. Format: ">

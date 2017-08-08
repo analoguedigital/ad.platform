@@ -253,6 +253,10 @@
     <Content Include="wwwroot\comp\home\surveys\summary\surveysSummaryView.html" />
     <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
     <Content Include="wwwroot\comp\login\loginView.html" />
+    <Content Include="wwwroot\css\index.css" />
+    <Content Include="wwwroot\css\index.min.css">
+      <DependentUpon>index.css</DependentUpon>
+    </Content>
     <Content Include="wwwroot\index.html" />
   </ItemGroup>
   <ItemGroup>
@@ -336,6 +340,10 @@
     <Content Include="package.json" />
     <Content Include="bower.json" />
     <Content Include=".bowerrc" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -346,6 +354,13 @@
     <Content Include="wwwroot\scripts\directives\lmFormGroup\template.html" />
     <Content Include="wwwroot\scripts\directives\lmLocations\template.html" />
     <Content Include="wwwroot\scripts\directives\lmPieChart\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmTimeline\template.html" />
+    <Content Include="wwwroot\scss\index.css">
+      <DependentUpon>index.scss</DependentUpon>
+    </Content>
+    <Content Include="wwwroot\scss\index.min.css">
+      <DependentUpon>index.css</DependentUpon>
+    </Content>
     <Content Include="wwwroot\scss\index.scss" />
     <Content Include="wwwroot\scss\Template\_badgets_labels.scss" />
     <Content Include="wwwroot\scss\Template\_base.scss" />
@@ -481,6 +496,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmPieChart\lmPieChart.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmTimeline\lmTimeline.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\achievementSummary.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\evidence.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\target.ts" />

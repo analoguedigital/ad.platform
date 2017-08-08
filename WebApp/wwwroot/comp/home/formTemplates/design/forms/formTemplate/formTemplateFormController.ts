@@ -19,7 +19,7 @@ module App {
         descriptionFormatRegex: RegExp = /{{([^}]+)}}/g;
         descriptionFormatValueRegex: RegExp = /{{(.*?)}}/;
 
-        static $inject: string[] = ["$scope", "$q", "$uibModalInstance", "formTemplateCategoryResource", "formTemplate", "metricOptions"];
+        static $inject: string[] = ["$scope", "$q", "$uibModalInstance", "formTemplateCategoryResource", "formTemplate", "calendarDateMetrics", "timelineBarMetrics"];
 
         constructor(
             private $scope: ng.IScope,
@@ -27,7 +27,8 @@ module App {
             private $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance,
             private formTemplateCategoryResource: Resources.IFormTemplateCategoryResource,
             public formTemplate: Models.IFormTemplate,
-            public metricOptions: any[]
+            public calendarDateMetrics: any[],
+            public timelineBarMetrics: any[]
         ) {
             this.formTemplate = formTemplate;
             this.activate();
