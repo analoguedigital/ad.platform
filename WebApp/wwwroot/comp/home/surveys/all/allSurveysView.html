@@ -15,6 +15,36 @@
         </h4>
     </div>
     <div class="box-content">
+        <form role="form" class="form-horizontal">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="Search term..." maxlength="50" ng-model="ctrl.searchTerm" />
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
+                        </span>
+                        <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" />
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
+                        </span>
+                        <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" />
+                    </div>
+                </div>
+                <div class="col-md-1 pull-right">
+                    <button type="button" class="btn btn-block btn-primary" ng-click="ctrl.search()">
+                        <i class="fa fa-search"></i> Search
+                    </button>
+                </div>
+            </div>
+        </form>
+        <hr />
+
         <div ng-hide="ctrl.isDataView" st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys">
             <table class="table table-hover table-striped">
                 <thead>
@@ -55,7 +85,7 @@
                     </tr>
                 </tbody>
             </table>
-            <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            <div st-pagination st-items-by-page="10" st-displayed-pages=""></div>
         </div>
         <div ng-show="ctrl.isDataView" st-table="ctrl.displayedSurveysData" st-safe-src="ctrl.surveysData">
             <table class="table table-hover table-striped">

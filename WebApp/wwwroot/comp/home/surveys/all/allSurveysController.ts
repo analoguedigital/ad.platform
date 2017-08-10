@@ -13,12 +13,19 @@ module App {
         numberOfPages: number;
         pageSize: number;
         isDataView: boolean;
+        startDate: Date;
+        endDate: Date;
+        startDateCalendar: any;
+        endDateCalendar: any;
+
         activate: () => void;
         delete: (id: string) => void;
+        search: () => void;
+        openStartDateCalendar: () => void;
+        openEndDateCalendar: () => void;
     }
 
     class AllSurveysController implements IAllSurveysController {
-
         title: string;
         searchTerm: string;
         surveys: Models.ISurvey[];
@@ -30,8 +37,12 @@ module App {
         numberOfPages: number;
         pageSize: number;
         isDataView: boolean;
+        startDate: Date;
+        endDate: Date;
+        startDateCalendar: any;
+        endDateCalendar: any;
 
-        static $inject: string[] = ["project","formTemplate", "surveyResource", "dataResource"];
+        static $inject: string[] = ["project", "formTemplate", "surveyResource", "dataResource"];
         constructor(
             public project: Models.IProject,
             private formTemplate: Models.IFormTemplate,
@@ -44,10 +55,22 @@ module App {
         }
 
         activate() {
+            this.startDateCalendar = { isOpen: false };
+            this.endDateCalendar = { isOpen: false };
+
             this.load();
         }
 
+        openStartDateCalendar() {
+            this.startDateCalendar.isOpen = true;
+        }
+
+        openEndDateCalendar() {
+            this.endDateCalendar.isOpen = true;
+        }
+
         load() {
+            console.log('template', this.formTemplate);
 
             this.surveyResource.query({ projectId: this.project.id }).$promise.then((surveys) => {
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
@@ -60,13 +83,17 @@ module App {
                 })
 
             });
-            
+
         }
 
         delete(id: string) {
             this.surveyResource.delete({ id: id },
                 () => { this.load(); },
                 (err) => { console.log(err); });
+        }
+
+        search() {
+            // not implemented
         }
     }
 
