@@ -53,5 +53,19 @@ namespace LightMethods.Survey.Models.Entities
             clone.MaxVal = MaxVal;
             return clone;
         }
+
+        public override FilterMetadata GetFilterMetadata()
+        {
+            return new NumericMetricMetadata
+            {
+                MetricId = this.Id,
+                ShortTitle = this.ShortTitle,
+                SectionTitle = this.SectionTitle,
+                Description = this.Description,
+                InputType = FilterInputType.Numeric.ToString(),
+                MinVal = this.MinVal,
+                MaxVal = this.MaxVal
+            };
+        }
     }
 }

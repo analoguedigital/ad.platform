@@ -152,5 +152,20 @@ namespace LightMethods.Survey.Models.Entities
             }
         }
 
+        public IEnumerable<FilterMetadata> GetFilterContext()
+        {
+            var metadata = new List<FilterMetadata>();
+
+            foreach (var metricGroup in this.MetricGroups)
+            {
+                foreach (var metric in metricGroup.Metrics)
+                {
+                    metadata.Add(metric.GetFilterMetadata());
+                }
+            }
+
+            return metadata;
+        }
+
     }
 }

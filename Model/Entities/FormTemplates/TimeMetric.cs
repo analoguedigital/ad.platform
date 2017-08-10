@@ -39,5 +39,17 @@ namespace LightMethods.Survey.Models.Entities
         {
             return BaseClone<TimeMetric>(template, metricGroup);
         }
+
+        public override FilterMetadata GetFilterMetadata()
+        {
+            return new TimeMetricMetadata
+            {
+                MetricId = this.Id,
+                ShortTitle = this.ShortTitle,
+                SectionTitle = this.SectionTitle,
+                Description = this.Description,
+                InputType = FilterInputType.Time.ToString()
+            };
+        }
     }
 }

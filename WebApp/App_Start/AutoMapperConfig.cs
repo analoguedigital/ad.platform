@@ -17,7 +17,13 @@ namespace WebApi
                 .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
             Mapper.CreateMap<FormTemplateCategory, FormTemplateCategoryDTO>().ReverseMap();
-            Mapper.CreateMap<FormTemplate, FormTemplateDTO>();
+
+            Mapper.CreateMap<FormTemplate, FormTemplateDTO>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.FilterContext = src.GetFilterContext();
+                });
+
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
             Mapper.CreateMap<Controllers.FormTemplatesController.EditBasicDetailsRequest, FormTemplate>();
@@ -86,8 +92,8 @@ namespace WebApi
                 });
             Mapper.CreateMap<AttachmentDTO, Attachment>();
             Mapper.CreateMap<Attachment, AttachmentDTO>()
-                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name;});
-                
+                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name; });
+
             Mapper.CreateMap<AttachmentMetric, AttachmentMetricDTO>();
             Mapper.CreateMap<AttachmentMetricDTO, AttachmentMetric>()
                 .ForMember(m => m.AllowedAttachmentTypes, opt => opt.Ignore());

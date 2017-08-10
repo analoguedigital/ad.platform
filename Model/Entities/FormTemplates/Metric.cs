@@ -120,5 +120,10 @@ namespace LightMethods.Survey.Models.Entities
         {
             throw new InvalidOperationException();
         }
+
+        public virtual FilterMetadata GetFilterMetadata()
+        {
+            return new FilterMetadata();
+        }
     }
 }

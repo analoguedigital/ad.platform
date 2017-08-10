@@ -50,6 +50,21 @@ namespace LightMethods.Survey.Models.Entities
             clone.MinLength = MinLength;
             return clone;
         }
+
+        public override FilterMetadata GetFilterMetadata()
+        {
+            return new FreeTextMetricMetadata
+            {
+                MetricId = this.Id,
+                ShortTitle = this.ShortTitle,
+                SectionTitle = this.SectionTitle,
+                Description = this.Description,
+                InputType = FilterInputType.Text.ToString(),
+                NumberOfLines = this.NumberOfLine,
+                MinLength = this.MinLength,
+                MaxLength = this.MaxLength
+            };
+        }
     }
 }
 

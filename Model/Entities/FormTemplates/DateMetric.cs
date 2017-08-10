@@ -46,5 +46,17 @@ namespace LightMethods.Survey.Models.Entities
         {
             return BaseClone<DateMetric>(template, metricGroup);
         }
+
+        public override FilterMetadata GetFilterMetadata()
+        {
+            return new DateMetricMetadata
+            {
+                MetricId = this.Id,
+                ShortTitle = this.ShortTitle,
+                SectionTitle = this.SectionTitle,
+                Description = this.Description,
+                InputType = this.HasTimeValue ? FilterInputType.DateTime.ToString() : FilterInputType.Date.ToString()
+            };
+        }
     }
 }

@@ -52,5 +52,17 @@ namespace LightMethods.Survey.Models.Entities
             clone.AllowedAttachmentTypes = new List<AttachmentType>(AllowedAttachmentTypes);
             return clone;
         }
+
+        public override FilterMetadata GetFilterMetadata()
+        {
+            return new AttachmentMetricMetadata
+            {
+                MetricId = this.Id,
+                ShortTitle = this.ShortTitle,
+                SectionTitle = this.SectionTitle,
+                Description = this.Description,
+                InputType = FilterInputType.Text.ToString()
+            };
+        }
     }
 }

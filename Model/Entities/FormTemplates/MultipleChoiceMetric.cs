@@ -46,5 +46,19 @@ namespace LightMethods.Survey.Models.Entities
             clone.ViewType = ViewType;
             return clone;
         }
+
+        public override FilterMetadata GetFilterMetadata()
+        {
+            return new MultipleChoiceMetricMetadata
+            {
+                MetricId = this.Id,
+                ShortTitle = this.ShortTitle,
+                SectionTitle = this.SectionTitle,
+                Description = this.Description,
+                InputType = FilterInputType.MultipleChoice.ToString(),
+                DataListId = this.DataListId,
+                ViewType = this.ViewType
+            };
+        }
     }
 }

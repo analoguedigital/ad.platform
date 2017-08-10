@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -36,6 +37,8 @@ namespace WebApi.Models
         public Guid? TimelineBarMetricId { set; get; }
 
         public ICollection<MetricGroupDTO> MetricGroups { set; get; }
+
+        public IEnumerable<FilterMetadata> FilterContext { get; set; }
 
     }
 }
