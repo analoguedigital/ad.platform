@@ -19,19 +19,45 @@
         }
 
         activate() {
-            var parentScope = this.$scope.$parent;
-            var metadata = parentScope.metadata;
+            var filter = this.$scope.metricFilter;
+            var viewName = undefined;
 
-            switch (metadata.inputType) {
-                case "Date": {
-                    this.$scope.viewName = "dateFilter";
+            switch (filter.type) {
+                case "Text": {
+                    viewName = "textFilter";
                     break;
                 }
-                case "Rate": {
-                    this.$scope.viewName = "rateFilter";
+                case "Dropdown": {
+                    viewName = "dropdownFilter";
+                    break;
+                }
+                case "Checkbox": {
+                    viewName = "checkboxFilter";
+                    break;
+                }
+                case "Dichotomous": {
+                    viewName = "dichotomousFilter";
+                    break;
+                }
+                case "Slider": {
+                    viewName = "sliderFilter";
+                    break;
+                }
+                case "DateRange": {
+                    viewName = "dateRangeFilter";
+                    break;
+                }
+                case "NumericRange": {
+                    viewName = "numericRangeFilter";
+                    break;
+                }
+                case "TimeRange": {
+                    viewName = "timeRangeFilter";
                     break;
                 }
             }
+
+            this.$scope.viewName = viewName;
         }
     }
 

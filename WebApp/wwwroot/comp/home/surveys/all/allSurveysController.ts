@@ -86,8 +86,6 @@ module App {
         }
 
         load() {
-            console.log('template', this.formTemplate);
-
             this.surveyResource.query({ projectId: this.project.id }).$promise.then((surveys) => {
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
                 this.displayedSurveys = [].concat(this.surveys);

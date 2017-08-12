@@ -1,0 +1,12 @@
+﻿<div class="col-md-3" ng-controller="checkboxFilterController">
+    <h4 class="filter-heading" data-toggle="tooltip" title="{{metricFilter.description}}">{{metricFilter.shortTitle}}</h4>
+
+    <ul class="list-unstyled">
+        <li ng-repeat="item in metricFilter.dataList track by $index">
+            <div class="checkbox">
+                <input type="checkbox" value="{{item.value}}" id="chk-{{item.text}}" />
+                <label for="chk-{{item.text}}">{{item.text}}</label>
+            </div>
+        </li>
+    </ul>
+</div>

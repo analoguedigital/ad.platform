@@ -1,14 +1,13 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
-    interface IDateFilterController {
+    interface IDateRangeFilterController {
         activate: () => void;
         openStartDateCalendar: () => void;
         openEndDateCalendar: () => void;
     }
 
-    interface IDateFilterControllerScope extends ng.IScope {
+    interface IDateRangeFilterControllerScope extends ng.IScope {
         startDate: Date;
         endDate: Date;
 
@@ -20,11 +19,10 @@ module App {
         openEndDateCalendar: () => void;
     }
 
-
-    class DateFilterController implements IDateFilterController {
+    class DateRangeFilterController implements IDateRangeFilterController {
         static $inject: string[] = ['$scope'];
 
-        constructor(private $scope: IDateFilterControllerScope) {
+        constructor(private $scope: IDateRangeFilterControllerScope) {
             $scope.startDateCalendar = { isOpen: false };
             $scope.endDateCalendar = { isOpen: false };
 
@@ -45,11 +43,13 @@ module App {
         }
 
         activate() {
+            var filter = this.$scope.metricFilter;
+
             var filterValue = {
-                metricId: this.$scope.metadata.metricId,
-                shortTitle: this.$scope.metadata.shortTitle,
-                startDate: this.$scope.startDate,
-                endDate: this.$scope.endDate
+                metricId: filter.metricId,
+                shortTitle: filter.shortTitle,
+                startDate: filter.startDate,
+                endDate: filter.endDate
             };
 
             this.$scope.filterValues.push(filterValue);
@@ -58,7 +58,7 @@ module App {
                 var start = value[0];
                 var end = value[1];
 
-                var filterValue: any = _.find(this.$scope.filterValues, { 'metricId': this.$scope.metadata.metricId });
+                var filterValue: any = _.find(this.$scope.filterValues, { 'metricId': filter.metricId });
                 if (filterValue) {
                     filterValue.startDate = start;
                     filterValue.endDate = end;
@@ -67,5 +67,5 @@ module App {
         }
     }
 
-    angular.module("app").controller("dateFilterController", DateFilterController);
+    angular.module("app").controller("dateRangeFilterController", DateRangeFilterController);
 }

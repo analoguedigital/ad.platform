@@ -2,37 +2,37 @@
 module App {
     "use strict";
 
-    interface IRateFilterController {
+    interface ISliderFilterController {
         activate: () => void;
     }
 
-    interface IRateFilterControllerScope extends ng.IScope {
+    interface ISliderFilterControllerScope extends ng.IScope {
         sliderOptions: any;
     }
 
 
-    class RateFilterController implements IRateFilterController {
+    class SliderFilterController implements ISliderFilterController {
         static $inject: string[] = ['$scope'];
 
-        constructor(private $scope: IRateFilterControllerScope) {
+        constructor(private $scope: ISliderFilterControllerScope) {
             this.activate();
         }
 
         activate() {
-            //console.log(this.$scope.metadata);
+            var filter = this.$scope.metricFilter;
 
-            if (this.$scope.metadata.dataListItems.length < 1) {
+            if (filter.dataList.length < 1) {
                 // basic slider (min/max range)
                 this.$scope.sliderOptions = {
                     floor: 1,
-                    ceil: this.$scope.metadata.maxValue,
+                    ceil: filter.maxValue,
                     showTicks: true
                 };
             } else {
-                var items = this.$scope.metadata.dataListItems;
+                var items = filter.dataList;
                 items.sort((a, b) => a.value - b.value);
 
-                var steps = this.$scope.metadata.dataListItems.map((val) => {
+                var steps = filter.dataList.map((val) => {
                     return {
                         value: val.value,
                         legend: val.text
@@ -48,5 +48,5 @@ module App {
         }
     }
 
-    angular.module("app").controller("rateFilterController", RateFilterController);
+    angular.module("app").controller("sliderFilterController", SliderFilterController);
 }

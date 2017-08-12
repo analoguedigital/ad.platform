@@ -163,8 +163,14 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryView.html" />
-    <Content Include="wwwroot\comp\common\filterControls\dateFilter\dateFilter.html" />
-    <Content Include="wwwroot\comp\common\filterControls\rateFilter\rateFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\checkboxFilter\checkboxFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\dateRangeFilter\dateRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\dichotomousFilter\dichotomousFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\dropdownFilter\dropdownFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\numericRangeFilter\numericRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\sliderFilter\sliderFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\textFilter\textFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilter.html" />
     <Content Include="wwwroot\comp\common\filterControls\_filter\filter.html" />
     <Content Include="wwwroot\comp\common\footer\footerView.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\attachmentMetric.html" />
@@ -404,6 +410,7 @@
     <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
     <Content Include="wwwroot\comp\home\projects\summary\_summary.scss" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_projectSummaryPrintView.scss" />
+    <Content Include="wwwroot\comp\common\filterControls\filterControls.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -421,8 +428,14 @@
   <ItemGroup>
     <TypeScriptCompile Include="typings\custom.d.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryController.ts" />
-    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\dateFilter\dateFilterController.ts" />
-    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\rateFilter\rateFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\checkboxFilter\checkboxFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\dateRangeFilter\dateRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\dichotomousFilter\dichotomousFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\dropdownFilter\dropdownFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\numericRangeFilter\numericRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\sliderFilter\sliderFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\textFilter\textFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\filterControls\_filter\filterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\footer\footerController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\timeMetric\timeMetricController.ts" />
