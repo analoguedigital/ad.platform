@@ -2,6 +2,10 @@
 module App {
     "use strict";
 
+    interface IAllSurveysControllerScope extends ng.IScope {
+        filterValues: any[];
+    }
+
     interface IAllSurveysController {
         title: string;
         searchTerm: string;
@@ -42,8 +46,12 @@ module App {
         startDateCalendar: any;
         endDateCalendar: any;
 
-        static $inject: string[] = ["project", "formTemplate", "surveyResource", "dataResource"];
+        isAdvSearchOpen: boolean;
+
+        static $inject: string[] = ["$scope", "$timeout", "project", "formTemplate", "surveyResource", "dataResource"];
         constructor(
+            private $scope: IAllSurveysControllerScope,
+            private $timeout: ng.ITimeoutService,
             public project: Models.IProject,
             private formTemplate: Models.IFormTemplate,
             private surveyResource: Resources.ISurveyResource,
@@ -57,6 +65,14 @@ module App {
         activate() {
             this.startDateCalendar = { isOpen: false };
             this.endDateCalendar = { isOpen: false };
+
+            this.$scope.$on('$viewContentLoaded', () => {
+                this.$timeout(() => {
+                    this.$scope.$broadcast('rzSliderForceRender');
+                }, 500);
+            });
+
+            this.$scope.filterValues = [];
 
             this.load();
         }
@@ -80,10 +96,8 @@ module App {
                     this.surveysDataHeaders = dataRows[0];
                     this.surveysData = dataRows.slice(1);
                     this.displayedSurveysData = [].concat(this.surveysData);
-                })
-
+                });
             });
-
         }
 
         delete(id: string) {
@@ -92,8 +106,12 @@ module App {
                 (err) => { console.log(err); });
         }
 
+        toggleAdvancedSearch() {
+            this.isAdvSearchOpen = !this.isAdvSearchOpen;
+        }
+
         search() {
-            // not implemented
+            console.log('filter values', this.$scope.filterValues);
         }
     }
 

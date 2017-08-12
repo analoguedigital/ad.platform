@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -47,24 +48,23 @@ namespace LightMethods.Survey.Models.Entities
             return string.Empty;
         }
 
-        public override Metric Clone(FormTemplate template, MetricGroup metricGroup) 
+        public override Metric Clone(FormTemplate template, MetricGroup metricGroup)
         {
             var clone = BaseClone<NumericMetric>(template, metricGroup);
             clone.MaxVal = MaxVal;
             return clone;
         }
 
-        public override FilterMetadata GetFilterMetadata()
+        public override MetricFilter GetMetricFilter()
         {
-            return new NumericMetricMetadata
+            return new NumericRangeFilter
             {
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                SectionTitle = this.SectionTitle,
                 Description = this.Description,
-                InputType = FilterInputType.Numeric.ToString(),
-                MinVal = this.MinVal,
-                MaxVal = this.MaxVal
+                MinValue = this.MinVal,
+                MaxValue = this.MaxVal,
+                FilterType = MetricFilterTypes.NumericRange.ToString()
             };
         }
     }

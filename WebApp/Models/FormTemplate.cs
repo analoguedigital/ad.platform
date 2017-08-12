@@ -1,4 +1,5 @@
 ﻿using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.MetricFilters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,7 +39,11 @@ namespace WebApi.Models
 
         public ICollection<MetricGroupDTO> MetricGroups { set; get; }
 
-        public IEnumerable<FilterMetadata> FilterContext { get; set; }
+        public List<MetricFilter> MetricFilters { get; set; }
 
+        public FormTemplateDTO()
+        {
+            this.MetricFilters = new List<MetricFilter>();
+        }
     }
 }

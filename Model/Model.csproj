@@ -120,15 +120,13 @@
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\AttachmentMetricMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\DateMetricMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\DichotomousMetricMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\FilterMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\FreeTextMetricMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\MultipleChoiceMetricMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\NumericMetricMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\RateMetricMetadata.cs" />
-    <Compile Include="Entities\FormTemplates\FilterMetadata\TimeMetricMetadata.cs" />
+    <Compile Include="MetricFilters\CheckboxFilter.cs" />
+    <Compile Include="MetricFilters\DateRangeFilter.cs" />
+    <Compile Include="MetricFilters\DichotomousFilter.cs" />
+    <Compile Include="MetricFilters\DropdownFilter.cs" />
+    <Compile Include="MetricFilters\NumericRangeFilter.cs" />
+    <Compile Include="MetricFilters\SliderFilter.cs" />
+    <Compile Include="MetricFilters\TextFilter.cs" />
     <Compile Include="Entities\FormTemplates\TimeMetric.cs" />
     <Compile Include="Entities\FormTemplates\FilledFormLocation.cs" />
     <Compile Include="Entities\FormTemplates\IHasAdHocDataList.cs" />
@@ -275,6 +273,8 @@
     <Compile Include="Entities\Adult.cs" />
     <Compile Include="Extenstions\IArchivable.cs" />
     <Compile Include="Extenstions\IHasAdHocDataList.cs" />
+    <Compile Include="MetricFilters\MetricFilter.cs" />
+    <Compile Include="MetricFilters\TimeRangeFilter.cs" />
     <Compile Include="Migrations\201505172026245_InitialCreate.cs" />
     <Compile Include="Migrations\201505172026245_InitialCreate.Designer.cs">
       <DependentUpon>201505172026245_InitialCreate.cs</DependentUpon>

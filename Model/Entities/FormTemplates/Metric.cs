@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using LightMethods.Survey.Models.DAL;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -121,9 +122,9 @@ namespace LightMethods.Survey.Models.Entities
             throw new InvalidOperationException();
         }
 
-        public virtual FilterMetadata GetFilterMetadata()
+        public virtual MetricFilter GetMetricFilter()
         {
-            return new FilterMetadata();
+            return new MetricFilter();
         }
     }
 }

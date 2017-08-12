@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -47,15 +48,15 @@ namespace LightMethods.Survey.Models.Entities
             return BaseClone<DateMetric>(template, metricGroup);
         }
 
-        public override FilterMetadata GetFilterMetadata()
+        public override MetricFilter GetMetricFilter()
         {
-            return new DateMetricMetadata
+            return new DateRangeFilter
             {
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                SectionTitle = this.SectionTitle,
                 Description = this.Description,
-                InputType = this.HasTimeValue ? FilterInputType.DateTime.ToString() : FilterInputType.Date.ToString()
+                CanSelectTime = this.HasTimeValue,
+                FilterType = MetricFilterTypes.DateRange.ToString()
             };
         }
     }

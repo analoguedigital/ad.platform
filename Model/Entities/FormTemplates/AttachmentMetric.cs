@@ -53,16 +53,5 @@ namespace LightMethods.Survey.Models.Entities
             return clone;
         }
 
-        public override FilterMetadata GetFilterMetadata()
-        {
-            return new AttachmentMetricMetadata
-            {
-                MetricId = this.Id,
-                ShortTitle = this.ShortTitle,
-                SectionTitle = this.SectionTitle,
-                Description = this.Description,
-                InputType = FilterInputType.Text.ToString()
-            };
-        }
     }
 }

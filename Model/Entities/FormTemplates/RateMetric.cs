@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -90,20 +91,26 @@ namespace LightMethods.Survey.Models.Entities
             return clone;
         }
 
-        public override FilterMetadata GetFilterMetadata()
+        public override MetricFilter GetMetricFilter()
         {
-            return new RateMetricMetadata
+            var filter = new SliderFilter
             {
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                SectionTitle = this.SectionTitle,
                 Description = this.Description,
-                InputType = FilterInputType.Rate.ToString(),
                 MinValue = this.MinValue,
                 MaxValue = this.MaxValue,
                 DefaultValue = this.DefaultValue,
-                DataListId = this.DataListId
+                FilterType = MetricFilterTypes.Slider.ToString()
             };
+
+            if (this.DataList != null && this.DataList.Items.Any())
+            {
+                foreach (var item in this.DataList.Items)
+                    filter.DataList.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
+            }
+
+            return filter;
         }
     }
 }

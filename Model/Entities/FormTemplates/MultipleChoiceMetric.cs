@@ -7,6 +7,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -47,17 +48,31 @@ namespace LightMethods.Survey.Models.Entities
             return clone;
         }
 
-        public override FilterMetadata GetFilterMetadata()
+        public override MetricFilter GetMetricFilter()
         {
-            return new MultipleChoiceMetricMetadata
+            var items = new List<MetricFilterDataItem>();
+            foreach (var item in this.DataList.Items)
+                items.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
+
+            if (this.ViewType == MultipleChoiceViewType.DropDown)
+            {
+                return new DropdownFilter
+                {
+                    MetricId = this.Id,
+                    ShortTitle = this.ShortTitle,
+                    Description = this.Description,
+                    DataList = items,
+                    FilterType = MetricFilterTypes.Dropdown.ToString(),
+                };
+            }
+
+            return new CheckboxFilter
             {
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                SectionTitle = this.SectionTitle,
                 Description = this.Description,
-                InputType = FilterInputType.MultipleChoice.ToString(),
-                DataListId = this.DataListId,
-                ViewType = this.ViewType
+                DataList = items,
+                FilterType = MetricFilterTypes.Checkbox.ToString()
             };
         }
     }

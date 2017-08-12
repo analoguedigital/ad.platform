@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -40,16 +41,16 @@ namespace LightMethods.Survey.Models.Entities
             return BaseClone<TimeMetric>(template, metricGroup);
         }
 
-        public override FilterMetadata GetFilterMetadata()
+        public override MetricFilter GetMetricFilter()
         {
-            return new TimeMetricMetadata
+            return new TimeRangeFilter
             {
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                SectionTitle = this.SectionTitle,
                 Description = this.Description,
-                InputType = FilterInputType.Time.ToString()
+                FilterType = MetricFilterTypes.TimeRange.ToString()
             };
         }
+
     }
 }

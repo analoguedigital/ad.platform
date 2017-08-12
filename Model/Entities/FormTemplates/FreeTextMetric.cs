@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using AppHelper;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -51,18 +52,17 @@ namespace LightMethods.Survey.Models.Entities
             return clone;
         }
 
-        public override FilterMetadata GetFilterMetadata()
+        public override MetricFilter GetMetricFilter()
         {
-            return new FreeTextMetricMetadata
+            return new TextFilter
             {
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                SectionTitle = this.SectionTitle,
                 Description = this.Description,
-                InputType = FilterInputType.Text.ToString(),
-                NumberOfLines = this.NumberOfLine,
+                FilterType = MetricFilterTypes.Text.ToString(),
                 MinLength = this.MinLength,
-                MaxLength = this.MaxLength
+                MaxLength = this.MaxLength,
+                NumberOfLines = this.NumberOfLine
             };
         }
     }

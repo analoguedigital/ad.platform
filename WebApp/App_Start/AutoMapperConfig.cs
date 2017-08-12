@@ -21,7 +21,7 @@ namespace WebApi
             Mapper.CreateMap<FormTemplate, FormTemplateDTO>()
                 .AfterMap((src, dest) =>
                 {
-                    dest.FilterContext = src.GetFilterContext();
+                    dest.MetricFilters = src.GetMetricFilters();
                 });
 
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()

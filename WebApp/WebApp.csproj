@@ -163,6 +163,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryView.html" />
+    <Content Include="wwwroot\comp\common\filterControls\dateFilter\dateFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\rateFilter\rateFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\_filter\filter.html" />
     <Content Include="wwwroot\comp\common\footer\footerView.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\attachmentMetric.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\dateMetric\dateMetric.html" />
@@ -418,6 +421,9 @@
   <ItemGroup>
     <TypeScriptCompile Include="typings\custom.d.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\dateFilter\dateFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\rateFilter\rateFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\_filter\filterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\footer\footerController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\timeMetric\timeMetricController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\dateMetric\dateMetricController.ts" />

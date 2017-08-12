@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LightMethods.Survey.Models.Entities
+namespace LightMethods.Survey.Models.MetricFilters
 {
-    public class FreeTextMetricMetadata : FilterMetadata
+    public class TextFilter : MetricFilter
     {
-        public int NumberOfLines { get; set; }
-
         public int MinLength { get; set; }
 
         public int MaxLength { get; set; }
+
+        public int NumberOfLines { get; set; }
     }
 }

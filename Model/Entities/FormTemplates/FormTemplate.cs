@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -152,19 +153,17 @@ namespace LightMethods.Survey.Models.Entities
             }
         }
 
-        public IEnumerable<FilterMetadata> GetFilterContext()
+        public List<MetricFilter> GetMetricFilters()
         {
-            var metadata = new List<FilterMetadata>();
+            var filters = new List<MetricFilter>();
 
             foreach (var metricGroup in this.MetricGroups)
             {
                 foreach (var metric in metricGroup.Metrics)
-                {
-                    metadata.Add(metric.GetFilterMetadata());
-                }
+                    filters.Add(metric.GetMetricFilter());
             }
 
-            return metadata;
+            return filters;
         }
 
     }
