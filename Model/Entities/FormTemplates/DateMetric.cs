@@ -56,7 +56,7 @@ namespace LightMethods.Survey.Models.Entities
                 ShortTitle = this.ShortTitle,
                 Description = this.Description,
                 CanSelectTime = this.HasTimeValue,
-                FilterType = MetricFilterTypes.DateRange.ToString()
+                Type = MetricFilterTypes.DateRange.ToString()
             };
         }
     }

@@ -59,10 +59,10 @@ namespace LightMethods.Survey.Models.Entities
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
                 Description = this.Description,
-                FilterType = MetricFilterTypes.Text.ToString(),
                 MinLength = this.MinLength,
                 MaxLength = this.MaxLength,
-                NumberOfLines = this.NumberOfLine
+                NumberOfLines = this.NumberOfLine,
+                Type = MetricFilterTypes.Text.ToString(),
             };
         }
     }

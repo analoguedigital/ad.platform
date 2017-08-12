@@ -26,7 +26,7 @@ namespace LightMethods.Survey.Models.MetricFilters
 
         public string Description { get; set; }
 
-        public string FilterType { get; set; }
+        public string Type { get; set; }
     }
 
     public class MetricFilterDataItem

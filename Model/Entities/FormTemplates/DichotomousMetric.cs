@@ -48,7 +48,7 @@ namespace LightMethods.Survey.Models.Entities
                 MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
                 Description = this.Description,
-                FilterType = MetricFilterTypes.Dichotomous.ToString()
+                Type = MetricFilterTypes.Dichotomous.ToString()
             };
         }
 

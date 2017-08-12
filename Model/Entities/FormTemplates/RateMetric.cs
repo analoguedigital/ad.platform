@@ -101,7 +101,7 @@ namespace LightMethods.Survey.Models.Entities
                 MinValue = this.MinValue,
                 MaxValue = this.MaxValue,
                 DefaultValue = this.DefaultValue,
-                FilterType = MetricFilterTypes.Slider.ToString()
+                Type = MetricFilterTypes.Slider.ToString()
             };
 
             if (this.DataList != null && this.DataList.Items.Any())

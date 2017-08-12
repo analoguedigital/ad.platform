@@ -64,7 +64,7 @@ namespace LightMethods.Survey.Models.Entities
                 Description = this.Description,
                 MinValue = this.MinVal,
                 MaxValue = this.MaxVal,
-                FilterType = MetricFilterTypes.NumericRange.ToString()
+                Type = MetricFilterTypes.NumericRange.ToString()
             };
         }
     }

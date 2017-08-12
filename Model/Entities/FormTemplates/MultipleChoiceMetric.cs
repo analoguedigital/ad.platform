@@ -62,7 +62,7 @@ namespace LightMethods.Survey.Models.Entities
                     ShortTitle = this.ShortTitle,
                     Description = this.Description,
                     DataList = items,
-                    FilterType = MetricFilterTypes.Dropdown.ToString(),
+                    Type = MetricFilterTypes.Dropdown.ToString(),
                 };
             }
 
@@ -72,7 +72,7 @@ namespace LightMethods.Survey.Models.Entities
                 ShortTitle = this.ShortTitle,
                 Description = this.Description,
                 DataList = items,
-                FilterType = MetricFilterTypes.Checkbox.ToString()
+                Type = MetricFilterTypes.Checkbox.ToString()
             };
         }
     }
