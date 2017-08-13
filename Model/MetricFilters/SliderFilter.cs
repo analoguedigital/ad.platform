@@ -16,6 +16,8 @@ namespace LightMethods.Survey.Models.MetricFilters
 
         public List<MetricFilterDataItem> DataList { get; set; }
 
+        public int SelectedValue { get; set; }
+
         public SliderFilter()
         {
             this.DataList = new List<MetricFilterDataItem>();

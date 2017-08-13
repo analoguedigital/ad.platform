@@ -8,8 +8,8 @@ namespace LightMethods.Survey.Models.MetricFilters
 {
     public class TimeRangeFilter : MetricFilter
     {
-        public TimeSpan StartTime { get; set; }
+        public DateTime? StartTime { get; set; }
 
-        public TimeSpan EndTime { get; set; }
+        public DateTime? EndTime { get; set; }
     }
 }

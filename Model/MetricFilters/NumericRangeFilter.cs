@@ -11,5 +11,9 @@ namespace LightMethods.Survey.Models.MetricFilters
         public int? MinValue { get; set; }
 
         public int? MaxValue { get; set; }
+
+        public int? StartValue { get; set; }
+
+        public int? EndValue { get; set; }
     }
 }

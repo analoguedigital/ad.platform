@@ -10,9 +10,6 @@ namespace LightMethods.Survey.Models.MetricFilters
     {
         public List<MetricFilterDataItem> DataList { get; set; }
 
-        public List<int> SelectedValues { get; set; }
-
-
         public CheckboxFilter()
         {
             this.DataList = new List<MetricFilterDataItem>();
