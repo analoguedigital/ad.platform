@@ -8,9 +8,6 @@
     }
 
     interface IDateRangeFilterControllerScope extends ng.IScope {
-        startDate: Date;
-        endDate: Date;
-
         startDateCalendar: any;
         endDateCalendar: any;
         dateTimeFormat: string;
@@ -44,26 +41,7 @@
 
         activate() {
             var filter = this.$scope.metricFilter;
-
-            var filterValue = {
-                metricId: filter.metricId,
-                shortTitle: filter.shortTitle,
-                startDate: filter.startDate,
-                endDate: filter.endDate
-            };
-
-            this.$scope.filterValues.push(filterValue);
-
-            this.$scope.$watchGroup(['startDate', 'endDate'], (value) => {
-                var start = value[0];
-                var end = value[1];
-
-                var filterValue: any = _.find(this.$scope.filterValues, { 'metricId': filter.metricId });
-                if (filterValue) {
-                    filterValue.startDate = start;
-                    filterValue.endDate = end;
-                }
-            });
+            this.$scope.metricFilters.push(filter);
         }
     }
 

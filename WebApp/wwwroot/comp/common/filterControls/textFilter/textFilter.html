@@ -1,3 +1,6 @@
 ﻿<div class="col-md-3" ng-controller="textFilterController">
     <h4 class="filter-heading" data-toggle="tooltip" title="{{metricFilter.description}}">{{metricFilter.shortTitle}}</h4>
+
+    <input type="text" class="form-control" maxlength="{{metricFilter.maxLength}}" ng-model="metricFilter.selectedValue" ng-if="metricFilter.numberOfLines == 1" />
+    <textarea class="form-control" maxlength="{{metricFilter.maxLength}}" rows="{{metricFilter.numberOfLines}}" ng-model="metricFilter.selectedValue" ng-if="metricFilter.numberOfLines > 1"></textarea>
 </div>

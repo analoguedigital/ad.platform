@@ -18,6 +18,7 @@
 
         activate() {
             var filter = this.$scope.metricFilter;
+            this.$scope.metricFilters.push(filter);
         }
     }
 

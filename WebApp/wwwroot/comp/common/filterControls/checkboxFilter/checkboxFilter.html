@@ -4,7 +4,7 @@
     <ul class="list-unstyled">
         <li ng-repeat="item in metricFilter.dataList track by $index">
             <div class="checkbox">
-                <input type="checkbox" value="{{item.value}}" id="chk-{{item.text}}" />
+                <input type="checkbox" value="{{item.value}}" id="chk-{{item.text}}" ng-model="item.selected" />
                 <label for="chk-{{item.text}}">{{item.text}}</label>
             </div>
         </li>

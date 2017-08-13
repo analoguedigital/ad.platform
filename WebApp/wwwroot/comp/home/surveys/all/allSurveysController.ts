@@ -3,7 +3,7 @@ module App {
     "use strict";
 
     interface IAllSurveysControllerScope extends ng.IScope {
-        filterValues: any[];
+        metricFilters: any[];
     }
 
     interface IAllSurveysController {
@@ -72,7 +72,7 @@ module App {
                 }, 500);
             });
 
-            this.$scope.filterValues = [];
+            this.$scope.metricFilters = [];
 
             this.load();
         }
@@ -109,7 +109,7 @@ module App {
         }
 
         search() {
-            console.log('filter values', this.$scope.filterValues);
+            console.log('metric filters', this.$scope.metricFilters);
         }
     }
 

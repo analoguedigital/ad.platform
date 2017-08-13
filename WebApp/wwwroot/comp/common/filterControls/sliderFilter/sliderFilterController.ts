@@ -21,6 +21,8 @@ module App {
         activate() {
             var filter = this.$scope.metricFilter;
 
+            this.$scope.metricFilters.push(filter);
+
             if (filter.dataList.length < 1) {
                 // basic slider (min/max range)
                 this.$scope.sliderOptions = {
@@ -29,6 +31,7 @@ module App {
                     showTicks: true
                 };
             } else {
+                // adhoc data list (steps slider)
                 var items = filter.dataList;
                 items.sort((a, b) => a.value - b.value);
 

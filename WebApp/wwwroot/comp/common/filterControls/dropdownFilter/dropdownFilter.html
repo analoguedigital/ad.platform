@@ -1,3 +1,7 @@
 ﻿<div class="col-md-3" ng-controller="dropdownFilterController">
     <h4 class="filter-heading" data-toggle="tooltip" title="{{metricFilter.description}}">{{metricFilter.shortTitle}}</h4>
+
+    <select class="form-control" ng-model="metricFilter.selectedValue" ng-options="item.value as item.text for item in metricFilter.dataList">
+        <option value="">Select an option</option>
+    </select>
 </div>

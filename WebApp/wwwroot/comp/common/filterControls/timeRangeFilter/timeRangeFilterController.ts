@@ -16,7 +16,10 @@
             this.activate();
         }
 
-        activate() { }
+        activate() {
+            var filter = this.$scope.metricFilter;
+            this.$scope.metricFilters.push(filter);
+        }
     }
 
     angular.module("app").controller("timeRangeFilterController", TimeRangeFilterController);
