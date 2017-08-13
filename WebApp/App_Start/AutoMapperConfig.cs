@@ -5,6 +5,8 @@ using LightMethods.Survey.Models.Entities;
 using System.Data.Entity.Core.Objects;
 using WebApi.Models;
 using System;
+using LightMethods.Survey.Models.MetricFilters;
+using WebApi.Models.MetricFilters;
 
 namespace WebApi
 {
@@ -48,8 +50,37 @@ namespace WebApi
             //.ForMember(dest => dest.Owner, opts => opts.Ignore())
             //.ForMember(dest => dest.DataList, opts => opts.Ignore());
 
+            // config metric filters mappings
+            Mapper.CreateMap<MetricFilter, MetricFilterDTO>()
+                .Include<CheckboxFilter, CheckboxFilterDTO>()
+                .Include<DateRangeFilter, DateRangeFilterDTO>()
+                .Include<DichotomousFilter, DichotomousFilterDTO>()
+                .Include<DropdownFilter, DropdownFilterDTO>()
+                .Include<NumericRangeFilter, NumericRangeFilterDTO>()
+                .Include<SliderFilter, SliderFilterDTO>()
+                .Include<TextFilter, TextFilterDTO>()
+                .Include<TimeRangeFilter, TimeRangeFilterDTO>();
 
+            Mapper.CreateMap<MetricFilterDTO, MetricFilter>()
+                .Include<CheckboxFilterDTO, CheckboxFilter>()
+                .Include<DateRangeFilterDTO, DateRangeFilter>()
+                .Include<DichotomousFilterDTO, DichotomousFilter>()
+                .Include<DropdownFilterDTO, DropdownFilter>()
+                .Include<NumericRangeFilterDTO, NumericRangeFilter>()
+                .Include<SliderFilterDTO, SliderFilter>()
+                .Include<TextFilterDTO, TextFilter>()
+                .Include<TimeRangeFilterDTO, TimeRangeFilter>();
 
+            Mapper.CreateMap<CheckboxFilter, CheckboxFilterDTO>().ReverseMap();
+            Mapper.CreateMap<DateRangeFilter, DateRangeFilterDTO>().ReverseMap();
+            Mapper.CreateMap<DichotomousFilter, DichotomousFilterDTO>().ReverseMap();
+            Mapper.CreateMap<DropdownFilter, DropdownFilterDTO>().ReverseMap();
+            Mapper.CreateMap<NumericRangeFilter, NumericRangeFilterDTO>().ReverseMap();
+            Mapper.CreateMap<SliderFilter, SliderFilterDTO>().ReverseMap();
+            Mapper.CreateMap<TextFilter, TextFilterDTO>().ReverseMap();
+            Mapper.CreateMap<TimeRangeFilter, TimeRangeFilterDTO>().ReverseMap();
+
+            // config metrics mappings
             Mapper.CreateMap<Metric, MetricDTO>()
                .Include<DateMetric, DateMetricDTO>()
                .Include<TimeMetric, TimeMetricDTO>()

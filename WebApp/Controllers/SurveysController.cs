@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
@@ -20,66 +21,44 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using System.Xml;
 using WebApi.Models;
+using WebApi.Models.FilledForms;
 
 namespace WebApi.Controllers
 {
     public class SurveysController : BaseApiController
     {
-
         FormTemplatesRepository Templates { get { return UnitOfWork.FormTemplatesRepository; } }
         FilledFormsRepository FilledForms { get { return UnitOfWork.FilledFormsRepository; } }
         FormValuesRepository FormValues { get { return UnitOfWork.FormValuesRepository; } }
 
         [Route("api/surveys")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult Get(Guid projectId, string filter = "")
+        public IHttpActionResult Get(Guid projectId)
         {
-
             //TODO: refactore to api/projects/{projectId}/surveys
-            MatchCollection filters = null;
-
-            if (filter.HasValue())
-            {
-                string strRegex = @"(?<Filter>" +
-                "\n" + @"     (?<Resource>.+?)\s+" +
-                "\n" + @"     (?<Operator>eq|ne|gt|ge|lt|le|add|sub|mul|div|mod)\s+" +
-                "\n" + @"     '?(?<Value>.+?)'?" +
-                "\n" + @")" +
-                "\n" + @"(?:" +
-                "\n" + @"    \s*$" +
-                "\n" + @"   |\s+(?:or|and|not)\s+" +
-                "\n" + @")" +
-                "\n";
-                Regex myRegex = new Regex(strRegex, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace);
-                if (!myRegex.IsMatch(filter))
-                    BadRequest();
-
-                filters = myRegex.Matches(filter);
-            }
 
             var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => s.ProjectId == projectId)
                 .ToList();
-            //.Select(f => Mapper.Map<FilledFormDTO>(f));
 
-            if (filters != null)
-            {
-                foreach (Match criteria in filters)
-                {
-                    var metricName = criteria.Groups["Resource"].Value;
-                    var op = criteria.Groups["Operator"].Value;
-                    var value = criteria.Groups["Value"].Value;
+            var result = surveys.Select(f => Mapper.Map<FilledFormDTO>(f));
 
-
-                    surveys = surveys
-                        .Where(s => (s.FormValues.Where(v => v.Metric.ShortTitle == metricName).SingleOrDefault()) == value)
-                        .ToList();
-                }
-            }
-
-            return Ok(surveys.Select(f => Mapper.Map<FilledFormDTO>(f)));
+            return Ok(result);
         }
 
+        [HttpPost]
+        [Route("api/surveys/search")]
+        [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
+        public IHttpActionResult Search(SearchDTO model)
+        {
+            var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                .Where(s => s.ProjectId == model.ProjectId)
+                .ToList();
+
+            var result = surveys.Select(f => Mapper.Map<FilledFormDTO>(f));
+
+            return Ok(result);
+        }
 
         [Route("api/projects/{projectId}/formTemplates/{formTemplateId}/data")]
         [ResponseType(typeof(IEnumerable<IEnumerable<string>>))]
@@ -178,9 +157,8 @@ namespace WebApi.Controllers
                 filledForm.FormValues.SelectMany(v => v.Attachments).ToList()
                     .ForEach(attachment => UnitOfWork.AttachmentsRepository.StoreFile(attachment));
                 UnitOfWork.Save();
+
                 return Ok();
-
-
             }
             catch (DbEntityValidationException dbEx)
             {
@@ -193,8 +171,6 @@ namespace WebApi.Controllers
                 }
                 throw dbEx;
             }
-
-            return BadRequest();
         }
 
         [HttpPut]

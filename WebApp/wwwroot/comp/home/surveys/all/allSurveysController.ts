@@ -109,7 +109,21 @@ module App {
         }
 
         search() {
-            console.log('metric filters', this.$scope.metricFilters);
+            var model = {
+                projectId: this.project.id,
+                term: this.searchTerm,
+                startDate: this.startDate,
+                endDate: this.endDate,
+                filters: this.$scope.metricFilters
+            };
+
+            console.log('model', model);
+
+            this.surveyResource.search(model, (surveys) => {
+                console.log('surveys', surveys);
+            }, (error) => {
+                console.warn(error);
+            });
         }
     }
 
