@@ -54,18 +54,6 @@ namespace LightMethods.Survey.Models.Entities
             foreach (var item in this.DataList.Items)
                 items.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
 
-            if (this.ViewType == MultipleChoiceViewType.DropDown)
-            {
-                return new DropdownFilter
-                {
-                    MetricId = this.Id,
-                    ShortTitle = this.ShortTitle,
-                    Description = this.Description,
-                    DataList = items,
-                    Type = MetricFilterTypes.Dropdown.ToString(),
-                };
-            }
-
             return new CheckboxFilter
             {
                 MetricId = this.Id,

@@ -93,24 +93,80 @@ namespace LightMethods.Survey.Models.Entities
 
         public override MetricFilter GetMetricFilter()
         {
-            var filter = new SliderFilter
+            if (this.DataList == null || !this.DataList.Items.Any())
             {
-                MetricId = this.Id,
-                ShortTitle = this.ShortTitle,
-                Description = this.Description,
-                MinValue = this.MinValue,
-                MaxValue = this.MaxValue,
-                DefaultValue = this.DefaultValue,
-                Type = MetricFilterTypes.Slider.ToString()
-            };
+                var ticks = this.MaxValue - this.MinValue;
+                if (ticks <= 5)
+                {
+                    var filter = new SliderFilter
+                    {
+                        MetricId = this.Id,
+                        ShortTitle = this.ShortTitle,
+                        Description = this.Description,
+                        MinValue = this.MinValue,
+                        MaxValue = this.MaxValue,
+                        DefaultValue = this.DefaultValue,
+                        Type = MetricFilterTypes.Slider.ToString()
+                    };
 
-            if (this.DataList != null && this.DataList.Items.Any())
+                    return filter;
+                }
+                else
+                {
+                    var filter = new DropdownFilter
+                    {
+                        MetricId = this.Id,
+                        ShortTitle = this.ShortTitle,
+                        Description = this.Description,
+                        Type = MetricFilterTypes.Dropdown.ToString()
+                    };
+
+                    for (var i = this.MinValue; i <= this.MaxValue; i++)
+                        filter.DataList.Add(new MetricFilterDataItem { Text = i.ToString(), Value = i });
+
+                    return filter;
+                }
+            }
+            else
             {
-                foreach (var item in this.DataList.Items)
-                    filter.DataList.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
+                if (this.DataList.Items.Count() <= 5)
+                {
+                    var minVal = this.DataList.Items.Min(x => x.Value);
+                    var maxVal = this.DataList.Items.Max(x => x.Value);
+
+                    var filter = new SliderFilter
+                    {
+                        MetricId = this.Id,
+                        ShortTitle = this.ShortTitle,
+                        Description = this.Description,
+                        MinValue = minVal,
+                        MaxValue = maxVal,
+                        DefaultValue = this.DefaultValue,
+                        Type = MetricFilterTypes.Slider.ToString()
+                    };
+
+                    foreach (var item in this.DataList.Items)
+                        filter.DataList.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
+
+                    return filter;
+                }
+                else
+                {
+                    var filter = new DropdownFilter
+                    {
+                        MetricId = this.Id,
+                        ShortTitle = this.ShortTitle,
+                        Description = this.Description,
+                        Type = MetricFilterTypes.Dropdown.ToString()
+                    };
+
+                    foreach (var item in this.DataList.Items)
+                        filter.DataList.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
+
+                    return filter;
+                }
             }
 
-            return filter;
         }
     }
 }
