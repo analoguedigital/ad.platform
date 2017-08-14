@@ -178,9 +178,8 @@ namespace WebApi.Controllers
                 filledForm.FormValues.SelectMany(v => v.Attachments).ToList()
                     .ForEach(attachment => UnitOfWork.AttachmentsRepository.StoreFile(attachment));
                 UnitOfWork.Save();
+
                 return Ok();
-
-
             }
             catch (DbEntityValidationException dbEx)
             {
@@ -193,8 +192,6 @@ namespace WebApi.Controllers
                 }
                 throw dbEx;
             }
-
-            return BadRequest();
         }
 
         [HttpPut]
