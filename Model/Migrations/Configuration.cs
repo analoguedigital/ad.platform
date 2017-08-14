@@ -125,8 +125,8 @@ namespace LightMethods.Survey.Models.Migrations
                     Town = "London",
                     County = "London",
                     Postcode = "EC23 4AD",
-                    DefaultLanguageId = LanguagesRepository.Persian.Id,
-                    DefaultCalendarId = CalendarsRepository.Persian.Id,
+                    DefaultLanguageId = LanguagesRepository.English.Id,
+                    DefaultCalendarId = CalendarsRepository.Gregorian.Id,
                     IsActive = true,
                     SubscriptionEnabled = true,
                     SubscriptionMonthlyRate = 6M
