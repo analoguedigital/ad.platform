@@ -351,6 +351,8 @@ namespace WebApi.Models
                 IsRootUser = false,
                 IsActive = true,
                 TypeId = OrgUserTypesRepository.TeamUser.Id,
+                IsMobileUser = true,
+                IsWebUser = false
             };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);

@@ -87,7 +87,7 @@ namespace WebApi
                 if (referer.Host == this.HttpContext.Request.Url.Host)
                     return user.IsWebUser;
 
-                return false;
+                return user.IsMobileUser;
             }
 
             return user.IsMobileUser;
