@@ -56,19 +56,27 @@ namespace WebApi.Controllers
             {
                 var filterValue = Mapper.Map<FilterValue>(filter);
 
-                var foundMetrics = template.MetricGroups.Select(x => x.Metrics.Where(m => m.ShortTitle == filter.ShortTitle)).ToList();
-                if (foundMetrics.Any())
-                {
-                    var metric = foundMetrics[0].ToList()[0];
-                    var exp = metric.GetFilterExpression(filterValue);
 
-                    surveys = surveys.Where(exp);
-                }
+
+                var metric = this.FindMetricById(filter.Id, template);
+                if (metric != null)
+                    surveys = surveys.Where(metric.GetFilterExpression(filterValue));
             }
 
             var result = surveys.ToList().Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
 
             return Ok(result);
+        }
+
+        private Metric FindMetricById(Guid id, FormTemplate template)
+        {
+            Metric result = null;
+
+            foreach (var group in template.MetricGroups)
+                foreach (var metric in group.Metrics)
+                    if (metric.Id == id) result = metric;
+
+            return result;
         }
 
         [Route("api/projects/{projectId}/formTemplates/{formTemplateId}/data")]

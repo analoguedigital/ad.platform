@@ -59,6 +59,7 @@ namespace LightMethods.Survey.Models.Entities
         {
             return new NumericRangeFilter
             {
+                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
                 MinValue = this.MinVal,
                 MaxValue = this.MaxVal,

@@ -98,6 +98,7 @@ namespace LightMethods.Survey.Models.Entities
                 // use the range filter for numeric sliders
                 return new NumericRangeFilter
                 {
+                    MetricId = this.Id,
                     ShortTitle = this.ShortTitle,
                     MinValue = this.MinValue,
                     MaxValue = this.MaxValue,
@@ -109,6 +110,7 @@ namespace LightMethods.Survey.Models.Entities
                 // use the checkbox filter for data lists
                 var filter = new CheckboxFilter
                 {
+                    MetricId = this.Id,
                     ShortTitle = this.ShortTitle,
                     Type = MetricFilterTypes.Checkbox.ToString()
                 };

@@ -13,6 +13,8 @@ namespace LightMethods.Survey.Models.MetricFilters
 
     public class MetricFilter
     {
+        public Guid MetricId { get; set; }
+
         public string ShortTitle { get; set; }
 
         public string Type { get; set; }

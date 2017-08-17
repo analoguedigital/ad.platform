@@ -52,6 +52,7 @@ namespace LightMethods.Survey.Models.Entities
         {
             return new DateRangeFilter
             {
+                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
                 CanSelectTime = this.HasTimeValue,
                 Type = MetricFilterTypes.DateRange.ToString()

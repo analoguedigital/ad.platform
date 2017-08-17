@@ -29,6 +29,7 @@
             };
 
             var filterValue = {
+                id: filter.metricId,
                 shortTitle: filter.shortTitle,
                 type: 'multiple',
                 values: []
@@ -55,7 +56,7 @@
                 }
             }
 
-            var filterValue: any = _.find(this.$scope.filterValues, { 'shortTitle': this.$scope.metricFilter.shortTitle });
+            var filterValue: any = _.find(this.$scope.filterValues, { 'id': this.$scope.metricFilter.metricId });
             if (filterValue) {
                 filterValue.values = values;
             }

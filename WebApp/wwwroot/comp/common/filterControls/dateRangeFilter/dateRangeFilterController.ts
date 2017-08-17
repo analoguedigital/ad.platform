@@ -49,6 +49,7 @@
             this.$scope.metricFilters.push(filter);
 
             var filterValue = {
+                id: filter.metricId,
                 shortTitle: filter.shortTitle,
                 type: 'range',
                 fromValue: undefined,
@@ -61,7 +62,7 @@
                 var start = values[0];
                 var end = values[1];
 
-                var filterValue: any = _.find(this.$scope.filterValues, { 'shortTitle': this.$scope.metricFilter.shortTitle });
+                var filterValue: any = _.find(this.$scope.filterValues, { 'id': this.$scope.metricFilter.metricId });
                 if (filterValue) {
                     filterValue.fromValue = start;
                     filterValue.toValue = end;
