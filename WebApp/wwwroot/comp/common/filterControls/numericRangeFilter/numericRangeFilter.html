@@ -1,11 +1,11 @@
 ﻿<div class="col-md-3" ng-controller="numericRangeFilterController">
-    <h4 class="filter-heading" data-toggle="tooltip" title="{{metricFilter.description}}">{{metricFilter.shortTitle}}</h4>
+    <h4 class="filter-heading">{{metricFilter.shortTitle}}</h4>
     <div class="row">
         <div class="col-md-6">
-            <input type="number" class="form-control" min="{{metricFilter.minValue}}" max="{{metricFilter.maxValue}}" placeholder="start value" ng-model="metricFilter.startValue" />
+            <input type="number" class="form-control" min="{{metricFilter.minValue}}" max="{{metricFilter.maxValue}}" placeholder="start value" ng-model="model.startValue" />
         </div>
         <div class="col-md-6">
-            <input type="number" class="form-control" min="{{metricFilter.minValue}}" max="{{metricFilter.maxValue}}" placeholder="end value" ng-model="metricFilter.endValue" />
+            <input type="number" class="form-control" min="{{metricFilter.minValue}}" max="{{metricFilter.maxValue}}" placeholder="end value" ng-model="model.endValue" />
         </div>
     </div>
 </div>

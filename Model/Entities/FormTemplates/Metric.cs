@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DAL;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -124,7 +125,12 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual MetricFilter GetMetricFilter()
         {
-            return new MetricFilter();
+            throw new InvalidOperationException();
+        }
+
+        public virtual Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
+        {
+            throw new InvalidOperationException();
         }
     }
 }

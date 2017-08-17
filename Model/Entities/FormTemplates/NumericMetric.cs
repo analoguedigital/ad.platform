@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using AppHelper;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -59,13 +59,35 @@ namespace LightMethods.Survey.Models.Entities
         {
             return new NumericRangeFilter
             {
-                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                Description = this.Description,
                 MinValue = this.MinVal,
                 MaxValue = this.MaxVal,
                 Type = MetricFilterTypes.NumericRange.ToString()
             };
+        }
+
+        public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
+        {
+            var rangeValue = filter as RangeFilterValue;
+            var fromValue = rangeValue.FromValue as long?;
+            var toValue = rangeValue.ToValue as long?;
+
+            Expression<Func<FilledForm, bool>> result = null;
+
+            if (fromValue.HasValue && !toValue.HasValue)
+            {   // we have a start value
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue.Value);
+            }
+            else if (!fromValue.HasValue && toValue.HasValue)
+            {   // we have a end value
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue <= toValue);
+            }
+            else if (fromValue.HasValue && toValue.HasValue)
+            {   // we have a numeric range
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue && v.NumericValue <= toValue);
+            }
+
+            return result;
         }
     }
 }

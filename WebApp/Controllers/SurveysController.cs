@@ -1,28 +1,23 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.MetricFilters;
+using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
-using System.Dynamic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Xml;
 using WebApi.Models;
 using WebApi.Models.FilledForms;
-using WebApi.Models.MetricFilters;
 
 namespace WebApi.Controllers
 {
@@ -52,63 +47,26 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Search(SearchDTO model)
         {
-            var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                .Where(s => s.ProjectId == model.ProjectId);
+            var template = this.UnitOfWork.FormTemplatesRepository.Find(model.FormTemplateId);
 
-            // apply filters
-            foreach (var filter in model.Filters)
+            var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == model.FormTemplateId);
+
+            foreach (var filter in model.FilterValues)
             {
-                MetricFilterTypes type = (MetricFilterTypes)Enum.Parse(typeof(MetricFilterTypes), filter.Type, true);
-                switch (type)
+                var filterValue = Mapper.Map<FilterValue>(filter);
+
+                var foundMetrics = template.MetricGroups.Select(x => x.Metrics.Where(m => m.ShortTitle == filter.ShortTitle)).ToList();
+                if (foundMetrics.Any())
                 {
-                    case MetricFilterTypes.Text:
-                        break;
-                    case MetricFilterTypes.Dropdown:
-                        break;
-                    case MetricFilterTypes.Checkbox:
-                        break;
-                    case MetricFilterTypes.Dichotomous:
-                        var dichotomouFilter = filter as DichotomousFilterDTO;
+                    var metric = foundMetrics[0].ToList()[0];
+                    var exp = metric.GetFilterExpression(filterValue);
 
-                        //surveys = surveys.Where(s => s.FormValues.Any(fv => fv.MetricId == dichotomouFilter.MetricId && fv.BoolValue == dichotomouFilter.SelectedValue));
-
-                        break;
-                    case MetricFilterTypes.Slider:
-                        var sliderFilter = filter as SliderFilterDTO;
-
-                        surveys = surveys.Where(s => s.FormValues.Any(fv => fv.MetricId == sliderFilter.MetricId && fv.NumericValue == sliderFilter.SelectedValue));
-
-                        break;
-                    case MetricFilterTypes.DateRange:
-                        var dateRangeFilter = filter as DateRangeFilterDTO;
-                        var startDate = dateRangeFilter.StartDate;
-                        var endDate = dateRangeFilter.EndDate;
-
-                        if (startDate.HasValue && !endDate.HasValue)
-                        {
-                            surveys = surveys.Where(s => s.FormValues.Any(fv => fv.MetricId == dateRangeFilter.MetricId && fv.DateValue >= startDate));
-                        }
-                        else if (!startDate.HasValue && endDate.HasValue)
-                        {
-                            surveys = surveys.Where(s => s.FormValues.Any(fv => fv.MetricId == dateRangeFilter.MetricId && fv.DateValue <= endDate));
-                        }
-                        else if (startDate.HasValue && endDate.HasValue)
-                        {
-                            surveys = surveys.Where(s => s.FormValues.Any(fv => fv.MetricId == dateRangeFilter.MetricId && fv.DateValue >= startDate && fv.DateValue <= endDate));
-                        }
-
-                        break;
-                    case MetricFilterTypes.NumericRange:
-                        break;
-                    case MetricFilterTypes.TimeRange:
-                        break;
-                    default:
-                        break;
+                    surveys = surveys.Where(exp);
                 }
             }
 
-            var dataset = surveys.ToList();
-            var result = dataset.Select(s => Mapper.Map<FilledFormDTO>(s));
+            var result = surveys.ToList().Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
 
             return Ok(result);
         }

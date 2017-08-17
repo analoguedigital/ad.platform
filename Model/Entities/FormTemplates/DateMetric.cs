@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using AppHelper;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -52,12 +52,34 @@ namespace LightMethods.Survey.Models.Entities
         {
             return new DateRangeFilter
             {
-                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                Description = this.Description,
                 CanSelectTime = this.HasTimeValue,
                 Type = MetricFilterTypes.DateRange.ToString()
             };
+        }
+
+        public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
+        {
+            var rangeValue = filter as RangeFilterValue;
+            var fromDate = rangeValue.FromValue as DateTime?;
+            var toDate = rangeValue.ToValue as DateTime?;
+
+            Expression<Func<FilledForm, bool>> result = null;
+
+            if (fromDate.HasValue && !toDate.HasValue)
+            {   // we have a start date
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.DateValue >= fromDate.Value);
+            }
+            else if (!fromDate.HasValue && toDate.HasValue)
+            {   // we have a end date
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.DateValue <= toDate);
+            }
+            else if (fromDate.HasValue && toDate.HasValue)
+            {   // we have a date range
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.DateValue >= fromDate && v.DateValue <= toDate);
+            }
+
+            return result;
         }
     }
 }

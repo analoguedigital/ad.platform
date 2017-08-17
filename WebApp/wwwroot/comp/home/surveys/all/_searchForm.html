@@ -19,7 +19,7 @@
                 <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
             </div>
         </div>
-        <div class="col-md-2 pull-right" style="direction: rtl">
+        <div class="col-md-3 pull-right" style="direction: rtl">
             <button type="button" class="btn btn-primary" ng-click="ctrl.search()">
                 <i class="fa fa-search"></i> Search
             </button>
@@ -28,6 +28,10 @@
                 <i class="fa fa-chevron-down" ng-if="!ctrl.isAdvSearchOpen"></i>
                 <i class="fa fa-chevron-up" ng-if="ctrl.isAdvSearchOpen"></i>
                 Advanced
+            </button>
+
+            <button type="button" class="btn btn-default" ng-click="ctrl.resetSearch()" ng-if="ctrl.isAdvSearchOpen">
+                <i class="fa fa-refresh"></i> Reset
             </button>
         </div>
     </div>

@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using AppHelper;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -95,78 +95,77 @@ namespace LightMethods.Survey.Models.Entities
         {
             if (this.DataList == null || !this.DataList.Items.Any())
             {
-                var ticks = this.MaxValue - this.MinValue;
-                if (ticks <= 5)
+                // use the range filter for numeric sliders
+                return new NumericRangeFilter
                 {
-                    var filter = new SliderFilter
-                    {
-                        MetricId = this.Id,
-                        ShortTitle = this.ShortTitle,
-                        Description = this.Description,
-                        MinValue = this.MinValue,
-                        MaxValue = this.MaxValue,
-                        DefaultValue = this.DefaultValue,
-                        Type = MetricFilterTypes.Slider.ToString()
-                    };
-
-                    return filter;
-                }
-                else
-                {
-                    var filter = new DropdownFilter
-                    {
-                        MetricId = this.Id,
-                        ShortTitle = this.ShortTitle,
-                        Description = this.Description,
-                        Type = MetricFilterTypes.Dropdown.ToString()
-                    };
-
-                    for (var i = this.MinValue; i <= this.MaxValue; i++)
-                        filter.DataList.Add(new MetricFilterDataItem { Text = i.ToString(), Value = i });
-
-                    return filter;
-                }
+                    ShortTitle = this.ShortTitle,
+                    MinValue = this.MinValue,
+                    MaxValue = this.MaxValue,
+                    Type = MetricFilterTypes.NumericRange.ToString()
+                };
             }
             else
             {
-                if (this.DataList.Items.Count() <= 5)
+                // use the checkbox filter for data lists
+                var filter = new CheckboxFilter
                 {
-                    var minVal = this.DataList.Items.Min(x => x.Value);
-                    var maxVal = this.DataList.Items.Max(x => x.Value);
+                    ShortTitle = this.ShortTitle,
+                    Type = MetricFilterTypes.Checkbox.ToString()
+                };
 
-                    var filter = new SliderFilter
-                    {
-                        MetricId = this.Id,
-                        ShortTitle = this.ShortTitle,
-                        Description = this.Description,
-                        MinValue = minVal,
-                        MaxValue = maxVal,
-                        DefaultValue = this.DefaultValue,
-                        Type = MetricFilterTypes.Slider.ToString()
-                    };
+                var items = new List<MetricFilterOption>();
+                foreach (var item in this.DataList.AllItems)
+                    items.Add(new MetricFilterOption { Text = item.Text, Value = item.Value });
 
-                    foreach (var item in this.DataList.Items)
-                        filter.DataList.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
+                filter.DataList = items;
 
-                    return filter;
-                }
-                else
-                {
-                    var filter = new DropdownFilter
-                    {
-                        MetricId = this.Id,
-                        ShortTitle = this.ShortTitle,
-                        Description = this.Description,
-                        Type = MetricFilterTypes.Dropdown.ToString()
-                    };
-
-                    foreach (var item in this.DataList.Items)
-                        filter.DataList.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
-
-                    return filter;
-                }
+                return filter;
             }
 
+        }
+
+        public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
+        {
+            if (filter is RangeFilterValue)
+            {
+                var rangeFilterValue = filter as RangeFilterValue;
+                var fromValue = rangeFilterValue.FromValue as long?;
+                var toValue = rangeFilterValue.ToValue as long?;
+
+                Expression<Func<FilledForm, bool>> result = null;
+
+                if (fromValue.HasValue && !toValue.HasValue)
+                {
+                    result = f => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue.Value);
+                }
+                else if (!fromValue.HasValue && toValue.HasValue)
+                {
+                    result = f => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue <= toValue.Value);
+                }
+                else if (fromValue.HasValue && toValue.HasValue)
+                {
+                    result = f => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue.Value && v.NumericValue <= toValue.Value);
+                }
+
+                return result;
+            }
+
+            if (filter is MultipleFilterValue)
+            {
+                var multipleFilterValue = filter as MultipleFilterValue;
+                var values = new List<double?>();
+                foreach (var item in multipleFilterValue.Values)
+                {
+                    var value = item as long?;
+                    values.Add(Convert.ToDouble(value));
+                }
+
+                Expression<Func<FilledForm, bool>> result = f => f.FormValues.Any(v => v.MetricId == this.Id && values.Contains(v.NumericValue));
+
+                return result;
+            }
+
+            throw new InvalidOperationException("FilterValue could not be cast! invalid value.");
         }
     }
 }

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-using System.Xml.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using AppHelper;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -50,18 +47,32 @@ namespace LightMethods.Survey.Models.Entities
 
         public override MetricFilter GetMetricFilter()
         {
-            var items = new List<MetricFilterDataItem>();
-            foreach (var item in this.DataList.Items)
-                items.Add(new MetricFilterDataItem { Text = item.Text, Value = item.Value });
-
-            return new CheckboxFilter
+            var filter = new CheckboxFilter
             {
-                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                Description = this.Description,
-                DataList = items,
                 Type = MetricFilterTypes.Checkbox.ToString()
             };
+
+            var items = new List<MetricFilterOption>();
+            foreach (var item in this.DataList.AllItems)
+                items.Add(new MetricFilterOption { Id = item.Id, Text = item.Text, Value = item.Value });
+
+            filter.DataList = items;
+
+            return filter;
+        }
+
+        public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
+        {
+            var multipleFilterValue = filter as MultipleFilterValue;
+            var values = new List<Guid?>();
+            foreach (var item in multipleFilterValue.Values)
+                values.Add(Guid.Parse(item.ToString()));
+
+            Expression<Func<FilledForm, bool>> result = f => f.FormValues.Any(v => v.MetricId == this.Id && values.Contains(v.GuidValue));
+
+            return result;
         }
     }
+
 }

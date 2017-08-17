@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.MetricFilters
 {
     public enum MetricFilterTypes
     {
         Text,
-        Dropdown,
         Checkbox,
-        Dichotomous,
-        Slider,
         DateRange,
         NumericRange,
         TimeRange
@@ -20,21 +13,18 @@ namespace LightMethods.Survey.Models.MetricFilters
 
     public class MetricFilter
     {
-        public Guid MetricId { get; set; }
-
         public string ShortTitle { get; set; }
-
-        public string Description { get; set; }
 
         public string Type { get; set; }
     }
 
-    public class MetricFilterDataItem
+    public class MetricFilterOption
     {
+        public Guid? Id { get; set; }
+
         public string Text { get; set; }
 
         public int Value { get; set; }
 
-        public bool Selected { get; set; }
     }
 }

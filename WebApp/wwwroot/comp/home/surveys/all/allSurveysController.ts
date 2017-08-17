@@ -4,6 +4,7 @@ module App {
 
     interface IAllSurveysControllerScope extends ng.IScope {
         metricFilters: any[];
+        filterValues: any[];
     }
 
     interface IAllSurveysController {
@@ -25,6 +26,7 @@ module App {
         activate: () => void;
         delete: (id: string) => void;
         search: () => void;
+        resetSearch: () => void;
         openStartDateCalendar: () => void;
         openEndDateCalendar: () => void;
     }
@@ -73,6 +75,7 @@ module App {
             });
 
             this.$scope.metricFilters = [];
+            this.$scope.filterValues = [];
 
             this.load();
         }
@@ -106,21 +109,87 @@ module App {
 
         toggleAdvancedSearch() {
             this.isAdvSearchOpen = !this.isAdvSearchOpen;
+
+            if (this.isAdvSearchOpen) {
+                this.$timeout(() => {
+                    this.$scope.$broadcast('rzSliderForceRender');
+                }, 100);
+            }
+        }
+
+        resetSearch() {
+            _.forEach(this.$scope.filterValues, (fv) => {
+                switch (fv.type) {
+                    case "single": {
+                        fv.value = undefined;
+                        break;
+                    }
+                    case "range": {
+                        fv.fromValue = undefined;
+                        fv.toValue = undefined;
+                        break;
+                    }
+                    case "multiple": {
+                        fv.values = [];
+                        break;
+                    }
+                }
+            });
+
+            this.$scope.$broadcast('reset-filter-controls');
+
+            this.load();
+        }
+
+        getFilterValues() {
+            var filterValues = [];
+
+            _.forEach(this.$scope.filterValues, (filterValue) => {
+                switch (filterValue.type) {
+                    case "single": {
+                        if (filterValue.value && filterValue.value.length)
+                            filterValues.push(filterValue);
+
+                        break;
+                    }
+                    case "range": {
+                        var fromValue = filterValue.fromValue;
+                        var toValue = filterValue.toValue;
+
+                        if (fromValue || toValue)
+                            filterValues.push(filterValue);
+
+                        break;
+                    }
+                    case "multiple": {
+                        if (filterValue.values && filterValue.values.length)
+                            filterValues.push(filterValue);
+
+                        break;
+                    }
+                }
+            });
+
+            return filterValues;
         }
 
         search() {
+            var filterValues = this.getFilterValues();
+
             var model = {
                 projectId: this.project.id,
+                formTemplateId: this.formTemplate.id,
                 term: this.searchTerm,
                 startDate: this.startDate,
                 endDate: this.endDate,
-                filters: this.$scope.metricFilters
+                filterValues: filterValues
             };
 
-            console.log('model', model);
+            console.info('model', model);
 
-            this.surveyResource.search(model, (surveys) => {
-                console.log('surveys', surveys);
+            this.surveyResource.search(model, (surveys: Models.ISurvey[]) => {
+                this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
+                this.displayedSurveys = [].concat(this.surveys);
             }, (error) => {
                 console.warn(error);
             });

@@ -120,12 +120,13 @@
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
+    <Compile Include="FilterValues\FilterValue.cs" />
+    <Compile Include="FilterValues\MultipleFilterValue.cs" />
+    <Compile Include="FilterValues\RangeFilterValue.cs" />
+    <Compile Include="FilterValues\SingleFilterValue.cs" />
     <Compile Include="MetricFilters\CheckboxFilter.cs" />
     <Compile Include="MetricFilters\DateRangeFilter.cs" />
-    <Compile Include="MetricFilters\DichotomousFilter.cs" />
-    <Compile Include="MetricFilters\DropdownFilter.cs" />
     <Compile Include="MetricFilters\NumericRangeFilter.cs" />
-    <Compile Include="MetricFilters\SliderFilter.cs" />
     <Compile Include="MetricFilters\TextFilter.cs" />
     <Compile Include="Entities\FormTemplates\TimeMetric.cs" />
     <Compile Include="Entities\FormTemplates\FilledFormLocation.cs" />

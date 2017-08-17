@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using AppHelper;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -43,13 +43,32 @@ namespace LightMethods.Survey.Models.Entities
 
         public override MetricFilter GetMetricFilter()
         {
-            return new DichotomousFilter
+            var filter = new CheckboxFilter
             {
-                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
-                Description = this.Description,
-                Type = MetricFilterTypes.Dichotomous.ToString()
+                Type = MetricFilterTypes.Checkbox.ToString()
             };
+
+            filter.DataList.Add(new MetricFilterOption { Text = "Yes", Value = 1 });
+            filter.DataList.Add(new MetricFilterOption { Text = "No", Value = 0 });
+
+            return filter;
+        }
+
+        public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
+        {
+            var multipleFilterValue = filter as MultipleFilterValue;
+            var values = new List<bool?>();
+
+            foreach (var item in multipleFilterValue.Values)
+            {
+                var value = item as long?;
+                values.Add(Convert.ToBoolean(value));
+            }
+
+            Expression<Func<FilledForm, bool>> result = f => f.FormValues.Any(v => v.MetricId == this.Id && values.Contains(v.BoolValue));
+
+            return result;
         }
 
     }
