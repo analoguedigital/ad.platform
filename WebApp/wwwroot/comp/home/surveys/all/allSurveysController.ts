@@ -185,13 +185,11 @@ module App {
                 filterValues: filterValues
             };
 
-            console.info('model', model);
-
             this.surveyResource.search(model, (surveys: Models.ISurvey[]) => {
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
                 this.displayedSurveys = [].concat(this.surveys);
             }, (error) => {
-                console.warn(error);
+                console.error(error);
             });
         }
     }

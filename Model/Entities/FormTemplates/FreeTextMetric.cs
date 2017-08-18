@@ -69,7 +69,7 @@ namespace LightMethods.Survey.Models.Entities
             var singleValue = filterValue as SingleFilterValue;
             var value = singleValue.Value.ToString();
 
-            Expression<Func<FilledForm, bool>> result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.TextValue.Contains(value));
+            Expression<Func<FilledForm, bool>> result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.TextValue.Contains(value, false));
 
             return result;
         }
