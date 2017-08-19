@@ -56,7 +56,6 @@ namespace LightMethods.Survey.Models.Entities
         {
             return new TextFilter
             {
-                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
                 MaxLength = this.MaxLength,
                 NumberOfLines = this.NumberOfLine,

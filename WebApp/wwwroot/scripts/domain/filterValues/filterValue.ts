@@ -2,7 +2,6 @@
     "use strict";
 
     export interface IFilterValue {
-        id: string;
         type: string;
         shortTitle: string;
     }

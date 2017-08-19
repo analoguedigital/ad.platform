@@ -21,7 +21,6 @@
             var filter = this.$scope.metricFilter;
 
             this.$scope.model = {
-                id: filter.metricId,
                 shortTitle: filter.shortTitle,
                 type: Models.FilterValueTypes.MultipleFilterValue,
                 options: filter.dataList,

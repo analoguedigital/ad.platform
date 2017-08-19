@@ -2,7 +2,6 @@
     "use strict";
 
     export interface IMetricFilter {
-        metricId: string;
         shortTitle: string;
         type: string;
     }

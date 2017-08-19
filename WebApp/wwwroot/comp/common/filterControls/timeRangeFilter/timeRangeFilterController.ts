@@ -20,7 +20,6 @@
             var filter = this.$scope.metricFilter;
 
             this.$scope.model = {
-                id: filter.metricId,
                 shortTitle: filter.shortTitle,
                 type: Models.FilterValueTypes.RangeFilterValue,
                 fromValue: undefined,

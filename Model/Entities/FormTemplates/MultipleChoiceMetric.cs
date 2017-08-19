@@ -49,7 +49,6 @@ namespace LightMethods.Survey.Models.Entities
         {
             var filter = new CheckboxFilter
             {
-                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
                 Type = MetricFilterTypes.Checkbox.ToString()
             };

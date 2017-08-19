@@ -59,7 +59,7 @@ namespace WebApi.Controllers
             {
                 var filterValue = Mapper.Map<FilterValue>(filter);
 
-                var metric = this.FindMetricById(filter.Id, template);
+                var metric = this.FindMetricByShortTitle(filter.ShortTitle, template);
                 if (metric != null)
                     surveys = surveys.Where(metric.GetFilterExpression(filterValue));
             }
@@ -86,13 +86,13 @@ namespace WebApi.Controllers
             return surveys;
         }
 
-        private Metric FindMetricById(Guid id, FormTemplate template)
+        private Metric FindMetricByShortTitle(string shortTitle, FormTemplate template)
         {
             Metric result = null;
 
             foreach (var group in template.MetricGroups)
-                foreach (var metric in group.Metrics)
-                    if (metric.Id == id) result = metric;
+                foreach (var metric in group.Metrics.Where(m => !m.IsArchived()))
+                    if (metric.ShortTitle == shortTitle) result = metric;
 
             return result;
         }

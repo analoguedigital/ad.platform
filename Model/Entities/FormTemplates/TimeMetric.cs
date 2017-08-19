@@ -45,7 +45,6 @@ namespace LightMethods.Survey.Models.Entities
         {
             return new TimeRangeFilter
             {
-                MetricId = this.Id,
                 ShortTitle = this.ShortTitle,
                 Type = MetricFilterTypes.TimeRange.ToString()
             };
