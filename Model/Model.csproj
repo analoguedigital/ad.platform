@@ -120,6 +120,7 @@
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
+    <Compile Include="Extenstions\JsonCreationConverter.cs" />
     <Compile Include="FilterValues\FilterValue.cs" />
     <Compile Include="FilterValues\MultipleFilterValue.cs" />
     <Compile Include="FilterValues\RangeFilterValue.cs" />

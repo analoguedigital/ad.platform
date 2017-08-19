@@ -5,7 +5,6 @@ using System;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
 using WebApi.Models;
-using WebApi.Models.MetricFilters;
 
 namespace WebApi
 {
@@ -48,21 +47,6 @@ namespace WebApi
             Mapper.CreateMap<DataListRelationshipDTO, DataListRelationship>();
             //.ForMember(dest => dest.Owner, opts => opts.Ignore())
             //.ForMember(dest => dest.DataList, opts => opts.Ignore());
-
-            // config filter value mappings
-            Mapper.CreateMap<FilterValue, FilterValueDTO>()
-                .Include<SingleFilterValue, SingleFilterValueDTO>()
-                .Include<RangeFilterValue, RangeFilterValueDTO>()
-                .Include<MultipleFilterValue, MultipleFilterValueDTO>();
-
-            Mapper.CreateMap<FilterValueDTO, FilterValue>()
-                .Include<SingleFilterValueDTO, SingleFilterValue>()
-                .Include<RangeFilterValueDTO, RangeFilterValue>()
-                .Include<MultipleFilterValueDTO, MultipleFilterValue>();
-
-            Mapper.CreateMap<SingleFilterValue, SingleFilterValueDTO>().ReverseMap();
-            Mapper.CreateMap<RangeFilterValue, RangeFilterValueDTO>().ReverseMap();
-            Mapper.CreateMap<MultipleFilterValue, MultipleFilterValueDTO>().ReverseMap();
 
             // config metrics mappings
             Mapper.CreateMap<Metric, MetricDTO>()

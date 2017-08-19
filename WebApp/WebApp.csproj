@@ -269,7 +269,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Code\CustomMultipartFormDataStreamProvider.cs" />
-    <Compile Include="App_Code\JsonCreationConverter.cs" />
     <Compile Include="App_Code\ServiceContext.cs" />
     <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\AuthorizationServerProvider.cs" />
@@ -304,10 +303,6 @@
     <Compile Include="Models\Account\IdentityModels.cs" />
     <Compile Include="Models\ChangePasswordDTO.cs" />
     <Compile Include="Models\FilledForms\SearchDTO.cs" />
-    <Compile Include="Models\MetricFilters\FilterValueDTO.cs" />
-    <Compile Include="Models\MetricFilters\MultipleFilterValueDTO.cs" />
-    <Compile Include="Models\MetricFilters\RangeFilterValueDTO.cs" />
-    <Compile Include="Models\MetricFilters\SingleFilterValueDTO.cs" />
     <Compile Include="Models\ProjectSummaryPrintSession.cs" />
     <Compile Include="Models\DataList.cs" />
     <Compile Include="Models\DataListItem.cs" />

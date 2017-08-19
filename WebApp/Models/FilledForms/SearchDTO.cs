@@ -1,6 +1,6 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.FilterValues;
+using System;
 using System.Collections.Generic;
-using WebApi.Models.MetricFilters;
 
 namespace WebApi.Models.FilledForms
 {
@@ -16,6 +16,6 @@ namespace WebApi.Models.FilledForms
 
         public DateTime? EndDate { get; set; }
 
-        public List<FilterValueDTO> FilterValues { get; set; }
+        public List<FilterValue> FilterValues { get; set; }
     }
 }
