@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.FilterValues;
+using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Models;
-using WebApi.Models.FilledForms;
 
 namespace WebApi.Controllers
 {
@@ -45,7 +45,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/surveys/search")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult Search(SearchDTO model)
+        public IHttpActionResult Search(Search model)
         {
             var template = this.UnitOfWork.FormTemplatesRepository.Find(model.FormTemplateId);
 

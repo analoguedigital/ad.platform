@@ -1,10 +1,13 @@
 ﻿using LightMethods.Survey.Models.FilterValues;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebApi.Models.FilledForms
+namespace LightMethods.Survey.Models.MetricFilters
 {
-    public class SearchDTO
+    public class Search
     {
         public Guid ProjectId { get; set; }
 
@@ -17,5 +20,10 @@ namespace WebApi.Models.FilledForms
         public DateTime? EndDate { get; set; }
 
         public List<FilterValue> FilterValues { get; set; }
+
+        public Search()
+        {
+            this.FilterValues = new List<FilterValue>();
+        }
     }
 }

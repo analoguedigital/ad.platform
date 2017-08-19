@@ -302,7 +302,6 @@
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\IdentityModels.cs" />
     <Compile Include="Models\ChangePasswordDTO.cs" />
-    <Compile Include="Models\FilledForms\SearchDTO.cs" />
     <Compile Include="Models\ProjectSummaryPrintSession.cs" />
     <Compile Include="Models\DataList.cs" />
     <Compile Include="Models\DataListItem.cs" />
