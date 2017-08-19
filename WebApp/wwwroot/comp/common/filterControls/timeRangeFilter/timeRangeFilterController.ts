@@ -6,18 +6,13 @@
     }
 
     interface ITimeRangeFilterControllerScope extends ng.IScope {
-        model: any;
+        model: Models.IRangeFilterValue;
     }
 
     class TimeRangeFilterController implements ITimeRangeFilterController {
         static $inject: string[] = ['$scope'];
 
         constructor(private $scope: ITimeRangeFilterControllerScope) {
-            $scope.model = {
-                startTime: undefined,
-                endTime: undefined
-            };
-
             this.activate();
         }
 
@@ -27,7 +22,7 @@
             this.$scope.model = {
                 id: filter.metricId,
                 shortTitle: filter.shortTitle,
-                type: 'range',
+                type: Models.FilterValueTypes.RangeFilterValue,
                 fromValue: undefined,
                 toValue: undefined
             };

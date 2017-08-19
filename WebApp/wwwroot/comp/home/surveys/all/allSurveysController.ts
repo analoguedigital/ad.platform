@@ -3,7 +3,7 @@ module App {
     "use strict";
 
     interface IAllSurveysControllerScope extends ng.IScope {
-        filterValues: any[];
+        filterValues: Models.IFilterValue[];
     }
 
     interface IAllSurveysController {
@@ -21,6 +21,7 @@ module App {
         endDate: Date;
         startDateCalendar: any;
         endDateCalendar: any;
+        metricFilters: Models.IMetricFilter[];
 
         activate: () => void;
         delete: (id: string) => void;
@@ -48,7 +49,7 @@ module App {
         endDateCalendar: any;
 
         isAdvSearchOpen: boolean;
-        metricFilters: any[];
+        metricFilters: Models.IMetricFilter[];
 
         static $inject: string[] = ["$scope", "$timeout", "project", "formTemplate", "formTemplateResource", "surveyResource", "dataResource"];
         constructor(
@@ -132,17 +133,23 @@ module App {
             _.forEach(this.$scope.filterValues, (fv) => {
                 switch (fv.type) {
                     case "single": {
-                        fv.value = undefined;
+                        var singleValue = <Models.ISingleFilterValue>fv;
+                        singleValue.value = undefined;
+
                         break;
                     }
                     case "range": {
-                        fv.fromValue = undefined;
-                        fv.toValue = undefined;
+                        var rangeValue = <Models.IRangeFilterValue>fv;
+
+                        rangeValue.fromValue = undefined;
+                        rangeValue.toValue = undefined;
+
                         break;
                     }
                     case "multiple": {
-                        fv.values = [];
-                        _.forEach(fv.options, (opt) => { opt.selected = false });
+                        var multipleValue = <Models.IMultipleFilterValue>fv;
+                        multipleValue.values = [];
+                        _.forEach(multipleValue.options, (opt) => { opt.selected = false });
 
                         break;
                     }
@@ -158,14 +165,16 @@ module App {
             _.forEach(this.$scope.filterValues, (filterValue) => {
                 switch (filterValue.type) {
                     case "single": {
-                        if (filterValue.value && filterValue.value.length)
+                        var singleValue = <Models.ISingleFilterValue>filterValue;
+                        if (singleValue.value && singleValue.value.length)
                             filterValues.push(filterValue);
 
                         break;
                     }
                     case "range": {
-                        var fromValue = filterValue.fromValue;
-                        var toValue = filterValue.toValue;
+                        var rangeValue = <Models.IRangeFilterValue>filterValue;
+                        var fromValue = rangeValue.fromValue;
+                        var toValue = rangeValue.toValue;
 
                         if (fromValue || toValue)
                             filterValues.push(filterValue);
@@ -173,8 +182,9 @@ module App {
                         break;
                     }
                     case "multiple": {
-                        if (filterValue.values && filterValue.values.length)
-                            filterValues.push(filterValue);
+                        var multipleValue = <Models.IMultipleFilterValue>filterValue;
+                        if (multipleValue.values && multipleValue.values.length)
+                            filterValues.push(multipleValue);
 
                         break;
                     }

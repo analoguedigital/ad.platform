@@ -11,7 +11,7 @@
         startDateCalendar: any;
         endDateCalendar: any;
         dateTimeFormat: string;
-        model: any;
+        model: Models.IRangeFilterValue;
 
         openStartDateCalendar: () => void;
         openEndDateCalendar: () => void;
@@ -46,7 +46,7 @@
             this.$scope.model = {
                 id: filter.metricId,
                 shortTitle: filter.shortTitle,
-                type: 'range',
+                type: Models.FilterValueTypes.RangeFilterValue,
                 fromValue: undefined,
                 toValue: undefined
             };

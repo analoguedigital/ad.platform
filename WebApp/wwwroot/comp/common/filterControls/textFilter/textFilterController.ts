@@ -6,7 +6,7 @@
     }
 
     interface ITextFilterControllerScope extends ng.IScope {
-        model: any;
+        model: Models.ISingleFilterValue;
     }
 
     class TextFilterController implements ITextFilterController {
@@ -21,9 +21,9 @@
 
             this.$scope.model = {
                 id: filter.metricId,
-                type: 'single',
+                type: Models.FilterValueTypes.SingleFilterValue,
                 shortTitle: filter.shortTitle,
-                value: ''
+                value: undefined
             };
 
             this.$scope.filterValues.push(this.$scope.model);

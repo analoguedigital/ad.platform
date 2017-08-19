@@ -6,8 +6,7 @@
     }
 
     interface ICheckboxFilterControllerScope extends ng.IScope {
-        options: any[];
-        model: any;
+        model: Models.IMultipleFilterValue;
     }
 
     class CheckboxFilterController implements ICheckboxFilterController {
@@ -21,14 +20,11 @@
         activate() {
             var filter = this.$scope.metricFilter;
 
-            var options = filter.dataList;
-            _.forEach(options, (opt) => { opt.selected = false });
-
             this.$scope.model = {
                 id: filter.metricId,
                 shortTitle: filter.shortTitle,
-                type: 'multiple',
-                options: options,
+                type: Models.FilterValueTypes.MultipleFilterValue,
+                options: filter.dataList,
                 values: []
             };
 
@@ -36,7 +32,7 @@
         }
 
         optionValueChanged(value) {
-            var selectedItems = _.filter(this.$scope.model.options, (opt: any) => { return opt.selected == true });
+            var selectedItems = _.filter(this.$scope.model.options, (opt) => { return opt.selected == true });
             this.$scope.model.values = selectedItems.map((item) => { return item.value });;
         }
     }

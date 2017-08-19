@@ -519,6 +519,16 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataListItem.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataList.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataListRelationship.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\filterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\multipleFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\rangeFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\singleFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\checkboxFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\dateRangeFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\metricFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\numericRangeFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\textFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\timeRangeFilter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\attachment.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\attachmentMetric.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\timeMetric.ts" />

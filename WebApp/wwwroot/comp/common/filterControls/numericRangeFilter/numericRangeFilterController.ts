@@ -6,18 +6,13 @@
     }
 
     interface INumericRangeFilterControllerScope extends ng.IScope {
-        model: any;
+        model: Models.IRangeFilterValue;
     }
 
     class NumericRangeFilterController implements INumericRangeFilterController {
         static $inject: string[] = ['$scope'];
 
         constructor(private $scope: INumericRangeFilterControllerScope) {
-            $scope.model = {
-                startValue: undefined,
-                endValue: undefined
-            };
-
             this.activate();
         }
 
@@ -27,7 +22,7 @@
             this.$scope.model = {
                 id: filter.metricId,
                 shortTitle: filter.shortTitle,
-                type: 'range',
+                type: Models.FilterValueTypes.RangeFilterValue,
                 fromValue: undefined,
                 toValue: undefined
             };
