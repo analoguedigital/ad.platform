@@ -24,27 +24,20 @@
             var options = filter.dataList;
             _.forEach(options, (opt) => { opt.selected = false });
 
-            this.$scope.options = options;
-
             this.$scope.model = {
                 id: filter.metricId,
                 shortTitle: filter.shortTitle,
                 type: 'multiple',
+                options: options,
                 values: []
             };
 
             this.$scope.filterValues.push(this.$scope.model);
-
-            this.$scope.$on('reset-filter-controls', () => {
-                _.forEach(this.$scope.model.options, (opt) => { opt.selected = false; });
-            });
         }
 
         optionValueChanged(value) {
-            var selectedItems = _.filter(this.$scope.options, (opt: any) => { return opt.selected == true });
-            var values = selectedItems.map((item) => { return item.value });
-
-            this.$scope.model.values = values;
+            var selectedItems = _.filter(this.$scope.model.options, (opt: any) => { return opt.selected == true });
+            this.$scope.model.values = selectedItems.map((item) => { return item.value });;
         }
     }
 

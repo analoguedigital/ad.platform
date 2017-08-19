@@ -33,11 +33,6 @@
             };
 
             this.$scope.filterValues.push(this.$scope.model);
-
-            this.$scope.$on('reset-filter-controls', () => {
-                this.$scope.model.startValue = undefined;
-                this.$scope.model.endValue = undefined;
-            });
         }
     }
 

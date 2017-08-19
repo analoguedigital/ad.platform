@@ -52,11 +52,6 @@
             };
 
             this.$scope.filterValues.push(this.$scope.model);
-
-            this.$scope.$on('reset-filter-controls', () => {
-                this.$scope.model.startDate = undefined;
-                this.$scope.model.endDate = undefined;
-            });
         }
     }
 

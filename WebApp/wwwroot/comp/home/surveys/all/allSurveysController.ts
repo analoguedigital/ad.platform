@@ -131,12 +131,12 @@ module App {
                     }
                     case "multiple": {
                         fv.values = [];
+                        _.forEach(fv.options, (opt) => { opt.selected = false });
+
                         break;
                     }
                 }
             });
-
-            this.$scope.$broadcast('reset-filter-controls');
 
             this.load();
         }
