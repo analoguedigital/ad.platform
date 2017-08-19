@@ -23,9 +23,8 @@
 
         activate() {
             var filter = this.$scope.metricFilter;
-            this.$scope.metricFilters.push(filter);
 
-            var filterValue = {
+            this.$scope.model = {
                 id: filter.metricId,
                 shortTitle: filter.shortTitle,
                 type: 'range',
@@ -33,18 +32,7 @@
                 toValue: undefined
             };
 
-            this.$scope.filterValues.push(filterValue);
-
-            this.$scope.$watchGroup(['model.startValue', 'model.endValue'], (values) => {
-                var start = values[0];
-                var end = values[1];
-
-                var filterValue: any = _.find(this.$scope.filterValues, { 'id': this.$scope.metricFilter.metricId });
-                if (filterValue) {
-                    filterValue.fromValue = start;
-                    filterValue.toValue = end;
-                }
-            });
+            this.$scope.filterValues.push(this.$scope.model);
 
             this.$scope.$on('reset-filter-controls', () => {
                 this.$scope.model.startValue = undefined;

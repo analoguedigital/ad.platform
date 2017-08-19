@@ -6,6 +6,7 @@
     }
 
     interface ICheckboxFilterControllerScope extends ng.IScope {
+        options: any[];
         model: any;
     }
 
@@ -19,23 +20,20 @@
 
         activate() {
             var filter = this.$scope.metricFilter;
-            this.$scope.metricFilters.push(filter);
 
             var options = filter.dataList;
             _.forEach(options, (opt) => { opt.selected = false });
 
-            this.$scope.model = {
-                options: options
-            };
+            this.$scope.options = options;
 
-            var filterValue = {
+            this.$scope.model = {
                 id: filter.metricId,
                 shortTitle: filter.shortTitle,
                 type: 'multiple',
                 values: []
             };
 
-            this.$scope.filterValues.push(filterValue);
+            this.$scope.filterValues.push(this.$scope.model);
 
             this.$scope.$on('reset-filter-controls', () => {
                 _.forEach(this.$scope.model.options, (opt) => { opt.selected = false; });
@@ -43,13 +41,10 @@
         }
 
         optionValueChanged(value) {
-            var selectedItems = _.filter(this.$scope.model.options, (opt: any) => { return opt.selected == true });
+            var selectedItems = _.filter(this.$scope.options, (opt: any) => { return opt.selected == true });
             var values = selectedItems.map((item) => { return item.value });
 
-            var filterValue: any = _.find(this.$scope.filterValues, { 'id': this.$scope.metricFilter.metricId });
-            if (filterValue) {
-                filterValue.values = values;
-            }
+            this.$scope.model.values = values;
         }
     }
 

@@ -2,7 +2,7 @@
     <h4 class="filter-heading">{{metricFilter.shortTitle}}</h4>
 
     <ul class="list-unstyled">
-        <li ng-repeat="item in model.options track by $index">
+        <li ng-repeat="item in options track by $index">
             <div class="checkbox">
                 <input type="checkbox" value="{{item.value}}" id="chk-{{item.text}}" ng-model="item.selected" ng-change="valueChanged(item.value)" />
                 <label for="chk-{{item.text}}">{{item.text}}</label>
