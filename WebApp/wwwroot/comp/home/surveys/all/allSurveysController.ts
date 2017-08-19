@@ -118,6 +118,10 @@ module App {
         }
 
         resetSearch() {
+            this.searchTerm = undefined;
+            this.startDate = undefined;
+            this.endDate = undefined;
+
             _.forEach(this.$scope.filterValues, (fv) => {
                 switch (fv.type) {
                     case "single": {
