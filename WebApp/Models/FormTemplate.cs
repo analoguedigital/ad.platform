@@ -39,11 +39,5 @@ namespace WebApi.Models
 
         public ICollection<MetricGroupDTO> MetricGroups { set; get; }
 
-        public List<MetricFilter> MetricFilters { get; set; }
-
-        public FormTemplateDTO()
-        {
-            this.MetricFilters = new List<MetricFilter>();
-        }
     }
 }

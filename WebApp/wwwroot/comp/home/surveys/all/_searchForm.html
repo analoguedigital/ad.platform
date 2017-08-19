@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.formTemplate.metricFilters track by $index">
+            <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by $index">
                 <div ng-class="{ 'row': ($index + 1) % 4 == 0 }">
                     <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
                 </div>

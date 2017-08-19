@@ -3,7 +3,6 @@ module App {
     "use strict";
 
     interface IAllSurveysControllerScope extends ng.IScope {
-        metricFilters: any[];
         filterValues: any[];
     }
 
@@ -49,13 +48,15 @@ module App {
         endDateCalendar: any;
 
         isAdvSearchOpen: boolean;
+        metricFilters: any[];
 
-        static $inject: string[] = ["$scope", "$timeout", "project", "formTemplate", "surveyResource", "dataResource"];
+        static $inject: string[] = ["$scope", "$timeout", "project", "formTemplate", "formTemplateResource", "surveyResource", "dataResource"];
         constructor(
             private $scope: IAllSurveysControllerScope,
             private $timeout: ng.ITimeoutService,
             public project: Models.IProject,
             private formTemplate: Models.IFormTemplate,
+            private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private dateResource: Resources.IDataResource) {
 
@@ -74,7 +75,7 @@ module App {
                 }, 500);
             });
 
-            this.$scope.metricFilters = [];
+            this.metricFilters = [];
             this.$scope.filterValues = [];
 
             this.load();
@@ -89,6 +90,12 @@ module App {
         }
 
         load() {
+            this.formTemplateResource.getFilters({ id: this.formTemplate.id }, (filters) => {
+                this.metricFilters = filters;
+            }, (error) => {
+                console.error(error);
+            });
+
             this.surveyResource.query({ projectId: this.project.id }).$promise.then((surveys) => {
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
                 this.displayedSurveys = [].concat(this.surveys);

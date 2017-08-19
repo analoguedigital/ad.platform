@@ -159,7 +159,7 @@ namespace LightMethods.Survey.Models.Entities
 
             foreach (var metricGroup in this.MetricGroups)
             {
-                foreach (var metric in metricGroup.Metrics)
+                foreach (var metric in metricGroup.Metrics.Where(m => !m.IsArchived()).OrderBy(m => m.Order))
                     filters.Add(metric.GetMetricFilter());
             }
 

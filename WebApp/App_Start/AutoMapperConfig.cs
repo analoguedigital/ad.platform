@@ -17,12 +17,7 @@ namespace WebApi
                 .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
             Mapper.CreateMap<FormTemplateCategory, FormTemplateCategoryDTO>().ReverseMap();
-
-            Mapper.CreateMap<FormTemplate, FormTemplateDTO>()
-                .AfterMap((src, dest) =>
-                {
-                    dest.MetricFilters = src.GetMetricFilters();
-                });
+            Mapper.CreateMap<FormTemplate, FormTemplateDTO>();
 
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
