@@ -12,6 +12,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Models;
 using Newtonsoft.Json;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace WebApi.Controllers
 {
@@ -46,6 +47,20 @@ namespace WebApi.Controllers
                 return NotFound();
 
             return Ok(form);
+        }
+
+        [ResponseType(typeof(IEnumerable<MetricFilter>))]
+        [Route("api/formtemplates/{id:Guid}/filters")]
+        public IHttpActionResult GetFilters(Guid id)
+        {
+            var template = this.UnitOfWork.FormTemplatesRepository.Find(id);
+            if (template != null)
+            {
+                var metricFilters = template.GetMetricFilters();
+                return Ok(metricFilters);
+            }
+
+            return BadRequest("FormTemplate not found!");
         }
 
         // POST api/<controller>
