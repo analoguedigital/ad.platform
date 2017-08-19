@@ -43,18 +43,8 @@
         }
 
         optionValueChanged(value) {
-            var values = [];
-
             var selectedItems = _.filter(this.$scope.model.options, (opt: any) => { return opt.selected == true });
-
-            if (selectedItems.length) {
-                var sampleItem = selectedItems[0];
-                if (sampleItem.id && sampleItem.id.length) {
-                    values = selectedItems.map((item) => { return item.id });
-                } else {
-                    values = selectedItems.map((item) => { return item.value });
-                }
-            }
+            var values = selectedItems.map((item) => { return item.value });
 
             var filterValue: any = _.find(this.$scope.filterValues, { 'id': this.$scope.metricFilter.metricId });
             if (filterValue) {

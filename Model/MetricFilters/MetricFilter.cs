@@ -22,8 +22,6 @@ namespace LightMethods.Survey.Models.MetricFilters
 
     public class MetricFilterOption
     {
-        public Guid? Id { get; set; }
-
         public string Text { get; set; }
 
         public int Value { get; set; }

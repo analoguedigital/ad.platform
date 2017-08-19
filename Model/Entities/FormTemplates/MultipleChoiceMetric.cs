@@ -56,7 +56,7 @@ namespace LightMethods.Survey.Models.Entities
 
             var items = new List<MetricFilterOption>();
             foreach (var item in this.DataList.AllItems)
-                items.Add(new MetricFilterOption { Id = item.Id, Text = item.Text, Value = item.Value });
+                items.Add(new MetricFilterOption { Text = item.Text, Value = item.Value });
 
             filter.DataList = items;
 
@@ -66,9 +66,17 @@ namespace LightMethods.Survey.Models.Entities
         public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
         {
             var multipleFilterValue = filter as MultipleFilterValue;
-            var values = new List<Guid?>();
+            var filterValues = new List<int>();
+
             foreach (var item in multipleFilterValue.Values)
-                values.Add(Guid.Parse(item.ToString()));
+                filterValues.Add(Convert.ToInt32(item));
+
+            var values = new List<Guid?>();
+            foreach (var item in filterValues)
+            {
+                var dataListItem = this.DataList.Items.Where(x => x.Value == item).FirstOrDefault();
+                values.Add(dataListItem.Id);
+            }
 
             Expression<Func<FilledForm, bool>> result = f => f.FormValues.Any(v => v.MetricId == this.Id && values.Contains(v.GuidValue));
 
