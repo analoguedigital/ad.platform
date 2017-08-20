@@ -47,54 +47,10 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Search(Search model)
         {
-            var template = this.UnitOfWork.FormTemplatesRepository.Find(model.FormTemplateId);
-
-            var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == model.FormTemplateId);
-
-            if (model.StartDate.HasValue || model.EndDate.HasValue)
-                surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
-
-            foreach (var filter in model.FilterValues)
-            {
-                var filterValue = Mapper.Map<FilterValue>(filter);
-
-                var metric = this.FindMetricByShortTitle(filter.ShortTitle, template);
-                if (metric != null)
-                    surveys = surveys.Where(metric.GetFilterExpression(filterValue));
-            }
-
-            var result = surveys.ToList();
-
-            if (!string.IsNullOrEmpty(model.Term))
-                result = result.Where(s => s.Description.Contains(model.Term, caseSensitive: false)).ToList();
-
+            var result = this.UnitOfWork.FilledFormsRepository.Search(model);
             var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
 
             return Ok(retVal);
-        }
-
-        private IQueryable<FilledForm> ApplySurveysDateRange(IQueryable<FilledForm> surveys, DateTime? startDate, DateTime? endDate)
-        {
-            if (startDate.HasValue && !endDate.HasValue)
-                surveys = surveys.Where(s => s.SurveyDate >= startDate.Value);
-            else if (!startDate.HasValue && endDate.HasValue)
-                surveys = surveys.Where(s => s.SurveyDate <= endDate.Value);
-            else if (startDate.HasValue && endDate.HasValue)
-                surveys = surveys.Where(s => s.SurveyDate >= startDate.Value && s.SurveyDate <= endDate.Value);
-
-            return surveys;
-        }
-
-        private Metric FindMetricByShortTitle(string shortTitle, FormTemplate template)
-        {
-            Metric result = null;
-
-            foreach (var group in template.MetricGroups)
-                foreach (var metric in group.Metrics.Where(m => !m.IsArchived()))
-                    if (metric.ShortTitle == shortTitle) result = metric;
-
-            return result;
         }
 
         [Route("api/projects/{projectId}/formTemplates/{formTemplateId}/data")]

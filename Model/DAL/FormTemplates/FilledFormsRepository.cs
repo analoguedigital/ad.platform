@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.MetricFilters;
+using AutoMapper;
+using LightMethods.Survey.Models.FilterValues;
 
 namespace LightMethods.Survey.Models.DAL
 {
@@ -74,6 +77,35 @@ namespace LightMethods.Survey.Models.DAL
             return dest;
         }
 
+        public IEnumerable<FilledForm> Search(Search model)
+        {
+            var template = this.Context.FormTemplates.Find(model.FormTemplateId);
+
+            var surveys = this.Context.FilledForms
+                .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == model.FormTemplateId);
+
+            // apply generic date range
+            if (model.StartDate.HasValue || model.EndDate.HasValue)
+                surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
+
+            // apply metric filters
+            foreach (var filter in model.FilterValues)
+            {
+                var filterValue = Mapper.Map<FilterValue>(filter);
+
+                var metric = this.FindMetricByShortTitle(filter.ShortTitle, template);
+                if (metric != null)
+                    surveys = surveys.Where(metric.GetFilterExpression(filterValue));
+            }
+
+            var result = surveys.ToList();
+
+            // apply generic search term
+            if (!string.IsNullOrEmpty(model.Term))
+                result = result.Where(s => s.Description.Contains(model.Term, caseSensitive: false)).ToList();
+
+            return result;
+        }
 
         public override void Delete(FilledForm entity)
         {
@@ -82,5 +114,32 @@ namespace LightMethods.Survey.Models.DAL
             base.Delete(entity);
 
         }
+
+        #region Helpers
+
+        private IQueryable<FilledForm> ApplySurveysDateRange(IQueryable<FilledForm> surveys, DateTime? startDate, DateTime? endDate)
+        {
+            if (startDate.HasValue && !endDate.HasValue)
+                surveys = surveys.Where(s => s.SurveyDate >= startDate.Value);
+            else if (!startDate.HasValue && endDate.HasValue)
+                surveys = surveys.Where(s => s.SurveyDate <= endDate.Value);
+            else if (startDate.HasValue && endDate.HasValue)
+                surveys = surveys.Where(s => s.SurveyDate >= startDate.Value && s.SurveyDate <= endDate.Value);
+
+            return surveys;
+        }
+
+        private Metric FindMetricByShortTitle(string shortTitle, FormTemplate template)
+        {
+            Metric result = null;
+
+            foreach (var group in template.MetricGroups)
+                foreach (var metric in group.Metrics.Where(m => !m.IsArchived()))
+                    if (metric.ShortTitle == shortTitle) result = metric;
+
+            return result;
+        }
+
+        #endregion Helpers
     }
 }
