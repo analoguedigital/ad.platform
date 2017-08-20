@@ -197,7 +197,7 @@ module App {
         search() {
             var filterValues = this.getFilterValues();
 
-            var model = {
+            var searchModel: Models.SearchModel = {
                 projectId: this.project.id,
                 formTemplateId: this.formTemplate.id,
                 term: this.searchTerm,
@@ -206,7 +206,7 @@ module App {
                 filterValues: filterValues
             };
 
-            this.surveyResource.search(model, (surveys: Models.ISurvey[]) => {
+            this.surveyResource.search(searchModel, (surveys: Models.ISurvey[]) => {
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
                 this.displayedSurveys = [].concat(this.surveys);
             }, (error) => {

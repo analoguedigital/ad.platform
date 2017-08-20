@@ -4,7 +4,7 @@ module App.Resources {
 
     export interface ISurveyResource extends ng.resource.IResourceClass<Models.ISurvey> {
         update(survey: Models.ISurvey, success: Function, error?: Function): Models.ISurvey;
-        search(searchModel: any, success: Function, error?: Function): Array<Models.ISurvey>
+        search(model: Models.SearchModel, success: Function, error?: Function): Array<Models.ISurvey>
     }
 
     SurveyResource.$inject = ["$resource"];

@@ -550,6 +550,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\projectSummarySession.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\promotionCode.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\searchModel.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\subscription.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\user.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\survey.ts" />
