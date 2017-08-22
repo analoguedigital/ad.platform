@@ -66,7 +66,7 @@ namespace LightMethods.Survey.Models.Entities
         public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filterValue)
         {
             var singleValue = filterValue as SingleFilterValue;
-            var value = singleValue.Value.ToString();
+            var value = singleValue.Value;
 
             Expression<Func<FilledForm, bool>> result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.TextValue.Contains(value, false));
 

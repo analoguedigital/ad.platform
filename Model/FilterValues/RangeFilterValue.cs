@@ -8,8 +8,8 @@ namespace LightMethods.Survey.Models.FilterValues
 {
     public class RangeFilterValue : FilterValue
     {
-        public Object FromValue { get; set; }
+        public string FromValue { get; set; }
 
-        public Object ToValue { get; set; }
+        public string ToValue { get; set; }
     }
 }

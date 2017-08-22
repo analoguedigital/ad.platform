@@ -8,11 +8,11 @@ namespace LightMethods.Survey.Models.FilterValues
 {
     public class MultipleFilterValue : FilterValue
     {
-        public List<Object> Values { get; set; }
+        public List<string> Values { get; set; }
 
         public MultipleFilterValue()
         {
-            this.Values = new List<object>();
+            this.Values = new List<string>();
         }
     }
 }

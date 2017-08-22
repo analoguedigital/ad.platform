@@ -69,23 +69,27 @@ namespace LightMethods.Survey.Models.Entities
         public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
         {
             var rangeValue = filter as RangeFilterValue;
-            var fromValue = rangeValue.FromValue as long?;
-            var toValue = rangeValue.ToValue as long?;
+
+            int? fromValue = null;
+            int? toValue = null;
+
+            if (!string.IsNullOrEmpty(rangeValue.FromValue))
+                fromValue = Convert.ToInt32(rangeValue.FromValue);
+
+            if (!string.IsNullOrEmpty(rangeValue.ToValue))
+                toValue = Convert.ToInt32(rangeValue.ToValue);
 
             Expression<Func<FilledForm, bool>> result = null;
 
             if (fromValue.HasValue && !toValue.HasValue)
-            {   // we have a start value
+                // we have a start value
                 result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue.Value);
-            }
             else if (!fromValue.HasValue && toValue.HasValue)
-            {   // we have a end value
+                // we have a end value
                 result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue <= toValue);
-            }
             else if (fromValue.HasValue && toValue.HasValue)
-            {   // we have a numeric range
+                // we have a numeric range
                 result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue && v.NumericValue <= toValue);
-            }
 
             return result;
         }

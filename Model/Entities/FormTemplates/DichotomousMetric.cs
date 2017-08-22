@@ -62,7 +62,7 @@ namespace LightMethods.Survey.Models.Entities
 
             foreach (var item in multipleFilterValue.Values)
             {
-                var value = item as long?;
+                var value = Convert.ToInt32(item);
                 values.Add(Convert.ToBoolean(value));
             }
 

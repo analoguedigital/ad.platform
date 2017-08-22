@@ -53,8 +53,15 @@ namespace LightMethods.Survey.Models.Entities
         public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
         {
             var rangeFilterValue = filter as RangeFilterValue;
-            var fromTime = rangeFilterValue.FromValue as DateTime?;
-            var toTime = rangeFilterValue.ToValue as DateTime?;
+
+            DateTime? fromTime = null;
+            DateTime? toTime = null;
+
+            if (!string.IsNullOrEmpty(rangeFilterValue.FromValue))
+                fromTime = Convert.ToDateTime(rangeFilterValue.FromValue);
+
+            if (!string.IsNullOrEmpty(rangeFilterValue.ToValue))
+                toTime = Convert.ToDateTime(rangeFilterValue.ToValue);
 
             Expression<Func<FilledForm, bool>> result = null;
 

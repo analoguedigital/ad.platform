@@ -8,6 +8,6 @@ namespace LightMethods.Survey.Models.FilterValues
 {
     public class SingleFilterValue : FilterValue
     {
-        public Object Value { get; set; }
+        public string Value { get; set; }
     }
 }

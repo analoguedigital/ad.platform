@@ -129,23 +129,24 @@ namespace LightMethods.Survey.Models.Entities
             if (filter is RangeFilterValue)
             {
                 var rangeFilterValue = filter as RangeFilterValue;
-                var fromValue = rangeFilterValue.FromValue as long?;
-                var toValue = rangeFilterValue.ToValue as long?;
+
+                int? fromValue = null;
+                int? toValue = null;
+
+                if (!string.IsNullOrEmpty(rangeFilterValue.FromValue))
+                    fromValue = Convert.ToInt32(rangeFilterValue.FromValue);
+
+                if (!string.IsNullOrEmpty(rangeFilterValue.ToValue))
+                    toValue = Convert.ToInt32(rangeFilterValue.ToValue);
 
                 Expression<Func<FilledForm, bool>> result = null;
 
                 if (fromValue.HasValue && !toValue.HasValue)
-                {
                     result = f => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue.Value);
-                }
                 else if (!fromValue.HasValue && toValue.HasValue)
-                {
                     result = f => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue <= toValue.Value);
-                }
                 else if (fromValue.HasValue && toValue.HasValue)
-                {
                     result = f => f.FormValues.Any(v => v.MetricId == this.Id && v.NumericValue >= fromValue.Value && v.NumericValue <= toValue.Value);
-                }
 
                 return result;
             }
@@ -155,10 +156,7 @@ namespace LightMethods.Survey.Models.Entities
                 var multipleFilterValue = filter as MultipleFilterValue;
                 var values = new List<double?>();
                 foreach (var item in multipleFilterValue.Values)
-                {
-                    var value = item as long?;
-                    values.Add(Convert.ToDouble(value));
-                }
+                    values.Add(Convert.ToDouble(item));
 
                 Expression<Func<FilledForm, bool>> result = f => f.FormValues.Any(v => v.MetricId == this.Id && values.Contains(v.NumericValue));
 
