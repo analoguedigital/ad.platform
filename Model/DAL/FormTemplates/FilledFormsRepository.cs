@@ -6,6 +6,7 @@ using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.MetricFilters;
 using AutoMapper;
 using LightMethods.Survey.Models.FilterValues;
+using System.Data.Entity;
 
 namespace LightMethods.Survey.Models.DAL
 {
@@ -120,11 +121,11 @@ namespace LightMethods.Survey.Models.DAL
         private IQueryable<FilledForm> ApplySurveysDateRange(IQueryable<FilledForm> surveys, DateTime? startDate, DateTime? endDate)
         {
             if (startDate.HasValue && !endDate.HasValue)
-                surveys = surveys.Where(s => s.SurveyDate >= startDate.Value);
+                surveys = surveys.Where(s => DbFunctions.TruncateTime(s.SurveyDate) >= DbFunctions.TruncateTime(startDate.Value));
             else if (!startDate.HasValue && endDate.HasValue)
-                surveys = surveys.Where(s => s.SurveyDate <= endDate.Value);
+                surveys = surveys.Where(s => DbFunctions.TruncateTime(s.SurveyDate) <= DbFunctions.TruncateTime(endDate.Value));
             else if (startDate.HasValue && endDate.HasValue)
-                surveys = surveys.Where(s => s.SurveyDate >= startDate.Value && s.SurveyDate <= endDate.Value);
+                surveys = surveys.Where(s => DbFunctions.TruncateTime(s.SurveyDate) >= DbFunctions.TruncateTime(startDate.Value) && DbFunctions.TruncateTime(s.SurveyDate) <= DbFunctions.TruncateTime(endDate.Value));
 
             return surveys;
         }
