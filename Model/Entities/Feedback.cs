@@ -20,5 +20,17 @@ namespace LightMethods.Survey.Models.Entities
         [Required]
         [StringLength(500)]
         public string Comment { get; set; }
+
+        public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (this.AddedById == Guid.Empty)
+                yield return new ValidationResult("AddedById is empty.");
+
+            if (this.OrganisationId == Guid.Empty)
+                yield return new ValidationResult("OrganisationId is empty.");
+
+            if (string.IsNullOrEmpty(this.Comment))
+                yield return new ValidationResult("Comment is required.");
+        }
     }
 }

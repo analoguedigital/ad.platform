@@ -276,6 +276,7 @@
     <Compile Include="Controllers\CustomControllers\MBS\Models\Target.cs" />
     <Compile Include="Controllers\CustomControllers\MBS\Models\Evidence.cs" />
     <Compile Include="Controllers\CustomControllers\MBS\Models\Update.cs" />
+    <Compile Include="Controllers\FeedbacksController.cs" />
     <Compile Include="Controllers\ProjectSummaryPrintSessionController.cs" />
     <Compile Include="Controllers\DataListsController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
@@ -295,6 +296,7 @@
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\IdentityModels.cs" />
     <Compile Include="Models\ChangePasswordDTO.cs" />
+    <Compile Include="Models\Feedback.cs" />
     <Compile Include="Models\ProjectSummaryPrintSession.cs" />
     <Compile Include="Models\DataList.cs" />
     <Compile Include="Models\DataListItem.cs" />
