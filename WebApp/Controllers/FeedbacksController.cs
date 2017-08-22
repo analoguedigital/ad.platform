@@ -61,5 +61,19 @@ namespace WebApi.Controllers
                 throw dbEx;
             }
         }
+
+        [Route("api/feedbacks/{id}")]
+        public IHttpActionResult Delete(Guid id)
+        {
+            var feedback = this.Feedbacks.Find(id);
+
+            if (feedback == null)
+                return NotFound();
+
+            this.Feedbacks.Delete(feedback);
+            this.Feedbacks.Save();
+
+            return Ok();
+        }
     }
 }
