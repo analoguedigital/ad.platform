@@ -1,0 +1,23 @@
+﻿<div class="col-md-3" ng-controller="dateRangeFilterController">
+    <h4 class="filter-heading">{{metricFilter.shortTitle}}</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
+                       ng-model="model.fromValue" is-open="startDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="start date" />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
+                       ng-model="model.toValue" is-open="endDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="end date" />
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

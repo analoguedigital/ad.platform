@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.MetricFilters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;

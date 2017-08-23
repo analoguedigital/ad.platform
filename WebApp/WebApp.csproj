@@ -163,6 +163,12 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryView.html" />
+    <Content Include="wwwroot\comp\common\filterControls\checkboxFilter\checkboxFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\dateRangeFilter\dateRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\numericRangeFilter\numericRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\textFilter\textFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\_filter\filter.html" />
     <Content Include="wwwroot\comp\common\footer\footerView.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\attachmentMetric.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\dateMetric\dateMetric.html" />
@@ -223,6 +229,8 @@
     <Content Include="wwwroot\comp\home\projects\summary\_recordings.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
+    <Content Include="wwwroot\comp\home\surveys\all\_dataTable.html" />
+    <Content Include="wwwroot\comp\home\surveys\all\_searchForm.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_formDetails.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_locations.html" />
     <Content Include="wwwroot\comp\home\myAccount\redeemCode\redeemCode.html" />
@@ -261,7 +269,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Code\CustomMultipartFormDataStreamProvider.cs" />
-    <Compile Include="App_Code\JsonCreationConverter.cs" />
     <Compile Include="App_Code\ServiceContext.cs" />
     <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\AuthorizationServerProvider.cs" />
@@ -401,6 +408,7 @@
     <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
     <Content Include="wwwroot\comp\home\projects\summary\_summary.scss" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_projectSummaryPrintView.scss" />
+    <Content Include="wwwroot\comp\common\filterControls\filterControls.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -418,6 +426,12 @@
   <ItemGroup>
     <TypeScriptCompile Include="typings\custom.d.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\checkboxFilter\checkboxFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\dateRangeFilter\dateRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\numericRangeFilter\numericRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\textFilter\textFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\_filter\filterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\footer\footerController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\timeMetric\timeMetricController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\dateMetric\dateMetricController.ts" />
@@ -505,6 +519,16 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataListItem.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataList.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataListRelationship.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\filterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\multipleFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\rangeFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\singleFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\checkboxFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\dateRangeFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\metricFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\numericRangeFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\textFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\timeRangeFilter.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\attachment.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\attachmentMetric.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\timeMetric.ts" />
@@ -526,6 +550,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\projectSummarySession.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\promotionCode.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\searchModel.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\subscription.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\user.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\survey.ts" />

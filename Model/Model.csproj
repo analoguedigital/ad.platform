@@ -120,6 +120,16 @@
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
+    <Compile Include="Extenstions\JsonCreationConverter.cs" />
+    <Compile Include="FilterValues\FilterValue.cs" />
+    <Compile Include="FilterValues\MultipleFilterValue.cs" />
+    <Compile Include="FilterValues\RangeFilterValue.cs" />
+    <Compile Include="FilterValues\SingleFilterValue.cs" />
+    <Compile Include="MetricFilters\CheckboxFilter.cs" />
+    <Compile Include="MetricFilters\DateRangeFilter.cs" />
+    <Compile Include="MetricFilters\NumericRangeFilter.cs" />
+    <Compile Include="MetricFilters\Search.cs" />
+    <Compile Include="MetricFilters\TextFilter.cs" />
     <Compile Include="Entities\FormTemplates\TimeMetric.cs" />
     <Compile Include="Entities\FormTemplates\FilledFormLocation.cs" />
     <Compile Include="Entities\FormTemplates\IHasAdHocDataList.cs" />
@@ -266,6 +276,8 @@
     <Compile Include="Entities\Adult.cs" />
     <Compile Include="Extenstions\IArchivable.cs" />
     <Compile Include="Extenstions\IHasAdHocDataList.cs" />
+    <Compile Include="MetricFilters\MetricFilter.cs" />
+    <Compile Include="MetricFilters\TimeRangeFilter.cs" />
     <Compile Include="Migrations\201505172026245_InitialCreate.cs" />
     <Compile Include="Migrations\201505172026245_InitialCreate.Designer.cs">
       <DependentUpon>201505172026245_InitialCreate.cs</DependentUpon>

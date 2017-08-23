@@ -1,9 +1,10 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.FilterValues;
+using LightMethods.Survey.Models.MetricFilters;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
-using AppHelper;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -49,6 +50,27 @@ namespace LightMethods.Survey.Models.Entities
             clone.NumberOfLine = NumberOfLine;
             clone.MinLength = MinLength;
             return clone;
+        }
+
+        public override MetricFilter GetMetricFilter()
+        {
+            return new TextFilter
+            {
+                ShortTitle = this.ShortTitle,
+                MaxLength = this.MaxLength,
+                NumberOfLines = this.NumberOfLine,
+                Type = MetricFilterTypes.Text.ToString()
+            };
+        }
+
+        public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filterValue)
+        {
+            var singleValue = filterValue as SingleFilterValue;
+            var value = singleValue.Value;
+
+            Expression<Func<FilledForm, bool>> result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.TextValue.Contains(value, false));
+
+            return result;
         }
     }
 }

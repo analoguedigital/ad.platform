@@ -1,10 +1,12 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.FilterValues;
+using LightMethods.Survey.Models.MetricFilters;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
-using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -45,6 +47,44 @@ namespace LightMethods.Survey.Models.Entities
         public override Metric Clone(FormTemplate template, MetricGroup metricGroup)
         {
             return BaseClone<DateMetric>(template, metricGroup);
+        }
+
+        public override MetricFilter GetMetricFilter()
+        {
+            return new DateRangeFilter
+            {
+                ShortTitle = this.ShortTitle,
+                CanSelectTime = this.HasTimeValue,
+                Type = MetricFilterTypes.DateRange.ToString()
+            };
+        }
+
+        public override Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)
+        {
+            var rangeValue = filter as RangeFilterValue;
+
+            DateTime? fromDate = null;
+            DateTime? toDate = null;
+
+            if (!string.IsNullOrEmpty(rangeValue.FromValue))
+                fromDate = Convert.ToDateTime(rangeValue.FromValue);
+
+            if (!string.IsNullOrEmpty(rangeValue.ToValue))
+                toDate = Convert.ToDateTime(rangeValue.ToValue);
+
+            Expression<Func<FilledForm, bool>> result = null;
+
+            if (fromDate.HasValue && !toDate.HasValue)
+                // we have a start date
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && DbFunctions.TruncateTime(v.DateValue) >= DbFunctions.TruncateTime(fromDate.Value));
+            else if (!fromDate.HasValue && toDate.HasValue)
+                // we have a end date
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && DbFunctions.TruncateTime(v.DateValue) <= DbFunctions.TruncateTime(toDate));
+            else if (fromDate.HasValue && toDate.HasValue)
+                // we have a date range
+                result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && DbFunctions.TruncateTime(v.DateValue) >= DbFunctions.TruncateTime(fromDate) && DbFunctions.TruncateTime(v.DateValue) <= DbFunctions.TruncateTime(toDate));
+
+            return result;
         }
     }
 }

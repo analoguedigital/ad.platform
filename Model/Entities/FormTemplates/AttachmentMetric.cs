@@ -52,5 +52,6 @@ namespace LightMethods.Survey.Models.Entities
             clone.AllowedAttachmentTypes = new List<AttachmentType>(AllowedAttachmentTypes);
             return clone;
         }
+
     }
 }

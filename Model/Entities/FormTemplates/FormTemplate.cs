@@ -5,6 +5,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
+using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -150,6 +151,19 @@ namespace LightMethods.Survey.Models.Entities
                 if (names.Count != foundMetrics.Count)
                     yield return new ValidationResult("Description Format is not valid. Correct the format string and try again.");
             }
+        }
+
+        public List<MetricFilter> GetMetricFilters()
+        {
+            var filters = new List<MetricFilter>();
+
+            foreach (var metricGroup in this.MetricGroups)
+            {
+                foreach (var metric in metricGroup.Metrics.Where(m => !m.IsArchived()).OrderBy(m => m.Order))
+                    filters.Add(metric.GetMetricFilter());
+            }
+
+            return filters;
         }
 
     }

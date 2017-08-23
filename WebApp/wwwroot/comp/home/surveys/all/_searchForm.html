@@ -1,0 +1,54 @@
+﻿<form role="form" class="form-horizontal">
+    <div class="form-group">
+        <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Search term..." maxlength="50" ng-model="ctrl.searchTerm" />
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
+                </span>
+                <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" placeholder="start date" />
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
+                </span>
+                <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
+            </div>
+        </div>
+        <div class="col-md-3 pull-right" style="direction: rtl">
+            <button type="button" class="btn btn-primary" ng-click="ctrl.search()">
+                <i class="fa fa-search"></i> Search
+            </button>
+
+            <button type="button" class="btn btn-default" ng-click="ctrl.toggleAdvancedSearch()">
+                <i class="fa fa-chevron-down" ng-if="!ctrl.isAdvSearchOpen"></i>
+                <i class="fa fa-chevron-up" ng-if="ctrl.isAdvSearchOpen"></i>
+                Advanced
+            </button>
+
+            <button type="button" class="btn btn-default" ng-click="ctrl.resetSearch()">
+                <i class="fa fa-refresh"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <div id="adv-search" ng-show="ctrl.isAdvSearchOpen">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Advanced Search Filters</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by $index">
+                <div ng-class="{ 'row': ($index + 1) % 4 == 0 }">
+                    <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<hr />

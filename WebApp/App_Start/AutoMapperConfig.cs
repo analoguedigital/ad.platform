@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using AutoMapper.Mappers;
-using System.Linq;
 using LightMethods.Survey.Models.Entities;
-using System.Data.Entity.Core.Objects;
-using WebApi.Models;
+using LightMethods.Survey.Models.FilterValues;
 using System;
+using System.Data.Entity.Core.Objects;
+using System.Linq;
+using WebApi.Models;
 
 namespace WebApi
 {
@@ -18,6 +18,7 @@ namespace WebApi
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
             Mapper.CreateMap<FormTemplateCategory, FormTemplateCategoryDTO>().ReverseMap();
             Mapper.CreateMap<FormTemplate, FormTemplateDTO>();
+
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
             Mapper.CreateMap<Controllers.FormTemplatesController.EditBasicDetailsRequest, FormTemplate>();
@@ -42,8 +43,7 @@ namespace WebApi
             //.ForMember(dest => dest.Owner, opts => opts.Ignore())
             //.ForMember(dest => dest.DataList, opts => opts.Ignore());
 
-
-
+            // config metrics mappings
             Mapper.CreateMap<Metric, MetricDTO>()
                .Include<DateMetric, DateMetricDTO>()
                .Include<TimeMetric, TimeMetricDTO>()
@@ -86,8 +86,8 @@ namespace WebApi
                 });
             Mapper.CreateMap<AttachmentDTO, Attachment>();
             Mapper.CreateMap<Attachment, AttachmentDTO>()
-                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name;});
-                
+                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name; });
+
             Mapper.CreateMap<AttachmentMetric, AttachmentMetricDTO>();
             Mapper.CreateMap<AttachmentMetricDTO, AttachmentMetric>()
                 .ForMember(m => m.AllowedAttachmentTypes, opt => opt.Ignore());
