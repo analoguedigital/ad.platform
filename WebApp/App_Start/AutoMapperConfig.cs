@@ -124,6 +124,8 @@ namespace WebApi
             Mapper.CreateMap<PaymentRecord, PaymentRecordDTO>().ReverseMap();
             Mapper.CreateMap<PromotionCode, PromotionCodeDTO>().ReverseMap();
             Mapper.CreateMap<Subscription, SubscriptionDTO>().ReverseMap();
+
+            Mapper.CreateMap<Feedback, FeedbackDTO>().ReverseMap();
         }
     }
 }

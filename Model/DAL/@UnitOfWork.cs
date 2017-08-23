@@ -469,6 +469,18 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
+        private FeedbacksRepository _FeedbacksRepository;
+        public FeedbacksRepository FeedbacksRepository
+        {
+            get
+            {
+                if (this._FeedbacksRepository == null)
+                    this._FeedbacksRepository = new FeedbacksRepository(this);
+
+                return this._FeedbacksRepository;
+            }
+        }
+
         public void Save(bool disableValidation = false)
         {
             if (disableValidation)
