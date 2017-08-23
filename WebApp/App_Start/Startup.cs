@@ -1,16 +1,14 @@
-﻿using LightMethods.Survey.Models;
-using LightMethods.Survey.Models.DAL;
+﻿using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Owin;
 using System;
 using System.Data.Entity;
-using System.Linq;
 using System.Web;
 using System.Web.Http;
-using System.Web.Routing;
 using WebApi.Providers;
+using Hangfire;
 
 [assembly: OwinStartupAttribute(typeof(WebApi.Startup))]
 namespace WebApi
@@ -27,15 +25,19 @@ namespace WebApi
             AttachmentsRepository.RootFolderPath = HttpContext.Current.Server.MapPath("~/Attachments/");
             
             HttpConfiguration config = new HttpConfiguration();
-
-
-
             WebApiConfig.Register(config);
+
             //app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
             app.UseWebApi(config);
 
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<SurveyContext, LightMethods.Survey.Models.Migrations.Configuration>());
             AutoMapperConfig.Config();
+
+            // hangfire configuration.
+            Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage("LightSurveys");
+
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
         }
 
         public void ConfigureOAuth(IAppBuilder app)
