@@ -481,6 +481,18 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
+        private EmailsRepository _EmailsRepository;
+        public EmailsRepository EmailsRepository
+        {
+            get
+            {
+                if (this._EmailsRepository == null)
+                    this._EmailsRepository = new EmailsRepository(this);
+
+                return this._EmailsRepository;
+            }
+        }
+
         public void Save(bool disableValidation = false)
         {
             if (disableValidation)
