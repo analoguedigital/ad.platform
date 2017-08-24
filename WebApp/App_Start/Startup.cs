@@ -33,11 +33,7 @@ namespace WebApi
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<SurveyContext, LightMethods.Survey.Models.Migrations.Configuration>());
             AutoMapperConfig.Config();
 
-            // hangfire configuration.
-            Hangfire.GlobalConfiguration.Configuration.UseSqlServerStorage("LightSurveys");
-
-            app.UseHangfireDashboard();
-            app.UseHangfireServer();
+            HangFireConfig.Config(app);
         }
 
         public void ConfigureOAuth(IAppBuilder app)

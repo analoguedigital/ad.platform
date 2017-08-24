@@ -271,6 +271,7 @@
     <Compile Include="App_Code\ServiceContext.cs" />
     <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\AuthorizationServerProvider.cs" />
+    <Compile Include="App_Start\HangFireConfig.cs" />
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\.BaseApiController.cs" />
