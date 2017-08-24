@@ -1,9 +1,5 @@
 ﻿using Hangfire;
 using Owin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace WebApi
 {
@@ -15,6 +11,9 @@ namespace WebApi
 
             app.UseHangfireDashboard();
             app.UseHangfireServer();
+
+            var emailService = new WebApi.Services.EmailService();
+            RecurringJob.AddOrUpdate("process-emails", () => emailService.ProcessEmails(), Cron.MinuteInterval(1));
         }
     }
 }
