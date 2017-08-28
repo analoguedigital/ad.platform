@@ -108,6 +108,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DAL\EmailsRepository.cs" />
     <Compile Include="DAL\FeedbacksRepository.cs" />
     <Compile Include="DAL\FormTemplates\AttachmentTypesRepository.cs" />
     <Compile Include="DAL\FormTemplates\AttachmentsRepository.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="DAL\RolesRepository.cs" />
     <Compile Include="DAL\SubscriptionsRepository.cs" />
     <Compile Include="DTO\ExportToExcel.cs" />
+    <Compile Include="Entities\Email.cs" />
     <Compile Include="Entities\Feedback.cs" />
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
@@ -404,6 +406,10 @@
     <Compile Include="Migrations\201708221934064_Add_feedback.Designer.cs">
       <DependentUpon>201708221934064_Add_feedback.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708241252356_Add_email.cs" />
+    <Compile Include="Migrations\201708241252356_Add_email.Designer.cs">
+      <DependentUpon>201708241252356_Add_email.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -527,6 +533,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708221934064_Add_feedback.resx">
       <DependentUpon>201708221934064_Add_feedback.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708241252356_Add_email.resx">
+      <DependentUpon>201708241252356_Add_email.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

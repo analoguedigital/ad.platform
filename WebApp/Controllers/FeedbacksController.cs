@@ -2,15 +2,9 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services;
-using System;
-using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Description;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -18,16 +12,7 @@ namespace WebApi.Controllers
     public class FeedbackController : BaseApiController
     {
         FeedbacksRepository Feedbacks { get { return this.UnitOfWork.FeedbacksRepository; } }
-
-        [Route("api/feedbacks")]
-        [ResponseType(typeof(IEnumerable<FeedbackDTO>))]
-        public IHttpActionResult Get()
-        {
-            var feedbacks = this.Feedbacks.AllAsNoTracking.OrderByDescending(f => f.DateCreated).ToList();
-            var result = feedbacks.Select(f => Mapper.Map<FeedbackDTO>(f)).ToList();
-
-            return Ok(result);
-        }
+        EmailsRepository Emails { get { return this.UnitOfWork.EmailsRepository; } }
 
         [HttpPost]
         [Route("api/feedbacks")]
@@ -35,6 +20,8 @@ namespace WebApi.Controllers
         {
             var feedback = Mapper.Map<Feedback>(model);
             feedback.AddedAt = DateTimeService.UtcNow;
+            feedback.AddedById = this.CurrentOrgUser.Id;
+            feedback.OrganisationId = this.CurrentOrganisation.Id;
 
             ModelState.Clear();
             Validate(feedback);
@@ -43,7 +30,15 @@ namespace WebApi.Controllers
 
             try
             {
+                var email = new LightMethods.Survey.Models.Entities.Email
+                {
+                    To = this.CurrentOrgUser.Email,
+                    Subject = "New feedback posted",
+                    Content = "Hello, a new feedback has been posted."
+                };
+
                 this.UnitOfWork.FeedbacksRepository.InsertOrUpdate(feedback);
+                this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
                 this.UnitOfWork.Save();
 
                 return Ok();
@@ -60,20 +55,6 @@ namespace WebApi.Controllers
 
                 throw dbEx;
             }
-        }
-
-        [Route("api/feedbacks/{id}")]
-        public IHttpActionResult Delete(Guid id)
-        {
-            var feedback = this.Feedbacks.Find(id);
-
-            if (feedback == null)
-                return NotFound();
-
-            this.Feedbacks.Delete(feedback);
-            this.Feedbacks.Save();
-
-            return Ok();
         }
     }
 }

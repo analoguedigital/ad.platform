@@ -52,6 +52,7 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<PaymentRecord> PaymentRecords { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
+        public DbSet<Email> Emails { get; set; }
 
         #endregion
 
