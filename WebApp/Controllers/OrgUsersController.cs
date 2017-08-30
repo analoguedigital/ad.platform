@@ -73,9 +73,12 @@ namespace WebApi.Controllers
             Mapper.Map(value, orguser);
             orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
 
-            UnitOfWork.UserManager.UpdateSync(orguser);
+            var result = UnitOfWork.UserManager.UpdateSync(orguser);
 
-            return Ok();
+            if (result.Succeeded)
+                return Ok();
+            else
+                return BadRequest(result.Errors.ToString(", "));
         }
 
         public IHttpActionResult Delete(Guid id)
