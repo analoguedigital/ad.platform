@@ -6,6 +6,7 @@ using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.Web.Http;
 using WebApi.Models;
+using System.Linq;
 
 namespace WebApi.Controllers
 {
@@ -30,15 +31,20 @@ namespace WebApi.Controllers
 
             try
             {
-                var email = new LightMethods.Survey.Models.Entities.Email
-                {
-                    To = this.CurrentOrgUser.Email,
-                    Subject = "New feedback posted",
-                    Content = "Hello, a new feedback has been posted."
-                };
-
                 this.UnitOfWork.FeedbacksRepository.InsertOrUpdate(feedback);
-                this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+
+                var orgAdmins = CurrentOrganisation.OrgUsers.Where(u => u.TypeId == OrgUserTypesRepository.Administrator.Id);
+                foreach (var admin in orgAdmins)
+                {
+                    var email = new Email
+                    {
+                        To = admin.Email,
+                        Subject = "New feedback posted",
+                        Content = feedback.Comment
+                    };
+
+                    this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+                }
                 this.UnitOfWork.Save();
 
                 return Ok();
