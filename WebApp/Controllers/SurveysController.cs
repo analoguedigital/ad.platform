@@ -53,6 +53,17 @@ namespace WebApi.Controllers
             return Ok(retVal);
         }
 
+        [HttpPost]
+        [Route("api/surveys/summarySearch")]
+        [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
+        public IHttpActionResult SummarySearch(SummarySearchDTO model)
+        {
+            var result = this.UnitOfWork.FilledFormsRepository.SummarySearch(model);
+            var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
+
+            return Ok(retVal);
+        }
+
         [Route("api/projects/{projectId}/formTemplates/{formTemplateId}/data")]
         [ResponseType(typeof(IEnumerable<IEnumerable<string>>))]
         public IHttpActionResult GetDataView(Guid projectId, Guid formTemplateId)

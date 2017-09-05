@@ -26,4 +26,25 @@ namespace LightMethods.Survey.Models.MetricFilters
             this.FilterValues = new List<FilterValue>();
         }
     }
+
+    public class SummarySearchDTO
+    {
+        public Guid ProjectId { get; set; }
+
+        public List<Guid> FormTemplateIds { get; set; }
+
+        public string Term { get; set; }
+
+        public DateTime? StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+        public List<FilterValue> FilterValues { get; set; }
+
+        public SummarySearchDTO()
+        {
+            this.FormTemplateIds = new List<Guid>();
+            this.FilterValues = new List<FilterValue>();
+        }
+    }
 }
