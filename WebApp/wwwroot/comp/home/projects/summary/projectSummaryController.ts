@@ -14,6 +14,8 @@ module App {
 
         today: Date;
         months: string[];
+
+        filterValues: Models.IFilterValue[];
     }
 
     interface IProjectSummaryController {
@@ -31,6 +33,7 @@ module App {
         selectedTemplates: Models.IFormTemplate[];
 
         timelineSnapshotView: boolean;
+        metricFilters: Models.IMetricFilter[];
 
         activate: () => void;
         clearSearch: () => void;
@@ -41,6 +44,7 @@ module App {
         selectNone: () => void;
         openStartDateCalendar: () => void;
         openEndDateCalendar: () => void;
+        search: () => void;
     }
 
     class ProjectSummaryController implements IProjectSummaryController {
@@ -56,6 +60,7 @@ module App {
         displayedSurveys: Models.ISurvey[] = [];
         selectedTemplates: Models.IFormTemplate[] = [];
         timelineSnapshotView: boolean;
+        metricFilters: Models.IMetricFilter[];
 
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
@@ -84,6 +89,9 @@ module App {
             this.$scope.today = new Date();
             this.$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+            this.metricFilters = [];
+            this.$scope.filterValues = [];
+
             this.$rootScope.$on('timeline-in-snapshot-view', () => {
                 this.timelineSnapshotView = true;
             });
@@ -92,37 +100,12 @@ module App {
                 this.timelineSnapshotView = false;
             });
 
-            this.bindWatchers();
             this.load();
         }
 
-        bindWatchers() {
-            this.$scope.$watch('ctrl.searchTerm', _.debounce((newValue, oldValue) => {
-                this.$scope.$apply(() => {
-                    if ((oldValue == undefined && newValue) || (oldValue && newValue.length < 1) || (oldValue && oldValue.length && newValue.length)) {
-                        this.applyFilters();
-                    }
-                });
-            }, 1000));
-
-            this.$scope.$watch('ctrl.startDate', _.debounce((newValue, oldValue) => {
-                this.$scope.$apply(() => {
-                    if (this.startDate || (oldValue && newValue == null)) {
-                        this.applyFilters();
-                    }
-                });
-            }, 1000));
-
-            this.$scope.$watch('ctrl.endDate', _.debounce((newValue, oldValue) => {
-                this.$scope.$apply(() => {
-                    if (this.endDate || (oldValue && newValue == null)) {
-                        this.applyFilters();
-                    }
-                });
-            }, 1000));
-        }
-
         load() {
+            let ctrl = this;
+
             this.$q.all([
                 this.formTemplateResource.query({ projectId: this.project.id }).$promise,
                 this.surveyResource.query({ projectId: this.project.id }).$promise
@@ -134,46 +117,97 @@ module App {
 
                 this.projectSummaryService.formTemplates = this.formTemplates;
                 this.projectSummaryService.surveys = this.surveys;
-
                 this.$scope.safeSurveys = this.surveys;
 
-                this.applyFilters();
-            });
-        }
+                // get metric filters for each form template
+                let filterPromises: ng.IPromise<any>[] = [];
 
-        applyFilters() {
-            this.projectSummaryService.query = this.searchTerm;
-            this.projectSummaryService.fromDate = this.startDate;
-            this.projectSummaryService.toDate = this.endDate;
+                _.forEach(this.formTemplates, (template) => {
+                    filterPromises.push(this.formTemplateResource.getFilters({ id: template.id }, (res) => { }).$promise);
+                });
 
-            this.projectSummaryService.filter().then((result: Services.IProjectSummaryServiceResultView) => {
-                this.displayedSurveys = result.surveys;
-                this.selectedTemplates = result.templates;
+                this.$q.all(filterPromises)
+                    .then((metricFilters) => {
+                        // flatten metric filters
+                        var filters: Models.IMetricFilter[] = [];
+                        _.forEach(metricFilters, (mf) => {
+                            filters = filters.concat(mf);
+                        });
 
+                        var res = [];
+                        _.forEach(filters, (f) => {
+                            var found = this.findMetricFilter(f, filters);
+                            if (found) res.push(found);
+                        });
+
+                        res = _.uniqBy(res, 'shortTitle');
+                        console.log(res);
+
+                        ctrl.metricFilters = res;
+                    });
+
+                // populate data sets
+                this.displayedSurveys = this.surveys;
+                this.selectedTemplates = this.formTemplates;
                 this.$scope.displayedSurveys = this.displayedSurveys;
             });
         }
 
-        threadsChanged() {
-            this.applyFilters();
+        findMetricFilter(metricFilter: Models.IMetricFilter, filters: Models.IMetricFilter[]) {
+            var result = undefined;
+            var count = 0;
+
+            _.forEach(filters, (item) => {
+                if (item.shortTitle === metricFilter.shortTitle && item.type === metricFilter.type) {
+                    result = item;
+                    count++;
+                }
+            });
+
+            if (result && count > 1)
+                return result;
+
+            return undefined;
         }
 
         clearSearch() {
-            this.searchTerm = '';
+            this.searchTerm = undefined;
             this.startDate = undefined;
             this.endDate = undefined;
         }
 
         clearThreads() {
             angular.forEach(this.formTemplates, (t) => { t.isChecked = false });
-            this.applyFilters();
         }
 
         clearAll() {
-            this.searchTerm = '';
+            this.searchTerm = undefined;
             this.startDate = undefined;
             this.endDate = undefined;
-            angular.forEach(this.formTemplates, (t) => { t.isChecked = false });
+
+            _.forEach(this.$scope.filterValues, (fv) => {
+                switch (fv.type) {
+                    case "single": {
+                        var singleValue = <Models.ISingleFilterValue>fv;
+                        singleValue.value = undefined;
+                        break;
+                    }
+                    case "range": {
+                        var rangeValue = <Models.IRangeFilterValue>fv;
+                        rangeValue.fromValue = undefined;
+                        rangeValue.toValue = undefined;
+                        break;
+                    }
+                    case "multiple": {
+                        var multipleValue = <Models.IMultipleFilterValue>fv;
+                        multipleValue.values = [];
+                        _.forEach(multipleValue.options, (opt) => { opt.selected = false });
+                        break;
+                    }
+                }
+            });
+
+            this.load();
         }
 
         print() {
@@ -243,6 +277,62 @@ module App {
             this.$rootScope.$broadcast('timeline-previous-month');
         }
 
+        getFilterValues() {
+            var filterValues = [];
+
+            _.forEach(this.$scope.filterValues, (filterValue) => {
+                switch (filterValue.type) {
+                    case "single": {
+                        var singleValue = <Models.ISingleFilterValue>filterValue;
+                        if (singleValue.value && singleValue.value.length)
+                            filterValues.push(filterValue);
+
+                        break;
+                    }
+                    case "range": {
+                        var rangeValue = <Models.IRangeFilterValue>filterValue;
+                        var fromValue = rangeValue.fromValue;
+                        var toValue = rangeValue.toValue;
+
+                        if (fromValue || toValue)
+                            filterValues.push(filterValue);
+
+                        break;
+                    }
+                    case "multiple": {
+                        var multipleValue = <Models.IMultipleFilterValue>filterValue;
+                        if (multipleValue.values && multipleValue.values.length)
+                            filterValues.push(multipleValue);
+
+                        break;
+                    }
+                }
+            });
+
+            return filterValues;
+        }
+
+        search() {
+            var filterValues = this.getFilterValues();
+            var templateIds = _.map(_.filter(this.formTemplates, (template) => { return template.isChecked == true }), (template) => { return template.id });
+
+            var searchModel: Models.SummarySearchModel = {
+                projectId: this.project.id,
+                formTemplateIds: templateIds,
+                term: this.searchTerm,
+                startDate: this.startDate,
+                endDate: this.endDate,
+                filterValues: filterValues
+            };
+
+            this.surveyResource.summarySearch(searchModel, (surveys: Models.ISurvey[]) => {
+                this.surveys = surveys;
+                this.displayedSurveys = [].concat(this.surveys);
+                this.$scope.displayedSurveys = this.displayedSurveys;
+            }, (error) => {
+                console.error(error);
+            });
+        }
     }
 
     angular.module("app").controller("projectSummaryController", ProjectSummaryController);

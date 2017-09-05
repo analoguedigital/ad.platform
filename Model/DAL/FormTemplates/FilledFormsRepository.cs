@@ -108,6 +108,39 @@ namespace LightMethods.Survey.Models.DAL
             return result;
         }
 
+        public IEnumerable<FilledForm> SummarySearch(SummarySearchDTO model)
+        {
+            var templates = this.Context.FormTemplates.Where(t => model.FormTemplateIds.Contains(t.Id)).ToList();
+
+            var surveys = this.Context.FilledForms
+                .Where(s => s.ProjectId == model.ProjectId && model.FormTemplateIds.Contains(s.FormTemplateId));
+
+            // apply generic date range
+            if (model.StartDate.HasValue || model.EndDate.HasValue)
+                surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
+
+            foreach (var template in templates)
+            {
+                // apply metric filters
+                foreach (var filter in model.FilterValues)
+                {
+                    var filterValue = Mapper.Map<FilterValue>(filter);
+
+                    var metric = this.FindMetricByShortTitle(filter.ShortTitle, template);
+                    if (metric != null)
+                        surveys = surveys.Where(metric.GetFilterExpression(filterValue));
+                }
+            }
+
+            var result = surveys.ToList();
+
+            // apply generic search term
+            if (!string.IsNullOrEmpty(model.Term))
+                result = result.Where(s => s.Description.Contains(model.Term, caseSensitive: false)).ToList();
+
+            return result;
+        }
+
         public override void Delete(FilledForm entity)
         {
             entity.FormValues.ToList().ForEach(v => CurrentUOW.FormValuesRepository.Delete(v));
