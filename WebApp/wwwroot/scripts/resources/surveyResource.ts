@@ -4,8 +4,7 @@ module App.Resources {
 
     export interface ISurveyResource extends ng.resource.IResourceClass<Models.ISurvey> {
         update(survey: Models.ISurvey, success: Function, error?: Function): Models.ISurvey;
-        search(model: Models.SearchModel, success: Function, error?: Function): Array<Models.ISurvey>;
-        summarySearch(model: Models.SummarySearchModel, success: Function, error?: Function): Array<Models.ISurvey>;
+        search(model: Models.SearchDTO, success: Function, error?: Function): Array<Models.ISurvey>;
     }
 
     SurveyResource.$inject = ["$resource"];
@@ -14,8 +13,7 @@ module App.Resources {
         return <ISurveyResource>$resource('/api/surveys/:id', { id: '@id' }, {
             'get': { method: 'GET' },
             'update': { method: 'PUT' },
-            'search': { method: 'POST', url: '/api/surveys/search', isArray: true },
-            'summarySearch': { method: 'POST', url: '/api/surveys/summarySearch', isArray: true }
+            'search': { method: 'POST', url: '/api/surveys/search', isArray: true }
         });
 
     }

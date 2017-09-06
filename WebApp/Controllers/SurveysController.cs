@@ -45,20 +45,9 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/surveys/search")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult Search(Search model)
+        public IHttpActionResult Search(SearchDTO model)
         {
             var result = this.UnitOfWork.FilledFormsRepository.Search(model);
-            var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
-
-            return Ok(retVal);
-        }
-
-        [HttpPost]
-        [Route("api/surveys/summarySearch")]
-        [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult SummarySearch(SummarySearchDTO model)
-        {
-            var result = this.UnitOfWork.FilledFormsRepository.SummarySearch(model);
             var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
 
             return Ok(retVal);

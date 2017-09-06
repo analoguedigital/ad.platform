@@ -88,6 +88,7 @@ module App {
             this.$scope.title = this.project.name;
             this.$scope.today = new Date();
             this.$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            this.startDate = moment().add('-1', 'month').toDate();
 
             this.metricFilters = [];
             this.$scope.filterValues = [];
@@ -316,7 +317,7 @@ module App {
             var filterValues = this.getFilterValues();
             var templateIds = _.map(_.filter(this.formTemplates, (template) => { return template.isChecked == true }), (template) => { return template.id });
 
-            var searchModel: Models.SummarySearchModel = {
+            var searchModel: Models.SearchDTO = {
                 projectId: this.project.id,
                 formTemplateIds: templateIds,
                 term: this.searchTerm,
@@ -325,7 +326,7 @@ module App {
                 filterValues: filterValues
             };
 
-            this.surveyResource.summarySearch(searchModel, (surveys: Models.ISurvey[]) => {
+            this.surveyResource.search(searchModel, (surveys: Models.ISurvey[]) => {
                 this.surveys = surveys;
                 this.displayedSurveys = [].concat(this.surveys);
                 this.$scope.displayedSurveys = this.displayedSurveys;
