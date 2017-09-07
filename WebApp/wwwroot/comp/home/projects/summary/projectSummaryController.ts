@@ -142,8 +142,6 @@ module App {
                         });
 
                         res = _.uniqBy(res, 'shortTitle');
-                        console.log(res);
-
                         ctrl.metricFilters = res;
                     });
 

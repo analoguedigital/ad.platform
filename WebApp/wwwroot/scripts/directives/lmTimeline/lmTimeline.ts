@@ -126,7 +126,7 @@
 
                 return xAxesTicks;
             }
-            
+
             function generateMobileXAxis() {
                 var xAxesTicks = [];
 
@@ -215,9 +215,12 @@
             function generateDatasets(xAxesTicks) {
                 var datasets = [];
 
-                _.forEach(scope.formTemplates, (template) => {
+                var templateIds = _.uniq(_.map(scope.surveys, (s) => { return s.formTemplateId; }));
+
+                _.forEach(templateIds, (id) => {
                     var data = [];
-                    var records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId == template.id });
+                    var template = _.find(scope.formTemplates, (t) => { return t.id === id; });
+                    var records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId === id; });
 
                     _.forEach(xAxesTicks, function (tick) {
                         var foundSurveys = _.filter(records, (record) => {
