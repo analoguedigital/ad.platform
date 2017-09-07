@@ -89,10 +89,26 @@ namespace LightMethods.Survey.Models.DAL
             {
                 var surveys = this.Context.FilledForms.Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id);
                 var surveyCount = this.Context.FilledForms.Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
+                var foundBySearchTerm = false;
 
                 // apply generic date range
                 if (model.StartDate.HasValue || model.EndDate.HasValue)
                     surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
+
+                // apply search term
+                if (!string.IsNullOrEmpty(model.Term))
+                {
+                    var descMetrics = template.GetDescriptionMetrics();
+                    if (descMetrics.Any())
+                    {
+                        List<Guid?> metricIds = new List<Guid?>();
+                        foreach (var metric in descMetrics)
+                            metricIds.Add(metric.Id);
+
+                        surveys = surveys.Where(s => s.FormValues.Any(fv => metricIds.Contains(fv.MetricId) && fv.TextValue.Contains(model.Term)));
+                        if (surveys.Count() > 0) foundBySearchTerm = true;
+                    }
+                }
 
                 // apply metric filters
                 foreach (var filter in model.FilterValues)
@@ -103,14 +119,13 @@ namespace LightMethods.Survey.Models.DAL
                         surveys = surveys.Where(metric.GetFilterExpression(filterValue));
                 }
 
-                var result = surveys.ToList();
-
-                // apply generic search term
-                if (!string.IsNullOrEmpty(model.Term))
-                    result = result.Where(s => s.Description.Contains(model.Term, caseSensitive: false)).ToList();
+                var result = surveys.OrderByDescending(s => s.SurveyDate).ToList();
 
                 if (!model.FilterValues.Any())
-                    foundSurveys.AddRange(result);
+                {
+                    if (foundBySearchTerm)
+                        foundSurveys.AddRange(result);
+                }
                 else
                 {
                     if (surveyCount != result.Count)

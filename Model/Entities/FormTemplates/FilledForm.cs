@@ -12,8 +12,6 @@ namespace LightMethods.Survey.Models.Entities
 {
     public class FilledForm : Entity, IValidatableObject
     {
-        private Regex descriptionFormatPattern = new Regex(@"\{\{([^}]*)\}\}");
-
         [Required]
         [Index]
         public Guid FormTemplateId { get; set; }
@@ -50,40 +48,22 @@ namespace LightMethods.Survey.Models.Entities
 
                 if (this.FormTemplate != null)
                 {
-                    var format = this.FormTemplate.DescriptionFormat;
-                    if (string.IsNullOrEmpty(format))
-                        return string.Empty;
-
-                    var matches = this.descriptionFormatPattern.Matches(format);
-                    var names = new List<string>();
-                    foreach (Match match in matches)
-                        names.Add(match.Groups[1].Value);
-
-                    var foundMetrics = new List<Metric>();
-                    foreach (var metricGroup in this.FormTemplate.MetricGroups)
-                    {
-                        foreach (var metric in metricGroup.Metrics)
-                        {
-                            if (names.Contains(metric.ShortTitle.ToLower()))
-                                foundMetrics.Add(metric);
-                        }
-                    }
-
-                    if (foundMetrics.Any())
+                    var descriptionMetrics = this.FormTemplate.GetDescriptionMetrics();
+                    if (descriptionMetrics.Any())
                     {
                         var descFormat = this.FormTemplate.DescriptionFormat;
 
-                        foreach (var metric in foundMetrics)
+                        foreach (var metric in descriptionMetrics)
                         {
                             var formValue = this.FormValues.Where(fm => fm.MetricId == metric.Id).FirstOrDefault();
                             if (formValue != null)
-                        {
-                            var src = "{{" + metric.ShortTitle.ToLower() + "}}";
-                            descFormat = descFormat.Replace(src, formValue.ToString());
-                        }
+                            {
+                                var src = "{{" + metric.ShortTitle.ToLower() + "}}";
+                                descFormat = descFormat.Replace(src, formValue.ToString());
+                            }
                         }
 
-                    this._description = descFormat;
+                        this._description = descFormat;
 
                         return this._description;
                     }

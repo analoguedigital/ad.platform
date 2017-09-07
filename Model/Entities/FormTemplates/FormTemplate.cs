@@ -166,5 +166,30 @@ namespace LightMethods.Survey.Models.Entities
             return filters;
         }
 
+        public List<Metric> GetDescriptionMetrics()
+        {
+            if (string.IsNullOrEmpty(this.DescriptionFormat))
+                return new List<Metric>();
+
+            Regex formatPattern = new Regex(@"\{\{([^}]*)\}\}");
+            var matches = formatPattern.Matches(this.DescriptionFormat);
+
+            var names = new List<string>();
+            foreach (Match match in matches)
+                names.Add(match.Groups[1].Value);
+
+            var foundMetrics = new List<Metric>();
+            foreach (var metricGroup in this.MetricGroups)
+            {
+                foreach (var metric in metricGroup.Metrics)
+                {
+                    if (names.Contains(metric.ShortTitle.ToLower()))
+                        foundMetrics.Add(metric);
+                }
+            }
+
+            return foundMetrics;
+        }
+
     }
 }
