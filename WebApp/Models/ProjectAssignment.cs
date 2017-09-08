@@ -12,5 +12,9 @@ namespace WebApi.Models
         public Guid OrgUserId { set; get; }
 
         public string OrgUserName { set; get; }
+
+        public bool HasReadAccess { get; set; }
+
+        public bool HasWriteAccess { get; set; }
     }
 }

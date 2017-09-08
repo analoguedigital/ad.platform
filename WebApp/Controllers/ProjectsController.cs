@@ -57,7 +57,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/projects/{id:guid}/assign/{userId:guid}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult AddAssignments(Guid id, Guid userId)
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, bool hasReadAccess, bool hasWriteAccess)
         {
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
@@ -70,16 +70,29 @@ namespace WebApi.Controllers
             if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
                 return NotFound();
 
-            if (project.Assignments.Any(a => a.OrgUserId == userId))
-                return BadRequest($"{orgUser.ToString()} is already assigned to {project.Name}");
+            var assignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
+                .Where(a => a.ProjectId == id && a.OrgUserId == userId).FirstOrDefault();
 
-            var assignment = new Assignment()
+            if (assignment != null)
             {
-                ProjectId = id,
-                OrgUserId = userId
-            };
+                assignment.HasReadAccess = hasReadAccess;
+                assignment.HasWriteAccess = hasWriteAccess;
 
-            UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+                UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+            }
+            else
+            {
+                var entity = new Assignment()
+                {
+                    ProjectId = id,
+                    OrgUserId = userId,
+                    HasReadAccess = hasReadAccess,
+                    HasWriteAccess = hasWriteAccess
+                };
+
+                UnitOfWork.AssignmentsRepository.InsertOrUpdate(entity);
+            }
+
             UnitOfWork.Save();
 
             return Ok();

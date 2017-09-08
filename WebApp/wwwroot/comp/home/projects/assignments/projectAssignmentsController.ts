@@ -14,6 +14,8 @@ module App {
         userId: string;
         name: string;
         isAssigned: boolean;
+        hasReadAccess: boolean;
+        hasWriteAccess: boolean;
     }
 
 
@@ -48,34 +50,61 @@ module App {
             usersPromise.then((users) => { this.users = users; });
 
             this.$q.all([projectPromise, usersPromise]).then(() => {
-
                 this.projectResource.assignments({ id: projectId }, (assignments) => {
                     this.userAssignments = [];
 
-                    angular.forEach(this.users, (user) => {
-                        this.userAssignments.push({ userId: user.id, name: user.firstName + ' ' + user.surname, isAssigned: _.some(assignments, { orgUserId: user.id }) });
+                    _.forEach(this.users, (user) => {
+                        var userName = user.email;
+                        if (user.firstName || user.surname)
+                            userName = `${user.firstName} ${user.surname}`;
+
+                        var assgn = _.find(assignments, { 'orgUserId': user.id });
+                        var userAssignment = <Models.IProjectAssignment>assgn;
+
+                        var record: IAssignmentUser = {
+                            userId: user.id,
+                            name: userName,
+                            isAssigned: _.some(assignments, { 'orgUserId': user.id }),
+                            hasReadAccess: userAssignment ? userAssignment.hasReadAccess : false,
+                            hasWriteAccess: userAssignment ? userAssignment.hasWriteAccess : false
+                        };
+
+                        this.userAssignments.push(record);
                     });
                 });
             });
         }
 
         updateAssignment(assg: IAssignmentUser) {
-            if (assg.isAssigned) {
-                this.projectResource.assign({ id: this.project.id, userId: assg.userId },
-                    () => {
-                        this.toastr.success('User assigned successfully!', 'Success', {
-                            closeButton: true
-                        });
-                    },
-                    (err) => {
-                        this.toastr.error('Unable to assign the user!', 'Error', {
-                            closeButton: true
-                        });
+            var params = {
+                id: this.project.id,
+                userId: assg.userId,
+                hasReadAccess: assg.hasReadAccess,
+                hasWriteAccess: assg.hasWriteAccess
+            };
+
+            this.projectResource.assign(params,
+                () => {
+                    assg.isAssigned = true;
+                    this.toastr.success('User assigned successfully!', 'Success', {
+                        closeButton: true
                     });
-            }
-            else {
+                },
+                (err) => {
+                    this.toastr.error('Unable to assign the user!', 'Error', {
+                        closeButton: true
+                    });
+                });
+        }
+
+        deleteAssignment(assg: IAssignmentUser) {
+            if (confirm('Are you sure you want to remove this assignment?')) {
                 this.projectResource.unassign({ id: this.project.id, userId: assg.userId },
                     () => {
+                        assg.isAssigned = false;
+                        assg.hasReadAccess = false;
+                        assg.hasWriteAccess = false;
+
                         this.toastr.success('User removed from the project successfully!', 'Success', {
                             closeButton: true
                         });

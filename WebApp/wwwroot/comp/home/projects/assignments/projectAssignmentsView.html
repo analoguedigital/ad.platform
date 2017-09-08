@@ -9,17 +9,27 @@
                 <thead>
                     <tr>
                         <th>Users</th>
-                        <th></th>
+                        <th class="text-center"></th>
+                        <th class="text-center" width="30"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="user in ctrl.userAssignments">
                         <td>{{user.name}}</td>
-                        <td>
+                        <td class="text-center">
                             <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins">
-                                <input type="checkbox" id="isAssigned_{{user.userId}}" ng-model="user.isAssigned" ng-change="ctrl.updateAssignment(user)">
-                                <label for="isAssigned_{{user.userId}}"></label>
+                                <input type="checkbox" id="has_read_access_{{user.userId}}" ng-model="user.hasReadAccess" ng-change="ctrl.updateAssignment(user)" />
+                                <label for="has_read_access_{{user.userId}}">Read Access</label>
+                            </div> 
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins" style="margin-right: 10px !important">
+                                <input type="checkbox" id="has_write_access_{{user.userId}}" ng-model="user.hasWriteAccess" ng-change="ctrl.updateAssignment(user)" />
+                                <label for="has_write_access_{{user.userId}}">Write Access</label>
                             </div>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-danger btn-xs" ng-if="user.isAssigned" ng-click="ctrl.deleteAssignment(user)">
+                                <i class="fa fa-trash-o"></i>
+                            </button>
                         </td>
                     </tr>
                 </tbody>

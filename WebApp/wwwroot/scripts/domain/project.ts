@@ -18,5 +18,7 @@ module App.Models {
         orgUserId: string;
         orgUserName: string;
         projectId: string;
+        hasReadAccess: boolean;
+        hasWriteAccess: boolean;
     }
 }
