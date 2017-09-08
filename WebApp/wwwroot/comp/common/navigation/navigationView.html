@@ -36,7 +36,7 @@
                 <a ui-sref="home.projects.list"><i class="fa fa-folder-o"></i> <span class="nav-label">Users</span></a>
             </li>
             <li lm-access="Organisation user" ng-class="{'active':$state.includes('home.surveys')}">
-                <a ui-sref="home.surveys.list"><i class="fa fa-file-text-o"></i> <span class="nav-label">Forms</span></a>
+                <a ui-sref="home.surveys.list" ui-sref-opts="{reload: true}"><i class="fa fa-file-text-o"></i> <span class="nav-label">Forms</span></a>
             </li>
             <li lm-access="Organisation administrator" ng-class="{'active':$state.includes('home.users')}">
                 <a ui-sref="home.users.list"><i class="fa fa-users"></i> <span class="nav-label">User Management</span></a>
