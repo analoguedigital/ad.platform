@@ -15,5 +15,9 @@ namespace LightMethods.Survey.Models.Entities
         [Index("IX_User_Project", 1, IsUnique = true)]
         public Guid ProjectId { get; set; }
         public virtual Project Project { get; set; }
+
+        public bool HasReadAccess { get; set; }
+
+        public bool HasWriteAccess { get; set; }
     }
 }
