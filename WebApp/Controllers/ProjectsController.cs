@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Models;
+using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
 namespace WebApi.Controllers
 {
@@ -55,9 +56,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("api/projects/{id:guid}/assign/{userId:guid}")]
+        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult AddAssignments(Guid id, Guid userId, bool canAdd, bool canEdit, bool canView, bool canDelete)
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, string accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
@@ -70,42 +71,24 @@ namespace WebApi.Controllers
             if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
                 return NotFound();
 
-            var assignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
-                .Where(a => a.ProjectId == id && a.OrgUserId == userId).FirstOrDefault();
+            if (string.IsNullOrEmpty(accessLevel))
+                return BadRequest();
 
-            if (assignment != null)
-            {
-                assignment.CanAdd = canAdd;
-                assignment.CanEdit = canEdit;
-                assignment.CanDelete = canDelete;
-                assignment.CanView = canView;
+            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
-                UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
-            }
-            else
-            {
-                var entity = new Assignment()
-                {
-                    ProjectId = id,
-                    OrgUserId = userId,
-                    CanAdd = canAdd,
-                    CanEdit = canEdit,
-                    CanDelete = canDelete,
-                    CanView = canView
-                };
+            if (result == AssignAccessLevelResult.NotFound)
+                return NotFound();
 
-                UnitOfWork.AssignmentsRepository.InsertOrUpdate(entity);
-            }
-
-            UnitOfWork.Save();
+            if (result == AssignAccessLevelResult.BadRequest)
+                return BadRequest();
 
             return Ok();
         }
 
         [HttpDelete]
-        [Route("api/projects/{id:guid}/assign/{userId:guid}")]
+        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult DeleteAssignments(Guid id, Guid userId)
+        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, string accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
             if (project == null)
@@ -118,8 +101,14 @@ namespace WebApi.Controllers
             if (assignment == null)
                 return NotFound();
 
-            UnitOfWork.AssignmentsRepository.Delete(assignment);
-            UnitOfWork.Save();
+            if (string.IsNullOrEmpty(accessLevel))
+                return BadRequest();
+
+            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
+            if (result == AssignAccessLevelResult.NotFound)
+                return NotFound();
+            if (result == AssignAccessLevelResult.BadRequest)
+                return BadRequest();
 
             return Ok();
         }

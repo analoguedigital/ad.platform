@@ -401,6 +401,7 @@
     <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
     <Content Include="wwwroot\comp\home\projects\summary\_summary.scss" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_projectSummaryPrintView.scss" />
+    <Content Include="wwwroot\comp\home\projects\assignments\_assignments.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

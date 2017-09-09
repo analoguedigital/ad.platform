@@ -13,7 +13,6 @@ module App {
     interface IAssignmentUser {
         userId: string;
         name: string;
-        isAssigned: boolean;
         canAdd: boolean;
         canEdit: boolean;
         canView: boolean;
@@ -66,7 +65,6 @@ module App {
                         var record: IAssignmentUser = {
                             userId: user.id,
                             name: userName,
-                            isAssigned: _.some(assignments, { 'orgUserId': user.id }),
                             canAdd: userAssignment ? userAssignment.canAdd : false,
                             canEdit: userAssignment ? userAssignment.canEdit : false,
                             canView: userAssignment ? userAssignment.canView : false,
@@ -79,49 +77,37 @@ module App {
             });
         }
 
-        updateAssignment(assg: IAssignmentUser) {
+        updateAssignment(assg: IAssignmentUser, accessLevel: string) {
             var params = {
                 id: this.project.id,
                 userId: assg.userId,
-                canAdd: assg.canAdd,
-                canEdit: assg.canEdit,
-                canView: assg.canView,
-                canDelete: assg.canDelete
+                accessLevel: accessLevel
             };
 
-            this.projectResource.assign(params,
-                () => {
-                    assg.isAssigned = true;
-                    this.toastr.success('User assigned successfully!', 'Success', {
-                        closeButton: true
-                    });
-                },
-                (err) => {
-                    this.toastr.error('Unable to assign the user!', 'Error', {
-                        closeButton: true
-                    });
-                });
-        }
+            var toggled = false;
+            switch (accessLevel) {
+                case 'add': {
+                    toggled = assg.canAdd;
+                    break;
+                }
+                case 'edit': {
+                    toggled = assg.canEdit;
+                    break;
+                }
+                case 'delete': {
+                    toggled = assg.canDelete;
+                    break;
+                }
+                case 'view': {
+                    toggled = assg.canView;
+                    break;
+                }
+            }
 
-        deleteAssignment(assg: IAssignmentUser) {
-            if (confirm('Are you sure you want to remove this assignment?')) {
-                this.projectResource.unassign({ id: this.project.id, userId: assg.userId },
-                    () => {
-                        assg.isAssigned = false;
-                        assg.canAdd = false;
-                        assg.canEdit = false;
-                        assg.canDelete = false;
-                        assg.canView = false;
-
-                        this.toastr.success('User removed from the project successfully!', 'Success', {
-                            closeButton: true
-                        });
-                    },
-                    (err) => {
-                        this.toastr.error('Unable to remove the user from the project!', 'Error', {
-                            closeButton: true
-                        });
-                    });
+            if (toggled) {
+                this.projectResource.assign(params, (result) => { }, (error) => { });
+            } else {
+                this.projectResource.unassign(params, (result) => { }, (error) => { });
             }
         }
 
