@@ -390,6 +390,10 @@
     <Compile Include="Migrations\201709081314473_Update_assignments.Designer.cs">
       <DependentUpon>201709081314473_Update_assignments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709090752228_Enhance_assignments.cs" />
+    <Compile Include="Migrations\201709090752228_Enhance_assignments.Designer.cs">
+      <DependentUpon>201709090752228_Enhance_assignments.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -513,6 +517,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709081314473_Update_assignments.resx">
       <DependentUpon>201709081314473_Update_assignments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709090752228_Enhance_assignments.resx">
+      <DependentUpon>201709090752228_Enhance_assignments.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
