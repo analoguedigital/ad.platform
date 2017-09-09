@@ -25,12 +25,13 @@ module App {
         //survey: Models.ISurvey;
         activeTabIndex: number = 0;
 
-        static $inject: string[] = ["$scope", "$state", "$timeout", "surveyResource", "formTemplate", "project", "survey"];
+        static $inject: string[] = ["$scope", "$state", "$timeout", "toastr", "surveyResource", "formTemplate", "project", "survey"];
 
         constructor(
             private $scope: INewSurveyScope,
             private $state: ng.ui.IStateService,
             private $timeout: ng.ITimeoutService,
+            private toastr: any,
             private surveyResource: Resources.ISurveyResource,
             public formTemplate: Models.IFormTemplate,
             public project: Models.IProject,
@@ -131,14 +132,20 @@ module App {
                     () => {
                         this.$state.go('home.surveys.list.summary', { projectId: this.project.id });
                     },
-                    (err) => { console.log(err); });
+                    (err) => {
+                        console.log(err);
+                        this.toastr.error(err.data);
+                    });
             }
             else {
                 this.surveyResource.update(this.survey,
                     () => {
                         this.$state.go('home.surveys.list.summary', { projectId: this.survey.projectId });
                     },
-                    (err) => { console.log(err); });
+                    (err) => {
+                        console.log(err);
+                        this.toastr.error(err.data);    
+                    });
             }
 
         }

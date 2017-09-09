@@ -44,7 +44,7 @@ module App {
         selectNone: () => void;
         openStartDateCalendar: () => void;
         openEndDateCalendar: () => void;
-        delete(id: string): () => void;
+        delete: (id: string) => void;
     }
 
     class ProjectSummaryController implements IProjectSummaryController {

@@ -34,6 +34,9 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Get(Guid projectId, string filter = "")
         {
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
+            if (assignment == null || !assignment.CanView)
+                return Content(HttpStatusCode.Forbidden, "Access Denied");
 
             //TODO: refactore to api/projects/{projectId}/surveys
             MatchCollection filters = null;
@@ -114,6 +117,13 @@ namespace WebApi.Controllers
                 .Select(f => Mapper.Map<FilledFormDTO>(f))
                 .SingleOrDefault();
 
+            if (survey == null)
+                return NotFound();
+
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+            if (assignment == null || !assignment.CanView)
+                return Content(HttpStatusCode.Forbidden, "Access Denied");
+
             return Ok(survey);
         }
 
@@ -124,6 +134,10 @@ namespace WebApi.Controllers
             var attachment = UnitOfWork.AttachmentsRepository.Find(id);
             if (attachment.FormValue.FilledFormId != surveyId)
                 return NotFound();
+
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == attachment.FormValue.FilledForm.ProjectId);
+            if (assignment == null || !assignment.CanView)
+                return Content(HttpStatusCode.Forbidden, "Access Denied");
 
             var fileInfo = new FileInfo(Path.Combine(AttachmentsRepository.RootFolderPath, attachment.RelativeFolder, attachment.NameOnDisk));
 
@@ -143,6 +157,10 @@ namespace WebApi.Controllers
         [Route("api/surveys")]
         public IHttpActionResult Post(FilledFormDTO survey)
         {
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+            if (assignment == null || !assignment.CanAdd)
+                return Content(HttpStatusCode.Forbidden, "Access Denied");
+
             var filledForm = Mapper.Map<FilledForm>(survey);
             filledForm.FilledById = CurrentOrgUser.Id;
             try
@@ -201,6 +219,10 @@ namespace WebApi.Controllers
         [Route("api/surveys/{id}")]
         public IHttpActionResult Put(Guid id, FilledFormDTO surveyDTO)
         {
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == surveyDTO.ProjectId);
+            if (assignment == null || !assignment.CanEdit)
+                return Content(HttpStatusCode.Forbidden, "Access Denied");
+
             var survey = Mapper.Map<FilledForm>(surveyDTO);
             ModelState.Clear();
             Validate(survey);
@@ -282,11 +304,13 @@ namespace WebApi.Controllers
         [Route("api/surveys/{id}")]
         public IHttpActionResult Delete(Guid id)
         {
-
             var survey = UnitOfWork.FilledFormsRepository.Find(id);
-
             if (survey == null)
-                NotFound();
+                return NotFound();
+
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+            if (assignment == null || !assignment.CanDelete)
+                return Content(HttpStatusCode.Forbidden, "Access Denied");
 
             UnitOfWork.FilledFormsRepository.Delete(survey);
             UnitOfWork.FilledFormsRepository.Save();

@@ -21,15 +21,16 @@ module App {
         currentUser: Models.IOrgUser;
         assignment: Models.IProjectAssignment;
 
-        static $inject: string[] = ['$state', 'project', 'formTemplateResource', 'surveyResource', 'userContextService'];
+        static $inject: string[] = ['$state', 'toastr', 'project', 'formTemplateResource', 'surveyResource', 'userContextService'];
 
         constructor(
             public $state: ng.ui.IStateService,
+            public toastr: any,
             public project: Models.IProject,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private userContextService: Services.IUserContextService) {
-          
+
             this.activate();
         }
 
@@ -46,15 +47,28 @@ module App {
             this.currentUser = orgUser;
             this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
 
+            this.assignment.canAdd = true;
+            this.assignment.canEdit = true;
+            this.assignment.canDelete = true;
+            this.assignment.canView = true;
+
             this.formTemplates = this.formTemplateResource.query({ projectId: this.project.id });
-            this.surveys = this.surveyResource.query({ projectId: this.project.id });
+            this.surveyResource.query({ projectId: this.project.id }).$promise
+                .then((surveys) => {
+                    this.surveys = surveys;
+                }, (err) => {
+                    console.error(err);
+                }); 
         }
 
 
         delete(id: string) {
             this.surveyResource.delete({ id: id },
                 () => { this.load(); },
-                (err) => { console.log(err); });
+                (err) => {
+                    console.error(err);
+                    this.toastr.error(err.data);
+                });
         }
 
         printSelected() {
@@ -63,7 +77,7 @@ module App {
 
             this.$state.go('home.surveys.print-multiple', { selectedSurveys: result });
         }
-        
+
     }
 
     angular.module("app").controller("surveysSummaryController", SurveysSummaryController);
