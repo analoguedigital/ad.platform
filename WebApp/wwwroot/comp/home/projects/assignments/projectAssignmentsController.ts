@@ -14,8 +14,10 @@ module App {
         userId: string;
         name: string;
         isAssigned: boolean;
-        hasReadAccess: boolean;
-        hasWriteAccess: boolean;
+        canAdd: boolean;
+        canEdit: boolean;
+        canView: boolean;
+        canDelete: boolean;
     }
 
 
@@ -65,8 +67,10 @@ module App {
                             userId: user.id,
                             name: userName,
                             isAssigned: _.some(assignments, { 'orgUserId': user.id }),
-                            hasReadAccess: userAssignment ? userAssignment.hasReadAccess : false,
-                            hasWriteAccess: userAssignment ? userAssignment.hasWriteAccess : false
+                            canAdd: userAssignment ? userAssignment.canAdd : false,
+                            canEdit: userAssignment ? userAssignment.canEdit : false,
+                            canView: userAssignment ? userAssignment.canView : false,
+                            canDelete: userAssignment ? userAssignment.canDelete : false
                         };
 
                         this.userAssignments.push(record);
@@ -79,8 +83,10 @@ module App {
             var params = {
                 id: this.project.id,
                 userId: assg.userId,
-                hasReadAccess: assg.hasReadAccess,
-                hasWriteAccess: assg.hasWriteAccess
+                canAdd: assg.canAdd,
+                canEdit: assg.canEdit,
+                canView: assg.canView,
+                canDelete: assg.canDelete
             };
 
             this.projectResource.assign(params,
@@ -102,8 +108,10 @@ module App {
                 this.projectResource.unassign({ id: this.project.id, userId: assg.userId },
                     () => {
                         assg.isAssigned = false;
-                        assg.hasReadAccess = false;
-                        assg.hasWriteAccess = false;
+                        assg.canAdd = false;
+                        assg.canEdit = false;
+                        assg.canDelete = false;
+                        assg.canView = false;
 
                         this.toastr.success('User removed from the project successfully!', 'Success', {
                             closeButton: true

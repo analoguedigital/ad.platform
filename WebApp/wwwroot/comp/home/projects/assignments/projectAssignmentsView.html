@@ -18,12 +18,20 @@
                         <td>{{user.name}}</td>
                         <td class="text-center">
                             <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins">
-                                <input type="checkbox" id="has_read_access_{{user.userId}}" ng-model="user.hasReadAccess" ng-change="ctrl.updateAssignment(user)" />
-                                <label for="has_read_access_{{user.userId}}">Read Access</label>
+                                <input type="checkbox" id="can-add-{{user.userId}}" ng-model="user.canAdd" ng-change="ctrl.updateAssignment(user)" />
+                                <label for="can-add-{{user.userId}}">Can Add</label>
                             </div> 
                             <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins" style="margin-right: 10px !important">
-                                <input type="checkbox" id="has_write_access_{{user.userId}}" ng-model="user.hasWriteAccess" ng-change="ctrl.updateAssignment(user)" />
-                                <label for="has_write_access_{{user.userId}}">Write Access</label>
+                                <input type="checkbox" id="can-edit-{{user.userId}}" ng-model="user.canEdit" ng-change="ctrl.updateAssignment(user)" />
+                                <label for="can-edit-{{user.userId}}">Can Edit</label>
+                            </div>
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins">
+                                <input type="checkbox" id="can-view-{{user.userId}}" ng-model="user.canView" ng-change="ctrl.updateAssignment(user)" />
+                                <label for="can-view-{{user.userId}}">Can View</label>
+                            </div>
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins" style="margin-right: 10px !important">
+                                <input type="checkbox" id="can-del-{{user.userId}}" ng-model="user.canDelete" ng-change="ctrl.updateAssignment(user)" />
+                                <label for="can-del-{{user.userId}}">Can Delete</label>
                             </div>
                         </td>
                         <td class="text-center">

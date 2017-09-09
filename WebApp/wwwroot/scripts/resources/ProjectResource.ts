@@ -15,7 +15,7 @@ module App.Resources {
         return <IProjectResource>$resource('/api/projects/:id', { id: '@id' }, {
             'update': { method: 'PUT' },
             'assignments': { method: 'GET', isArray: true, url: '/api/projects/:id/assignments', params: { id: '@id' } },
-            'assign': { method: 'POST', url: '/api/projects/:id/assign/:userId', params: { id: '@id', userId: '@userId', hasReadAccess: '@hasReadAccess', hasWriteAccess: '@hasWriteAccess' } },
+            'assign': { method: 'POST', url: '/api/projects/:id/assign/:userId', params: { id: '@id', userId: '@userId', canAdd: '@canAdd', canEdit: '@canEdit', canView: '@canView', canDelete: '@canDelete' } },
             'unassign': { method: 'DELETE', url: '/api/projects/:id/assign/:userId', params: { id: '@id', userId: '@userId' } }
         });
     }

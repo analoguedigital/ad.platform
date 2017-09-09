@@ -22,6 +22,7 @@ module App.Models {
         isRootUser: boolean;
         isWebUser: boolean;
         isMobileUser: boolean;
+        assignments: IProjectAssignment[];
     }
        
 

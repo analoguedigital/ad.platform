@@ -15,6 +15,8 @@ module App {
         isDataView: boolean;
         activate: () => void;
         delete: (id: string) => void;
+        currentUser: Models.IOrgUser;
+        assignment: Models.IProjectAssignment;
     }
 
     class AllSurveysController implements IAllSurveysController {
@@ -30,13 +32,16 @@ module App {
         numberOfPages: number;
         pageSize: number;
         isDataView: boolean;
+        currentUser: Models.IOrgUser;
+        assignment: Models.IProjectAssignment;
 
-        static $inject: string[] = ["project","formTemplate", "surveyResource", "dataResource"];
+        static $inject: string[] = ["project", "formTemplate", "surveyResource", "dataResource", "userContextService"];
         constructor(
             public project: Models.IProject,
             private formTemplate: Models.IFormTemplate,
             private surveyResource: Resources.ISurveyResource,
-            private dateResource: Resources.IDataResource) {
+            private dateResource: Resources.IDataResource,
+            private userContextService: Services.IUserContextService) {
 
             this.title = "AllSurveys";
             this.isDataView = false;
@@ -48,6 +53,9 @@ module App {
         }
 
         load() {
+            var orgUser = this.userContextService.current.orgUser;
+            this.currentUser = orgUser;
+            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
 
             this.surveyResource.query({ projectId: this.project.id }).$promise.then((surveys) => {
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
@@ -60,7 +68,7 @@ module App {
                 })
 
             });
-            
+
         }
 
         delete(id: string) {

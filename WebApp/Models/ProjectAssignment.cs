@@ -13,8 +13,12 @@ namespace WebApi.Models
 
         public string OrgUserName { set; get; }
 
-        public bool HasReadAccess { get; set; }
+        public bool CanAdd { get; set; }
 
-        public bool HasWriteAccess { get; set; }
+        public bool CanEdit { get; set; }
+
+        public bool CanDelete { get; set; }
+
+        public bool CanView { get; set; }
     }
 }

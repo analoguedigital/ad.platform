@@ -57,7 +57,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/projects/{id:guid}/assign/{userId:guid}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult AddAssignments(Guid id, Guid userId, bool hasReadAccess, bool hasWriteAccess)
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, bool canAdd, bool canEdit, bool canView, bool canDelete)
         {
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
@@ -75,8 +75,10 @@ namespace WebApi.Controllers
 
             if (assignment != null)
             {
-                assignment.HasReadAccess = hasReadAccess;
-                assignment.HasWriteAccess = hasWriteAccess;
+                assignment.CanAdd = canAdd;
+                assignment.CanEdit = canEdit;
+                assignment.CanDelete = canDelete;
+                assignment.CanView = canView;
 
                 UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
             }
@@ -86,8 +88,10 @@ namespace WebApi.Controllers
                 {
                     ProjectId = id,
                     OrgUserId = userId,
-                    HasReadAccess = hasReadAccess,
-                    HasWriteAccess = hasWriteAccess
+                    CanAdd = canAdd,
+                    CanEdit = canEdit,
+                    CanDelete = canDelete,
+                    CanView = canView
                 };
 
                 UnitOfWork.AssignmentsRepository.InsertOrUpdate(entity);

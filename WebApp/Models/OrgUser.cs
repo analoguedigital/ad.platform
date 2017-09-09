@@ -10,7 +10,7 @@ namespace WebApi.Models
     public class OrgUserDTO
     {
         public Guid Id { get; set; }
-       
+
         public string Email { get; set; }
 
         public string FirstName { get; set; }
@@ -32,6 +32,13 @@ namespace WebApi.Models
         public bool IsWebUser { get; set; }
 
         public bool IsMobileUser { get; set; }
+
+        public List<ProjectAssignmentDTO> Assignments { get; set; }
+
+        public OrgUserDTO()
+        {
+            this.Assignments = new List<ProjectAssignmentDTO>();
+        }
 
     }
 }
