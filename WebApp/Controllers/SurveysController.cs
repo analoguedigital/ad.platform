@@ -47,6 +47,17 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Search(SearchDTO model)
         {
+            var project = this.UnitOfWork.ProjectsRepository.Find(model.ProjectId);
+            if (project == null)
+                return NotFound();
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(this.CurrentOrgUser.Id);
+            if (orgUser == null)
+                return NotFound();
+
+            if (this.CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
+                return NotFound();
+
             var result = this.UnitOfWork.FilledFormsRepository.Search(model);
             var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
 

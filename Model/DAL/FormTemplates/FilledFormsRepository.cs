@@ -80,15 +80,18 @@ namespace LightMethods.Survey.Models.DAL
 
         public IEnumerable<FilledForm> Search(SearchDTO model)
         {
-            var templates = this.Context.FormTemplates.Where(t => model.FormTemplateIds.Contains(t.Id)).ToList();
+            var templates = this.CurrentUOW.FormTemplatesRepository.AllAsNoTracking
+                .Where(t => model.FormTemplateIds.Contains(t.Id)).ToList();
 
             IQueryable<FilledForm> query = Enumerable.Empty<FilledForm>().AsQueryable();
             List<FilledForm> foundSurveys = new List<FilledForm>();
-
+            
             foreach (var template in templates)
             {
-                var surveys = this.Context.FilledForms.Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id);
-                var surveyCount = this.Context.FilledForms.Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
+                var surveys = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
+                    .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id);
+                var surveyCount = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
+                    .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
                 var foundBySearchTerm = false;
 
                 // apply generic date range
