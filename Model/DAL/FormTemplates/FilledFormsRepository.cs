@@ -85,7 +85,7 @@ namespace LightMethods.Survey.Models.DAL
 
             IQueryable<FilledForm> query = Enumerable.Empty<FilledForm>().AsQueryable();
             List<FilledForm> foundSurveys = new List<FilledForm>();
-            
+
             foreach (var template in templates)
             {
                 var surveys = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
@@ -93,10 +93,14 @@ namespace LightMethods.Survey.Models.DAL
                 var surveyCount = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
                     .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
                 var foundBySearchTerm = false;
+                var foundByDate = false;
 
                 // apply generic date range
                 if (model.StartDate.HasValue || model.EndDate.HasValue)
+                {
                     surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
+                    if (surveys.Count() > 0) foundByDate = true;
+                }
 
                 // apply search term
                 if (!string.IsNullOrEmpty(model.Term))
@@ -126,7 +130,7 @@ namespace LightMethods.Survey.Models.DAL
 
                 if (!model.FilterValues.Any())
                 {
-                    if (foundBySearchTerm)
+                    if (foundBySearchTerm || foundByDate)
                         foundSurveys.AddRange(result);
                 }
                 else
