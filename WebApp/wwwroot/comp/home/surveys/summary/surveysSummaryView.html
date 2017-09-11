@@ -27,7 +27,7 @@
                                 <label></label>
                             </div>
                         </td>
-                        <td>{{survey.surveyDate | date : 'dd/MM/yyyy': d}}</td>
+                        <td>{{survey.date | amDateFormat: 'L'}}</td>
                         <td>{{survey.serial}}</td>
                         <td>{{survey.filledBy}}</td>
                         <td>

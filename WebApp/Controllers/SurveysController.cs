@@ -37,7 +37,8 @@ namespace WebApi.Controllers
                 .Where(s => s.ProjectId == projectId)
                 .ToList();
 
-            var result = surveys.Select(f => Mapper.Map<FilledFormDTO>(f));
+            var result = surveys.OrderByDescending(x => x.Date)
+                .Select(s => Mapper.Map<FilledFormDTO>(s));
 
             return Ok(result);
         }

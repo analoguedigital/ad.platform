@@ -13,7 +13,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="survey in ctrl.displayedSurveys | orderBy:'-surveyDate'">
-                <td>{{survey.surveyDate | amDateFormat: 'L'}}</td>
+                <td>{{survey.date | amDateFormat: 'L'}}</td>
                 <td>{{survey.serial}}</td>
                 <td>{{survey.filledBy}}</td>
                 <td>{{survey.description}}</td>
