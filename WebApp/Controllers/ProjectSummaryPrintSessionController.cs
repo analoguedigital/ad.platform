@@ -32,14 +32,32 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/ProjectSummaryPrintSession/Download/{id:Guid}")]
-        public HttpResponseMessage Download(Guid id)
+        [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}")]
+        public HttpResponseMessage DownloadZip(Guid id)
         {
             var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
                 return null;
 
             return ExportZipFile(session, id);
+        }
+
+        [HttpGet]
+        [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}")]
+        public HttpResponseMessage DownloadPdf(Guid id)
+        {
+            var session = ProjectSummaryPrintSessionService.GetSession(id);
+            if (session == null)
+                return null;
+
+            var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}";
+
+            var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
+            var pdfFileName = $"{projectName}.pdf";
+
+            var pdfData = ConvertHtmlToPdf(url);
+            return CreatePdfResponseMessage(pdfData, projectName);
         }
 
         private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id)
@@ -119,6 +137,17 @@ namespace WebApi.Controllers
             htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 30;
             htmlToPdfConverter.PdfDocumentOptions.RightMargin = 30;
             return htmlToPdfConverter.ConvertUrl(url);
+        }
+
+        private HttpResponseMessage CreatePdfResponseMessage(byte[] data, string fileName)
+        {
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            result.Content = new ByteArrayContent(data);
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/pdf");
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            result.Content.Headers.ContentDisposition.FileName = fileName;
+            result.Content.Headers.Add("x-filename", fileName);
+            return result;
         }
 
         private HttpResponseMessage CreateZipResponseMessage(byte[] data, string fileName)
