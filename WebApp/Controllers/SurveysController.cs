@@ -37,7 +37,8 @@ namespace WebApi.Controllers
                 .Where(s => s.ProjectId == projectId)
                 .ToList();
 
-            var result = surveys.Select(f => Mapper.Map<FilledFormDTO>(f));
+            var result = surveys.OrderByDescending(x => x.Date)
+                .Select(s => Mapper.Map<FilledFormDTO>(s));
 
             return Ok(result);
         }
@@ -45,20 +46,20 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/surveys/search")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult Search(Search model)
+        public IHttpActionResult Search(SearchDTO model)
         {
+            var project = this.UnitOfWork.ProjectsRepository.Find(model.ProjectId);
+            if (project == null)
+                return NotFound();
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(this.CurrentOrgUser.Id);
+            if (orgUser == null)
+                return NotFound();
+
+            if (this.CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
+                return NotFound();
+
             var result = this.UnitOfWork.FilledFormsRepository.Search(model);
-            var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
-
-            return Ok(retVal);
-        }
-
-        [HttpPost]
-        [Route("api/surveys/summarySearch")]
-        [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult SummarySearch(SummarySearchDTO model)
-        {
-            var result = this.UnitOfWork.FilledFormsRepository.SummarySearch(model);
             var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
 
             return Ok(retVal);

@@ -125,7 +125,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual MetricFilter GetMetricFilter()
         {
-            throw new InvalidOperationException();
+            return null;
         }
 
         public virtual Expression<Func<FilledForm, bool>> GetFilterExpression(FilterValue filter)

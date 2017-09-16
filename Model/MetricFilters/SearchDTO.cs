@@ -7,27 +7,7 @@ using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.MetricFilters
 {
-    public class Search
-    {
-        public Guid ProjectId { get; set; }
-
-        public Guid FormTemplateId { get; set; }
-
-        public string Term { get; set; }
-
-        public DateTime? StartDate { get; set; }
-
-        public DateTime? EndDate { get; set; }
-
-        public List<FilterValue> FilterValues { get; set; }
-
-        public Search()
-        {
-            this.FilterValues = new List<FilterValue>();
-        }
-    }
-
-    public class SummarySearchDTO
+    public class SearchDTO
     {
         public Guid ProjectId { get; set; }
 
@@ -41,9 +21,8 @@ namespace LightMethods.Survey.Models.MetricFilters
 
         public List<FilterValue> FilterValues { get; set; }
 
-        public SummarySearchDTO()
+        public SearchDTO()
         {
-            this.FormTemplateIds = new List<Guid>();
             this.FilterValues = new List<FilterValue>();
         }
     }

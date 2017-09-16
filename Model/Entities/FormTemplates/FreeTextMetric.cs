@@ -68,7 +68,10 @@ namespace LightMethods.Survey.Models.Entities
             var singleValue = filterValue as SingleFilterValue;
             var value = singleValue.Value;
 
-            Expression<Func<FilledForm, bool>> result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && v.TextValue.Contains(value));
+            var punctuation = value.Where(Char.IsPunctuation).Distinct().ToArray();
+            var words = value.Split().Select(x => x.Trim(punctuation));
+
+            Expression<Func<FilledForm, bool>> result = (FilledForm f) => f.FormValues.Any(v => v.MetricId == this.Id && words.Any(w => v.TextValue.Contains(w)));
 
             return result;
         }

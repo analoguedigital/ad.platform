@@ -7,6 +7,7 @@
     interface IlmTimelineScope extends ng.IScope {
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
+        tickData: any[];
 
         height: number;
         renderMode: string;
@@ -126,7 +127,7 @@
 
                 return xAxesTicks;
             }
-            
+
             function generateMobileXAxis() {
                 var xAxesTicks = [];
 
@@ -215,9 +216,12 @@
             function generateDatasets(xAxesTicks) {
                 var datasets = [];
 
-                _.forEach(scope.formTemplates, (template) => {
+                var templateIds = _.uniq(_.map(scope.surveys, (s) => { return s.formTemplateId; }));
+
+                _.forEach(templateIds, (id) => {
                     var data = [];
-                    var records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId == template.id });
+                    var template = _.find(scope.formTemplates, (t) => { return t.id === id; });
+                    var records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId === id; });
 
                     _.forEach(xAxesTicks, function (tick) {
                         var foundSurveys = _.filter(records, (record) => {
@@ -265,11 +269,26 @@
 
             function generateTimelineData() {
                 var ticks = [];
+                scope.tickData = [];
 
                 if (scope.renderMode === 'web')
                     ticks = generateWebXAxis();
                 else if (scope.renderMode === 'mobile')
                     ticks = generateMobileXAxis();
+
+                // generate ticks data
+                _.forEach(ticks, (tick) => {
+                    let surveys = _.filter(scope.surveys, (survey) => {
+                        if (moment(survey.surveyDate).format('MM-DD-YYYY') === moment(tick).format('MM-DD-YYYY')) {
+                            return survey;
+                        }
+                    });
+
+                    scope.tickData.push({
+                        date: tick,
+                        data: surveys
+                    });
+                });
 
                 scope.chartLabels = ticks;
                 scope.chartDatasets = generateDatasets(ticks);
@@ -465,13 +484,9 @@
 
                 this.data.datasets.forEach(function (dataset, i) {
                     var meta = chartInstance.controller.getDatasetMeta(i);
-
                     if (meta.hidden === null || meta.hidden === false) {
                         var barSize = meta.controller._ruler.barSize;
                         var minBarSize = 15;
-
-                        var currentDay = moment(scope.currentDate).date();
-                        var firstDayOfMonth = moment(scope.currentDate).add(-(currentDay - 1), 'day').toDate();
 
                         if (barSize >= minBarSize) {
                             meta.data.forEach(function (bar, index) {
@@ -482,29 +497,13 @@
                                     var foundTemplate = _.filter(scope.formTemplates, (template) => { return template.id === dataset.formTemplateId; });
                                     if (foundTemplate.length) {
                                         var template = foundTemplate[0];
-                                        var records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId == template.id });
+                                        var tickData = scope.tickData[index];
 
-                                        var x_axis = chartSelf.scales['x-axis-0'];
-                                        var tickLabel = x_axis.ticks[index];
-
-                                        var d = new Date(tickLabel);
-                                        d.setFullYear(new Date().getFullYear());
-
-                                        var dayString = tickLabel.substr(3, tickLabel.length - 2);
-                                        var dayNumber = parseInt(dayString);
-
-                                        var daysToAdd = -(currentDay - dayNumber);
-                                        var foundDate = moment(scope.currentDate).add(daysToAdd, 'day').toDate();
-
-                                        // refactor foundDate
-
-                                        var foundSurveys = _.filter(records, (record) => {
-                                            if (moment(d).format('MM-DD-YYYY') === moment(record.surveyDate).format('MM-DD-YYYY')) {
-                                                return record;
-                                            }
+                                        let records = _.filter(tickData.data, (record: Models.ISurvey) => {
+                                            return record.formTemplateId == template.id;
                                         });
 
-                                        if (foundSurveys.length) {
+                                        if (records.length) {
                                             var centerX = bar._model.x;
                                             var centerY = bar._model.y;
                                             var radius = barSize / 2;
@@ -518,7 +517,7 @@
                                             ctx.stroke();
 
                                             ctx.fillStyle = '#1D2331';
-                                            ctx.fillText(foundSurveys.length, bar._model.x, bar._model.y + 7);
+                                            ctx.fillText(records.length, bar._model.x, bar._model.y + 7);
                                         }
                                     }
                                 }

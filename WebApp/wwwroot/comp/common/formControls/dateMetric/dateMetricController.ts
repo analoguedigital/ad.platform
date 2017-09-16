@@ -26,7 +26,7 @@ module App {
         constructor(private $scope: IDateMetricContrllerScope) {
             $scope.calendar = { isOpen: false };
             $scope.openCalendar = () => { this.openCalendar(); }
-            $scope.dateTimeFormat = "dd/MM/yyyy";
+            $scope.dateTimeFormat = "MM/dd/yyyy";
 
             this.activate();
         }
@@ -44,7 +44,7 @@ module App {
             }
 
             if (this.$scope.metric.hasTimeValue)
-                this.$scope.dateTimeFormat = "dd/MM/yyyy HH:mm a";  
+                this.$scope.dateTimeFormat = "MM/dd/yyyy HH:mm a";  
         }
     }
 

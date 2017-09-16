@@ -78,67 +78,69 @@ namespace LightMethods.Survey.Models.DAL
             return dest;
         }
 
-        public IEnumerable<FilledForm> Search(Search model)
+        public IEnumerable<FilledForm> Search(SearchDTO model)
         {
-            var template = this.Context.FormTemplates.Find(model.FormTemplateId);
+            var templates = this.CurrentUOW.FormTemplatesRepository.AllAsNoTracking
+                .Where(t => model.FormTemplateIds.Contains(t.Id)).ToList();
 
-            var surveys = this.Context.FilledForms
-                .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == model.FormTemplateId);
-
-            // apply generic date range
-            if (model.StartDate.HasValue || model.EndDate.HasValue)
-                surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
-
-            // apply metric filters
-            foreach (var filter in model.FilterValues)
-            {
-                var filterValue = Mapper.Map<FilterValue>(filter);
-
-                var metric = this.FindMetricByShortTitle(filter.ShortTitle, template);
-                if (metric != null)
-                    surveys = surveys.Where(metric.GetFilterExpression(filterValue));
-            }
-
-            var result = surveys.ToList();
-
-            // apply generic search term
-            if (!string.IsNullOrEmpty(model.Term))
-                result = result.Where(s => s.Description.Contains(model.Term, caseSensitive: false)).ToList();
-
-            return result;
-        }
-
-        public IEnumerable<FilledForm> SummarySearch(SummarySearchDTO model)
-        {
-            var templates = this.Context.FormTemplates.Where(t => model.FormTemplateIds.Contains(t.Id)).ToList();
-
-            var surveys = this.Context.FilledForms
-                .Where(s => s.ProjectId == model.ProjectId && model.FormTemplateIds.Contains(s.FormTemplateId));
-
-            // apply generic date range
-            if (model.StartDate.HasValue || model.EndDate.HasValue)
-                surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
+            IQueryable<FilledForm> query = Enumerable.Empty<FilledForm>().AsQueryable();
+            List<FilledForm> foundSurveys = new List<FilledForm>();
 
             foreach (var template in templates)
             {
+                var surveys = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
+                    .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id);
+                var surveyCount = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
+                    .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
+                var foundBySearchTerm = false;
+                var foundByDate = false;
+
+                // apply generic date range
+                if (model.StartDate.HasValue || model.EndDate.HasValue)
+                {
+                    surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
+                    if (surveys.Count() > 0) foundByDate = true;
+                }
+
+                // apply search term
+                if (!string.IsNullOrEmpty(model.Term))
+                {
+                    var descMetrics = template.GetDescriptionMetrics();
+                    if (descMetrics.Any())
+                    {
+                        List<Guid?> metricIds = new List<Guid?>();
+                        foreach (var metric in descMetrics)
+                            metricIds.Add(metric.Id);
+
+                        surveys = surveys.Where(s => s.FormValues.Any(fv => metricIds.Contains(fv.MetricId) && fv.TextValue.Contains(model.Term)));
+                        if (surveys.Count() > 0) foundBySearchTerm = true;
+                    }
+                }
+
                 // apply metric filters
                 foreach (var filter in model.FilterValues)
                 {
                     var filterValue = Mapper.Map<FilterValue>(filter);
-
                     var metric = this.FindMetricByShortTitle(filter.ShortTitle, template);
                     if (metric != null)
                         surveys = surveys.Where(metric.GetFilterExpression(filterValue));
                 }
+
+                var result = surveys.OrderByDescending(s => s.SurveyDate).ToList();
+
+                if (!model.FilterValues.Any())
+                {
+                    if (foundBySearchTerm || foundByDate)
+                        foundSurveys.AddRange(result);
+                }
+                else
+                {
+                    if (surveyCount != result.Count)
+                        foundSurveys.AddRange(result);
+                }
             }
 
-            var result = surveys.ToList();
-
-            // apply generic search term
-            if (!string.IsNullOrEmpty(model.Term))
-                result = result.Where(s => s.Description.Contains(model.Term, caseSensitive: false)).ToList();
-
-            return result;
+            return foundSurveys;
         }
 
         public override void Delete(FilledForm entity)

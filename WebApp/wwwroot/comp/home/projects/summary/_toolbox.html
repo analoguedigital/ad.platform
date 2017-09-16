@@ -23,7 +23,7 @@
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
                             </span>
-                            <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" />
+                            <input uib-datepicker-popup="{{'MM/dd/yyyy'}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" />
                         </div>
                     </div>
                 </div>
@@ -33,7 +33,7 @@
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
                             </span>
-                            <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" />
+                            <input uib-datepicker-popup="{{'MM/dd/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" />
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
             <div class="toolbox-buttons">
                 <div class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group">
-                        <button class="btn btn-default" ng-click="ctrl.search()">
+                        <button class="btn btn-primary" ng-click="ctrl.search()">
                             <i class="fa fa-search-plus"></i> Search
                         </button>
                     </div>

@@ -197,9 +197,9 @@ module App {
         search() {
             var filterValues = this.getFilterValues();
 
-            var searchModel: Models.SearchModel = {
+            var searchModel: Models.SearchDTO = {
                 projectId: this.project.id,
-                formTemplateId: this.formTemplate.id,
+                formTemplateIds: [this.formTemplate.id],
                 term: this.searchTerm,
                 startDate: this.startDate,
                 endDate: this.endDate,
