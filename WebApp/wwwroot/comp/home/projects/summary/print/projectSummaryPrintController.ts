@@ -13,6 +13,8 @@
         locationCount: number;
 
         activate: () => void;
+        downloadPdf: () => void;
+        downloadZip: () => void;
     }
 
     class ProjectSummaryPrintController implements IProjectSummaryPrintController {
@@ -81,11 +83,38 @@
             this.session.removedItemIds = [];
         }
 
-        generatePDF() {
-
+        downloadPdf() {
             this.session.$save().then(() => {
+                this.$http.get("/api/projectSummaryPrintSession/downloadPdf/" + this.session.id, { responseType: 'arraybuffer' }).then((result) => {
+                    let headers = result.headers();
 
-                this.$http.get("/api/projectSummaryPrintSession/download/" + this.session.id, { responseType: 'arraybuffer' }).then((result) => {
+                    var filename = headers['x-filename'];
+                    var contentType = headers['content-type'];
+
+                    var linkElement = document.createElement('a');
+                    try {
+                        var blob = new Blob([result.data], { type: contentType });
+                        var url = window.URL.createObjectURL(blob);
+
+                        linkElement.setAttribute('href', url);
+                        linkElement.setAttribute("download", filename);
+
+                        var clickEvent = new MouseEvent("click", {
+                            "view": window,
+                            "bubbles": true,
+                            "cancelable": false
+                        });
+                        linkElement.dispatchEvent(clickEvent);
+                    } catch (ex) {
+                        console.log(ex);
+                    }
+                });
+            });
+        }
+
+        downloadZip() {
+            this.session.$save().then(() => {
+                this.$http.get("/api/projectSummaryPrintSession/downloadZip/" + this.session.id, { responseType: 'arraybuffer' }).then((result) => {
                     let headers = result.headers();
 
                     var filename = headers['x-filename'];

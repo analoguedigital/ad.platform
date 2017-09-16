@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using WebApi.Models;
 
@@ -30,19 +32,99 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/ProjectSummaryPrintSession/Download/{id:Guid}")]
-        public HttpResponseMessage Download(Guid id)
+        [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}")]
+        public HttpResponseMessage DownloadZip(Guid id)
         {
             var session = ProjectSummaryPrintSessionService.GetSession(id);
+            if (session == null)
+                return null;
 
+            return ExportZipFile(session, id);
+        }
+
+        [HttpGet]
+        [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}")]
+        public HttpResponseMessage DownloadPdf(Guid id)
+        {
+            var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
                 return null;
 
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}";
 
-            var filename = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name + ".pdf";
-            return CreatePdfResponseMessage(ConvertHtmlToPdf(url), filename);
+            var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
+            var pdfFileName = $"{projectName}.pdf";
+
+            var pdfData = ConvertHtmlToPdf(url);
+            return CreatePdfResponseMessage(pdfData, projectName);
+        }
+
+        private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id)
+        {
+            var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}";
+
+            var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                .Where(s => session.SurveyIds.Contains(s.Id)).ToList();
+
+            var rootFolder = HostingEnvironment.MapPath("/ExportTemp");
+            if (Directory.Exists(rootFolder))
+                Directory.Delete(rootFolder, true);
+            Directory.CreateDirectory(rootFolder);
+
+            foreach (var survey in surveys)
+            {
+                var attachments = this.UnitOfWork.AttachmentsRepository.AllAsNoTracking
+                    .Where(a => a.FormValue.FilledFormId == survey.Id).ToList();
+
+                foreach (var attch in attachments)
+                {
+                    string folderPath = string.Empty;
+                    if (!string.IsNullOrEmpty(survey.Description))
+                    {
+                        var sanitizedFileName = SanitizeFileName(survey.Description);
+                        folderPath = HostingEnvironment.MapPath($"/ExportTemp/{survey.Serial}_{sanitizedFileName}");
+                    }
+                    else
+                        folderPath = HostingEnvironment.MapPath($"/ExportTemp/{survey.Serial}");
+
+                    if (!Directory.Exists(folderPath))
+                        Directory.CreateDirectory(folderPath);
+
+                    var filePath = HostingEnvironment.MapPath(attch.Url);
+                    var fileInfo = new FileInfo(filePath);
+                    var dest = Path.Combine(folderPath, attch.FileName);
+                    fileInfo.CopyTo(dest);
+                }
+            }
+
+            var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
+            var pdfFileName = $"{projectName}.pdf";
+
+            var pdfData = ConvertHtmlToPdf(url);
+            var pdfFilePath = Path.Combine(rootFolder, pdfFileName);
+            var fs = new FileStream(pdfFilePath, FileMode.Create);
+            fs.Write(pdfData, 0, pdfData.Length);
+            fs.Flush();
+            fs.Close();
+
+            var zipRootPath = HostingEnvironment.MapPath("/ZipTemp");
+            if (Directory.Exists(zipRootPath))
+                Directory.Delete(zipRootPath, true);
+            Directory.CreateDirectory(zipRootPath);
+
+            var zipFilename = $"{projectName}.zip";
+            var zipFilePath = Path.Combine(zipRootPath, zipFilename);
+            ZipFile.CreateFromDirectory(rootFolder, zipFilePath);
+
+            var zipData = File.ReadAllBytes(zipFilePath);
+            var response = CreateZipResponseMessage(zipData, zipFilename);
+
+            Directory.Delete(rootFolder, true);
+            Directory.Delete(zipRootPath, true);
+
+            return response;
         }
 
         private byte[] ConvertHtmlToPdf(string url)
@@ -67,6 +149,27 @@ namespace WebApi.Controllers
             result.Content.Headers.Add("x-filename", fileName);
             return result;
         }
+
+        private HttpResponseMessage CreateZipResponseMessage(byte[] data, string fileName)
+        {
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            result.Content = new ByteArrayContent(data);
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            result.Content.Headers.ContentDisposition.FileName = fileName;
+            result.Content.Headers.Add("x-filename", fileName);
+
+            return result;
+        }
+
+        private string SanitizeFileName(string filename)
+        {
+            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
+            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+            return System.Text.RegularExpressions.Regex.Replace(filename, invalidRegStr, "_");
+        }
+
     }
 
     public class ProjectSummaryPrintSessionService
