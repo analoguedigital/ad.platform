@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Models;
+using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
 namespace WebApi.Controllers
 {
@@ -55,9 +56,9 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("api/projects/{id:guid}/assign/{userId:guid}")]
+        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult AddAssignments(Guid id, Guid userId)
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, string accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
@@ -70,25 +71,24 @@ namespace WebApi.Controllers
             if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
                 return NotFound();
 
-            if (project.Assignments.Any(a => a.OrgUserId == userId))
-                return BadRequest($"{orgUser.ToString()} is already assigned to {project.Name}");
+            if (string.IsNullOrEmpty(accessLevel))
+                return BadRequest();
 
-            var assignment = new Assignment()
-            {
-                ProjectId = id,
-                OrgUserId = userId
-            };
+            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
-            UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
-            UnitOfWork.Save();
+            if (result == AssignAccessLevelResult.NotFound)
+                return NotFound();
+
+            if (result == AssignAccessLevelResult.BadRequest)
+                return BadRequest();
 
             return Ok();
         }
 
         [HttpDelete]
-        [Route("api/projects/{id:guid}/assign/{userId:guid}")]
+        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult DeleteAssignments(Guid id, Guid userId)
+        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, string accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
             if (project == null)
@@ -101,8 +101,14 @@ namespace WebApi.Controllers
             if (assignment == null)
                 return NotFound();
 
-            UnitOfWork.AssignmentsRepository.Delete(assignment);
-            UnitOfWork.Save();
+            if (string.IsNullOrEmpty(accessLevel))
+                return BadRequest();
+
+            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
+            if (result == AssignAccessLevelResult.NotFound)
+                return NotFound();
+            if (result == AssignAccessLevelResult.BadRequest)
+                return BadRequest();
 
             return Ok();
         }

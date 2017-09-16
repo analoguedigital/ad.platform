@@ -35,6 +35,9 @@ module App {
         timelineSnapshotView: boolean;
         metricFilters: Models.IMetricFilter[];
 
+        currentUser: Models.IOrgUser;
+        assignment: Models.IProjectAssignment;
+
         activate: () => void;
         clearSearch: () => void;
         clearThreads: () => void;
@@ -45,6 +48,7 @@ module App {
         openStartDateCalendar: () => void;
         openEndDateCalendar: () => void;
         search: () => void;
+        delete: (id: string) => void;
     }
 
     class ProjectSummaryController implements IProjectSummaryController {
@@ -62,10 +66,13 @@ module App {
         timelineSnapshotView: boolean;
         metricFilters: Models.IMetricFilter[];
 
+        currentUser: Models.IOrgUser;
+        assignment: Models.IProjectAssignment;
+
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
             "formTemplateResource", "surveyResource", "project",
-            "toastr", "projectSummaryService"];
+            "toastr", "projectSummaryService", "userContextService"];
 
         constructor(
             private $scope: IProjectSummaryControllerScope,
@@ -79,7 +86,8 @@ module App {
             private surveyResource: Resources.ISurveyResource,
             private project: Models.IProject,
             private toastr: any,
-            private projectSummaryService: Services.IProjectSummaryService) {
+            private projectSummaryService: Services.IProjectSummaryService,
+            private userContextService: Services.IUserContextService) {
 
             this.activate();
         }
@@ -105,7 +113,9 @@ module App {
         }
 
         load() {
-            let ctrl = this;
+            var orgUser = this.userContextService.current.orgUser;
+            this.currentUser = orgUser;
+            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
 
             this.$q.all([
                 this.formTemplateResource.query({ projectId: this.project.id }).$promise,
@@ -142,7 +152,6 @@ module App {
                         });
 
                         res = _.uniqBy(res, 'shortTitle');
-                        ctrl.metricFilters = res;
                     });
 
                 // populate data sets
@@ -274,6 +283,12 @@ module App {
         timelinePreviousMonth() {
             this.$scope.today = moment(this.$scope.today).subtract(1, 'months').toDate();
             this.$rootScope.$broadcast('timeline-previous-month');
+        }
+
+        delete(id: string) {
+            this.surveyResource.delete({ id: id },
+                () => { this.load(); },
+                (err) => { console.error(err); });
         }
 
         getFilterValues() {

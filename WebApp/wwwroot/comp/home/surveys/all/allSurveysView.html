@@ -18,7 +18,7 @@
         <div ng-include="'comp/home/surveys/all/_searchForm.html'"></div>
         <div ng-include="'comp/home/surveys/all/_dataTable.html'"></div>
     </div>
-    <div class="box-footer">
+    <div class="box-footer" ng-if="ctrl.assignment.canAdd">
         <a ui-sref="home.surveys.new({formTemplateId: ctrl.formTemplate.id, projectId: ctrl.project.id})"><i class="fa fa-plus-square"></i> Add new </a>
     </div>
 </div>

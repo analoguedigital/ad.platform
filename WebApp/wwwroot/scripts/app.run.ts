@@ -16,7 +16,6 @@
 
         let authdata = getParameterByName("authData", null);
         if (authdata) {
-            console.log(authdata);
             authService.loginUser(JSON.parse(authdata));
         }
     }

@@ -25,6 +25,8 @@ module App {
 
         activate: () => void;
         delete: (id: string) => void;
+        currentUser: Models.IOrgUser;
+        assignment: Models.IProjectAssignment;
         search: () => void;
         resetSearch: () => void;
         openStartDateCalendar: () => void;
@@ -45,13 +47,15 @@ module App {
         isDataView: boolean;
         startDate: Date;
         endDate: Date;
+        currentUser: Models.IOrgUser;
+        assignment: Models.IProjectAssignment;
         startDateCalendar: any;
         endDateCalendar: any;
 
         isAdvSearchOpen: boolean;
         metricFilters: Models.IMetricFilter[];
 
-        static $inject: string[] = ["$scope", "$timeout", "project", "formTemplate", "formTemplateResource", "surveyResource", "dataResource"];
+        static $inject: string[] = ["$scope", "$timeout", "project", "formTemplate", "formTemplateResource", "surveyResource", "dataResource", "userContextService"];
         constructor(
             private $scope: IAllSurveysControllerScope,
             private $timeout: ng.ITimeoutService,
@@ -59,7 +63,8 @@ module App {
             private formTemplate: Models.IFormTemplate,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
-            private dateResource: Resources.IDataResource) {
+            private dateResource: Resources.IDataResource,
+            private userContextService: Services.IUserContextService) {
 
             this.title = "AllSurveys";
             this.isDataView = false;
@@ -91,6 +96,9 @@ module App {
         }
 
         load() {
+            var orgUser = this.userContextService.current.orgUser;
+            this.currentUser = orgUser;
+            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
             this.formTemplateResource.getFilters({ id: this.formTemplate.id }, (filters) => {
                 this.metricFilters = filters;
             }, (error) => {
@@ -107,6 +115,7 @@ module App {
                     this.displayedSurveysData = [].concat(this.surveysData);
                 });
             });
+
         }
 
         delete(id: string) {

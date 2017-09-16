@@ -54,11 +54,11 @@
                 <td ng-repeat="item in survey" ng-if="$index > 0">
                     {{item}}
                 <td>
-                    <a ui-sref="home.surveys.edit({surveyId: survey[0]})"><i class="fa fa-pencil"></i><span class="hidden-xs"> </span></a>
+                    <a ui-sref="home.surveys.edit({surveyId: survey[0]})" ng-if="ctrl.assignment.canEdit"><i class="fa fa-pencil"></i><span class="hidden-xs"> </span></a>
                 </td>
 
                 <td>
-                    <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey[0])">
+                    <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey[0])" ng-if="ctrl.assignment.canDelete">
                         <i class="fa fa-remove"></i><span class="hidden-xs"></span>
                     </a>
                 </td>

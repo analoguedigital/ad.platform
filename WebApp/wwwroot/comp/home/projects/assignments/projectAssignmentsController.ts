@@ -13,7 +13,10 @@ module App {
     interface IAssignmentUser {
         userId: string;
         name: string;
-        isAssigned: boolean;
+        canAdd: boolean;
+        canEdit: boolean;
+        canView: boolean;
+        canDelete: boolean;
     }
 
 
@@ -48,43 +51,63 @@ module App {
             usersPromise.then((users) => { this.users = users; });
 
             this.$q.all([projectPromise, usersPromise]).then(() => {
-
                 this.projectResource.assignments({ id: projectId }, (assignments) => {
                     this.userAssignments = [];
 
-                    angular.forEach(this.users, (user) => {
-                        this.userAssignments.push({ userId: user.id, name: user.firstName + ' ' + user.surname, isAssigned: _.some(assignments, { orgUserId: user.id }) });
+                    _.forEach(this.users, (user) => {
+                        var userName = user.email;
+                        if (user.firstName || user.surname)
+                            userName = `${user.firstName} ${user.surname}`;
+
+                        var assgn = _.find(assignments, { 'orgUserId': user.id });
+                        var userAssignment = <Models.IProjectAssignment>assgn;
+
+                        var record: IAssignmentUser = {
+                            userId: user.id,
+                            name: userName,
+                            canAdd: userAssignment ? userAssignment.canAdd : false,
+                            canEdit: userAssignment ? userAssignment.canEdit : false,
+                            canView: userAssignment ? userAssignment.canView : false,
+                            canDelete: userAssignment ? userAssignment.canDelete : false
+                        };
+
+                        this.userAssignments.push(record);
                     });
                 });
             });
         }
 
-        updateAssignment(assg: IAssignmentUser) {
-            if (assg.isAssigned) {
-                this.projectResource.assign({ id: this.project.id, userId: assg.userId },
-                    () => {
-                        this.toastr.success('User assigned successfully!', 'Success', {
-                            closeButton: true
-                        });
-                    },
-                    (err) => {
-                        this.toastr.error('Unable to assign the user!', 'Error', {
-                            closeButton: true
-                        });
-                    });
+        updateAssignment(assg: IAssignmentUser, accessLevel: string) {
+            var params = {
+                id: this.project.id,
+                userId: assg.userId,
+                accessLevel: accessLevel
+            };
+
+            var toggled = false;
+            switch (accessLevel) {
+                case 'add': {
+                    toggled = assg.canAdd;
+                    break;
+                }
+                case 'edit': {
+                    toggled = assg.canEdit;
+                    break;
+                }
+                case 'delete': {
+                    toggled = assg.canDelete;
+                    break;
+                }
+                case 'view': {
+                    toggled = assg.canView;
+                    break;
+                }
             }
-            else {
-                this.projectResource.unassign({ id: this.project.id, userId: assg.userId },
-                    () => {
-                        this.toastr.success('User removed from the project successfully!', 'Success', {
-                            closeButton: true
-                        });
-                    },
-                    (err) => {
-                        this.toastr.error('Unable to remove the user from the project!', 'Error', {
-                            closeButton: true
-                        });
-                    });
+
+            if (toggled) {
+                this.projectResource.assign(params, (result) => { }, (error) => { });
+            } else {
+                this.projectResource.unassign(params, (result) => { }, (error) => { });
             }
         }
 

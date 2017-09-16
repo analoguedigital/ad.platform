@@ -18,5 +18,9 @@ module App.Models {
         orgUserId: string;
         orgUserName: string;
         projectId: string;
+        canAdd: boolean;
+        canEdit: boolean;
+        canView: boolean;
+        canDelete: boolean;
     }
 }

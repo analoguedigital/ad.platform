@@ -15,5 +15,13 @@ namespace LightMethods.Survey.Models.Entities
         [Index("IX_User_Project", 1, IsUnique = true)]
         public Guid ProjectId { get; set; }
         public virtual Project Project { get; set; }
+
+        public bool CanAdd { get; set; }
+
+        public bool CanEdit { get; set; }
+
+        public bool CanDelete { get; set; }
+
+        public bool CanView { get; set; }
     }
 }

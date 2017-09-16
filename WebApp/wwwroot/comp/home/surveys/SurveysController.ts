@@ -22,12 +22,13 @@ module App {
         projects: Models.IProject[];
         surveys: Models.ISurvey[];
 
-        static $inject: string[] = ['$stateParams', '$state', 'projectResource', 'formTemplateResource', 'surveyResource'];
+        static $inject: string[] = ['$stateParams', '$state', 'toastr', 'projectResource', 'formTemplateResource', 'surveyResource'];
 
         constructor(
 
             private $stateParams: IProjectStateParamsService,
             private $state: ng.ui.IStateService,
+            private toastr: any,
             private projectResource: Resources.IProjectResource,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource) {
@@ -52,7 +53,11 @@ module App {
                         this.selectedProject = this.projects[0];
                         this.selectedProjectChanged();
                     }
+                } else {
+                    this.toastr.error('No Projects Found');
                 }
+            }, (error) => {
+                console.error(error);
             });
         }
 

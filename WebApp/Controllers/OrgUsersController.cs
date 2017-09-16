@@ -38,7 +38,14 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid id)
         {
             var user = Users.Find(id);
-            return Ok(Mapper.Map<OrgUserDTO>(user));
+
+            var orgUser = user as OrgUser;
+            var result = Mapper.Map<OrgUserDTO>(user);
+
+            var assignments = orgUser.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)).ToList();
+            result.Assignments = assignments;
+
+            return Ok(result);
         }
 
         public IHttpActionResult Post([FromBody]OrgUserDTO value)
