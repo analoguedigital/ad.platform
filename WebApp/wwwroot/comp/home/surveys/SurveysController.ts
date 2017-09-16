@@ -42,8 +42,10 @@ module App {
         load() {
             this.projectResource.query().$promise.then((projects) => {
                 this.projects = projects;
+
                 if (this.projects.length > 0) {
-                    if (this.$state.params['projectId'] !== undefined) {
+                    var projectId = this.$state.params['projectId'];
+                    if (projectId !== undefined) {
                         this.selectedProject = _.find(this.projects, { id: this.$state.params['projectId'] });
                     }
                     else {
@@ -59,10 +61,10 @@ module App {
                 return;
 
             if (this.$state.current.name === 'home.surveys.list.all') {
-                this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id });
+                this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id }, { reload: true });
             }
             else {
-                this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id });
+                this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
             }
 
         }
