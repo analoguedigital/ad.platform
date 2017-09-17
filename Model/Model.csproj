@@ -410,9 +410,9 @@
     <Compile Include="Migrations\201708241252356_Add_email.Designer.cs">
       <DependentUpon>201708241252356_Add_email.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201709161144053_Update_assignments.cs" />
-    <Compile Include="Migrations\201709161144053_Update_assignments.Designer.cs">
-      <DependentUpon>201709161144053_Update_assignments.cs</DependentUpon>
+    <Compile Include="Migrations\201709170919422_Update_assignments.cs" />
+    <Compile Include="Migrations\201709170919422_Update_assignments.Designer.cs">
+      <DependentUpon>201709170919422_Update_assignments.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -541,8 +541,8 @@
     <EmbeddedResource Include="Migrations\201708241252356_Add_email.resx">
       <DependentUpon>201708241252356_Add_email.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201709161144053_Update_assignments.resx">
-      <DependentUpon>201709161144053_Update_assignments.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201709170919422_Update_assignments.resx">
+      <DependentUpon>201709170919422_Update_assignments.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
