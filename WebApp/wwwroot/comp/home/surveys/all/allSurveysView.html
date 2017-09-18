@@ -1,7 +1,7 @@
 ﻿<div class="box">
     <div class="box-title">
         <h4>
-            {{ctrl.formTemplate.title}}
+            {{ctrl.formTemplate.title}} <small class="text-muted" ng-show="ctrl.displayedSurveys.length">{{ctrl.surveys.length}} found</small>
             <span class="pull-right">
                 <span class="radio radio-inline">
                     <input id="chk-data-view" type="radio" ng-model="ctrl.isDataView" ng-value="true" />
