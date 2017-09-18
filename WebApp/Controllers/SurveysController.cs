@@ -270,9 +270,15 @@ namespace WebApi.Controllers
                     FormValues.Delete(deletedFormValue);
 
                 UnitOfWork.Save();
-                dbForm.FormValues.SelectMany(v => v.Attachments).Where(a => a.IsTemp).ToList()
-                    .ForEach(attachment => UnitOfWork.AttachmentsRepository.StoreFile(attachment));
-                UnitOfWork.Save();
+
+                var tempAttachments = dbForm.FormValues.SelectMany(v => v.Attachments).Where(a => a.IsTemp).ToList();
+                if (tempAttachments.Any())
+                {
+                    foreach (var attachment in tempAttachments)
+                        UnitOfWork.AttachmentsRepository.StoreFile(attachment);
+                    UnitOfWork.Save();
+                }
+
                 return Ok();
             }
             else
