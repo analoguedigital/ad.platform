@@ -14,6 +14,7 @@
                         <th>Date</th>
                         <th>Serial no</th>
                         <th>Completed by</th>
+                        <th>Description</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -30,6 +31,7 @@
                         <td>{{survey.date | amDateFormat: 'L'}}</td>
                         <td>{{survey.serial}}</td>
                         <td>{{survey.filledBy}}</td>
+                        <td>{{survey.description}}</td>
                         <td>
                             <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.assignment.canView">
                                 <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
