@@ -38,10 +38,10 @@ namespace WebApi.Controllers
 
             var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => s.ProjectId == projectId)
+                .OrderByDescending(x => x.SurveyDate)
                 .ToList();
 
-            var result = surveys.OrderByDescending(x => x.Date)
-                .Select(s => Mapper.Map<FilledFormDTO>(s));
+            var result = surveys.Select(s => Mapper.Map<FilledFormDTO>(s));
 
             return Ok(result);
         }

@@ -145,13 +145,13 @@ module App {
                             filters = filters.concat(mf);
                         });
 
-                        var res = [];
+                        var matchedFilters = [];
                         _.forEach(filters, (f) => {
                             var found = this.findMetricFilter(f, filters);
-                            if (found) res.push(found);
+                            if (found) matchedFilters.push(found);
                         });
 
-                        res = _.uniqBy(res, 'shortTitle');
+                        this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');;
                     });
 
                 // populate data sets
