@@ -88,14 +88,17 @@ module App {
             switch (accessLevel) {
                 case 'add': {
                     toggled = assg.canAdd;
+                    if (toggled) assg.canView = true;
                     break;
                 }
                 case 'edit': {
                     toggled = assg.canEdit;
+                    if (toggled) assg.canView = true;
                     break;
                 }
                 case 'delete': {
                     toggled = assg.canDelete;
+                    if (toggled) assg.canView = true;
                     break;
                 }
                 case 'view': {
