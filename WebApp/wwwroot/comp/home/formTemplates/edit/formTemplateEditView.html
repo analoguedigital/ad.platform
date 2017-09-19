@@ -14,6 +14,9 @@
                         </span>
                     </div>
                 </lm-form-group>
+                <lm-form-group label="Project :">
+                    <select id="project" name="project" ng-model="ctrl.formTemplate.projectId" ng-options="project.id as project.name for project in ctrl.projects track by project.id"></select>
+                </lm-form-group>
                 <lm-form-group label="Code: ">
                     <input type="text" id="code" name="code" ng-model="ctrl.formTemplate.code" required />
                 </lm-form-group>
