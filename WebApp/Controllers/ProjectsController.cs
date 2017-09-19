@@ -19,10 +19,10 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
         public IHttpActionResult Get()
         {
-            return Ok(UnitOfWork.ProjectsRepository.GetProjects(CurrentUser)
-                .OrderByDescending(p => p.DateCreated)
-                .ToList()
-                .Select(p => Mapper.Map<ProjectDTO>(p)).ToList());
+            var projects = UnitOfWork.ProjectsRepository.GetProjects(CurrentUser).OrderByDescending(p => p.DateCreated);
+            var result = projects.ToList().Select(p => Mapper.Map<ProjectDTO>(p)).ToList();
+
+            return Ok(result);
         }
 
         // GET api/<controller>/5

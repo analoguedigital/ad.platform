@@ -23,10 +23,16 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid? projectId = null)
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var templates = surveyProvider.GetAllFormTemplatesWithMetrics();
 
-            return Ok(surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => projectId == null || f.ProjectId == null || f.ProjectId == projectId)
-                .Select(f => Mapper.Map<FormTemplateDTO>(f)));
+            if (projectId == null || projectId == Guid.Empty)
+                templates = templates.Where(t => t.ProjectId == null);
+            else
+                templates = templates.Where(t => t.ProjectId == projectId);
+
+            var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
+
+            return Ok(result);
         }
 
         // GET api/<controller>/5
