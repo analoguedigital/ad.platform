@@ -22,7 +22,7 @@ module App {
         errors: string;
 
 
-        static $inject: string[] = [ "orgUserResource", "orgUserTypeResource", "$state", "$stateParams"];
+        static $inject: string[] = ["orgUserResource", "orgUserTypeResource", "$state", "$stateParams"];
 
         constructor(
             private orgUserResource: Resources.IOrgUserResource,
@@ -32,23 +32,24 @@ module App {
         ) {
 
             this.title = "Users";
-            
+
             this.activate();
         }
 
         activate() {
-            var userId = this.$stateParams['id'];
-            if (userId === '') {
-                this.isInsertMode = true;
-                userId = '00000000-0000-0000-0000-000000000000';
-            }
             this.orgUserTypeResource.query().$promise.then((types) => {
                 this.types = types;
             });
 
-            this.orgUserResource.get({ id: userId }).$promise.then((user) => {
-                this.user = user;
-            });
+            var userId = this.$stateParams['id'];
+            if (userId === '') {
+                this.isInsertMode = true;
+                userId = '00000000-0000-0000-0000-000000000000';
+            } else {
+                this.orgUserResource.get({ id: userId }).$promise.then((user) => {
+                    this.user = user;
+                });
+            }
         }
 
         submit(form: ng.IFormController) {
