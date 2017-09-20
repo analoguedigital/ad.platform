@@ -3,9 +3,8 @@ using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Models;
@@ -100,8 +99,19 @@ namespace WebApi.Controllers
             if (orguser.IsRootUser)
                 return BadRequest();
 
-            Users.Delete(id);
-            UnitOfWork.Save();
+            try
+            {
+                Users.Delete(id);
+                UnitOfWork.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("Could not delete this user!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok();
         }

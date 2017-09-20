@@ -31,7 +31,12 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="user in displayedUsers">
-                            <td><a ui-sref="home.users.edit({id:user.id})">{{user.email}}</a></td>
+                            <td>
+                                <i class="fa fa-user-md" ng-if="user.type.name == 'Administrator'"></i>
+                                <i class="fa fa-user-o" ng-if="user.type.name !== 'Administrator'"></i>
+                                &nbsp;
+                                <a ui-sref="home.users.edit({id:user.id})">{{user.email}}</a>
+                            </td>
                             <td>{{user.firstName}}</td>
                             <td>{{user.surname}}</td>
                             <td class="hidden-xs">{{user.type.name}}</td>

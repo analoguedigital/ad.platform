@@ -22,11 +22,12 @@ module App {
     }
 
     class UsersController implements IUsersController {
-        static $inject: string[] = ["$scope", "$uibModal", "orgUserResource"];
+        static $inject: string[] = ["$scope", "$uibModal", "toastr", "orgUserResource"];
 
         constructor(
             private $scope: IUsersControllerScope,
             private $uibModal: ng.ui.bootstrap.IModalService,
+            private toastr: any,
             private userResource: Resources.IOrgUserResource) {
 
             $scope.title = "Users";
@@ -65,8 +66,12 @@ module App {
 
         delete(id: string) {
             this.userResource.delete({ id: id },
-                () => { this.load(); },
-                (err) => { console.log(err); });
+                () => {
+                    this.load();
+                },
+                (err) => {
+                    this.toastr.error(err.data.message);
+                });
         }
     }
 
