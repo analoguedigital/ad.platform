@@ -76,11 +76,15 @@ namespace WebApi.Controllers
             if (orguser == null)
                 return NotFound();
 
-            Mapper.Map(value, orguser);
             orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
+            orguser.Email = value.Email;
+            orguser.FirstName = value.FirstName;
+            orguser.Surname = value.Surname;
+            orguser.TypeId = value.Type.Id;
+            orguser.IsWebUser = value.IsWebUser;
+            orguser.IsMobileUser = value.IsMobileUser;
 
             var result = UnitOfWork.UserManager.UpdateSync(orguser);
-
             if (result.Succeeded)
                 return Ok();
             else
