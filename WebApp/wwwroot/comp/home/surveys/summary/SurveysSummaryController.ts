@@ -21,7 +21,7 @@ module App {
         assignment: Models.IProjectAssignment;
         projectId: string;
 
-        static $inject: string[] = ['$state', '$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'userContextService'];
+        static $inject: string[] = ['$state', '$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService'];
 
         constructor(
             public $state: ng.ui.IStateService,
@@ -29,6 +29,7 @@ module App {
             public toastr: any,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
+            private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
             private userContextService: Services.IUserContextService) {
 
             this.activate();
@@ -72,9 +73,14 @@ module App {
 
         printSelected() {
             let selectedSurveys = this.surveys.filter((survey) => survey.isChecked == true);
-            let result = selectedSurveys.map((survey) => { return survey.id; });
 
-            this.$state.go('home.surveys.print-multiple', { selectedSurveys: result });
+            let printSession = <Models.IProjectSummaryPrintSession>{};
+            printSession.projectId = this.projectId;
+            printSession.surveyIds = _.map(selectedSurveys, (survey) => { return survey.id; });
+
+            this.projectSummaryPrintSessionResource.save(printSession).$promise.then((session) => {
+                this.$state.go("home.projects.summaryPrint", { sessionId: session.id });
+            });
         }
 
         getTemplateColour(id: string) {
