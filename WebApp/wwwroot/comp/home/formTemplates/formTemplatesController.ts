@@ -31,13 +31,14 @@ module App {
 
     class FormTemplatesController implements IFormTemplatesController {
         errors: Error[] = [];
-        static $inject: string[] = ["$scope", "formTemplateResource", "projectResource", "$ngBootbox"];
+        static $inject: string[] = ["$scope", "formTemplateResource", "projectResource", "$ngBootbox", "toastr"];
 
         constructor(
             private $scope: IFormTemplatesControllerScope,
             private formResource: Resources.IFormTemplateResource,
             private projectResource: Resources.IProjectResource,
-            private $ngBootbox: BootboxStatic) {
+            private $ngBootbox: BootboxStatic,
+            private toastr: any) {
 
             $scope.title = "Form Templates";
             $scope.selectedProject = null;
@@ -70,13 +71,16 @@ module App {
 
         getSharedTemplates() {
             this.$scope.selectedProject = null;
-            this.load();    
+            this.load();
         }
 
         delete(id: string) {
             this.formResource.delete({ id: id },
                 () => { this.load(); },
-                (err) => { console.log(err); });
+                (err) => {
+                    console.log(err);
+                    this.toastr.error(err.data.message);
+                });
         }
 
         archive(template: Models.IFormTemplate) {

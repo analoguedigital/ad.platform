@@ -13,6 +13,7 @@ using System.Web.Http.Description;
 using WebApi.Models;
 using Newtonsoft.Json;
 using LightMethods.Survey.Models.MetricFilters;
+using System.Data.Entity.Infrastructure;
 
 namespace WebApi.Controllers
 {
@@ -239,10 +240,17 @@ namespace WebApi.Controllers
             if (form == null)
                 return NotFound();
 
-            UnitOfWork.FormTemplatesRepository.Delete(form);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.FormTemplatesRepository.Delete(form);
+                UnitOfWork.Save();
 
-            return Ok();
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("This Form cannot be deleted!");
+            }
         }
 
         [HttpPost]
