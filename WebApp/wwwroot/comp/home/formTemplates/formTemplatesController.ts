@@ -105,6 +105,14 @@ module App {
         clearErrors() {
             this.errors = [];
         }
+
+        getTemplateColour(id: string) {
+            let template = _.find(this.$scope.forms, (t) => { return t.id == id; });
+            if (template && template.colour && template.colour.length)
+                return template.colour;
+
+            return '';
+        }
     }
 
     angular.module("app").controller("formTemplatesController", FormTemplatesController);

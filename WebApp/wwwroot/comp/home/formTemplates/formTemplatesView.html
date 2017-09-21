@@ -1,5 +1,5 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content animated fadeInRight form-templates">
     <div class="box" ng-show="ctrl.errors.length">
         <div class="box-title">
             <h5>Errors ({{ctrl.errors.length}})</h5>
@@ -64,8 +64,10 @@
                             <td>{{form.code}}</td>
                             <td class="hidden-xs">{{form.formTemplateCategory.title}}</td>
                             <td>{{form.title}}</td>
-                            <td ng-if="form.projectName"> {{form.projectName}}</td>
-                            <td ng-if="!form.projectName"><i class="fa fa-th-large"></i> Shared</td>
+                            <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
+                            <td ng-if="form.projectName">
+                                <span ng-if="form.projectId" class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(form.id)}"></span> {{form.projectName}}
+                            </td>
                             <td ng-if="form.isPublished">Published (<a ng-bootbox-confirm="Are you sure you want to archive this?" ng-bootbox-confirm-action="archive(form)">archive</a>)</td>
                             <td ng-if="!form.isPublished">Archived (<a ng-bootbox-confirm="Are you sure you want to publish this?" ng-bootbox-confirm-action="publish(form)">publish</a>)</td>
                             <td><a ui-sref="home.formtemplates.design({id: form.id})"><i class="fa fa-paint-brush"></i><span class="hidden-xs"> design</span></a></td>
