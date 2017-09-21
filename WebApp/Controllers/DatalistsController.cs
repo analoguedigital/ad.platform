@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -97,78 +98,94 @@ namespace WebApi.Controllers
             ModelState.Clear();
             Validate(dataList);
 
-            if (ModelState.IsValid)
-            {
-                var dbDataList = UnitOfWork.DataListsRepository.Find(id);
-                dbDataList.Name = dataList.Name;
-                UnitOfWork.DataListsRepository.InsertOrUpdate(dbDataList);
-                var order = 1;
-                foreach (var val in dataListDTO.Items)
-                {
-                    var dbItem = UnitOfWork.DataListItemsRepository.Find(val.Id);
-                    if (dbItem == null)
-                        dbItem = new DataListItem();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                    if (val.IsDeleted)
+            var dbDataList = UnitOfWork.DataListsRepository.Find(id);
+            dbDataList.Name = dataList.Name;
+            UnitOfWork.DataListsRepository.InsertOrUpdate(dbDataList);
+            var order = 1;
+            foreach (var val in dataListDTO.Items)
+            {
+                var dbItem = UnitOfWork.DataListItemsRepository.Find(val.Id);
+                if (dbItem == null)
+                    dbItem = new DataListItem();
+
+                if (val.IsDeleted)
+                    UnitOfWork.DataListItemsRepository.Delete(dbItem);
+                else
+                {
+                    Mapper.Map(val, dbItem);
+
+                    if (dbItem.Attributes != null)
                     {
-                        UnitOfWork.DataListItemsRepository.Delete(dbItem);
-                    }
-                    else
-                    {
-                        Mapper.Map(val, dbItem);
-                        dbItem.Attributes.ToList().ForEach(attr =>
+                        var attributes = dbItem.Attributes.ToList();
+                        foreach (var attr in attributes)
                         {
                             attr.OwnerId = dbItem.Id;
                             Mapper.Map(val.Attributes.SingleOrDefault(a => a.Id == attr.Id), attr);
-                        });
-                        val.Attributes.Where(att => att.Id == Guid.Empty && att.ValueId != Guid.Empty).ToList().ForEach(att =>
-                        {
-                            var newAtt = Mapper.Map<DataListItemAttr>(att);
-                            newAtt.OwnerId = dbItem.Id;
-                            dbItem.Attributes.Add(newAtt);
-                        });
-
-                        dbItem.DataListId = id;
-                        dbItem.Order = order++;
-                        UnitOfWork.DataListItemsRepository.InsertOrUpdate(dbItem);
+                        }
                     }
+
+                    if (val.Attributes != null)
+                    {
+                        var newAttributes = val.Attributes.Where(attr => attr.Id == Guid.Empty && attr.ValueId != Guid.Empty).ToList();
+                        foreach (var attr in newAttributes)
+                        {
+                            var newAttr = Mapper.Map<DataListItemAttr>(attr);
+                            newAttr.OwnerId = dbItem.Id;
+                            dbItem.Attributes.Add(newAttr);
+                        }
+                    }
+
+                    dbItem.DataListId = id;
+                    dbItem.Order = order++;
+                    UnitOfWork.DataListItemsRepository.InsertOrUpdate(dbItem);
                 }
-
-
-                UnitOfWork.Save();
-                return Ok();
             }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+
+            UnitOfWork.Save();
+            return Ok();
         }
 
-        public void Delete(Guid id)
+        public IHttpActionResult Delete(Guid id)
         {
-            UnitOfWork.DataListsRepository.Delete(id);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.DataListsRepository.Delete(id);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("This Data List cannot be deleted!");
+            }
         }
 
         [ResponseType(typeof(GetDataListReferencesResDto))]
         [Route("api/datalists/{datalistId}/references")]
         public IHttpActionResult GetReferences(Guid datalistId)
         {
-            var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
+            if (datalistId == Guid.Empty)
+                return Ok(new GetDataListReferencesResDto { Items = new List<GetDataListReferencesResItemDto>() });
 
+            var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
                 return NotFound();
 
-            return Ok(new GetDataListReferencesResDto
+            var result = new GetDataListReferencesResDto
             {
-                Items = UnitOfWork.DataListRelationshipsRepository.All.Where(r => r.DataListId == datalistId)
-                        .Select(r => new GetDataListReferencesResItemDto
-                        {
-                            Id = r.OwnerId,
-                            Name = r.Owner.Name
-                        }).ToList()
-            });
+                Items = UnitOfWork.DataListRelationshipsRepository.All
+                    .Where(r => r.DataListId == datalistId)
+                    .Select(r => new GetDataListReferencesResItemDto
+                    {
+                        Id = r.OwnerId,
+                        Name = r.Owner.Name
+                    }).ToList()
+            };
 
+            return Ok(result);
         }
 
         [HttpPost]
@@ -187,7 +204,7 @@ namespace WebApi.Controllers
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
                 return BadRequest();
 
-            var newOrder = owner.Relationships.Select(r=>r.Order).DefaultIfEmpty().Max() + 1;
+            var newOrder = owner.Relationships.Select(r => r.Order).DefaultIfEmpty().Max() + 1;
 
             var relationship = new DataListRelationship()
             {
