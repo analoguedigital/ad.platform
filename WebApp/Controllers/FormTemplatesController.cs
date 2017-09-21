@@ -24,8 +24,19 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid? projectId = null)
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
-            var templates = surveyProvider.GetAllFormTemplates()
-                .Where(t => t.ProjectId == null || t.ProjectId == projectId);
+
+            var templates = surveyProvider.GetAllFormTemplates().Where(t => t.ProjectId == null);
+            if (projectId.HasValue && projectId != Guid.Empty)
+            {
+                var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking
+                .Where(a => a.ProjectId == projectId && a.OrgUserId == CurrentOrgUser.Id)
+                .ToList();
+
+                templates = templates
+                    .Where(t => t.ProjectId == projectId || t.ProjectId == null)
+                    .Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
+            }
+
             var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
 
             return Ok(result);
@@ -195,7 +206,7 @@ namespace WebApi.Controllers
         [Route("api/formtemplates/{id:Guid}/details")]
         public IHttpActionResult EditBasicDetails(Guid id, EditBasicDetailsRequest value)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);;
+            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false); ;
 
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
