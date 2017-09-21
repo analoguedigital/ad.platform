@@ -39,15 +39,11 @@ namespace WebApi.Controllers
 
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .Select(f => Mapper.Map<FormTemplateDTO>(f))
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
-            return Ok(form);
+            return Ok(Mapper.Map<FormTemplateDTO>(form));
         }
 
         [ResponseType(typeof(IEnumerable<MetricFilter>))]
@@ -92,10 +88,7 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == value.Id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
@@ -123,7 +116,6 @@ namespace WebApi.Controllers
                 foreach (var valueMetric in valueGroup.Metrics)
                 {
                     var metric = group.Metrics.Where(m => m.Id == valueMetric.Id)
-                        // .Select(m => Mapper.Map(valueMetric, m))
                         .SingleOrDefault();
 
                     if (metric == null && valueMetric.isDeleted)
@@ -202,12 +194,9 @@ namespace WebApi.Controllers
         [Route("api/formtemplates/{id:Guid}/details")]
         public IHttpActionResult EditBasicDetails(Guid id, EditBasicDetailsRequest value)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);;
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
@@ -246,10 +235,7 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
