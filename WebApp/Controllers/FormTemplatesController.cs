@@ -25,7 +25,7 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var templates = surveyProvider.GetAllFormTemplates().Where(t => t.ProjectId == null);
+            var templates = surveyProvider.GetAllFormTemplates();
             if (projectId.HasValue && projectId != Guid.Empty)
             {
                 var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking
@@ -36,6 +36,8 @@ namespace WebApi.Controllers
                     .Where(t => t.ProjectId == projectId || t.ProjectId == null)
                     .Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
             }
+            else
+                templates = templates.Where(t => t.ProjectId == null);
 
             var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
 
