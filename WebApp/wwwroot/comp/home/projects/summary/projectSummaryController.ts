@@ -130,29 +130,8 @@ module App {
                 this.projectSummaryService.surveys = this.surveys;
                 this.$scope.safeSurveys = this.surveys;
 
-                // get metric filters for each form template
-                let filterPromises: ng.IPromise<any>[] = [];
-
-                _.forEach(this.formTemplates, (template) => {
-                    filterPromises.push(this.formTemplateResource.getFilters({ id: template.id }, (res) => { }).$promise);
-                });
-
-                this.$q.all(filterPromises)
-                    .then((metricFilters) => {
-                        // flatten metric filters
-                        var filters: Models.IMetricFilter[] = [];
-                        _.forEach(metricFilters, (mf) => {
-                            filters = filters.concat(mf);
-                        });
-
-                        var matchedFilters = [];
-                        _.forEach(filters, (f) => {
-                            var found = this.findMetricFilter(f, filters);
-                            if (found) matchedFilters.push(found);
-                        });
-
-                        this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');;
-                    });
+                var templateIds = _.map(this.formTemplates, (template) => { return template.id; });
+                this.getMetricFilters(templateIds);
 
                 // populate data sets
                 this.displayedSurveys = this.surveys;
@@ -188,11 +167,7 @@ module App {
             angular.forEach(this.formTemplates, (t) => { t.isChecked = false });
         }
 
-        clearAll() {
-            this.searchTerm = undefined;
-            this.startDate = undefined;
-            this.endDate = undefined;
-
+        clearFilterValues() {
             _.forEach(this.$scope.filterValues, (fv) => {
                 switch (fv.type) {
                     case "single": {
@@ -214,7 +189,14 @@ module App {
                     }
                 }
             });
+        }
 
+        clearAll() {
+            this.searchTerm = undefined;
+            this.startDate = undefined;
+            this.endDate = undefined;
+
+            this.clearFilterValues();
             this.load();
         }
 
@@ -326,6 +308,29 @@ module App {
             return filterValues;
         }
 
+        getMetricFilters(templateIds: string[]) {
+            let filterPromises: ng.IPromise<any>[] = [];
+            _.forEach(templateIds, (id) => {
+                filterPromises.push(this.formTemplateResource.getFilters({ id: id }, (res) => { }).$promise);
+            });
+
+            this.$q.all(filterPromises)
+                .then((metricFilters) => {
+                    var filters: Models.IMetricFilter[] = [];
+                    _.forEach(metricFilters, (mf) => {
+                        filters = filters.concat(mf);
+                    });
+
+                    var matchedFilters = [];
+                    _.forEach(filters, (f) => {
+                        var found = this.findMetricFilter(f, filters);
+                        if (found) matchedFilters.push(found);
+                    });
+
+                    this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');;
+                });
+        }
+
         search() {
             var filterValues = this.getFilterValues();
             var templateIds = _.map(_.filter(this.formTemplates, (template) => { return template.isChecked == true }), (template) => { return template.id });
@@ -343,6 +348,9 @@ module App {
                 this.surveys = surveys;
                 this.displayedSurveys = [].concat(this.surveys);
                 this.$scope.displayedSurveys = this.displayedSurveys;
+
+                // reload advanced search UI
+                this.getMetricFilters(templateIds);
             }, (error) => {
                 console.error(error);
             });
