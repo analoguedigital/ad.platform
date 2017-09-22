@@ -327,7 +327,7 @@ module App {
                         if (found) matchedFilters.push(found);
                     });
 
-                    this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');;
+                    this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');
                 });
         }
 
