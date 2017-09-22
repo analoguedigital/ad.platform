@@ -64,7 +64,7 @@
             </div>
 
             <div>
-                <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters">
+                <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by metricFilter.type+metricFilter.shortTitle">
                     <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
                 </div>
             </div>
