@@ -156,7 +156,7 @@ namespace WebApi.Controllers
             var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
 
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
-                return NotFound();
+                return Ok(new GetDataListReferencesResDTO { Items = new List<GetDataListReferencesResItemDTO>() });
 
             return Ok(new GetDataListReferencesResDTO
             {
@@ -186,7 +186,7 @@ namespace WebApi.Controllers
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
                 return BadRequest();
 
-            var newOrder = owner.Relationships.Select(r=>r.Order).DefaultIfEmpty().Max() + 1;
+            var newOrder = owner.Relationships.Select(r => r.Order).DefaultIfEmpty().Max() + 1;
 
             var relationship = new DataListRelationship()
             {
