@@ -8,6 +8,7 @@ using LightMethods.Survey.Models.Entities;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Identity.EntityFramework;
 using LightMethods.Survey.Models.Services;
+using LightMethods.Survey.Models.EntityConfig;
 
 namespace LightMethods.Survey.Models.DAL
 {
@@ -168,325 +169,47 @@ namespace LightMethods.Survey.Models.DAL
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //modelBuilder.Entity<OrgUser>().Map(m =>
-            //  {
-            //      m.MapInheritedProperties();
-            //      m.ToTable("OrgUsers");
-            //  });
 
-            //modelBuilder.Entity<SuperUser>().Map(m =>
-            //{
-            //    m.MapInheritedProperties();
-            //    m.ToTable("SuperUsers");
-            //});
+            // projects and organisations config
+            modelBuilder.Configurations.Add(new ProjectConfig());
+            modelBuilder.Configurations.Add(new AssignmentConfig());
+            modelBuilder.Configurations.Add(new OrganisationConfig());
+            modelBuilder.Configurations.Add(new OrganisationWorkerConfig());
 
-            modelBuilder.Entity<User>()
-                .Property(x => x.UserName)
-                .HasMaxLength(256);
+            // users config
+            modelBuilder.Configurations.Add(new OrgUserConfig());
+            modelBuilder.Configurations.Add(new AdultConfig());
+            modelBuilder.Configurations.Add(new AdultAddressConfig());
+            modelBuilder.Configurations.Add(new AdultContactNumberConfig());
+            modelBuilder.Configurations.Add(new ExternalOrgContactNumberConfig());
 
-            modelBuilder.Entity<OrgUser>()
-                .HasRequired<OrgUserType>(u => u.Type)
-                .WithMany()
-                .WillCascadeOnDelete(false);
+            // data lists config
+            modelBuilder.Configurations.Add(new DataListConfig());
+            modelBuilder.Configurations.Add(new DataListItemConfig());
+            modelBuilder.Configurations.Add(new DataListItemAttrConfig());
+            modelBuilder.Configurations.Add(new DataListRelationshipConfig());
 
-            modelBuilder.Entity<OrgUser>()
-                .HasRequired<Organisation>(u => u.Organisation)
-                .WithMany(o => o.OrgUsers)
-                .HasForeignKey(u => u.OrganisationId)
-                .WillCascadeOnDelete();
+            modelBuilder.Configurations.Add(new MultipleChoiceMetricConfig());
+            modelBuilder.Configurations.Add(new RateMetricConfig());
+            modelBuilder.Configurations.Add(new DocumentConfig());
+            modelBuilder.Configurations.Add(new CommentaryConfig());
+            modelBuilder.Configurations.Add(new CommentaryDocumentConfig());
 
-            modelBuilder.Entity<Project>()
-                .HasRequired<Organisation>(u => u.Organisation)
-                .WithMany(o => o.Projects)
-                .HasForeignKey(p => p.OrganisationId)
-                .WillCascadeOnDelete(false);
+            // form templates config
+            modelBuilder.Configurations.Add(new ReportTemplateConfig());
+            modelBuilder.Configurations.Add(new ReportTemplateCategoryConfig());
+            modelBuilder.Configurations.Add(new FormTemplateCategoryConfig());
+            modelBuilder.Configurations.Add(new FormTemplateConfig());
+            modelBuilder.Configurations.Add(new MetricGroupConfig());
+            modelBuilder.Configurations.Add(new FormValueConfig());
+            modelBuilder.Configurations.Add(new FilledFormConfig());
+            modelBuilder.Configurations.Add(new AttachmentConfig());
+            modelBuilder.Configurations.Add(new AttachmentMetricConfig());
 
-            modelBuilder.Entity<Assignment>()
-                .HasRequired<OrgUser>(u => u.OrgUser)
-                .WithMany(o => o.Assignments)
-                .HasForeignKey(u => u.OrgUserId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<OrgUser>()
-                .HasOptional<Project>(u => u.CurrentProject)
-                .WithMany()
-                .HasForeignKey(u => u.CurrentProjectId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<Assignment>()
-                .HasRequired<Project>(u => u.Project)
-                .WithMany(o => o.Assignments)
-                .HasForeignKey(u => u.ProjectId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<OrganisationWorker>()
-               .ToTable("OrganisationWorkers");
-
-            modelBuilder.Entity<OrganisationWorker>()
-                .HasRequired<ExternalOrganisation>(w => w.Organisation)
-                .WithMany(o => o.Workers)
-                .HasForeignKey(w => w.OrganisationId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<Adult>()
-                .HasRequired<Project>(r => r.Project)
-                .WithMany()
-                .HasForeignKey(r => r.ProjectId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<AdultAddress>()
-                .ToTable("AdultAddresses");
-
-            modelBuilder.Entity<AdultAddress>()
-                .HasRequired<Adult>(a => a.Adult)
-                .WithMany(a => a.Addresses)
-                .HasForeignKey(a => a.AdultId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<AdultContactNumber>()
-                .HasRequired<Adult>(a => a.Adult)
-                .WithMany(a => a.ContactNumbers)
-                .HasForeignKey(a => a.AdultId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<ExternalOrgContactNumber>()
-                .HasRequired<ExternalOrganisation>(a => a.Organisation)
-                .WithMany(a => a.ContactNumbers)
-                .HasForeignKey(a => a.OrganisationId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<Commentary>()
-                .HasRequired<Project>(c => c.Project)
-                .WithMany()
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<DataListItem>()
-                .HasRequired<DataList>(d => d.DataList)
-                .WithMany(d => d.AllItems)
-                .HasForeignKey(d => d.DataListId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<DataList>()
-                .HasRequired<Organisation>(d => d.Organisation)
-                .WithMany(o => o.DataLists)
-                .HasForeignKey(d => d.OrganisationId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<DataListRelationship>()
-                .HasRequired<DataList>(d => d.Owner)
-                .WithMany(d => d.NotOrderedRelationships)
-                .HasForeignKey(r => r.OwnerId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<DataListRelationship>()
-                .HasRequired<DataList>(d => d.DataList)
-                .WithMany()
-                .HasForeignKey(r => r.DataListId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<DataListItemAttr>()
-                .HasRequired<DataListItem>(a => a.Owner)
-                .WithMany(i => i.Attributes)
-                .HasForeignKey(a => a.OwnerId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<DataListItemAttr>()
-             .HasRequired<DataListRelationship>(a => a.Relationship)
-             .WithMany()
-             .HasForeignKey(a => a.RelationshipId)
-             .WillCascadeOnDelete(true);
-
-
-            modelBuilder.Entity<DataListItemAttr>()
-                .HasRequired<DataListItem>(a => a.Value)
-                .WithMany()
-                .HasForeignKey(a => a.ValueId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<MultipleChoiceMetric>()
-                .HasRequired<DataList>(m => m.DataList)
-                .WithMany()
-                .HasForeignKey(m => m.DataListId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<RateMetric>()
-                .HasOptional<DataList>(m => m.DataList)
-                .WithMany()
-                .HasForeignKey(m => m.DataListId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<OrganisationWorker>().ToTable("OrganisationWorkers");
-
-            modelBuilder.Entity<Organisation>()
-                .HasMany(x => x.PromotionCodes)
-                .WithRequired(x => x.Organisation)
-                .HasForeignKey(x => x.OrganisationId)
-                .WillCascadeOnDelete();
-
-            OnDocumentModelCreating(modelBuilder);
-
-            OnFormTemplateCreating(modelBuilder);
-
-            OnSubscriptionModelCreating(modelBuilder);
-        }
-
-        private void OnFormTemplateCreating(DbModelBuilder modelBuilder)
-        {
-
-            modelBuilder.Entity<ReportTemplate>()
-                .HasRequired<Organisation>(f => f.Organisation)
-                .WithMany(o => o.ReportTemplates)
-                .HasForeignKey(f => f.OrganisationId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<ReportTemplateCategory>()
-                .HasRequired<Organisation>(f => f.Organisation)
-                .WithMany(o => o.ReportTemplateCategories)
-                .HasForeignKey(f => f.OrganisationId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<FormTemplateCategory>()
-                .HasRequired<Organisation>(f => f.Organisation)
-                .WithMany(o => o.FormTemplateCategories)
-                .HasForeignKey(f => f.OrganisationId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<FormTemplate>()
-                .HasMany<MetricGroup>(t => t.MetricGroups)
-                .WithRequired(g => g.FormTemplate)
-                .HasForeignKey(g => g.FormTemplateId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<FormTemplate>()
-                .HasRequired<OrgUser>(f => f.CreatedBy)
-                .WithMany()
-                .HasForeignKey(f => f.CreatedById)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<MetricGroup>()
-                .HasMany<Metric>(t => t.Metrics)
-                .WithRequired(g => g.MetricGroup)
-                .HasForeignKey(g => g.MetricGroupId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<FormValue>()
-                .HasRequired<Metric>(v => v.Metric)
-                .WithMany()
-                .HasForeignKey(v => v.MetricId)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<FilledForm>()
-                .HasMany<FormValue>(f => f.FormValues)
-                .WithRequired(v => v.FilledForm)
-                .HasForeignKey(v => v.FilledFormId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<FilledForm>()
-                .HasMany<FilledFormLocation>(f => f.Locations)
-                .WithRequired(v => v.FilledForm)
-                .HasForeignKey(v => v.FilledFormId)
-                .WillCascadeOnDelete(true);
-
-            modelBuilder.Entity<Attachment>()
-                .HasRequired<FormValue>(a => a.FormValue)
-                .WithMany(a => a.Attachments)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<AttachmentMetric>()
-                .HasMany<AttachmentType>(m => m.AllowedAttachmentTypes)
-                .WithMany()
-                .Map(x =>
-                {
-                    x.MapLeftKey("AttachmentMetricId");
-                    x.MapRightKey("AttachmentTypeId");
-                    x.ToTable("AttachmentMetricAllowedTypes");
-                });
-
-        }
-
-        void OnDocumentModelCreating(DbModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Document>()
-                .HasRequired<File>(d => d.File)
-                .WithMany()
-                .HasForeignKey(d => d.FileId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<CommentaryDocument>()
-                .HasRequired<Commentary>(d => d.Commentary)
-                .WithMany(c => c.Documents)
-                .HasForeignKey(d => d.CommentaryId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<CommentaryDocument>()
-                .ToTable("CommentaryDocuments");
-        }
-
-        private void OnSubscriptionModelCreating(DbModelBuilder modelBuilder)
-        {
-            // configure PromotionCode
-            modelBuilder.Entity<PromotionCode>()
-                .Property(x => x.Title)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            modelBuilder.Entity<PromotionCode>()
-                .Property(x => x.Code)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .IsRequired();
-
-            modelBuilder.Entity<PromotionCode>()
-                .HasRequired(x => x.Organisation)
-                .WithMany(x => x.PromotionCodes)
-                .HasForeignKey(x => x.OrganisationId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<PromotionCode>()
-                .HasOptional(x => x.PaymentRecord)
-                .WithOptionalPrincipal(x => x.PromotionCode)
-                .WillCascadeOnDelete(false);
-
-            // configure PaymentRecord
-            modelBuilder.Entity<PaymentRecord>()
-                .Property(x => x.Reference)
-                .HasMaxLength(50);
-
-            modelBuilder.Entity<PaymentRecord>()
-                .Property(x => x.Note);
-
-            modelBuilder.Entity<PaymentRecord>()
-                .HasRequired(x => x.OrgUser)
-                .WithMany(x => x.Payments)
-                .HasForeignKey(x => x.OrgUserId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<PaymentRecord>()
-                .HasMany(x => x.Subscriptions)
-                .WithRequired(x => x.PaymentRecord)
-                .HasForeignKey(x => x.PaymentRecordId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<PaymentRecord>()
-                .HasOptional(x => x.PromotionCode)
-                .WithOptionalDependent(x => x.PaymentRecord)
-                .WillCascadeOnDelete(false);
-
-            // configure Subscription
-            modelBuilder.Entity<Subscription>()
-                .Property(x => x.Note);
-
-            modelBuilder.Entity<Subscription>()
-                .HasRequired(x => x.PaymentRecord)
-                .WithMany(x => x.Subscriptions)
-                .HasForeignKey(x => x.PaymentRecordId)
-                .WillCascadeOnDelete();
-
-            modelBuilder.Entity<Subscription>()
-                .HasRequired(x => x.OrgUser)
-                .WithMany(x => x.Subscriptions)
-                .HasForeignKey(x => x.OrgUserId)
-                .WillCascadeOnDelete(false);
+            // subscriptions config
+            modelBuilder.Configurations.Add(new PromotionCodeConfig());
+            modelBuilder.Configurations.Add(new PaymentRecordConfig());
+            modelBuilder.Configurations.Add(new SubscriptionConfig());
         }
     }
 }
