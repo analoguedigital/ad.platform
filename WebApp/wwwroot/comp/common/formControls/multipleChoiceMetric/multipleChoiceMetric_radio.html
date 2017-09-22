@@ -7,9 +7,11 @@
             </div>
 
             <div ng-if="metric.viewType === 'DropDown'">
-                <select class="form-control" ng-model="formValue.guidValue" ng-options="item.id as item.text for item in items  | orderBy:'order'| filter:{'isDeleted':false} track by $index"></select>
+                <select class="form-control" ng-model="formValue.guidValue">
+                    <option value=""></option>
+                    <option ng-repeat="item in items | orderBy:'order' | filter:{ 'isDeleted': false } track by $index" value="{{item.id}}">{{item.text}}</option>
+                </select>
             </div>
-
         </div>
     </div>
 </div>
