@@ -127,6 +127,8 @@
     <Compile Include="DTO\FilledForms\FilledFormDTO.cs" />
     <Compile Include="DTO\FilledForms\FilledFormLocationDTO.cs" />
     <Compile Include="DTO\FilledForms\FormValueDTO.cs" />
+    <Compile Include="DTO\FormTemplates\CloneReqDTO.cs" />
+    <Compile Include="DTO\FormTemplates\EditBasicDetailsReqDTO.cs" />
     <Compile Include="DTO\Metrics\AttachmentMetricDTO.cs" />
     <Compile Include="DTO\DataLists\DataListDTO.cs" />
     <Compile Include="DTO\DataLists\DataListItemAttrDTO.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="DTO\Metrics\NumericMetricDTO.cs" />
     <Compile Include="DTO\Metrics\RateMetricDTO.cs" />
     <Compile Include="DTO\Metrics\TimeMetricDTO.cs" />
+    <Compile Include="DTO\OperationResult.cs" />
     <Compile Include="DTO\Users\OrganisationDTO.cs" />
     <Compile Include="DTO\Users\OrgUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserTypeDTO.cs" />
@@ -454,6 +457,7 @@
     <Compile Include="Services\DataTableProvider.cs" />
     <Compile Include="Services\DateTimeService.cs" />
     <Compile Include="Services\FormDataProvider.cs" />
+    <Compile Include="Services\FormTemplatesService.cs" />
     <Compile Include="Services\Identity\ApplicationRoleManager.cs" />
     <Compile Include="Services\Identity\ApplicationRoleStore.cs" />
     <Compile Include="Services\Identity\ApplicationSignInManager.cs" />

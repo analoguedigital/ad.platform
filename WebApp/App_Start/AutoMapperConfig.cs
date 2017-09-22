@@ -21,7 +21,7 @@ namespace WebApi
 
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
-            Mapper.CreateMap<Controllers.FormTemplatesController.EditBasicDetailsRequest, FormTemplate>();
+            Mapper.CreateMap<EditBasicDetailsReqDTO, FormTemplate>();
 
             Mapper.CreateMap<MetricGroup, MetricGroupDTO>()
                 .AfterMap((src, dest) =>

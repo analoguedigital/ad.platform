@@ -8,52 +8,40 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
+using System.Web.Http.Results;
 
 namespace WebApi.Controllers
 {
     public class FormTemplatesController : BaseApiController
     {
+        private FormTemplatesService FormTemplatesService { get; set; }
+
+        public FormTemplatesController()
+        {
+            this.FormTemplatesService = new FormTemplatesService(this.UnitOfWork, this.CurrentOrgUser);
+        }
+
         // GET api/<controller>
         [ResponseType(typeof(IEnumerable<FormTemplateDTO>))]
         public IHttpActionResult Get(Guid? projectId = null)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
-
-            var templates = surveyProvider.GetAllFormTemplates();
-            if (projectId.HasValue && projectId != Guid.Empty)
-            {
-                var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking
-                .Where(a => a.ProjectId == projectId && a.OrgUserId == CurrentOrgUser.Id)
-                .ToList();
-
-                templates = templates
-                    .Where(t => t.ProjectId == projectId || t.ProjectId == null)
-                    .Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
-            }
-            else
-                templates = templates.Where(t => t.ProjectId == null);
-
-            var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
-
-            return Ok(result);
+            var response = this.FormTemplatesService.Get(projectId);
+            return Ok(response);
         }
 
         // GET api/<controller>/5
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Get(Guid id)
         {
-            if (id == Guid.Empty)
-                return Ok(Mapper.Map<FormTemplateDTO>(new FormTemplate() { }));
-
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
-
-            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
-            if (form == null)
+            var result = this.FormTemplatesService.Get(id);
+            if (result == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<FormTemplateDTO>(form));
+            return Ok(result);
         }
 
         [ResponseType(typeof(IEnumerable<MetricFilter>))]
@@ -61,13 +49,11 @@ namespace WebApi.Controllers
         public IHttpActionResult GetFilters(Guid id)
         {
             var template = this.UnitOfWork.FormTemplatesRepository.Find(id);
-            if (template != null)
-            {
-                var metricFilters = template.GetMetricFilters();
-                return Ok(metricFilters);
-            }
+            if (template == null)
+                return NotFound();
 
-            return BadRequest("FormTemplate not found!");
+            var metricFilters = template.GetMetricFilters();
+            return Ok(metricFilters);
         }
 
         // POST api/<controller>
@@ -75,220 +61,107 @@ namespace WebApi.Controllers
         {
             var formTemplate = Mapper.Map<FormTemplate>(value);
 
-            // Prevent reinserting the existing formTemplateCategory
-            formTemplate.FormTemplateCategory = null;
-            formTemplate.CreatedById = CurrentUser.Id;
-            formTemplate.OrganisationId = CurrentOrganisationId.Value;
-            //formTemplate.ProjectId = UnitOfWork.ProjectsRepository.All.Where(p => p.OrganisationId == CurrentOrgUser.OrganisationId).FirstOrDefault().Id;
-
             ModelState.Clear();
             Validate(formTemplate);
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(formTemplate);
-            UnitOfWork.Save();
+            var response = this.FormTemplatesService.Create(formTemplate);
+            if (!response.Success)
+            {
+                if (response.Message.ToLower() == "not found")
+                    return NotFound();
 
-            return Ok();
+                if (response.ValidationErrors.Any())
+                    return Content(System.Net.HttpStatusCode.BadGateway, response);
+
+                return BadRequest(response.Message);
+            }
+
+            return Ok(response.ReturnValue);
         }
 
         // PUT api/<controller>/5
         [ResponseType(typeof(FormTemplateDTO))]
-        public IHttpActionResult Put(Guid id, FormTemplateDTO value)
+        public HttpResponseMessage Put(Guid id, FormTemplateDTO value)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
-
-            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
-            if (form == null)
-                return NotFound();
-
-            Mapper.Map(value, form);
-
-            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
-            var groupOrder = 1;
-            foreach (var valueGroup in value.MetricGroups)
+            var response = this.FormTemplatesService.Update(id, value);
+            if (!response.Success)
             {
-                var group = form.MetricGroups.SingleOrDefault(g => g.Id == valueGroup.Id);
-                if (valueGroup.isDeleted && group != null)
-                {
-                    if (valueGroup.Metrics.Any(m => !m.isDeleted))
-                    {
-                        ModelState.AddModelError(group.Id.ToString(), $"Group {group.Title} is not empty!");
-                        return BadRequest(ModelState);
-                    }
-                }
+                if (response.Message.ToLower() == "not found")
+                    return Request.CreateResponse(System.Net.HttpStatusCode.NotFound);
 
-                group = valueGroup.Map(group, UnitOfWork, CurrentOrganisation);
-                group.FormTemplateId = form.Id;
-                group.Order = groupOrder++;
+                if (response.ValidationErrors.Any())
+                    return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, response);
 
-                var metricOrder = 1;
-                foreach (var valueMetric in valueGroup.Metrics)
-                {
-                    var metric = group.Metrics.Where(m => m.Id == valueMetric.Id)
-                        .SingleOrDefault();
-
-                    if (metric == null && valueMetric.isDeleted)
-                        continue;
-
-                    metric = valueMetric.Map(metric, UnitOfWork, CurrentOrganisation);
-
-                    if (valueMetric.isDeleted) // Delete
-                    {
-                        UnitOfWork.MetricsRepository.Delete(metric);
-                    }
-                    else
-                    {   // Insert or update
-                        metric.FormTemplateId = form.Id;
-                        metric.MetricGroup = group;
-                        metric.Order = metricOrder++;
-
-                        // Validate metric
-                        var validationResult = metric.Validate();
-                        if (validationResult.Any())
-                        {
-                            validationResult.ToList().ForEach(res => ModelState.AddModelError(metric.Id.ToString(), res.ErrorMessage));
-                            return BadRequest(ModelState);
-                        }
-
-                        UnitOfWork.MetricsRepository.InsertOrUpdate(metric);
-                    }
-                }
-
-                if (valueGroup.isDeleted && group != null)
-                {
-                    UnitOfWork.MetricGroupsRepository.Delete(group);
-                }
-                else
-                {
-                    UnitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
-                }
+                return Request.CreateResponse(System.Net.HttpStatusCode.BadRequest, response.Message);
             }
 
-            try
-            {
-                ModelState.Clear();
-
-                var result = form.Validate(new ValidationContext(form));
-                if (result.Any())
-                {
-                    result.ToList().ForEach(res => ModelState.AddModelError(id.ToString(), res.ErrorMessage));
-                    return BadRequest(ModelState);
-                }
-
-                UnitOfWork.Save();
-            }
-            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-            {
-                foreach (var entityError in ex.EntityValidationErrors)
-                {
-                    foreach (var validationError in entityError.ValidationErrors)
-                        ModelState.AddModelError(
-                            (entityError.Entry.Entity as Entity)?.Id.ToString() ?? string.Empty,
-                            validationError.ErrorMessage
-                            );
-                }
-                return BadRequest(ModelState);
-            }
-            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
-            {
-                ModelState.AddModelError(form.Id.ToString(), ex);
-                return BadRequest(ModelState);
-            }
-
-            return Ok(Mapper.Map<FormTemplateDTO>(form));
+            var retVal = Mapper.Map<FormTemplateDTO>(response.ReturnValue);
+            return Request.CreateResponse(System.Net.HttpStatusCode.OK, retVal);
         }
 
         [HttpPut]
         [ResponseType(typeof(FormTemplateDTO))]
         [Route("api/formtemplates/{id:Guid}/details")]
-        public IHttpActionResult EditBasicDetails(Guid id, EditBasicDetailsRequest value)
+        public IHttpActionResult EditBasicDetails(Guid id, EditBasicDetailsReqDTO value)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false); ;
-
-            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
-            if (form == null)
-                return NotFound();
-
-            Mapper.Map(value, form);
-            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
-
-            try
+            var response = this.FormTemplatesService.UpdateBasicDetails(id, value);
+            if (!response.Success)
             {
-                ModelState.Clear();
-                UnitOfWork.Save();
-            }
-            catch (System.Data.Entity.Validation.DbEntityValidationException ex)
-            {
-                foreach (var entityError in ex.EntityValidationErrors)
-                {
-                    foreach (var validationError in entityError.ValidationErrors)
-                        ModelState.AddModelError(
-                            (entityError.Entry.Entity as Entity)?.Id.ToString() ?? string.Empty,
-                            validationError.ErrorMessage
-                            );
-                }
-                return BadRequest(ModelState);
-            }
-            catch (System.Data.Entity.Infrastructure.DbUpdateException ex)
-            {
-                ModelState.AddModelError(form.Id.ToString(), ex);
-                return BadRequest(ModelState);
+                if (response.Message.ToLower() == "not found")
+                    return NotFound();
+
+                if (response.ValidationErrors.Any())
+                    return Content(System.Net.HttpStatusCode.BadRequest, response);
+
+                return BadRequest(response.Message);
             }
 
-            return Ok(Mapper.Map<FormTemplateDTO>(form));
+            return Ok(response.ReturnValue);
         }
 
 
         // DELETE api/<controller>/5
         public IHttpActionResult Delete(Guid id)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
-
-            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
-            if (form == null)
-                return NotFound();
-
-            try
+            var response = this.FormTemplatesService.Delete(id);
+            if (!response.Success)
             {
-                UnitOfWork.FormTemplatesRepository.Delete(form);
-                UnitOfWork.Save();
+                if (response.Message.ToLower() == "not found")
+                    return NotFound();
 
-                return Ok();
+                return BadRequest(response.Message);
             }
-            catch (DbUpdateException)
-            {
-                return BadRequest("This Form cannot be deleted!");
-            }
+
+            return Ok();
         }
 
         [HttpPost]
         [Route("api/formtemplates/{id:Guid}/clone")]
         [ResponseType(typeof(FormTemplateDTO))]
-        public IHttpActionResult Clone(Guid id, CloneRequest request)
+        public IHttpActionResult Clone(Guid id, CloneReqDTO request)
         {
-            var template = UnitOfWork.FormTemplatesRepository.Find(id);
-            var clone = UnitOfWork.FormTemplatesRepository.Clone(template, CurrentUser as OrgUser, request.Title, request.Colour, request.ProjectId);
-            return Ok(Mapper.Map<FormTemplateDTO>(clone));
+            var response = this.FormTemplatesService.Clone(id, request);
+            return Ok(response.ReturnValue);
         }
 
         [HttpPut]
         [Route("api/formtemplates/{id:Guid}/publish")]
         public IHttpActionResult Publish(Guid id)
         {
-            var template = UnitOfWork.FormTemplatesRepository.Find(id);
-            if (template == null)
-                return NotFound();
-
-            var result = template.Publish();
-            if (result.Any())
+            var response = this.FormTemplatesService.Publish(id);
+            if (!response.Success)
             {
-                result.ToList().ForEach(res => ModelState.AddModelError(id.ToString(), res.ErrorMessage));
-                return BadRequest(ModelState);
+                if (response.Message.ToLower() == "not found")
+                    return NotFound();
+
+                if (response.ValidationErrors.Any())
+                    return Content(System.Net.HttpStatusCode.BadRequest, response);
+
+                return BadRequest(response.Message);
             }
 
-            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(template);
-            UnitOfWork.Save();
             return Ok();
         }
 
@@ -296,30 +169,20 @@ namespace WebApi.Controllers
         [Route("api/formtemplates/{id:Guid}/publish")]
         public IHttpActionResult UndoPublish(Guid id)
         {
-            var template = UnitOfWork.FormTemplatesRepository.Find(id);
-            if (template == null)
-                return NotFound();
+            var response = this.FormTemplatesService.Unpublish(id);
+            if (!response.Success)
+            {
+                if (response.Message.ToLower() == "not found")
+                    return NotFound();
 
-            template.IsPublished = false;
-            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(template);
-            UnitOfWork.Save();
+                if (response.ValidationErrors.Any())
+                    return Content(System.Net.HttpStatusCode.BadGateway, response);
+
+                return BadRequest(response.Message);
+            }
+
             return Ok();
         }
 
-        public class CloneRequest
-        {
-            public string Title { get; set; }
-            public string Colour { get; set; }
-            public Guid? ProjectId { get; set; }
-        }
-
-        public class EditBasicDetailsRequest
-        {
-            public string Code { get; set; }
-            public string Title { get; set; }
-            public double Version { get; set; }
-            public string Description { set; get; }
-            public string Colour { get; set; }
-        }
     }
 }
