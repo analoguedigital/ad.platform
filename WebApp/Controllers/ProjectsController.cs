@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using WebApi.Models;
 using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
 namespace WebApi.Controllers

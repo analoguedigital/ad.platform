@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
-using System.Web.Http;
-using WebApi.Models;
 using System.Linq;
+using System.Web.Http;
 
 namespace WebApi.Controllers
 {

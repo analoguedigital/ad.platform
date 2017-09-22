@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.Entities;
 
 namespace LightMethods.Survey.Models.DTO
 {

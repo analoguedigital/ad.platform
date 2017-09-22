@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
 using System;
@@ -17,7 +17,6 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {

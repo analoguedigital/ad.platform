@@ -1,20 +1,19 @@
 ﻿using AutoMapper;
+using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.DTO.DataLists;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class DataListsController : BaseApiController
     {
 
-        [ResponseType(typeof(IEnumerable<GetDataListsResDto>))]
+        [ResponseType(typeof(IEnumerable<GetDataListsResDTO>))]
         public IHttpActionResult Get()
         {
             var datalists = UnitOfWork.DataListsRepository.All
@@ -22,9 +21,9 @@ namespace WebApi.Controllers
                 .OrderBy(d => d.Name)
                 .ToList()
                 .Where(d => !d.IsAdHoc)
-                .Select(d => Mapper.Map<GetDataListsResItemDto>(d));
+                .Select(d => Mapper.Map<GetDataListsResItemDTO>(d));
 
-            return Ok(new GetDataListsResDto() { Items = datalists.ToList() });
+            return Ok(new GetDataListsResDTO() { Items = datalists.ToList() });
         }
 
         [ResponseType(typeof(DataListDTO))]
@@ -150,7 +149,7 @@ namespace WebApi.Controllers
             UnitOfWork.Save();
         }
 
-        [ResponseType(typeof(GetDataListReferencesResDto))]
+        [ResponseType(typeof(GetDataListReferencesResDTO))]
         [Route("api/datalists/{datalistId}/references")]
         public IHttpActionResult GetReferences(Guid datalistId)
         {
@@ -159,10 +158,10 @@ namespace WebApi.Controllers
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
                 return NotFound();
 
-            return Ok(new GetDataListReferencesResDto
+            return Ok(new GetDataListReferencesResDTO
             {
                 Items = UnitOfWork.DataListRelationshipsRepository.All.Where(r => r.DataListId == datalistId)
-                        .Select(r => new GetDataListReferencesResItemDto
+                        .Select(r => new GetDataListReferencesResItemDTO
                         {
                             Id = r.OwnerId,
                             Name = r.Owner.Name
@@ -174,7 +173,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/datalists/{datalistId}/relationships")]
         [ResponseType(typeof(DataListRelationshipDTO))]
-        public IHttpActionResult AddRelationship(Guid datalistId, [FromBody] AddDataListRelationshipReqDto req)
+        public IHttpActionResult AddRelationship(Guid datalistId, [FromBody] AddDataListRelationshipReqDTO req)
         {
 
             var owner = UnitOfWork.DataListsRepository.Find(datalistId);
@@ -206,7 +205,7 @@ namespace WebApi.Controllers
 
         [HttpPut]
         [Route("api/datalists/{datalistId}/relationships/{id}")]
-        public IHttpActionResult EditRelationship(Guid datalistId, Guid id, [FromBody] EditDataListRelationshipReqDto req)
+        public IHttpActionResult EditRelationship(Guid datalistId, Guid id, [FromBody] EditDataListRelationshipReqDTO req)
         {
 
             var owner = UnitOfWork.DataListsRepository.Find(datalistId);

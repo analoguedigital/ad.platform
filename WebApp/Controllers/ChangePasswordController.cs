@@ -1,10 +1,10 @@
+using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Entities;
+using Microsoft.AspNet.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using LightMethods.Survey.Models.DAL;
-using Microsoft.AspNet.Identity;
 using WebApi.Models;
-using LightMethods.Survey.Models.Entities;
 
 namespace WebApi.Controllers
 {

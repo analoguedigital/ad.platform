@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LightMethods.Survey.Models.Services;
+using System;
 using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.DTO
 {

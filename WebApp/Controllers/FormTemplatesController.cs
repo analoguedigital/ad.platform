@@ -1,19 +1,15 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
+using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using WebApi.Models;
-using Newtonsoft.Json;
-using LightMethods.Survey.Models.MetricFilters;
-using System.Data.Entity.Infrastructure;
 
 namespace WebApi.Controllers
 {
