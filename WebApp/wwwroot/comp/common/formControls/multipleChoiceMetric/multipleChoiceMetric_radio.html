@@ -1,11 +1,10 @@
 ﻿<div class="row">
     <div class="col-md-8">
         <div class="form-group">
-
-            <label class="radio-inline" ng-if="metric.viewType === 'RadioButtonList'" ng-repeat="item in items  | orderBy:'order'| filter:{'isDeleted':false} track by $index">
-                <input type="radio" ng-model="formValue.guidValue" value="{{item.id}}">
-                {{item.text}}
-            </label>
+            <div class="radio radio-default" ng-if="metric.viewType === 'RadioButtonList'" ng-repeat="item in items | orderBy:'order' | filter:{ 'isDeleted': false } track by $index">
+                <input id="radio-{{$index}}" name="radio-{{$index}}" type="radio" ng-model="formValue.guidValue" value="{{item.id}}">
+                <label for="radio-{{$index}}">{{item.text}}</label>
+            </div>
 
             <div ng-if="metric.viewType === 'DropDown'">
                 <select class="form-control" ng-model="formValue.guidValue" ng-options="item.id as item.text for item in items  | orderBy:'order'| filter:{'isDeleted':false} track by $index"></select>
