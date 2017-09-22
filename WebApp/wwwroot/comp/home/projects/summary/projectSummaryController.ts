@@ -321,13 +321,17 @@ module App {
                         filters = filters.concat(mf);
                     });
 
-                    var matchedFilters = [];
-                    _.forEach(filters, (f) => {
-                        var found = this.findMetricFilter(f, filters);
-                        if (found) matchedFilters.push(found);
-                    });
+                    if (templateIds.length == 1) {
+                        this.metricFilters = filters;
+                    } else {
+                        var matchedFilters = [];
+                        _.forEach(filters, (f) => {
+                            var found = this.findMetricFilter(f, filters);
+                            if (found) matchedFilters.push(found);
+                        });
 
-                    this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');
+                        this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');
+                    }
                 });
         }
 
