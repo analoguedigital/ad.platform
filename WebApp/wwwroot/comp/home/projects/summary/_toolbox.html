@@ -59,11 +59,11 @@
             </div>
 
             <!-- advanced search -->
-            <div class="toolbox-heading">
-                <i class="fa fa-search-plus"></i> Advanced Search
-            </div>
+            <div ng-if="ctrl.metricFilters.length > 0">
+                <div class="toolbox-heading">
+                    <i class="fa fa-search-plus"></i> Advanced Search
+                </div>
 
-            <div>
                 <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by metricFilter.type+metricFilter.shortTitle">
                     <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
                 </div>
