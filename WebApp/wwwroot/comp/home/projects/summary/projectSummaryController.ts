@@ -72,7 +72,7 @@ module App {
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
             "formTemplateResource", "surveyResource", "project",
-            "toastr", "projectSummaryService", "userContextService"];
+            "toastr", "userContextService"];
 
         constructor(
             private $scope: IProjectSummaryControllerScope,
@@ -86,7 +86,6 @@ module App {
             private surveyResource: Resources.ISurveyResource,
             private project: Models.IProject,
             private toastr: any,
-            private projectSummaryService: Services.IProjectSummaryService,
             private userContextService: Services.IUserContextService) {
 
             this.activate();
@@ -123,12 +122,9 @@ module App {
             ]).then((data) => {
                 this.formTemplates = data[0];
                 this.surveys = data[1];
+                this.$scope.safeSurveys = this.surveys;
 
                 _.map(this.formTemplates, (t) => { t.isChecked = true });
-
-                this.projectSummaryService.formTemplates = this.formTemplates;
-                this.projectSummaryService.surveys = this.surveys;
-                this.$scope.safeSurveys = this.surveys;
 
                 var templateIds = _.map(this.formTemplates, (template) => { return template.id; });
                 this.getMetricFilters(templateIds);
