@@ -177,6 +177,17 @@ module App {
                 return;
             }
 
+            if (this.dataList.items.length < 1) {
+                this.toastr.error('Data list is empty! add data items first');
+                return;
+            }
+
+            var items = _.map(this.dataList.items, (item) => { return item.value; });
+            if (items.length !== _.uniq(items).length) {
+                this.toastr.error('Data list cannot contain duplicate values!');
+                return;
+            }
+
             var dataListId = this.$stateParams['id'];
             if (dataListId === '') {
                 this.dataListResource.save(
