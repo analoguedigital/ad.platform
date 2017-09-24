@@ -22,14 +22,15 @@ module App {
         metricsDraggableOptions = {
         };
 
-        static $inject: string[] = ["dataListResource", "dataListRelationshipResource", "$state", "$stateParams", "$uibModal"];
+        static $inject: string[] = ["dataListResource", "dataListRelationshipResource", "$state", "$stateParams", "$uibModal", "toastr"];
 
         constructor(
             private dataListResource: Resources.IDataListResource,
             private dataListRelationshipResource: Resources.IDataListRelationshipResource,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
-            private $uibModal: ng.ui.bootstrap.IModalService
+            private $uibModal: ng.ui.bootstrap.IModalService,
+            private toastr: any
         ) {
             this.dataListId = $stateParams['id'];
             this.activate();
@@ -201,6 +202,12 @@ module App {
             while (innerException) {
                 this.errors += innerException.exceptionMessage;
                 innerException = innerException.innerException;
+            }
+
+            if (err.data.modelState) {
+                _.forEach(err.data.modelState, (error) => {
+                    this.toastr.error(error[0]);
+                });
             }
         }
 

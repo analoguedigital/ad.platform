@@ -66,30 +66,19 @@ namespace WebApi.Controllers
             ModelState.Clear();
             Validate(dataList);
 
-            if (ModelState.IsValid)
-            {
-                dataList.OrganisationId = CurrentOrganisationId.Value;
-                UnitOfWork.DataListsRepository.InsertOrUpdate(dataList);
-                var order = 1;
-                foreach (var val in dataListDTO.Items)
-                {
-                    if (val.IsDeleted)
-                        continue; // nothing to do
-
-                    var dbItem = new DataListItem();
-                    Mapper.Map(val, dbItem);
-                    dbItem.DataList = dataList;
-                    dbItem.Order = order++;
-                    UnitOfWork.DataListItemsRepository.InsertOrUpdate(dbItem);
-                }
-
-                UnitOfWork.Save();
-                return Ok();
-            }
-            else
-            {
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            }
+
+            dataList.OrganisationId = CurrentOrganisationId.Value;
+
+            var order = 1;
+            foreach (var item in dataList.AllItems)
+                item.Order = order++;
+
+            UnitOfWork.DataListsRepository.InsertOrUpdate(dataList);
+            UnitOfWork.Save();
+
+            return Ok();
         }
 
         public IHttpActionResult Put(Guid id, [FromBody]DataListDTO dataListDTO)
