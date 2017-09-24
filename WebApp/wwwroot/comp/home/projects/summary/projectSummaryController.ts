@@ -353,8 +353,12 @@ module App {
                 this.displayedSurveys = [].concat(this.surveys);
                 this.$scope.displayedSurveys = this.displayedSurveys;
 
-                // reload advanced search UI
-                this.getMetricFilters(templateIds);
+                if (templateIds.length < 1) {
+                    this.selectedTemplates = [];
+                } else {
+                    // reload advanced search UI
+                    this.getMetricFilters(templateIds);
+                }
             }, (error) => {
                 console.error(error);
             });
