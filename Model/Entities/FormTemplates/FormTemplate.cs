@@ -114,12 +114,14 @@ namespace LightMethods.Survey.Models.Entities
                 Code = Code,
                 Colour = Colour,
                 Description = Description,
+                DescriptionFormat = DescriptionFormat,
                 FormTemplateCategoryId = FormTemplateCategoryId,
                 IsPublished = false,
                 OrganisationId = OrganisationId,
                 ProjectId = ProjectId,
                 Title = Title,
                 Version = Version
+                
             };
 
             foreach (var metricGroup in MetricGroups)

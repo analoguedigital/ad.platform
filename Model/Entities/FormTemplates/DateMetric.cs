@@ -46,7 +46,9 @@ namespace LightMethods.Survey.Models.Entities
 
         public override Metric Clone(FormTemplate template, MetricGroup metricGroup)
         {
-            return BaseClone<DateMetric>(template, metricGroup);
+            var clone =  BaseClone<DateMetric>(template, metricGroup);
+            clone.HasTimeValue = HasTimeValue;
+            return clone;
         }
 
         public override MetricFilter GetMetricFilter()
