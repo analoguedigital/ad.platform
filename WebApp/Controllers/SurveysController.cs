@@ -38,8 +38,9 @@ namespace WebApi.Controllers
 
             var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => s.ProjectId == projectId)
-                .OrderByDescending(x => x.SurveyDate)
-                .ToList();
+                .ToList()
+                .OrderByDescending(x => x.Date);
+
 
             var result = surveys.Select(s => Mapper.Map<FilledFormDTO>(s));
 
@@ -62,7 +63,7 @@ namespace WebApi.Controllers
             if (this.CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
                 return NotFound();
 
-            var result = this.UnitOfWork.FilledFormsRepository.Search(model);
+            var result = this.UnitOfWork.FilledFormsRepository.Search(model).OrderByDescending(r => r.Date);
             var retVal = result.Select(s => Mapper.Map<FilledFormDTO>(s)).ToList();
 
             return Ok(retVal);
