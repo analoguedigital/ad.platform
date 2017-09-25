@@ -209,83 +209,83 @@ namespace WebApi.Controllers
             ModelState.Clear();
             Validate(survey);
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var dbForm = UnitOfWork.FilledFormsRepository.Find(id);
+            dbForm.SurveyDate = survey.SurveyDate;
+            UnitOfWork.FilledFormsRepository.InsertOrUpdate(dbForm);
+
+            foreach (var val in surveyDTO.FormValues)
             {
-                var dbForm = UnitOfWork.FilledFormsRepository.Find(id);
-                dbForm.SurveyDate = survey.SurveyDate;
-                UnitOfWork.FilledFormsRepository.InsertOrUpdate(dbForm);
-
-
-                foreach (var val in surveyDTO.FormValues)
+                var dbrecord = FormValues.Find(val.Id);
+                if (dbrecord == null)
                 {
-                    var dbrecord = FormValues.Find(val.Id);
-                    if (dbrecord == null)
+                    dbrecord = new FormValue()
                     {
-                        dbrecord = new FormValue()
-                        {
-                            FilledFormId = dbForm.Id,
-                            MetricId = val.MetricId,
-                            RowDataListItemId = val.RowDataListItemId,
-                            RowNumber = val.RowNumber
-                        };
+                        FilledFormId = dbForm.Id,
+                        MetricId = val.MetricId,
+                        RowDataListItemId = val.RowDataListItemId,
+                        RowNumber = val.RowNumber
+                    };
 
-                    }
-
-                    dbrecord.NumericValue = val.NumericValue;
-                    dbrecord.BoolValue = val.BoolValue;
-                    dbrecord.DateValue = val.DateValue;
-                    dbrecord.TimeValue = val.TimeValue.HasValue ? new TimeSpan(val.TimeValue.Value.Hour, val.TimeValue.Value.Minute, 0) : (TimeSpan?)null;
-                    dbrecord.TextValue = val.TextValue;
-                    dbrecord.GuidValue = val.GuidValue;
-                    dbrecord.RowNumber = val.RowNumber;
-
-                    if (dbrecord.Metric is DateMetric)
-                    {
-                        var dateMetric = dbrecord.Metric as DateMetric;
-                        if (dbrecord.DateValue.HasValue && !dateMetric.HasTimeValue)
-                        {
-                            var dateValue = dbrecord.DateValue.Value;
-                            dbrecord.DateValue = new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, 0, 0, 0).AddDays(1);
-                        }
-                    }
-
-                    if (dbrecord.Metric is AttachmentMetric)
-                    {
-                        //Delete removed attachments 
-                        val.Attachments.Where(a => a.isDeleted).ToList().ForEach(a => UnitOfWork.AttachmentsRepository.Delete(a.Id));
-
-                        var fileInfos = val.TextValue == string.Empty ? new List<FileInfo>() : val.TextValue.Split(',')
-                                             .Select(i => HttpContext.Current.Server.MapPath("~/Uploads/" + i)).Select(path => new DirectoryInfo(path).GetFiles().FirstOrDefault());
-
-                        var attachments = fileInfos.Select(fileInfo => UnitOfWork.AttachmentsRepository.CreateAttachment(fileInfo, dbrecord));
-                        UnitOfWork.AttachmentsRepository.InsertOrUpdate(attachments);
-
-                        dbrecord.TextValue = string.Empty;
-                    }
-
-                    FormValues.InsertOrUpdate(dbrecord);
                 }
 
-                var deletedFormValues = dbForm.FormValues.Where(dv => !survey.FormValues.Any(v => v.Id == dv.Id)).ToList();
+                dbrecord.NumericValue = val.NumericValue;
+                dbrecord.BoolValue = val.BoolValue;
+                dbrecord.DateValue = val.DateValue;
+                dbrecord.TimeValue = val.TimeValue.HasValue ? new TimeSpan(val.TimeValue.Value.Hour, val.TimeValue.Value.Minute, 0) : (TimeSpan?)null;
+                dbrecord.TextValue = val.TextValue;
+                dbrecord.GuidValue = val.GuidValue;
+                dbrecord.RowNumber = val.RowNumber;
+
+                if (dbrecord.Metric is DateMetric)
+                {
+                    var dateMetric = dbrecord.Metric as DateMetric;
+                    if (dbrecord.DateValue.HasValue && !dateMetric.HasTimeValue)
+                    {
+                        var dateValue = dbrecord.DateValue.Value;
+                        dbrecord.DateValue = new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, 0, 0, 0).AddDays(1);
+                    }
+                }
+
+                if (dbrecord.Metric is AttachmentMetric)
+                {
+                    var deletedAttachments = val.Attachments.Where(a => a.isDeleted).ToList();
+                    foreach (var item in deletedAttachments)
+                        UnitOfWork.AttachmentsRepository.Delete(item.Id);
+
+                    var fileInfos = val.TextValue == string.Empty ? new List<FileInfo>() : val.TextValue.Split(',')
+                                         .Select(i => HttpContext.Current.Server.MapPath("~/Uploads/" + i)).Select(path => new DirectoryInfo(path).GetFiles().FirstOrDefault());
+
+                    var attachments = fileInfos.Select(fileInfo => UnitOfWork.AttachmentsRepository.CreateAttachment(fileInfo, dbrecord));
+                    UnitOfWork.AttachmentsRepository.InsertOrUpdate(attachments);
+
+                    dbrecord.TextValue = string.Empty;
+                }
+
+                FormValues.InsertOrUpdate(dbrecord);
+            }
+
+            UnitOfWork.Save();
+
+            var deletedFormValues = dbForm.FormValues.Where(dv => !survey.FormValues.Any(v => v.Id == dv.Id)).ToList();
+            if (deletedFormValues.Any())
+            {
                 foreach (var deletedFormValue in deletedFormValues)
                     FormValues.Delete(deletedFormValue);
-
                 UnitOfWork.Save();
-
-                var tempAttachments = dbForm.FormValues.SelectMany(v => v.Attachments).Where(a => a.IsTemp).ToList();
-                if (tempAttachments.Any())
-                {
-                    foreach (var attachment in tempAttachments)
-                        UnitOfWork.AttachmentsRepository.StoreFile(attachment);
-                    UnitOfWork.Save();
-                }
-
-                return Ok();
             }
-            else
+
+            var tempAttachments = dbForm.FormValues.SelectMany(v => v.Attachments).Where(a => a.IsTemp).ToList();
+            if (tempAttachments.Any())
             {
-                return BadRequest(ModelState);
+                foreach (var attachment in tempAttachments)
+                    UnitOfWork.AttachmentsRepository.StoreFile(attachment);
+                UnitOfWork.Save();
             }
+
+            return Ok();
         }
 
         // DELETE api/<controller>/5
