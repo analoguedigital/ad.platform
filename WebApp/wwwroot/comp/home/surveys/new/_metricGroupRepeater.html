@@ -32,8 +32,8 @@
             </td>
         </tr>
     </table>
-    <a ng-if="isDataList && maxRow < filtered.length" class="btn btn-default btn-block" ng-click="showAll()">Show more</a>
-    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="btn btn-default btn-block" ng-click="addRow()">Add row</a>
+    <a ng-if="isDataList && maxRow < filtered.length" class="btn btn-default btn-block" ng-click="showAll()"><i class="fa fa-list-alt"></i> Show more</a>
+    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="btn btn-default btn-block" ng-click="addRow()"><i class="fa fa-plus-square"></i> Add row</a>
 </div>
 
 <div class="errors">
