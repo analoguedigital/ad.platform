@@ -16,21 +16,21 @@
                     <tr ng-repeat="user in ctrl.userAssignments">
                         <td>{{user.name}}</td>
                         <td class="text-center">
-                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-10">
-                                <input type="checkbox" id="can-add-{{user.userId}}" ng-model="user.canAdd" ng-change="ctrl.updateAssignment(user, 'add')" />
-                                <label for="can-add-{{user.userId}}">Add</label>
-                            </div> 
-                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-10">
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-20">
+                                <input type="checkbox" id="can-del-{{user.userId}}" ng-model="user.canDelete" ng-change="ctrl.updateAssignment(user, 'delete')" />
+                                <label for="can-del-{{user.userId}}">Delete</label>
+                            </div>
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-20">
                                 <input type="checkbox" id="can-edit-{{user.userId}}" ng-model="user.canEdit" ng-change="ctrl.updateAssignment(user, 'edit')" />
                                 <label for="can-edit-{{user.userId}}">Edit</label>
                             </div>
-                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-10">
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-20">
+                                <input type="checkbox" id="can-add-{{user.userId}}" ng-model="user.canAdd" ng-change="ctrl.updateAssignment(user, 'add')" />
+                                <label for="can-add-{{user.userId}}">Add</label>
+                            </div>
+                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-20">
                                 <input type="checkbox" id="can-view-{{user.userId}}" ng-model="user.canView" ng-change="ctrl.updateAssignment(user, 'view')" />
                                 <label for="can-view-{{user.userId}}">View</label>
-                            </div>
-                            <div class="checkbox checkbox-circle checkbox-primary pull-right no-margins margin-right-10">
-                                <input type="checkbox" id="can-del-{{user.userId}}" ng-model="user.canDelete" ng-change="ctrl.updateAssignment(user, 'delete')" />
-                                <label for="can-del-{{user.userId}}">Delete</label>
                             </div>
                         </td>
                     </tr>
