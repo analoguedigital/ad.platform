@@ -352,7 +352,7 @@ namespace WebApi.Models
                 IsActive = true,
                 TypeId = OrgUserTypesRepository.TeamUser.Id,
                 IsMobileUser = true,
-                IsWebUser = false
+                IsWebUser = true
             };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
@@ -365,11 +365,11 @@ namespace WebApi.Models
 
             var project = new Project()
             {
-                Name = model.Email,
+                Name = $"{model.FirstName} {model.Surname}",
                 StartDate = DateTimeService.UtcNow,
                 OrganisationId = organisation.Id,
             };
-            
+
             UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
             UnitOfWork.Save();
 
@@ -377,11 +377,12 @@ namespace WebApi.Models
             {
                 ProjectId = project.Id,
                 OrgUserId = user.Id,
+                CanView = true
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
             UnitOfWork.Save();
-            
+
             return Ok();
         }
 
