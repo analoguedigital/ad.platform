@@ -332,11 +332,14 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var organisation = UnitOfWork.OrganisationRepository.FindByName(model.OrganisationName);
+            if (organisation == null)
+            {
+                ModelState.AddModelError("Organisation", "Organisation was not found!");
+                return BadRequest(ModelState);
+            }
 
             var user = new OrgUser()
             {
@@ -346,7 +349,7 @@ namespace WebApi.Models
                 Email = model.Email,
                 Gender = (User.GenderType)Enum.Parse(typeof(User.GenderType), model.Gender),
                 Address = model.Address,
-                Birthdate = model.Birthdate,
+                Birthdate = new DateTime(model.Birthdate.Year, model.Birthdate.Month, model.Birthdate.Day, 0, 0, 0).AddDays(1),
                 OrganisationId = organisation.Id,
                 IsRootUser = false,
                 IsActive = true,
@@ -356,7 +359,6 @@ namespace WebApi.Models
             };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-
             if (!result.Succeeded)
                 return GetErrorResult(result);
 
@@ -367,7 +369,7 @@ namespace WebApi.Models
             {
                 Name = $"{model.FirstName} {model.Surname}",
                 StartDate = DateTimeService.UtcNow,
-                OrganisationId = organisation.Id,
+                OrganisationId = organisation.Id
             };
 
             UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
@@ -377,7 +379,8 @@ namespace WebApi.Models
             {
                 ProjectId = project.Id,
                 OrgUserId = user.Id,
-                CanView = true
+                CanView = true,
+                CanAdd = true
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
