@@ -1,5 +1,5 @@
 ﻿<div class="row">
-    <div class="col-md-8">
+    <div ng-class="{ 'col-md-8': !metricGroup.isRepeater }">
         <p ng-repeat="fValue in formValues" class="checkbox-value">
             <i class="fa fa-check" ng-show="fValue.boolValue"></i> {{getText(fValue.guidValue)}}
         </p>

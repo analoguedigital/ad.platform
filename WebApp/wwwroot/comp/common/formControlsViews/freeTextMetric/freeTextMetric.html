@@ -1,5 +1,5 @@
 <div class="row" ng-controller="freeTextMetricController">
-    <div class="col-md-12">
+    <div ng-class="{ 'col-md-12': !metricGroup.isRepeater }">
         <p>{{formValue.textValue}}</p>
     </div>
 </div>

@@ -1,5 +1,5 @@
 <div class="row item item-checkbox" ng-controller="dichotomousMetricController">
-    <div class="col-md-12">
+    <div ng-class="{ 'col-md-12': !metricGroup.isRepeater }" class="no-padding">
         <p>{{formValue.boolValue ? "Yes" : "No"}}</p>
     </div>
 </div>
