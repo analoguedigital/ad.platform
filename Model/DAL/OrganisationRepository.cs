@@ -35,6 +35,8 @@ namespace LightMethods.Survey.Models.DAL
             {
                 Organisation = org,
                 IsRootUser = true,
+                IsWebUser = true,
+                IsMobileUser = false,
                 UserName = dto.RootUserEmail,
                 Email =  dto.RootUserEmail,
                 TypeId = OrgUserTypesRepository.Administrator.Id
