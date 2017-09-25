@@ -27,7 +27,7 @@
             $scope.openStartDateCalendar = () => { this.openStartDateCalendar(); }
             $scope.openEndDateCalendar = () => { this.openEndDateCalendar(); }
 
-            $scope.dateTimeFormat = "MM/dd/yyyy";
+            $scope.dateTimeFormat = "dd/MM/yyyy";
 
             this.activate();
         }

@@ -81,7 +81,7 @@
 
     configAngularMoment.$inject = ["amMoment", "$locale"];
     function configAngularMoment(amMoment, $locale) {
-        amMoment.changeLocale($locale.id);
+        amMoment.changeLocale("en-GB");
     }
 
 })();
