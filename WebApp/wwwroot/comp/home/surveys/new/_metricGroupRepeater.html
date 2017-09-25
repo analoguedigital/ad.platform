@@ -27,17 +27,13 @@
         <tr ng-if="!isDataList" ng-repeat="row in rows" ng-init="rowNumber = $index + 1" ng-class="$index % 2 != 0 ? 'alt' : ''">
             <td class="text-center">{{$index + 1}}</td>
             <td ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false} track by $index " ng-include="'comp/common/formControls/_metric/metric.html'" ng-controller="metricController"></td>
-            <td>
-                <a ng-click="deleteRow($index + 1)"><i class="fa fa-remove"></i></a>
+            <td class="text-center">
+                <a ng-click="deleteRow($index + 1)" class="btn btn-xs btn-danger" title="remove form value" data-toggle="tooltip"><i class="fa fa-remove"></i></a>
             </td>
         </tr>
     </table>
-    <a ng-if="isDataList && maxRow < filtered.length" class="button button-block button-stable" ng-click="showAll()">
-        <span>Show more</span>
-    </a>
-    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="button button-block button-stable" ng-click="addRow()">
-        <span>Add row</span>
-    </a>
+    <a ng-if="isDataList && maxRow < filtered.length" class="btn btn-default btn-block" ng-click="showAll()">Show more</a>
+    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="btn btn-default btn-block" ng-click="addRow()">Add row</a>
 </div>
 
 <div class="errors">
