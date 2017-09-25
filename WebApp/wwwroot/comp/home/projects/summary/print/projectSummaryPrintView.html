@@ -9,26 +9,27 @@
     <button class="btn btn-default hidden-print" ng-click="ctrl.downloadZip()">
         <i class="fa fa-file-zip-o"></i> Download Zip
     </button>
-
-    <div class="row charts-row">
-        <div class="col-md-6">
-            <lm-locations form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" location-count="ctrl.locationCount"></lm-locations>
-        </div>
-        <div class="col-md-6">
-            <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys"></lm-pie-chart>
-        </div>
-    </div>
-
-    <div ng-repeat="survey in ctrl.surveys track by $index" ng-init="formTemplate = ctrl.getFormTemplate(survey.formTemplateId)">
-        <h1>{{formTemplate.title}} <span ng-show="survey.serial !== null"> (#{{survey.serial}})</span></h1>
-        <hr />
-        <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
-            <div class="metric-groups">
-                <div class="content" ng-repeat="metricGroup in formTemplate.metricGroups | filter: {isDeleted: false} track by $index ">
-                    <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroup.html'"></div>
-                    <div ng-if="metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroupRepeater.html'"></div>
-                </div>
+    <div class="content">
+        <div class="row charts-row">
+            <div class="col-md-6">
+                <lm-locations form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" location-count="ctrl.locationCount"></lm-locations>
             </div>
-        </form>
+            <div class="col-md-6">
+                <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys"></lm-pie-chart>
+            </div>
+        </div>
+
+        <div ng-repeat="survey in ctrl.surveys track by $index" ng-init="formTemplate = ctrl.getFormTemplate(survey.formTemplateId)">
+            <h1>{{formTemplate.title}} <span ng-show="survey.serial !== null"> (#{{survey.serial}})</span></h1>
+            <hr />
+            <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
+                <div class="metric-groups">
+                    <div class="content" ng-repeat="metricGroup in formTemplate.metricGroups | filter: {isDeleted: false} track by $index ">
+                        <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroup.html'"></div>
+                        <div ng-if="metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroupRepeater.html'"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

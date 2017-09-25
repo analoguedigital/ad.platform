@@ -145,8 +145,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="wnvhtmltopdf, Version=14.2.0.0, Culture=neutral, PublicKeyToken=b12703d35a33ff98, processorArchitecture=MSIL">
-      <HintPath>..\packages\WnvHtmlToPdf_x64.14.2\lib\net40\wnvhtmltopdf.dll</HintPath>
+    <Reference Include="wnvhtmltopdf, Version=14.4.0.0, Culture=neutral, PublicKeyToken=b12703d35a33ff98, processorArchitecture=MSIL">
+      <HintPath>..\packages\WnvHtmlToPdf_x64.14.4\lib\net40\wnvhtmltopdf.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
