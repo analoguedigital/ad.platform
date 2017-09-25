@@ -39,7 +39,7 @@ namespace WebApi.Controllers
             else
                 templates = templates.Where(t => t.ProjectId == null);
 
-            var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
+            var result = templates.OrderByDescending(t => t.DateCreated).Select(t => Mapper.Map<FormTemplateDTO>(t));
 
             return Ok(result);
         }
@@ -107,8 +107,8 @@ namespace WebApi.Controllers
                 return NotFound();
 
             Mapper.Map(value, form);
-
             UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
+
             var groupOrder = 1;
             foreach (var valueGroup in value.MetricGroups)
             {
@@ -138,9 +138,7 @@ namespace WebApi.Controllers
                     metric = valueMetric.Map(metric, UnitOfWork, CurrentOrganisation);
 
                     if (valueMetric.isDeleted) // Delete
-                    {
                         UnitOfWork.MetricsRepository.Delete(metric);
-                    }
                     else
                     {   // Insert or update
                         metric.FormTemplateId = form.Id;
@@ -159,14 +157,10 @@ namespace WebApi.Controllers
                     }
                 }
 
-                if (valueGroup.isDeleted && group != null)
-                {
+                if (valueGroup.isDeleted && group != null && group.Id != Guid.Empty)
                     UnitOfWork.MetricGroupsRepository.Delete(group);
-                }
                 else
-                {
                     UnitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
-                }
             }
 
             try
