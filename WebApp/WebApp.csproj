@@ -422,6 +422,8 @@
     <Content Include="wwwroot\comp\home\projects\summary\print\_projectSummaryPrintView.scss" />
     <Content Include="wwwroot\comp\common\filterControls\filterControls.scss" />
     <Content Include="wwwroot\comp\home\projects\assignments\_assignments.scss" />
+    <Content Include="wwwroot\comp\home\surveys\summary\_summary.scss" />
+    <Content Include="wwwroot\comp\home\formTemplates\_formTemplates.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

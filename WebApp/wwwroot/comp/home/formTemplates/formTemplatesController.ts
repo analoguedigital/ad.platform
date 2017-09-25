@@ -16,7 +16,7 @@ module App {
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
-        selectedProjectId: string;
+        selectedProject: Models.IProject;
         delete: (id: string) => void;
         publish: (template: Models.IFormTemplate) => void;
         archive: (template: Models.IFormTemplate) => void;
@@ -31,17 +31,17 @@ module App {
 
     class FormTemplatesController implements IFormTemplatesController {
         errors: Error[] = [];
-        static $inject: string[] = ["$scope", "formTemplateResource", "projectResource", "$ngBootbox"];
+        static $inject: string[] = ["$scope", "formTemplateResource", "projectResource", "$ngBootbox", "toastr"];
 
         constructor(
             private $scope: IFormTemplatesControllerScope,
             private formResource: Resources.IFormTemplateResource,
             private projectResource: Resources.IProjectResource,
-            private $ngBootbox: BootboxStatic) {
-            
+            private $ngBootbox: BootboxStatic,
+            private toastr: any) {
+
             $scope.title = "Form Templates";
-            $scope.selectedProjectId = null;
-            this.$scope.$watch('selectedProjectId', () => { this.load(); });
+            $scope.selectedProject = null;
             $scope.delete = (id) => { this.delete(id); };
             $scope.publish = (template) => { this.publish(template); };
             $scope.archive = (template) => { this.archive(template); };
@@ -54,17 +54,33 @@ module App {
         }
 
         load() {
-            this.formResource.query().$promise.then((forms) => {
-                this.$scope.forms = _.filter(forms, { 'projectId': this.$scope.selectedProjectId });
+            var selectedProject = this.$scope.selectedProject;
+
+            var promise: ng.IPromise<any>;
+            if (selectedProject == null)
+                promise = this.formResource.query().$promise;
+            else
+                promise = this.formResource.query({ projectId: selectedProject.id }).$promise;
+
+            promise.then((forms) => {
+                this.$scope.forms = forms;
                 this.$scope.displayedForms = [].concat(this.$scope.forms);
                 this.errors = [];
             });
         }
 
+        getSharedTemplates() {
+            this.$scope.selectedProject = null;
+            this.load();
+        }
+
         delete(id: string) {
             this.formResource.delete({ id: id },
                 () => { this.load(); },
-                (err) => { console.log(err); });
+                (err) => {
+                    console.log(err);
+                    this.toastr.error(err.data.message);
+                });
         }
 
         archive(template: Models.IFormTemplate) {
@@ -92,6 +108,14 @@ module App {
 
         clearErrors() {
             this.errors = [];
+        }
+
+        getTemplateColour(id: string) {
+            let template = _.find(this.$scope.forms, (t) => { return t.id == id; });
+            if (template && template.colour && template.colour.length)
+                return template.colour;
+
+            return '';
         }
     }
 

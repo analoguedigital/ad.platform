@@ -16,6 +16,10 @@
             <lm-form-group label="Category: ">
                 {{ctrl.formTemplate.formTemplateCategory.title}}
             </lm-form-group>
+            <lm-form-group label="Project :">
+                <span ng-if="!ctrl.formTemplate.projectId"><i class="fa fa-windows"></i> Shared</span>
+                <span ng-if="ctrl.formTemplate.projectId">{{ctrl.formTemplate.projectName}}</span>
+            </lm-form-group>
             <lm-form-group label="Description: ">
                 {{ctrl.formTemplate.description}}
             </lm-form-group>

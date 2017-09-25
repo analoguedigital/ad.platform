@@ -31,10 +31,10 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Get(Guid projectId)
         {
+            //TODO: refactore to api/projects/{projectId}/surveys
             var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
             if (assignment == null || !assignment.CanView)
                 return Content(HttpStatusCode.Forbidden, "Access Denied");
-            //TODO: refactore to api/projects/{projectId}/surveys
 
             var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => s.ProjectId == projectId)
@@ -52,6 +52,10 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Search(SearchDTO model)
         {
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == model.ProjectId);
+            if (assignment == null || !assignment.CanView)
+                return Content(HttpStatusCode.Forbidden, "Access Denied");
+
             var project = this.UnitOfWork.ProjectsRepository.Find(model.ProjectId);
             if (project == null)
                 return NotFound();
@@ -96,12 +100,7 @@ namespace WebApi.Controllers
         [ResponseType(typeof(FilledFormDTO))]
         public IHttpActionResult GetSurvey(Guid id)
         {
-            var survey = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                .Where(s => s.Id == id)
-                .ToList()
-                .Select(f => Mapper.Map<FilledFormDTO>(f))
-                .SingleOrDefault();
-
+            var survey = UnitOfWork.FilledFormsRepository.Find(id);
             if (survey == null)
                 return NotFound();
 
@@ -109,7 +108,9 @@ namespace WebApi.Controllers
             if (assignment == null || !assignment.CanView)
                 return Content(HttpStatusCode.Forbidden, "Access Denied");
 
-            return Ok(survey);
+            var result = Mapper.Map<FilledFormDTO>(survey);
+
+            return Ok(result);
         }
 
         [HttpGet]
@@ -117,7 +118,7 @@ namespace WebApi.Controllers
         public IHttpActionResult GetAttachment(Guid surveyId, Guid id)
         {
             var attachment = UnitOfWork.AttachmentsRepository.Find(id);
-            if (attachment.FormValue.FilledFormId != surveyId)
+            if (attachment == null || attachment.FormValue.FilledFormId != surveyId)
                 return NotFound();
 
             var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == attachment.FormValue.FilledForm.ProjectId);
@@ -130,13 +131,15 @@ namespace WebApi.Controllers
             {
                 Content = new ByteArrayContent(System.IO.File.ReadAllBytes(fileInfo.FullName))
             };
+
             result.Content.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment")
             {
                 FileName = attachment.FileName
             };
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            return Ok(result);
 
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            return Ok(result);
         }
 
         [Route("api/surveys")]

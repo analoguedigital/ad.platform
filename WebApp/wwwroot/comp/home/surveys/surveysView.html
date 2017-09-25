@@ -4,12 +4,13 @@
         <div ncy-breadcrumb></div>
     </div>
 </div>
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content animated fadeInRight surveys-view">
     <div class="box">
         <div class="box-content">
             <form name="selectProject">
                 <lm-form-group label="User: " class="has-success">
-                    <select name="selectedProject" ng-change="ctrl.selectedProjectChanged()" ng-model="ctrl.selectedProject" ng-options="project as project.name for project in ctrl.projects track by project.id"></select>
+                    <select name="selectedProject" ng-change="ctrl.selectedProjectChanged()" ng-model="ctrl.selectedProject" 
+                            ng-options="project as project.name for project in ctrl.projects track by project.id"></select>
                 </lm-form-group>
             </form>
         </div>
