@@ -34,7 +34,8 @@ namespace WebApi
                 .ForMember(f => f.Metrics, opt => opt.Ignore());
 
             Mapper.CreateMap<DataList, DataListDTO>();
-            Mapper.CreateMap<DataListDTO, DataList>();
+            Mapper.CreateMap<DataListDTO, DataList>()
+                .ForMember(x => x.AllItems, opt => opt.MapFrom(src => src.Items));
             Mapper.CreateMap<DataListItem, DataListItemDTO>();
             Mapper.CreateMap<DataListItemDTO, DataListItem>().ForMember(f => f.Attributes, opt => opt.Ignore());
             Mapper.CreateMap<DataListItemAttr, DataListItemAttrDTO>().ReverseMap();
