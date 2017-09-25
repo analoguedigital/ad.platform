@@ -27,20 +27,8 @@
                     viewName = "textFilter";
                     break;
                 }
-                case "Dropdown": {
-                    viewName = "dropdownFilter";
-                    break;
-                }
                 case "Checkbox": {
                     viewName = "checkboxFilter";
-                    break;
-                }
-                case "Dichotomous": {
-                    viewName = "dichotomousFilter";
-                    break;
-                }
-                case "Slider": {
-                    viewName = "sliderFilter";
                     break;
                 }
                 case "DateRange": {

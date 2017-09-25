@@ -126,11 +126,7 @@ namespace LightMethods.Survey.Models.DAL
                 }
 
                 var result = surveys.OrderByDescending(s => s.SurveyDate).ToList();
-
-                if (!model.FilterValues.Any())
-                    foundSurveys.AddRange(result);
-                else if (surveyCount != result.Count)
-                    foundSurveys.AddRange(result);
+                foundSurveys.AddRange(result);
             }
 
             return foundSurveys;

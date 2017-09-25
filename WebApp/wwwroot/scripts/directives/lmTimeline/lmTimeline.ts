@@ -568,6 +568,11 @@
 
                 if (formTemplates.length && surveys.length) {
                     buildTimeline();
+                } else {
+                    scope.tickData = [];
+                    scope.chartLabels = [];
+                    scope.chartDatasets = [];
+                    renderTimelineChart();
                 }
             });
 
