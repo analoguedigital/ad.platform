@@ -24,20 +24,10 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid? projectId = null)
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
-
-            var templates = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(t => projectId == null || t.ProjectId == null || t.ProjectId == projectId);
-
-            var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking;
-            if (projectId == null)
-                assignments = assignments.Where(a => a.OrgUserId == CurrentOrgUser.Id);
-            else
-                assignments = assignments.Where(a => a.ProjectId == projectId && a.OrgUserId == CurrentOrgUser.Id);
-
-            templates = templates.Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
+            var templates = surveyProvider.GetAllProjectTemplates(projectId);
 
             var result = templates
-                .OrderByDescending(t => t.DateCreated)
+                .OrderBy(t => t.Title)
                 .Select(t => Mapper.Map<FormTemplateDTO>(t));
 
             return Ok(result);

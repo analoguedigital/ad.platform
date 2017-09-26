@@ -49,9 +49,26 @@ namespace LightMethods.Survey.Models.Services
             return PostLoadFilters(result.ToList());
         }
 
+        public IEnumerable<FormTemplate> GetAllProjectTemplates(Guid? projectId)
+        {
+            var templates = OnlyCanBeAccessedByUser(UOW.FormTemplatesRepository.AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics)));
+
+            templates = templates.Where(t => projectId == null || t.ProjectId == null || t.ProjectId == projectId);
+
+            var assignments = UOW.AssignmentsRepository.AllAsNoTracking;
+            if (projectId == null)
+                assignments = assignments.Where(a => a.OrgUserId == User.Id);
+            else
+                assignments = assignments.Where(a => a.ProjectId == projectId && a.OrgUserId == User.Id);
+
+            templates = templates.Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
+
+            return PostLoadFilters(templates.ToList());
+        }
+
         private IQueryable<FormTemplate> OnlyCanBeAccessedByUser(IQueryable<FormTemplate> datasource)
         {
-            if(OnlyPublished)
+            if (OnlyPublished)
                 datasource = datasource.Where(t => t.IsPublished);
 
             if (UserTypesWithFullAccess.Contains(User.Type))
