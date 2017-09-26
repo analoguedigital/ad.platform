@@ -18,9 +18,10 @@ module App {
         currentUser: Models.IOrgUser;
         assignment: Models.IProjectAssignment;
 
-        static $inject: string[] = ['$state', '$stateParams', 'toastr', 'formTemplateResource',
+        static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource',
             'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService', 'project'];
         constructor(
+            public $scope: ng.IScope,
             public $stateParams: ng.ui.IStateParamsService,
             public toastr: any,
             private formTemplateResource: Resources.IFormTemplateResource,
@@ -37,27 +38,42 @@ module App {
         }
 
         load() {
-            if (!this.project)
-                return;
+            if (this.project != null) {
+                var orgUser = this.userContextService.current.orgUser;
+                this.currentUser = orgUser;
+                this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
 
-            var orgUser = this.userContextService.current.orgUser;
-            this.currentUser = orgUser;
-            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
-
-            this.formTemplateResource.query({ projectId: this.project.id }).$promise
-                .then((templates) => {
-                    this.formTemplates = templates;
-                }, (err) => {
-                    this.toastr.error(err.data);
-                    console.log(err)
-                });
-            this.surveyResource.query({ projectId: this.project.id }).$promise
-                .then((surveys) => {
-                    this.surveys = surveys;
-                }, (err) => {
-                    this.toastr.error(err.data);
-                    console.error(err);
-                });
+                this.formTemplateResource.query({ projectId: this.project.id }).$promise
+                    .then((templates) => {
+                        this.formTemplates = templates;
+                    }, (err) => {
+                        this.toastr.error(err.data);
+                        console.log(err)
+                    });
+                this.surveyResource.query({ projectId: this.project.id }).$promise
+                    .then((surveys) => {
+                        this.surveys = surveys;
+                    }, (err) => {
+                        this.toastr.error(err.data);
+                        console.error(err);
+                    });
+            }
+            else {
+                this.formTemplateResource.query({ projectId: null }).$promise
+                    .then((templates) => {
+                        this.formTemplates = templates;
+                    }, (err) => {
+                        this.toastr.error(err.data);
+                        console.log(err)
+                    });
+                //this.surveyResource.query({ projectId: this.project.id }).$promise
+                //    .then((surveys) => {
+                //        this.surveys = surveys;
+                //    }, (err) => {
+                //        this.toastr.error(err.data);
+                //        console.error(err);
+                //    });
+            }
         }
 
         delete(id: string) {

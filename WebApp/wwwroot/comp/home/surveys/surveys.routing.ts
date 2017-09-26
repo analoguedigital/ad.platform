@@ -33,7 +33,11 @@
                     project:
                     ['$stateParams', 'projectResource',
                         ($stateParams, projectResource: App.Resources.IProjectResource) => {
-                            return projectResource.get({ id: $stateParams['projectId'] }).$promise.then((data) => {
+                            var projectId = $stateParams['projectId'];
+                            if (projectId == null || projectId.length < 1)
+                                return null;
+
+                            return projectResource.get({ id: projectId }).$promise.then((data) => {
                                 return data;
                             });
                         }]
