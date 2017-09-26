@@ -40,8 +40,10 @@ module App {
         load() {
             if (this.project != null) {
                 var orgUser = this.userContextService.current.orgUser;
-                this.currentUser = orgUser;
-                this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
+                if (orgUser != null) {
+                    this.currentUser = orgUser;
+                    this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
+                }
 
                 this.formTemplateResource.query({ projectId: this.project.id }).$promise
                     .then((templates) => {
