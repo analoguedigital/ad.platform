@@ -9,7 +9,6 @@ module App {
         currentUser: Models.IOrgUser;
         assignment: Models.IProjectAssignment;
         projectId: string;
-        printSelected: () => void;
         activate: () => void;
     }
 
@@ -21,10 +20,9 @@ module App {
         assignment: Models.IProjectAssignment;
         projectId: string;
 
-        static $inject: string[] = ['$state', '$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService'];
+        static $inject: string[] = ['$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService'];
 
         constructor(
-            public $state: ng.ui.IStateService,
             public $stateParams: ng.ui.IStateParamsService,
             public toastr: any,
             private formTemplateResource: Resources.IFormTemplateResource,
@@ -69,18 +67,6 @@ module App {
                     console.error(err);
                     this.toastr.error(err.data);
                 });
-        }
-
-        printSelected() {
-            let selectedSurveys = this.surveys.filter((survey) => survey.isChecked == true);
-
-            let printSession = <Models.IProjectSummaryPrintSession>{};
-            printSession.projectId = this.projectId;
-            printSession.surveyIds = _.map(selectedSurveys, (survey) => { return survey.id; });
-
-            this.projectSummaryPrintSessionResource.save(printSession).$promise.then((session) => {
-                this.$state.go("home.projects.summaryPrint", { sessionId: session.id });
-            });
         }
 
         getTemplateColour(id: string) {

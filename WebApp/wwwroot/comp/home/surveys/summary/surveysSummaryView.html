@@ -13,7 +13,6 @@
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
-                        <th class="text-center" width="60"></th>
                         <th>Date</th>
                         <th>Serial no</th>
                         <th>Completed by</th>
@@ -26,12 +25,6 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="survey in ctrl.surveys | filter: {formTemplateId: formTemplate.id} | orderBy:'-surveyDate' | limitTo : 5">
-                        <td class="text-center">
-                            <div class="checkbox table-checkbox">
-                                <input type="checkbox" ng-model="survey.isChecked" />
-                                <label></label>
-                            </div>
-                        </td>
                         <td>{{survey.date | amDateFormat: 'L'}}</td>
                         <td>{{survey.serial}}</td>
                         <td>{{survey.filledBy}}</td>
@@ -65,7 +58,3 @@
         </p>
     </div>
 </div>
-
-<button class="btn btn-primary" ng-click="ctrl.printSelected()" ng-if="ctrl.assignment.canView">
-    <i class="fa fa-print"></i> Print Selected
-</button><br /><br />
