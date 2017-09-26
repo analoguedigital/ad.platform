@@ -24,22 +24,11 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid? projectId = null)
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var templates = surveyProvider.GetAllProjectTemplates(projectId);
 
-            var templates = surveyProvider.GetAllFormTemplates();
-            if (projectId.HasValue && projectId != Guid.Empty)
-            {
-                var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking
-                .Where(a => a.ProjectId == projectId && a.OrgUserId == CurrentOrgUser.Id)
-                .ToList();
-
-                templates = templates
-                    .Where(t => t.ProjectId == projectId || t.ProjectId == null)
-                    .Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
-            }
-            else
-                templates = templates.Where(t => t.ProjectId == null);
-
-            var result = templates.OrderByDescending(t => t.DateCreated).Select(t => Mapper.Map<FormTemplateDTO>(t));
+            var result = templates
+                .OrderBy(t => t.Title)
+                .Select(t => Mapper.Map<FormTemplateDTO>(t));
 
             return Ok(result);
         }
@@ -53,7 +42,7 @@ namespace WebApi.Controllers
 
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
+            var form = surveyProvider.GetAllFormTemplatesWithMetrics().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
@@ -102,7 +91,7 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
+            var form = surveyProvider.GetAllFormTemplatesWithMetrics().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
@@ -204,7 +193,7 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false); ;
 
-            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
+            var form = surveyProvider.GetAllFormTemplatesWithMetrics().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
