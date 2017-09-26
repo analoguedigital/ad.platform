@@ -29,6 +29,15 @@
                 controller: "surveysSummaryController",
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Summary' },
+                resolve: {
+                    project:
+                    ['$stateParams', 'projectResource',
+                        ($stateParams, projectResource: App.Resources.IProjectResource) => {
+                            return projectResource.get({ id: $stateParams['projectId'] }).$promise.then((data) => {
+                                return data;
+                            });
+                        }]
+                },
                 module: "private"
             })
             .state("home.surveys.new", <App.Models.IAppRoute>{

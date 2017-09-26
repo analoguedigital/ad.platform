@@ -8,7 +8,6 @@ module App {
         surveys: Models.ISurvey[];
         currentUser: Models.IOrgUser;
         assignment: Models.IProjectAssignment;
-        projectId: string;
         activate: () => void;
     }
 
@@ -18,44 +17,45 @@ module App {
         surveys: Models.ISurvey[];
         currentUser: Models.IOrgUser;
         assignment: Models.IProjectAssignment;
-        projectId: string;
 
-        static $inject: string[] = ['$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService'];
-
+        static $inject: string[] = ['$state', '$stateParams', 'toastr', 'formTemplateResource',
+            'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService', 'project'];
         constructor(
             public $stateParams: ng.ui.IStateParamsService,
             public toastr: any,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
-            private userContextService: Services.IUserContextService) {
+            private userContextService: Services.IUserContextService,
+            private project: Models.IProject) {
 
             this.activate();
         }
 
         activate() {
-            this.projectId = this.$stateParams['projectId'];
             this.load();
         }
 
         load() {
-            if (!this.projectId)
+            if (!this.project)
                 return;
 
             var orgUser = this.userContextService.current.orgUser;
             this.currentUser = orgUser;
-            this.assignment = _.find(orgUser.assignments, { 'projectId': this.projectId });
+            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
 
-            this.formTemplateResource.query({ projectId: this.projectId }).$promise
+            this.formTemplateResource.query({ projectId: this.project.id }).$promise
                 .then((templates) => {
                     this.formTemplates = templates;
                 }, (err) => {
+                    this.toastr.error(err.data);
                     console.log(err)
                 });
-            this.surveyResource.query({ projectId: this.projectId }).$promise
+            this.surveyResource.query({ projectId: this.project.id }).$promise
                 .then((surveys) => {
                     this.surveys = surveys;
                 }, (err) => {
+                    this.toastr.error(err.data);
                     console.error(err);
                 });
         }
