@@ -9,6 +9,7 @@
         dateCreated: number;
         dateUpdated: number;
         surveyDate: Date;
+        date: Date;
         filledById: string;
         filledBy: string;
         projectId: string;

@@ -141,7 +141,7 @@ namespace LightMethods.Survey.Models.Services.Identity
         public override Task<IList<string>> GetRolesAsync(Guid userId)
         {
             var orgUser = this.FindById(userId) as OrgUser;
-            if (orgUser != null)
+            if (orgUser != null && orgUser.Organisation.SubscriptionEnabled)
             {
                 var subscriptionService = new SubscriptionService(orgUser, new UnitOfWork(new SurveyContext()));
                 if (!subscriptionService.HasValidSubscription(userId))

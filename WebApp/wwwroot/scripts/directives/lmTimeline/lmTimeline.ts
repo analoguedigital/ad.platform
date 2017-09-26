@@ -63,7 +63,7 @@
                 var xAxesTicks = [];
 
                 var groupedSurveys = _.groupBy(scope.surveys, function (survey) {
-                    return moment(survey.surveyDate).startOf('day').format();
+                    return moment(survey.date).startOf('day').format();
                 });
 
                 var occurences = _.map(groupedSurveys, function (group, day) {
@@ -138,13 +138,13 @@
 
                 var currentMonthSurveys = _.filter(scope.surveys, (survey) => {
                     var currentMonth = moment(scope.currentDate).format('MM-YYYY');
-                    var surveyMonth = moment(survey.surveyDate).format('MM-YYYY');
+                    var surveyMonth = moment(survey.date).format('MM-YYYY');
 
                     if (surveyMonth === currentMonth) { return survey; }
                 });
 
                 var groupedSurveys = _.groupBy(currentMonthSurveys, function (survey) {
-                    return moment(survey.surveyDate).startOf('day').format();
+                    return moment(survey.date).startOf('day').format();
                 });
 
                 var occurences = _.map(groupedSurveys, function (group, day) {
@@ -225,7 +225,7 @@
 
                     _.forEach(xAxesTicks, function (tick) {
                         var foundSurveys = _.filter(records, (record) => {
-                            if (moment(tick).format('MM-DD-YYYY') === moment(record.surveyDate).format('MM-DD-YYYY')) {
+                            if (moment(tick).format('MM-DD-YYYY') === moment(record.date).format('MM-DD-YYYY')) {
                                 return record;
                             }
                         });
@@ -279,7 +279,7 @@
                 // generate ticks data
                 _.forEach(ticks, (tick) => {
                     let surveys = _.filter(scope.surveys, (survey) => {
-                        if (moment(survey.surveyDate).format('MM-DD-YYYY') === moment(tick).format('MM-DD-YYYY')) {
+                        if (moment(survey.date).format('MM-DD-YYYY') === moment(tick).format('MM-DD-YYYY')) {
                             return survey;
                         }
                     });
@@ -528,14 +528,16 @@
             }
 
             function onTooltipsTitleCallback(items, data) {
-                var xLabel = items[0].xLabel;
+                var index = items[0].index;
+                var tick = scope.tickData[index];
+
                 var yValue = 0;
                 _.forEach(items, (item) => {
                     yValue += parseInt(item.yLabel);
                 });
 
                 var result = [];
-                result.push(xLabel);
+                result.push(moment(tick.date).format('D MMM YYYY'));
                 result.push(`Impact: ${yValue}`);
 
                 return result;
@@ -566,6 +568,11 @@
 
                 if (formTemplates.length && surveys.length) {
                     buildTimeline();
+                } else {
+                    scope.tickData = [];
+                    scope.chartLabels = [];
+                    scope.chartDatasets = [];
+                    renderTimelineChart();
                 }
             });
 

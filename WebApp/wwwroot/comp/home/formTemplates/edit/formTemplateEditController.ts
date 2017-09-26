@@ -7,6 +7,7 @@ module App {
         activate: () => void;
         formTemplate: Models.IFormTemplate;
         categories: Models.IFormTemplateCategory[];
+        projects: Models.IProject[];
         errors: string;
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
@@ -17,14 +18,16 @@ module App {
         formTemplateId: string;
         formTemplate: Models.IFormTemplate;
         categories: Models.IFormTemplateCategory[];
+        projects: Models.IProject[];
         errors: string;
 
-        static $inject: string[] = ["$scope", "formTemplateResource", "formTemplateCategoryResource", "$state", "$stateParams", "$uibModal"];
+        static $inject: string[] = ["$scope", "formTemplateResource", "formTemplateCategoryResource", "projectResource", "$state", "$stateParams", "$uibModal"];
 
         constructor(
             private $scope: ng.IScope,
             private formTemplateResource: Resources.IFormTemplateResource,
             private formTemplateCategoryResource: Resources.IFormTemplateCategoryResource,
+            private projectResource: Resources.IProjectResource,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
             private $uibModal: ng.ui.bootstrap.IModalService
@@ -43,6 +46,7 @@ module App {
                 });
 
             this.categories = this.formTemplateCategoryResource.query();
+            this.projects = this.projectResource.query();
         }
 
         submit(form: ng.IFormController) {

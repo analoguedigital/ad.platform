@@ -92,19 +92,17 @@ namespace LightMethods.Survey.Models.DAL
                     .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id);
                 var surveyCount = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
                     .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
-                var foundBySearchTerm = false;
-                var foundByDate = false;
 
                 // apply generic date range
                 if (model.StartDate.HasValue || model.EndDate.HasValue)
-                {
                     surveys = this.ApplySurveysDateRange(surveys, model.StartDate, model.EndDate);
-                    if (surveys.Count() > 0) foundByDate = true;
-                }
 
                 // apply search term
                 if (!string.IsNullOrEmpty(model.Term))
                 {
+                    var punctuation = model.Term.Where(Char.IsPunctuation).Distinct().ToArray();
+                    var words = model.Term.Split().Select(x => x.Trim(punctuation));
+
                     var descMetrics = template.GetDescriptionMetrics();
                     if (descMetrics.Any())
                     {
@@ -112,9 +110,10 @@ namespace LightMethods.Survey.Models.DAL
                         foreach (var metric in descMetrics)
                             metricIds.Add(metric.Id);
 
-                        surveys = surveys.Where(s => s.FormValues.Any(fv => metricIds.Contains(fv.MetricId) && fv.TextValue.Contains(model.Term)));
-                        if (surveys.Count() > 0) foundBySearchTerm = true;
+                        surveys = surveys.Where(s => s.FormValues.Any(fv => metricIds.Contains(fv.MetricId) && words.Any(w => fv.TextValue.Contains(w))));
                     }
+                    else
+                        surveys = surveys.Where(s => s.FormValues.Any(fv => words.Any(w => fv.TextValue.Contains(w))));
                 }
 
                 // apply metric filters
@@ -127,17 +126,7 @@ namespace LightMethods.Survey.Models.DAL
                 }
 
                 var result = surveys.OrderByDescending(s => s.SurveyDate).ToList();
-
-                if (!model.FilterValues.Any())
-                {
-                    if (foundBySearchTerm || foundByDate)
-                        foundSurveys.AddRange(result);
-                }
-                else
-                {
-                    if (surveyCount != result.Count)
-                        foundSurveys.AddRange(result);
-                }
+                foundSurveys.AddRange(result);
             }
 
             return foundSurveys;

@@ -1,8 +1,11 @@
-﻿<div class="box" ng-repeat="formTemplate in ctrl.formTemplates | orderBy: 'code'">
+﻿<div class="box" ng-repeat="formTemplate in ctrl.formTemplates track by formTemplate.id | orderBy: 'code'">
     <div class="box-title">
-        <h4 ui-sref="home.surveys.new({formTemplateId: formTemplate.id, projectId: ctrl.project.id})">
+        <h4>
+            <i class="fa fa-windows" ng-if="!formTemplate.projectId"></i>
+            <span class="color-block" ng-if="formTemplate.projectId" ng-style="{'background-color': ctrl.getTemplateColour(formTemplate.id)}"></span>
             {{formTemplate.title}}
-            <a class="pull-right" ng-if="ctrl.assignment.canAdd"><i class="fa fa-plus-square"></i> Add new </a>
+            <a class="pull-right" ng-if="ctrl.assignment.canAdd" 
+               ui-sref="home.surveys.new({projectId: ctrl.projectId, formTemplateId: formTemplate.id})"><i class="fa fa-plus-square"></i> Add new </a>
         </h4>
     </div>
     <div class="box-content">
@@ -14,6 +17,8 @@
                         <th>Date</th>
                         <th>Serial no</th>
                         <th>Completed by</th>
+                        <th>Description</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -30,6 +35,7 @@
                         <td>{{survey.date | amDateFormat: 'L'}}</td>
                         <td>{{survey.serial}}</td>
                         <td>{{survey.filledBy}}</td>
+                        <td>{{survey.description}}</td>
                         <td>
                             <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.assignment.canView">
                                 <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
@@ -54,7 +60,7 @@
         </div>
 
         <p>
-            <a ui-sref="home.surveys.list.all({formTemplateId: formTemplate.id, projectId: ctrl.project.id})"
+            <a ui-sref="home.surveys.list.all({formTemplateId: formTemplate.id, projectId: ctrl.projectId})"
                class="text-primary">See all <i class="fa fa-arrow-right"></i></a>
         </p>
     </div>

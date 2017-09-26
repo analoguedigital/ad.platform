@@ -28,11 +28,13 @@ namespace LightMethods.Survey.Models.DAL
                 case "add":
                     {
                         assignment.CanAdd = grant;
+                        if (grant) assignment.CanView = true;
                         break;
                     }
                 case "edit":
                     {
                         assignment.CanEdit = grant;
+                        if (grant) assignment.CanView = true;
                         break;
                     }
                 case "view":
@@ -43,6 +45,7 @@ namespace LightMethods.Survey.Models.DAL
                 case "delete":
                     {
                         assignment.CanDelete = grant;
+                        if (grant) assignment.CanView = true;
                         break;
                     }
             }

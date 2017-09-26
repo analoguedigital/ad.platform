@@ -114,7 +114,7 @@ module App {
 
             var groupMetricIds = _.map(this.$scope.metricGroup.metrics, "id");
 
-            _.remove(this.$scope.allFormValues, (formValue) => {
+            _.remove(this.$scope.ctrl.survey.formValues, (formValue) => {
                 return formValue.rowNumber === rowNumber && _.includes(groupMetricIds, formValue.metricId);
             });
 

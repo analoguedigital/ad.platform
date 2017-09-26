@@ -13,6 +13,7 @@ using System.Web.Http.Description;
 using WebApi.Models;
 using Newtonsoft.Json;
 using LightMethods.Survey.Models.MetricFilters;
+using System.Data.Entity.Infrastructure;
 
 namespace WebApi.Controllers
 {
@@ -24,9 +25,23 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            return Ok(surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => projectId == null || f.ProjectId == null || f.ProjectId == projectId)
-                .Select(f => Mapper.Map<FormTemplateDTO>(f)));
+            var templates = surveyProvider.GetAllFormTemplates();
+            if (projectId.HasValue && projectId != Guid.Empty)
+            {
+                var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking
+                .Where(a => a.ProjectId == projectId && a.OrgUserId == CurrentOrgUser.Id)
+                .ToList();
+
+                templates = templates
+                    .Where(t => t.ProjectId == projectId || t.ProjectId == null)
+                    .Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
+            }
+            else
+                templates = templates.Where(t => t.ProjectId == null);
+
+            var result = templates.OrderByDescending(t => t.DateCreated).Select(t => Mapper.Map<FormTemplateDTO>(t));
+
+            return Ok(result);
         }
 
         // GET api/<controller>/5
@@ -38,15 +53,11 @@ namespace WebApi.Controllers
 
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .Select(f => Mapper.Map<FormTemplateDTO>(f))
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
-            return Ok(form);
+            return Ok(Mapper.Map<FormTemplateDTO>(form));
         }
 
         [ResponseType(typeof(IEnumerable<MetricFilter>))]
@@ -91,16 +102,13 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == value.Id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
             Mapper.Map(value, form);
-
             UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
+
             var groupOrder = 1;
             foreach (var valueGroup in value.MetricGroups)
             {
@@ -122,7 +130,6 @@ namespace WebApi.Controllers
                 foreach (var valueMetric in valueGroup.Metrics)
                 {
                     var metric = group.Metrics.Where(m => m.Id == valueMetric.Id)
-                        // .Select(m => Mapper.Map(valueMetric, m))
                         .SingleOrDefault();
 
                     if (metric == null && valueMetric.isDeleted)
@@ -131,9 +138,7 @@ namespace WebApi.Controllers
                     metric = valueMetric.Map(metric, UnitOfWork, CurrentOrganisation);
 
                     if (valueMetric.isDeleted) // Delete
-                    {
                         UnitOfWork.MetricsRepository.Delete(metric);
-                    }
                     else
                     {   // Insert or update
                         metric.FormTemplateId = form.Id;
@@ -152,14 +157,10 @@ namespace WebApi.Controllers
                     }
                 }
 
-                if (valueGroup.isDeleted && group != null)
-                {
+                if (valueGroup.isDeleted && group != null && group.Id != Guid.Empty)
                     UnitOfWork.MetricGroupsRepository.Delete(group);
-                }
                 else
-                {
                     UnitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
-                }
             }
 
             try
@@ -201,12 +202,9 @@ namespace WebApi.Controllers
         [Route("api/formtemplates/{id:Guid}/details")]
         public IHttpActionResult EditBasicDetails(Guid id, EditBasicDetailsRequest value)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false); ;
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
@@ -245,17 +243,21 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
-            UnitOfWork.FormTemplatesRepository.Delete(form);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.FormTemplatesRepository.Delete(form);
+                UnitOfWork.Save();
 
-            return Ok();
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("This Form cannot be deleted!");
+            }
         }
 
         [HttpPost]
