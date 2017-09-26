@@ -1,5 +1,5 @@
 <div class="row attachment-metric" ng-controller="attachmentMetricController">
-    <div ng-class="{ 'col-md-12': !metricGroup.isRepeater }">
+    <div ng-class="{ 'col-md-12': !isCompact}">
         <div class="photos">
             <div xgallerify="{'margin':5, 'mode':'flickr'}">
                 <img ng-repeat="attachment in formValue.attachments | filter: {typeString:'image', isDeleted: false} track by $index" ng-src="{{attachment.url}}" alt="{{attachment.fileName}}" ng-click="deleteAttachment($event, attachment)" />

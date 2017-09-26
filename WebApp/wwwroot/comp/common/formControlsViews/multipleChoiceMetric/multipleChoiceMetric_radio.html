@@ -1,5 +1,5 @@
 ﻿<div class="row">
-    <div ng-class="{ 'col-md-8': !metricGroup.isRepeater }">
+    <div ng-class="{ 'col-md-8': !isCompact }">
         <p ng-repeat="item in items | orderBy:'order' track by $index" class="checkbox-value">
             <i class="fa fa-check" ng-show="item.id === formValue.guidValue"></i> {{getText(item.id)}}
         </p>

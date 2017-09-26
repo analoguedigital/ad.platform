@@ -1,5 +1,5 @@
 ﻿<div class="row">
-    <div class="col-md-8">
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }">
         <div class="form-group">
             <div class="radio radio-default" ng-if="metric.viewType === 'RadioButtonList'" ng-repeat="item in items | orderBy:'order' | filter:{ 'isDeleted': false } track by $index">
                 <input id="radio-{{$index}}" name="radio-{{$index}}" type="radio" ng-model="formValue.guidValue" value="{{item.id}}">
