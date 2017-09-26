@@ -34,16 +34,24 @@ namespace WebApi.Controllers
             //TODO: refactore to api/projects/{projectId}/surveys
             var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking;
 
-            if (projectId.HasValue && projectId != Guid.Empty)
+            if (this.CurrentOrgUser != null)
             {
-                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
-                if (assignment == null || !assignment.CanView)
-                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+                if (projectId.HasValue && projectId != Guid.Empty)
+                {
+                    var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
+                    if (assignment == null || !assignment.CanView)
+                        return Content(HttpStatusCode.Forbidden, "Access Denied");
 
-                surveys = surveys.Where(s => s.ProjectId == projectId);
+                    surveys = surveys.Where(s => s.ProjectId == projectId);
+                }
+                else
+                    surveys = surveys.Where(s => s.Project.Assignments.Any(a => a.OrgUserId == CurrentOrgUser.Id));
             }
             else
-                surveys = surveys.Where(s => s.Project.Assignments.Any(a => a.OrgUserId == CurrentOrgUser.Id));
+            {
+                if (projectId.HasValue && projectId != Guid.Empty)
+                    surveys = surveys.Where(s => s.ProjectId == projectId);
+            }
 
             var result = surveys
                 .ToList()
@@ -110,9 +118,12 @@ namespace WebApi.Controllers
             if (survey == null)
                 return NotFound();
 
-            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
-            if (assignment == null || !assignment.CanView)
-                return Content(HttpStatusCode.Forbidden, "Access Denied");
+            if (this.CurrentOrgUser != null)
+            {
+                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+                if (assignment == null || !assignment.CanView)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+            }
 
             var result = Mapper.Map<FilledFormDTO>(survey);
 
@@ -127,9 +138,12 @@ namespace WebApi.Controllers
             if (attachment == null || attachment.FormValue.FilledFormId != surveyId)
                 return NotFound();
 
-            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == attachment.FormValue.FilledForm.ProjectId);
-            if (assignment == null || !assignment.CanView)
-                return Content(HttpStatusCode.Forbidden, "Access Denied");
+            if (this.CurrentOrgUser != null)
+            {
+                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == attachment.FormValue.FilledForm.ProjectId);
+                if (assignment == null || !assignment.CanView)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+            }
 
             var fileInfo = new FileInfo(Path.Combine(AttachmentsRepository.RootFolderPath, attachment.RelativeFolder, attachment.NameOnDisk));
 
@@ -151,9 +165,12 @@ namespace WebApi.Controllers
         [Route("api/surveys")]
         public IHttpActionResult Post(FilledFormDTO survey)
         {
-            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
-            if (assignment == null || !assignment.CanAdd)
-                return Content(HttpStatusCode.Forbidden, "Access Denied");
+            if (this.CurrentOrgUser != null)
+            {
+                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+                if (assignment == null || !assignment.CanAdd)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+            }
 
             var filledForm = Mapper.Map<FilledForm>(survey);
             filledForm.FilledById = CurrentOrgUser.Id;
@@ -210,9 +227,12 @@ namespace WebApi.Controllers
         [Route("api/surveys/{id}")]
         public IHttpActionResult Put(Guid id, FilledFormDTO surveyDTO)
         {
-            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == surveyDTO.ProjectId);
-            if (assignment == null || !assignment.CanEdit)
-                return Content(HttpStatusCode.Forbidden, "Access Denied");
+            if (this.CurrentOrgUser != null)
+            {
+                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == surveyDTO.ProjectId);
+                if (assignment == null || !assignment.CanEdit)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+            }
 
             var survey = Mapper.Map<FilledForm>(surveyDTO);
             ModelState.Clear();
@@ -305,9 +325,12 @@ namespace WebApi.Controllers
             if (survey == null)
                 return NotFound();
 
-            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
-            if (assignment == null || !assignment.CanDelete)
-                return Content(HttpStatusCode.Forbidden, "Access Denied");
+            if (this.CurrentOrgUser != null)
+            {
+                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+                if (assignment == null || !assignment.CanDelete)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+            }
 
             UnitOfWork.FilledFormsRepository.Delete(survey);
             UnitOfWork.FilledFormsRepository.Save();

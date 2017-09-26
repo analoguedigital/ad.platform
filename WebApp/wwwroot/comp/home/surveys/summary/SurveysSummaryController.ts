@@ -38,13 +38,21 @@ module App {
         }
 
         load() {
-            if (this.project != null) {
-                var orgUser = this.userContextService.current.orgUser;
-                if (orgUser != null) {
-                    this.currentUser = orgUser;
-                    this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
-                }
+            var orgUser = this.userContextService.current.orgUser;
+            if (orgUser != null) {
+                this.currentUser = orgUser;
+                this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
+            } else {
+                this.assignment = <Models.IProjectAssignment>{
+                    orgUserId: this.userContextService.current.user.id,
+                    canView: true,
+                    canAdd: true,
+                    canEdit: true,
+                    canDelete: true
+                };
+            }
 
+            if (this.project != null) {
                 this.formTemplateResource.query({ projectId: this.project.id }).$promise
                     .then((templates) => {
                         this.formTemplates = templates;
