@@ -66,7 +66,7 @@
                             <td>{{form.title}}</td>
                             <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
                             <td ng-if="form.projectName">
-                                <span ng-if="form.projectId" class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(form.id)}"></span> {{form.projectName}}
+                                <span ng-if="form.projectId" class="color-block" ng-style="{'background-color': form.colour}"></span> {{form.projectName}}
                             </td>
                             <td ng-if="form.isPublished">Published (<a ng-bootbox-confirm="Are you sure you want to archive this?" ng-bootbox-confirm-action="archive(form)">archive</a>)</td>
                             <td ng-if="!form.isPublished">Archived (<a ng-bootbox-confirm="Are you sure you want to publish this?" ng-bootbox-confirm-action="publish(form)">publish</a>)</td>

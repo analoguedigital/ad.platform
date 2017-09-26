@@ -83,14 +83,6 @@ module App {
             });
         }
 
-        getTemplateColour(id: string) {
-            let template = _.find(this.formTemplates, (t) => { return t.id == id; });
-            if (template && template.colour && template.colour.length)
-                return template.colour;
-
-            return '';
-        }
-
     }
 
     angular.module("app").controller("surveysSummaryController", SurveysSummaryController);
