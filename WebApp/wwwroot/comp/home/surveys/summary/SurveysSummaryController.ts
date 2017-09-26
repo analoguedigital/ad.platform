@@ -66,13 +66,13 @@ module App {
                         this.toastr.error(err.data);
                         console.log(err)
                     });
-                //this.surveyResource.query({ projectId: this.project.id }).$promise
-                //    .then((surveys) => {
-                //        this.surveys = surveys;
-                //    }, (err) => {
-                //        this.toastr.error(err.data);
-                //        console.error(err);
-                //    });
+                this.surveyResource.query({ projectId: null }).$promise
+                    .then((surveys) => {
+                        this.surveys = surveys;
+                    }, (err) => {
+                        this.toastr.error(err.data);
+                        console.error(err);
+                    });
             }
         }
 

@@ -5,7 +5,7 @@
             <span class="color-block" ng-if="formTemplate.projectId" ng-style="{'background-color': ctrl.getTemplateColour(formTemplate.id)}"></span>
             {{formTemplate.title}}
             <a class="pull-right" ng-if="ctrl.assignment.canAdd" 
-               ui-sref="home.surveys.new({projectId: ctrl.projectId, formTemplateId: formTemplate.id})"><i class="fa fa-plus-square"></i> Add new </a>
+               ui-sref="home.surveys.new({projectId: ctrl.project.id, formTemplateId: formTemplate.id})"><i class="fa fa-plus-square"></i> Add new </a>
         </h4>
     </div>
     <div class="box-content">
@@ -52,8 +52,8 @@
             </table>
         </div>
 
-        <p>
-            <a ui-sref="home.surveys.list.all({formTemplateId: formTemplate.id, projectId: ctrl.projectId})"
+        <p ng-if="ctrl.project.id">
+            <a ui-sref="home.surveys.list.all({formTemplateId: formTemplate.id, projectId: ctrl.project.id})"
                class="text-primary">See all <i class="fa fa-arrow-right"></i></a>
         </p>
     </div>

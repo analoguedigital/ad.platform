@@ -69,12 +69,7 @@ module App {
         }
 
         loadSharedForms() {
-            if (this.$state.current.name === 'home.surveys.list.all') {
-                this.$state.go("home.surveys.list.all", { projectId: null }, { reload: false });
-            }
-            else {
-                this.$state.go("home.surveys.list.summary", { projectId: null }, { reload: false });
-            }
+            this.$state.go("home.surveys.list.summary", { projectId: null }, { reload: false });
         }
 
         selectedProjectChanged() {

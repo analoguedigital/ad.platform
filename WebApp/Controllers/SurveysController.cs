@@ -29,20 +29,26 @@ namespace WebApi.Controllers
 
         [Route("api/surveys")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult Get(Guid projectId)
+        public IHttpActionResult Get(Guid? projectId = null)
         {
             //TODO: refactore to api/projects/{projectId}/surveys
-            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
-            if (assignment == null || !assignment.CanView)
-                return Content(HttpStatusCode.Forbidden, "Access Denied");
+            var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking;
 
-            var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                .Where(s => s.ProjectId == projectId)
+            if (projectId.HasValue && projectId != Guid.Empty)
+            {
+                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
+                if (assignment == null || !assignment.CanView)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+
+                surveys = surveys.Where(s => s.ProjectId == projectId);
+            }
+            else
+                surveys = surveys.Where(s => s.Project.Assignments.Any(a => a.OrgUserId == CurrentOrgUser.Id));
+
+            var result = surveys
                 .ToList()
-                .OrderByDescending(x => x.Date);
-
-
-            var result = surveys.Select(s => Mapper.Map<FilledFormDTO>(s));
+                .OrderByDescending(x => x.Date)
+                .Select(s => Mapper.Map<FilledFormDTO>(s));
 
             return Ok(result);
         }
