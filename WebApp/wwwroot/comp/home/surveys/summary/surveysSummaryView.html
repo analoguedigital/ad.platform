@@ -4,7 +4,7 @@
             <i class="fa fa-windows" ng-if="!formTemplate.projectId"></i>
             <span class="color-block" ng-if="formTemplate.projectId" ng-style="{'background-color': ctrl.getTemplateColour(formTemplate.id)}"></span>
             {{formTemplate.title}}
-            <a class="pull-right" ng-if="ctrl.assignment.canAdd" 
+            <a class="pull-right" ng-if="ctrl.project.allowAdd" 
                ui-sref="home.surveys.new({projectId: ctrl.project.id, formTemplateId: formTemplate.id})"><i class="fa fa-plus-square"></i> Add new </a>
         </h4>
     </div>
@@ -30,20 +30,20 @@
                         <td>{{survey.filledBy}}</td>
                         <td>{{survey.description}}</td>
                         <td>
-                            <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.assignment.canView">
+                            <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
                                 <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
                             </a>
                         </td>
                         <td>
-                            <a ui-sref="home.surveys.print-single({surveyId: survey.id})" ng-if="ctrl.assignment.canView">
+                            <a ui-sref="home.surveys.print-single({surveyId: survey.id})" ng-if="ctrl.project.allowView">
                                 <i class="fa fa-print"></i><span class="hidden-xs"></span> Print
                             </a>
                         </td>
                         <td>
-                            <a ui-sref="home.surveys.edit({surveyId: survey.id})" ng-if="ctrl.assignment.canEdit"><i class="fa fa-pencil"></i><span class="hidden-xs"> Edit</span></a>
+                            <a ui-sref="home.surveys.edit({surveyId: survey.id})" ng-if="ctrl.project.allowEdit"><i class="fa fa-pencil"></i><span class="hidden-xs"> Edit</span></a>
                         </td>
                         <td>
-                            <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey.id)" ng-if="ctrl.assignment.canDelete">
+                            <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey.id)" ng-if="ctrl.project.allowDelete">
                                 <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
                             </a>
                         </td>

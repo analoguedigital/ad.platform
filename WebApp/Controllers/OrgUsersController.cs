@@ -41,9 +41,6 @@ namespace WebApi.Controllers
             var orgUser = user as OrgUser;
             var result = Mapper.Map<OrgUserDTO>(user);
 
-            var assignments = orgUser.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)).ToList();
-            result.Assignments = assignments;
-
             return Ok(result);
         }
 

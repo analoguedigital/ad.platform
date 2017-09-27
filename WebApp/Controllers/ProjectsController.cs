@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,20 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
         public IHttpActionResult Get()
         {
-            var projects = UnitOfWork.ProjectsRepository.GetProjects(CurrentUser).OrderByDescending(p => p.DateCreated);
-            var result = projects.ToList().Select(p => Mapper.Map<ProjectDTO>(p)).ToList();
+            var projects = UnitOfWork.ProjectsRepository
+                .GetProjects(CurrentUser)
+                .OrderByDescending(p => p.DateCreated)
+                .ToList();
+
+            var result = new List<ProjectDTO>();
+            foreach(var project in projects)
+            {
+                var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+                var dto = Mapper.Map<ProjectDTO>(project);
+                Mapper.Map(assignment, dto);
+
+                result.Add(dto);
+            }
 
             return Ok(result);
         }
@@ -32,16 +45,15 @@ namespace WebApi.Controllers
             if (id == Guid.Empty)
                 return Ok(Mapper.Map<ProjectDTO>(new Project()));
 
-            var project = UnitOfWork.ProjectsRepository.GetProjects(CurrentUser)
-                .Where(p => p.Id == id)
-                .ToList()
-                .Select(p => Mapper.Map<ProjectDTO>(p))
-                .SingleOrDefault();
-
+            var project = UnitOfWork.ProjectsRepository.GetProjects(CurrentUser).Where(p => p.Id == id).SingleOrDefault();
             if (project == null)
                 return NotFound();
 
-            return Ok(project);
+            var result = Mapper.Map<ProjectDTO>(project);
+            var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+            Mapper.Map(assignment, result);
+
+            return Ok(result);
         }
 
         [Route("api/projects/{id:guid}/assignments")]

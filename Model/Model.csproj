@@ -118,6 +118,7 @@
     <Compile Include="DAL\PromotionCodesRepository.cs" />
     <Compile Include="DAL\RolesRepository.cs" />
     <Compile Include="DAL\SubscriptionsRepository.cs" />
+    <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\ExportToExcel.cs" />
     <Compile Include="Entities\Email.cs" />
     <Compile Include="Entities\Feedback.cs" />

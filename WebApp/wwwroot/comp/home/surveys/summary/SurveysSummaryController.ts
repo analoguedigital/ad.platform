@@ -6,8 +6,6 @@ module App {
         title: string;
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
         activate: () => void;
     }
 
@@ -15,11 +13,9 @@ module App {
         title: string = "Surveys";
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
 
         static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource',
-            'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService', 'project'];
+            'surveyResource', 'projectSummaryPrintSessionResource', 'project'];
         constructor(
             public $scope: ng.IScope,
             public $stateParams: ng.ui.IStateParamsService,
@@ -27,7 +23,6 @@ module App {
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
-            private userContextService: Services.IUserContextService,
             private project: Models.IProject) {
 
             this.activate();
@@ -38,52 +33,25 @@ module App {
         }
 
         load() {
-            var orgUser = this.userContextService.current.orgUser;
-            if (orgUser != null) {
-                this.currentUser = orgUser;
-                this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
-            } else {
-                this.assignment = <Models.IProjectAssignment>{
-                    orgUserId: this.userContextService.current.user.id,
-                    canView: true,
-                    canAdd: true,
-                    canEdit: true,
-                    canDelete: true
-                };
+            var projectId = null;
+            if (this.project != null) {
+                projectId = this.project.id;
             }
 
-            if (this.project != null) {
-                this.formTemplateResource.query({ projectId: this.project.id }).$promise
-                    .then((templates) => {
-                        this.formTemplates = templates;
-                    }, (err) => {
-                        this.toastr.error(err.data);
-                        console.log(err)
-                    });
-                this.surveyResource.query({ projectId: this.project.id }).$promise
-                    .then((surveys) => {
-                        this.surveys = surveys;
-                    }, (err) => {
-                        this.toastr.error(err.data);
-                        console.error(err);
-                    });
-            }
-            else {
-                this.formTemplateResource.query({ projectId: null }).$promise
-                    .then((templates) => {
-                        this.formTemplates = templates;
-                    }, (err) => {
-                        this.toastr.error(err.data);
-                        console.log(err)
-                    });
-                this.surveyResource.query({ projectId: null }).$promise
-                    .then((surveys) => {
-                        this.surveys = surveys;
-                    }, (err) => {
-                        this.toastr.error(err.data);
-                        console.error(err);
-                    });
-            }
+            this.formTemplateResource.query({ projectId: projectId }).$promise
+                .then((templates) => {
+                    this.formTemplates = templates;
+                }, (err) => {
+                    this.toastr.error(err.data);
+                    console.log(err)
+                });
+            this.surveyResource.query({ projectId: projectId }).$promise
+                .then((surveys) => {
+                    this.surveys = surveys;
+                }, (err) => {
+                    this.toastr.error(err.data);
+                    console.error(err);
+                });
         }
 
         delete(id: string) {

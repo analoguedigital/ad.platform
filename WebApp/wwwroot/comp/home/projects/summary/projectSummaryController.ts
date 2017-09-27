@@ -35,9 +35,6 @@ module App {
         timelineSnapshotView: boolean;
         metricFilters: Models.IMetricFilter[];
 
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
-
         activate: () => void;
         clearSearch: () => void;
         clearThreads: () => void;
@@ -66,13 +63,9 @@ module App {
         timelineSnapshotView: boolean;
         metricFilters: Models.IMetricFilter[];
 
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
-
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
-            "formTemplateResource", "surveyResource", "project",
-            "toastr", "userContextService"];
+            "formTemplateResource", "surveyResource", "project", "toastr"];
 
         constructor(
             private $scope: IProjectSummaryControllerScope,
@@ -85,8 +78,7 @@ module App {
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private project: Models.IProject,
-            private toastr: any,
-            private userContextService: Services.IUserContextService) {
+            private toastr: any) {
 
             this.activate();
         }
@@ -112,10 +104,6 @@ module App {
         }
 
         load() {
-            var orgUser = this.userContextService.current.orgUser;
-            this.currentUser = orgUser;
-            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
-
             this.$q.all([
                 this.formTemplateResource.query({ projectId: this.project.id }).$promise,
                 this.surveyResource.query({ projectId: this.project.id }).$promise
