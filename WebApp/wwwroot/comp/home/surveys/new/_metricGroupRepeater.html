@@ -8,7 +8,7 @@
             </th>
             <th ng-if="!isDataList"></th>
         </tr>
-        <tr ng-if="isDataList">
+        <tr ng-if="isDataList && relationshipTitles.length">
             <th></th>
             <th ng-repeat="title in relationshipTitles">
                 <div class="table-header-wrapper">
