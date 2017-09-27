@@ -58,11 +58,14 @@ module App {
 
 
             if (this.$scope.metricGroup.isRepeater) {
-
-                if (this.$scope.metricGroup.type === "IterativeRepeater") {
-                    relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber });
-                } else {
-                    relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber, 'rowDataListItemId': this.$scope.dataListItem.id });
+                try {
+                    if (this.$scope.metricGroup.type === "IterativeRepeater") {
+                        relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber });
+                    } else {
+                        relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber, 'rowDataListItemId': this.$scope.dataListItem.id });
+                    }
+                } catch (e) {
+                    console.error('relatedFormValues error', e);
                 }
 
                 this.$scope.inputName = _.camelCase('m' + this.$scope.metric.id) + this.$scope.rowNumber;
