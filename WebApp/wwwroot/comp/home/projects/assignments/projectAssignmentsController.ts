@@ -7,7 +7,6 @@ module App {
         project: Models.IProject;
         errors: string;
         userAssignments: IAssignmentUser[];
-
         clearErrors: () => void;
     }
     interface IAssignmentUser {
@@ -19,9 +18,7 @@ module App {
         canDelete: boolean;
     }
 
-
     class ProjectAssignmentsController implements IProjectAssignmentsController {
-
         title: string;
         project: Models.IProject;
         users: Models.IOrgUser[];
@@ -86,22 +83,22 @@ module App {
 
             var toggled = false;
             switch (accessLevel) {
-                case 'add': {
+                case 'allowAdd': {
                     toggled = assg.canAdd;
                     if (toggled) assg.canView = true;
                     break;
                 }
-                case 'edit': {
+                case 'allowEdit': {
                     toggled = assg.canEdit;
                     if (toggled) assg.canView = true;
                     break;
                 }
-                case 'delete': {
+                case 'allowDelete': {
                     toggled = assg.canDelete;
                     if (toggled) assg.canView = true;
                     break;
                 }
-                case 'view': {
+                case 'allowView': {
                     toggled = assg.canView;
                     break;
                 }

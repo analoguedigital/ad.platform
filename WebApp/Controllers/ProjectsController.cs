@@ -70,7 +70,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult AddAssignments(Guid id, Guid userId, string accessLevel)
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, AccessLevels accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
@@ -83,16 +83,7 @@ namespace WebApi.Controllers
             if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
                 return NotFound();
 
-            if (string.IsNullOrEmpty(accessLevel))
-                return BadRequest();
-
-            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
-
-            if (result == AssignAccessLevelResult.NotFound)
-                return NotFound();
-
-            if (result == AssignAccessLevelResult.BadRequest)
-                return BadRequest();
+            this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
             return Ok();
         }
@@ -100,7 +91,7 @@ namespace WebApi.Controllers
         [HttpDelete]
         [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, string accessLevel)
+        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, AccessLevels accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
             if (project == null)
@@ -113,14 +104,7 @@ namespace WebApi.Controllers
             if (assignment == null)
                 return NotFound();
 
-            if (string.IsNullOrEmpty(accessLevel))
-                return BadRequest();
-
-            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
-            if (result == AssignAccessLevelResult.NotFound)
-                return NotFound();
-            if (result == AssignAccessLevelResult.BadRequest)
-                return BadRequest();
+            this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
 
             return Ok();
         }

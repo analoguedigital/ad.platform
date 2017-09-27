@@ -8,56 +8,54 @@ namespace LightMethods.Survey.Models.DAL
 {
     public class AssignmentsRepository : Repository<Assignment>
     {
-        public AssignmentsRepository(UnitOfWork uow)
-            : base(uow)
-        {
+        public AssignmentsRepository(UnitOfWork uow) : base(uow) { }
 
+        public enum AccessLevels
+        {
+            AllowView,
+            AllowAdd,
+            AllowEdit,
+            AllowDelete
         }
 
-        public enum AssignAccessLevelResult
+        private Assignment FlagAccessLevel(Assignment assignment, AccessLevels accessLevel, bool grant)
         {
-            NotFound,
-            BadRequest,
-            Ok
-        }
-
-        private Assignment FlagAccessLevel(Assignment assignment, string accessLevel, bool grant)
-        {
-            switch (accessLevel.ToLower())
+            switch (accessLevel)
             {
-                case "add":
+                case AccessLevels.AllowView:
+                    {
+                        assignment.CanView = grant;
+                        break;
+                    }
+                case AccessLevels.AllowAdd:
                     {
                         assignment.CanAdd = grant;
                         if (grant) assignment.CanView = true;
                         break;
                     }
-                case "edit":
+                case AccessLevels.AllowEdit:
                     {
                         assignment.CanEdit = grant;
                         if (grant) assignment.CanView = true;
                         break;
                     }
-                case "view":
-                    {
-                        assignment.CanView = grant;
-                        break;
-                    }
-                case "delete":
+                case AccessLevels.AllowDelete:
                     {
                         assignment.CanDelete = grant;
                         if (grant) assignment.CanView = true;
                         break;
                     }
+                default:
+                    break;
             }
 
             return assignment;
         }
 
-        public AssignAccessLevelResult AssignAccessLevel(Guid projectId, Guid userId, string accessLevel, bool grant)
+        public void AssignAccessLevel(Guid projectId, Guid userId, AccessLevels accessLevel, bool grant)
         {
             var project = this.CurrentUOW.ProjectsRepository.Find(projectId);
             var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == userId);
-
             if (assignment != null)
             {
                 assignment = FlagAccessLevel(assignment, accessLevel, grant);
@@ -65,19 +63,12 @@ namespace LightMethods.Survey.Models.DAL
             }
             else
             {
-                var entity = new Assignment()
-                {
-                    ProjectId = projectId,
-                    OrgUserId = userId
-                };
-
+                var entity = new Assignment() { ProjectId = projectId, OrgUserId = userId };
                 entity = FlagAccessLevel(entity, accessLevel, grant);
                 this.CurrentUOW.AssignmentsRepository.InsertOrUpdate(entity);
             }
 
             this.CurrentUOW.Save();
-
-            return AssignAccessLevelResult.Ok;
         }
 
         public override void InsertOrUpdate(Assignment entity)
