@@ -74,41 +74,49 @@ module App {
             });
         }
 
-        updateAssignment(assg: IAssignmentUser, accessLevel: string) {
+        updateAssignment(assignment: IAssignmentUser, accessLevel: string) {
             var params = {
                 id: this.project.id,
-                userId: assg.userId,
+                userId: assignment.userId,
                 accessLevel: accessLevel
             };
 
             var toggled = false;
             switch (accessLevel) {
                 case 'allowAdd': {
-                    toggled = assg.canAdd;
-                    if (toggled) assg.canView = true;
+                    toggled = assignment.canAdd;
                     break;
                 }
                 case 'allowEdit': {
-                    toggled = assg.canEdit;
-                    if (toggled) assg.canView = true;
+                    toggled = assignment.canEdit;
                     break;
                 }
                 case 'allowDelete': {
-                    toggled = assg.canDelete;
-                    if (toggled) assg.canView = true;
+                    toggled = assignment.canDelete;
                     break;
                 }
                 case 'allowView': {
-                    toggled = assg.canView;
+                    toggled = assignment.canView;
                     break;
                 }
             }
 
             if (toggled) {
-                this.projectResource.assign(params, (result) => { }, (error) => { });
+                this.projectResource.assign(params, (result: Models.IProjectAssignment) => {
+                    this.refreshAssignment(assignment, result);
+                }, (error) => { });
             } else {
-                this.projectResource.unassign(params, (result) => { }, (error) => { });
+                this.projectResource.unassign(params, (result: Models.IProjectAssignment) => {
+                    this.refreshAssignment(assignment, result);
+                }, (error) => { });
             }
+        }
+
+        refreshAssignment(assignment: IAssignmentUser, newValue: Models.IProjectAssignment) {
+            assignment.canView = newValue.canView;
+            assignment.canAdd = newValue.canAdd;
+            assignment.canEdit = newValue.canEdit;
+            assignment.canDelete = newValue.canDelete;
         }
 
         clearErrors() {

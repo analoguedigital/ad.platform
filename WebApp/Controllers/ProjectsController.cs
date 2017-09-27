@@ -26,7 +26,7 @@ namespace WebApi.Controllers
                 .ToList();
 
             var result = new List<ProjectDTO>();
-            foreach(var project in projects)
+            foreach (var project in projects)
             {
                 var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
                 var dto = Mapper.Map<ProjectDTO>(project);
@@ -83,9 +83,9 @@ namespace WebApi.Controllers
             if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
                 return NotFound();
 
-            this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
+            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
-            return Ok();
+            return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
         }
 
         [HttpDelete]
@@ -104,9 +104,11 @@ namespace WebApi.Controllers
             if (assignment == null)
                 return NotFound();
 
-            this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
+            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
+            if (result != null)
+                return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
 
-            return Ok();
+            return Ok(new ProjectAssignmentDTO());
         }
 
         // POST api/<controller>

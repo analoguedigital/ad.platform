@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
 
 namespace LightMethods.Survey.Models.DAL
 {
@@ -52,10 +50,11 @@ namespace LightMethods.Survey.Models.DAL
             return assignment;
         }
 
-        public void AssignAccessLevel(Guid projectId, Guid userId, AccessLevels accessLevel, bool grant)
+        public Assignment AssignAccessLevel(Guid projectId, Guid userId, AccessLevels accessLevel, bool grant)
         {
             var project = this.CurrentUOW.ProjectsRepository.Find(projectId);
             var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == userId);
+
             if (assignment != null)
             {
                 assignment = FlagAccessLevel(assignment, accessLevel, grant);
@@ -63,12 +62,14 @@ namespace LightMethods.Survey.Models.DAL
             }
             else
             {
-                var entity = new Assignment() { ProjectId = projectId, OrgUserId = userId };
-                entity = FlagAccessLevel(entity, accessLevel, grant);
-                this.CurrentUOW.AssignmentsRepository.InsertOrUpdate(entity);
+                assignment = new Assignment() { ProjectId = projectId, OrgUserId = userId };
+                assignment = FlagAccessLevel(assignment, accessLevel, grant);
+                this.CurrentUOW.AssignmentsRepository.InsertOrUpdate(assignment);
             }
 
             this.CurrentUOW.Save();
+
+            return project.Assignments.SingleOrDefault(a => a.OrgUserId == userId);
         }
 
         public override void InsertOrUpdate(Assignment entity)
