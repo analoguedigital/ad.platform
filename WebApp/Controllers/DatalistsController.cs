@@ -77,7 +77,7 @@ namespace WebApi.Controllers
             dataList.OrganisationId = CurrentOrganisationId.Value;
 
             var order = 1;
-            foreach (var item in dataList.AllItems.OrderBy(x => x.Value))
+            foreach (var item in dataList.AllItems)
                 item.Order = order++;
 
             UnitOfWork.DataListsRepository.InsertOrUpdate(dataList);
@@ -98,8 +98,9 @@ namespace WebApi.Controllers
             var dbDataList = UnitOfWork.DataListsRepository.Find(id);
             dbDataList.Name = dataList.Name;
             UnitOfWork.DataListsRepository.InsertOrUpdate(dbDataList);
+
             var order = 1;
-            foreach (var val in dataListDTO.Items.OrderBy(x => x.Value))
+            foreach (var val in dataListDTO.Items)
             {
                 var dbItem = UnitOfWork.DataListItemsRepository.Find(val.Id);
                 if (dbItem == null)
