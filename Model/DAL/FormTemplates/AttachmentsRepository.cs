@@ -48,7 +48,9 @@ namespace LightMethods.Survey.Models.DAL
                 Directory.CreateDirectory(newFileLoc);
 
             var fileName = tempFileInfo.Name;
-            tempFileInfo.MoveTo($"{newFileLoc}\\{ attachment.Id}{tempFileInfo.Extension}");
+            var location = $"{newFileLoc}\\{ attachment.Id}{tempFileInfo.Extension}";
+            if (!System.IO.File.Exists(location))
+                tempFileInfo.MoveTo(location);
 
             attachment.FileName = fileName;
             attachment.FileSize = Convert.ToInt32(tempFileInfo.Length);

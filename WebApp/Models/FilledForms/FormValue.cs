@@ -31,6 +31,11 @@ namespace WebApi.Models
         public Guid? GuidValue { set; get; }
 
         public IEnumerable<AttachmentDTO> Attachments { set; get; }
-       
+
+        public FormValueDTO()
+        {
+            this.Attachments = new List<AttachmentDTO>();
+        }
+
     }
 }
