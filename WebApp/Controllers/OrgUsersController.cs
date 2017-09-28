@@ -76,7 +76,6 @@ namespace WebApi.Controllers
             if (orguser == null)
                 return NotFound();
 
-            orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
             orguser.Email = value.Email;
             orguser.FirstName = value.FirstName;
             orguser.Surname = value.Surname;
