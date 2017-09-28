@@ -570,7 +570,6 @@
                     buildTimeline();
                 } else {
                     scope.tickData = [];
-                    scope.chartLabels = [];
                     scope.chartDatasets = [];
                     renderTimelineChart();
                 }
