@@ -369,6 +369,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="wwwroot\scripts\directives\lmAtWho\template.html" />
     <Content Include="wwwroot\scripts\directives\lmFormGroupCheckbox\template.html" />
     <Content Include="wwwroot\scripts\directives\lmFormGroup\template.html" />
     <Content Include="wwwroot\scripts\directives\lmLocations\template.html" />
@@ -517,6 +518,7 @@
     <Content Include="wwwroot\scripts\app.js" />
     <TypeScriptCompile Include="wwwroot\scripts\app.route.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmAccess\lmAccess.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmAtWho\lmAtWho.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmDateTime\lmDateTime.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />
