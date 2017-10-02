@@ -525,6 +525,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmTimeline\lmTimeline.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmZoomGallery\lmZoomGallery.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\achievementSummary.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\evidence.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\target.ts" />
