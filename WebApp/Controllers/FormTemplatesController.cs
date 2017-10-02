@@ -14,12 +14,14 @@ using WebApi.Models;
 using Newtonsoft.Json;
 using LightMethods.Survey.Models.MetricFilters;
 using System.Data.Entity.Infrastructure;
+using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
     public class FormTemplatesController : BaseApiController
     {
         // GET api/<controller>
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateDTO>))]
         public IHttpActionResult Get(Guid? projectId = null)
         {
@@ -45,6 +47,7 @@ namespace WebApi.Controllers
         }
 
         // GET api/<controller>/5
+        [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Get(Guid id)
         {
@@ -60,6 +63,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<FormTemplateDTO>(form));
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<MetricFilter>))]
         [Route("api/formtemplates/{id:Guid}/filters")]
         public IHttpActionResult GetFilters(Guid id)
@@ -97,6 +101,7 @@ namespace WebApi.Controllers
         }
 
         // PUT api/<controller>/5
+        [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Put(Guid id, FormTemplateDTO value)
         {
@@ -198,6 +203,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPut]
+        [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         [Route("api/formtemplates/{id:Guid}/details")]
         public IHttpActionResult EditBasicDetails(Guid id, EditBasicDetailsRequest value)
@@ -261,6 +267,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
+        [DeflateCompression]
         [Route("api/formtemplates/{id:Guid}/clone")]
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Clone(Guid id, CloneRequest request)

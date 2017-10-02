@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
@@ -26,6 +27,7 @@ namespace WebApi.Controllers
         }
 
         // GET api/<controller>/5
+        [DeflateCompression]
         [ResponseType(typeof(ProjectDTO))]
         public IHttpActionResult Get(Guid id)
         {
@@ -44,6 +46,7 @@ namespace WebApi.Controllers
             return Ok(project);
         }
 
+        [DeflateCompression]
         [Route("api/projects/{id:guid}/assignments")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
         public IHttpActionResult GetAssignments(Guid id)
