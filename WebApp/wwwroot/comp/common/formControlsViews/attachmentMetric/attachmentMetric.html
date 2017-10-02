@@ -1,13 +1,16 @@
 <div class="row attachment-metric" ng-controller="attachmentMetricController">
     <div class="col-md-12">
-        <div class="photos">
+        <div class="photos" lm-zoom-gallery>
             <div xgallerify="{'margin':5, 'mode':'flickr'}">
-                <img ng-repeat="attachment in formValue.attachments | filter: {typeString:'image', isDeleted: false} track by $index" ng-src="{{attachment.url}}" alt="{{attachment.fileName}}" ng-click="deleteAttachment($event, attachment)" />
+                <a class="mp-link" ng-repeat="attachment in formValue.attachments | filter: {typeString:'image', isDeleted: false} track by $index"
+                   href="{{attachment.url}}" title="{{attachment.fileName}}">
+                    <img ng-src="{{attachment.url}}" alt="{{attachment.fileName}}" ng-click="deleteAttachment($event, attachment)" />
+                </a>
             </div>
         </div>
 
         <div>
-            <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'!image', isDeleted: false} track by $index" ng-click="deleteAttachment($event, attachment)" >
+            <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'!image', isDeleted: false} track by $index" ng-click="deleteAttachment($event, attachment)">
                 <div class='col-xs-8 file-name'>
                     <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
                 </div>
