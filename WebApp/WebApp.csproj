@@ -229,6 +229,7 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_exportToolbox.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\projects\summary\projectSummaryView.html" />

@@ -15,6 +15,14 @@
         activate: () => void;
         downloadPdf: () => void;
         downloadZip: () => void;
+
+        showMap: boolean;
+        showPieChart: boolean;
+        showTimeline: boolean;
+
+        totalFormTemplates: number;
+        totalSurveys: number;
+        totalImpact: number;
     }
 
     class ProjectSummaryPrintController implements IProjectSummaryPrintController {
@@ -23,6 +31,12 @@
         surveys: Array<Models.ISurvey> = [];
         uniqFormTemplates: Models.IFormTemplate[];
         locationCount: number;
+        showMap: boolean = true;
+        showPieChart: boolean = true;
+        showTimeline: boolean = true;
+        totalFormTemplates: number;
+        totalSurveys: number;
+        totalImpact: number = 0;
 
         static $inject: string[] = ["$http", "session", "$state", "$stateParams", "$q", "projectSummaryPrintSessionResource", "formTemplateResource", "surveyResource"];
         constructor(
@@ -42,7 +56,6 @@
             let formTemplates = [];
             let surveys = [];
             let promises = [];
-
 
             angular.forEach(this.session.surveyIds, (surveyId) => {
                 let deferred = this.$q.defer();
@@ -64,7 +77,30 @@
                 this.surveys = surveys;
                 this.formTemplates = formTemplates;
                 this.uniqFormTemplates = _.uniqBy(this.formTemplates, (t) => { return t.id });
+
+                this.totalFormTemplates = this.uniqFormTemplates.length;
+                this.totalSurveys = this.surveys.length;
+
+                _.forEach(this.uniqFormTemplates, (template) => {
+                    this.totalImpact += this.getTotalImpact(template);
+                });
             });
+        }
+
+        getTotalImpact(template: Models.IFormTemplate) {
+            var totalValue = 0;
+
+            if (template.timelineBarMetricId && template.timelineBarMetricId.length) {
+                var records = _.filter(this.surveys, (s) => { return s.formTemplateId == template.id; });
+                _.forEach(records, (r) => {
+                    var impactValues = _.filter(r.formValues, (fv) => { return fv.metricId == template.timelineBarMetricId; });
+                    if (impactValues.length) {
+                        totalValue += impactValues[0].numericValue;
+                    }
+                });
+            }
+
+            return totalValue;
         }
 
         getFormTemplate(formTemplateId: string) {

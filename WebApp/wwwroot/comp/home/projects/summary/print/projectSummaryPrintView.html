@@ -1,27 +1,59 @@
 ﻿<div class="survey-print summary-print">
-    <br />
-    <button class="btn btn-default hidden-print" ng-click="ctrl.resetView()">
-        <i class="fa fa-refresh"></i> Reset View
-    </button>
-    <button class="btn btn-default hidden-print" ng-click="ctrl.downloadPdf()">
-        <i class="fa fa-file-pdf-o"></i> Download PDF
-    </button>
-    <button class="btn btn-default hidden-print" ng-click="ctrl.downloadZip()">
-        <i class="fa fa-file-zip-o"></i> Download Zip
-    </button>
+    <div ng-include="'comp/home/projects/summary/print/_exportToolbox.html'"></div>
     <div class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="inline mr-15">
+                    <i class="fa fa-folder-o"></i> Templates: {{ctrl.totalFormTemplates}}
+                </h1>
+                <h1 class="inline">
+                    <i class="fa fa-wpforms"></i> Surveys: {{ctrl.totalSurveys}}
+                </h1>
+                <h1 class="inline pull-right">
+                    <i class="fa fa-flash"></i> Total Impact: {{ctrl.totalImpact}}
+                </h1>
+            </div>
+        </div>
+        <div class="row timeline-row">
+            <div class="col-md-12" ng-if="ctrl.showTimeline">
+                <lm-timeline form-templates="ctrl.formTemplates" surveys="ctrl.surveys" height="250" render-mode="web"></lm-timeline>
+            </div>
+        </div>
         <div class="row charts-row">
-            <div class="col-md-6">
+            <div class="col-md-6" ng-if="ctrl.showMap">
                 <lm-locations form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" location-count="ctrl.locationCount"></lm-locations>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" ng-if="ctrl.showPieChart">
                 <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys"></lm-pie-chart>
             </div>
         </div>
-
+        
         <div ng-repeat="survey in ctrl.surveys track by $index" ng-init="formTemplate = ctrl.getFormTemplate(survey.formTemplateId)">
-            <h1>{{formTemplate.title}} <span ng-show="survey.serial !== null"> (#{{survey.serial}})</span></h1>
-            <hr />
+            <h1>{{formTemplate.title}}</h1>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="text-center" width="120"><i class="fa fa-hashtag"></i></th>
+                        <th class="text-center" width="120">Date</th>
+                        <th width="200">Filled By</th>
+                        <th>Description</th>
+                        <th class="text-center" width="120">Date Created</th>
+                        <th class="text-center" width="120">Date Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center"> {{survey.serial}}</td>
+                        <td class="text-center">{{survey.date | amDateFormat: 'L'}}</td>
+                        <td>{{survey.filledBy}}</td>
+                        <td>{{survey.description}}</td>
+                        <td class="text-center">{{survey.dateCreated | amDateFormat: 'L'}}</td>
+                        <td class="text-center">{{survey.dateUpdated | amDateFormat: 'L'}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
             <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
                 <div class="metric-groups">
                     <div class="content" ng-repeat="metricGroup in formTemplate.metricGroups | filter: {isDeleted: false} track by $index ">
