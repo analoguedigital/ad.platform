@@ -23,12 +23,12 @@
         </div>
 
         <div ng-if="isExportMode" class="row attachment-metric" ng-controller="attachmentMetricController">
-            <table class="table table-stripped">
+            <table class="table table-bordered table-striped" ng-if="formValue.attachments.length">
                 <thead>
                     <tr>
                         <th>FileName</th>
-                        <th>Type</th>
-                        <th>Size (byte)</th>
+                        <th class="text-center" width="100">Type</th>
+                        <th class="text-center">Size (byte)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -36,10 +36,10 @@
                         <td class='col-xs-8 file-name'>
                             <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
                         </td>
-                        <td class="col-xs-2 info">
+                        <td class="col-xs-2 info text-center">
                             {{attachment.typeString}}
                         </td>
-                        <td class="col-xs-2">
+                        <td class="col-xs-2 text-center">
                             {{attachment.fileSize}}
                         </td>
                     </tr>

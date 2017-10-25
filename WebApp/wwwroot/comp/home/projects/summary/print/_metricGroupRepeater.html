@@ -40,14 +40,5 @@
     <a ng-if="isDataList && maxRow < filtered.length" class="button button-block button-stable" ng-click="showAll()">
         <span>Show more</span>
     </a>
-    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="button button-block button-stable" ng-click="addRow()">
-        <span>Add row</span>
-    </a>
-</div>
-
-<div class="errors">
-    <div ng-repeat="error in ctrl.errors | filter: {key: metric.id}">
-        {{error.value}}
-    </div>
 </div>
 <div class="hr-line-dashed"></div>

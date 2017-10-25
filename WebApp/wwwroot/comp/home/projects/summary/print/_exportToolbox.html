@@ -2,7 +2,7 @@
 <button class="btn btn-default hidden-print" ng-click="ctrl.resetView()">
     <i class="fa fa-refresh"></i> Reset View
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.showTimeline = !ctrl.showTimeline">
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleTimeline()">
     <span ng-if="ctrl.showTimeline">
         <i class="fa fa-toggle-on"></i> Hide Timeline
     </span>
@@ -10,7 +10,7 @@
         <i class="fa fa-toggle-off"></i> Show Timeline
     </span>
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.showMap = !ctrl.showMap">
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleMap()">
     <span ng-if="ctrl.showMap">
         <i class="fa fa-toggle-on"></i> Hide Map
     </span>
@@ -18,7 +18,7 @@
         <i class="fa fa-toggle-off"></i> Show Map
     </span>
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.showPieChart = !ctrl.showPieChart">
+<button class="btn btn-default hidden-print" ng-click="ctrl.togglePieChart()">
     <span ng-if="ctrl.showPieChart">
         <i class="fa fa-toggle-on"></i> Hide Pie Chart
     </span>
