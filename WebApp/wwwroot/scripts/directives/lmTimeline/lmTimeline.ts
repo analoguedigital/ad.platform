@@ -245,6 +245,8 @@
                                 }
                             });
 
+                            if (impactSum === 0) impactSum = 0.9;
+
                             data.push(impactSum);
                         } else {
                             data.push(0);
@@ -390,15 +392,6 @@
                 else
                     ctx.canvas.height = parent.height();
 
-                // compute yAxes max value.
-                var dataPoints = [];
-                _.forEach(scope.chartDatasets, (ds) => {
-                    dataPoints.push.apply(dataPoints, ds.data);
-                });
-
-                var maxImpact = _.max(dataPoints) + 10;
-                if (scope.orientation === 'portrait') maxImpact += 10;
-
                 var chartOptions = {
                     responsive: true,
                     maintainAspectRatio: false,
@@ -439,8 +432,11 @@
                                 display: false
                             },
                             ticks: {
-                                beginAtZero: true,
-                                max: maxImpact
+                                beginAtZero: true
+                            },
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Impact'
                             }
                         }]
                     },
@@ -493,32 +489,32 @@
                                 var data = dataset.data[index];
                                 var impact = parseInt(data);
 
-                                if (impact > 0) {
-                                    var foundTemplate = _.filter(scope.formTemplates, (template) => { return template.id === dataset.formTemplateId; });
-                                    if (foundTemplate.length) {
-                                        var template = foundTemplate[0];
-                                        var tickData = scope.tickData[index];
+                                var foundTemplate = _.filter(scope.formTemplates, (template) => { return template.id === dataset.formTemplateId; });
+                                if (foundTemplate.length) {
+                                    var template = foundTemplate[0];
+                                    var tickData = scope.tickData[index];
 
-                                        let records = _.filter(tickData.data, (record: Models.ISurvey) => {
-                                            return record.formTemplateId == template.id;
-                                        });
+                                    let records = _.filter(tickData.data, (record: Models.ISurvey) => {
+                                        return record.formTemplateId == template.id;
+                                    });
 
-                                        if (records.length) {
-                                            var centerX = bar._model.x;
-                                            var centerY = bar._model.y;
-                                            var radius = barSize / 2;
+                                    if (records.length) {
+                                        var centerX = bar._model.x;
+                                        var centerY = bar._model.y;
+                                        var radius = barSize / 2;
+                                        var fillColour = impact === 0 ? 'orange' : 'white';
+                                        var strokeColour = impact === 0 ? 'darkorange' : 'gray';
 
-                                            ctx.beginPath();
-                                            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-                                            ctx.fillStyle = 'white';
-                                            ctx.fill();
-                                            ctx.lineWidth = 1;
-                                            ctx.strokeStyle = 'white';
-                                            ctx.stroke();
+                                        ctx.beginPath();
+                                        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                                        ctx.fillStyle = fillColour;
+                                        ctx.fill();
+                                        ctx.lineWidth = 1;
+                                        ctx.strokeStyle = strokeColour;
+                                        ctx.stroke();
 
-                                            ctx.fillStyle = '#1D2331';
-                                            ctx.fillText(records.length, bar._model.x, bar._model.y + 7);
-                                        }
+                                        ctx.fillStyle = '#1D2331';
+                                        ctx.fillText(records.length, bar._model.x, bar._model.y + 7);
                                     }
                                 }
                             });
