@@ -24,6 +24,13 @@
 
         <div ng-if="isExportMode" class="row attachment-metric" ng-controller="attachmentMetricController">
             <table class="table table-stripped">
+                <thead>
+                    <tr>
+                        <th>FileName</th>
+                        <th>Type</th>
+                        <th>Size (byte)</th>
+                    </tr>
+                </thead>
                 <tbody>
                     <tr ng-repeat='attachment in formValue.attachments | filter: {isDeleted: false} track by $index'>
                         <td class='col-xs-8 file-name'>
