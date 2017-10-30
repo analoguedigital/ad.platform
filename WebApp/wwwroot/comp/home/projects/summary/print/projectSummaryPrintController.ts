@@ -105,7 +105,7 @@
                 });
 
             this.$q.all(promises).then(() => {
-                this.surveys = surveys;
+                this.surveys = _.sortBy(surveys, 'surveyDate').reverse();
                 this.formTemplates = formTemplates;
                 this.uniqFormTemplates = _.uniqBy(this.formTemplates, (t) => { return t.id });
 

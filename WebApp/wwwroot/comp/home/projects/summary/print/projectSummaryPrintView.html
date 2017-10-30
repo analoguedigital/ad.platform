@@ -48,23 +48,21 @@
                 <thead>
                     <tr>
                         <th class="text-center" width="120"><i class="fa fa-hashtag"></i></th>
-                        <th class="text-center" width="120">Date</th>
+                        <th class="text-center" width="150">Date</th>
                         <th width="200">Filled By</th>
-                        <th>Description</th>
                         <th class="text-center" width="100">Impact</th>
-                        <th class="text-center" width="120">Date Created</th>
-                        <th class="text-center" width="120">Date Updated</th>
+                        <th>Description</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td class="text-center"> {{survey.serial}}</td>
-                        <td class="text-center">{{survey.date | amDateFormat: 'L'}}</td>
+                        <td class="text-center">
+                            <lm-date-time value="survey.surveyDate"></lm-date-time>
+                        </td>
                         <td>{{survey.filledBy}}</td>
-                        <td>{{survey.description}}</td>
                         <td class="text-center">{{ctrl.getSurveyImpact(survey)}}</td>
-                        <td class="text-center">{{survey.dateCreated | amDateFormat: 'L'}}</td>
-                        <td class="text-center">{{survey.dateUpdated | amDateFormat: 'L'}}</td>
+                        <td>{{survey.description}}</td>
                     </tr>
                 </tbody>
             </table>
