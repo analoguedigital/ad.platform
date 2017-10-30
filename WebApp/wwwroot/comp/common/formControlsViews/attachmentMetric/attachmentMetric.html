@@ -27,19 +27,19 @@
                 <thead>
                     <tr>
                         <th>FileName</th>
-                        <th>Type</th>
-                        <th>Size (byte)</th>
+                        <th class="text-center" width="120">Type</th>
+                        <th class="text-center" width="120">Size (bytes)</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat='attachment in formValue.attachments | filter: {isDeleted: false} track by $index'>
-                        <td class='col-xs-8 file-name'>
+                        <td class='file-name'>
                             <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
                         </td>
-                        <td class="col-xs-2 info">
+                        <td class="info text-center">
                             {{attachment.typeString}}
                         </td>
-                        <td class="col-xs-2">
+                        <td class="text-center">
                             {{attachment.fileSize}}
                         </td>
                     </tr>
