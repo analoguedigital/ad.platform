@@ -3,27 +3,17 @@
     <div class="content">
         <div class="row">
             <div class="col-md-12">
-                <h1 class="text-center"><i class="fa fa-flask"></i> {{ctrl.project.name}}</h1>
-                <h2 class="text-center"><i class="fa fa-hashtag"></i> {{ctrl.project.number}}</h2>
-                <h3 class="text-muted text-center" ng-if="ctrl.project.startDate">
-                    start: {{ctrl.project.startDate | amDateFormat: 'L'}}
-                </h3>
-                <h3 class="text-muted text-center" ng-if="ctrl.project.endDate">
-                    end: {{ctrl.project.endDate | amDateFormat: 'L' }}
-                </h3>
+                <h1 class="text-center">{{ctrl.project.name}}</h1>
                 <hr />
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <h1 class="inline mr-15">
-                    <i class="fa fa-folder-o"></i> Templates: {{ctrl.totalFormTemplates}}
+                    <i class="fa fa-folder-o"></i> Threads: {{ctrl.totalFormTemplates}}
                 </h1>
                 <h1 class="inline">
-                    <i class="fa fa-wpforms"></i> Surveys: {{ctrl.totalSurveys}}
-                </h1>
-                <h1 class="inline pull-right">
-                    <i class="fa fa-flash"></i> Total Impact: {{ctrl.totalImpact}}
+                    <i class="fa fa-wpforms"></i> Records: {{ctrl.totalSurveys}}
                 </h1>
             </div>
         </div>
@@ -49,9 +39,9 @@
                     <tr>
                         <th class="text-center" width="120"><i class="fa fa-hashtag"></i></th>
                         <th class="text-center" width="150">Date</th>
-                        <th width="200">Filled By</th>
+                        <th width="200">Completed_by</th>
                         <th class="text-center" width="100">Impact</th>
-                        <th>Description</th>
+                        <th>Record</th>
                     </tr>
                 </thead>
                 <tbody>
