@@ -35,7 +35,7 @@
         locationCount: number;
         showMap: boolean = false;
         showPieChart: boolean = false;
-        showTimeline: boolean = false;
+        showTimeline: boolean = true;
         totalFormTemplates: number;
         totalSurveys: number;
         totalImpact: number = 0;
