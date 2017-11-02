@@ -2,37 +2,48 @@
 module App {
     "use strict";
 
+    interface GenderType {
+        id: number;
+        label: string;
+    }
+
     interface IUserEditController {
         title: string;
         user: Models.IOrgUser;
         types: Models.IOrgUserType[];
         errors: string;
+        birthDateCalendar: any;
+
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
-
         activate: () => void;
+        openBirthDateCalendar: () => void;
     }
 
     class UserEditController implements IUserEditController {
-
         title: string;
         user: Models.IOrgUser;
         types: Models.IOrgUserType[];
         isInsertMode: boolean;
         errors: string;
+        genderTypes: GenderType[];
 
+        birthDateCalendar = { isOpen: false };
 
-        static $inject: string[] = [ "orgUserResource", "orgUserTypeResource", "$state", "$stateParams"];
-
+        static $inject: string[] = ["orgUserResource", "orgUserTypeResource", "$state", "$stateParams"];
         constructor(
             private orgUserResource: Resources.IOrgUserResource,
             private orgUserTypeResource: Resources.IOrgUserTypeResource,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService
         ) {
-
             this.title = "Users";
-            
+            this.genderTypes = [
+                { id: 0, label: 'Male' },
+                { id: 1, label: 'Female' },
+                { id: 2, label: 'Other' }
+            ];
+
             this.activate();
         }
 
@@ -55,6 +66,7 @@ module App {
             if (form.$invalid) {
                 return;
             }
+
             var userId = this.$stateParams['id'];
             if (userId === '') {
                 this.orgUserResource.save(
@@ -80,6 +92,9 @@ module App {
             this.errors = undefined;
         }
 
+        openBirthDateCalendar() {
+            this.birthDateCalendar.isOpen = true;
+        }
     }
 
     angular.module("app").controller("userEditController", UserEditController);
