@@ -245,8 +245,6 @@
                                 }
                             });
 
-                            if (impactSum === 0) impactSum = 0.9;
-
                             data.push(impactSum);
                         } else {
                             data.push(0);
@@ -391,6 +389,15 @@
                     ctx.canvas.height = scope.height;
                 else
                     ctx.canvas.height = parent.height();
+
+                // compute yAxes max value.
+                var dataPoints = [];
+                _.forEach(scope.chartDatasets, (ds) => {
+                    dataPoints.push.apply(dataPoints, ds.data);
+                });
+
+                var maxImpact = _.max(dataPoints) + 10;
+                var minImpact = _.min(dataPoints) + -10;
 
                 var chartOptions = {
                     responsive: true,
