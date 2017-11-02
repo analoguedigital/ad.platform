@@ -178,6 +178,7 @@
     <Content Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilter.html" />
     <Content Include="wwwroot\comp\common\filterControls\_filter\filter.html" />
     <Content Include="wwwroot\comp\common\footer\footerView.html" />
+    <Content Include="wwwroot\comp\forgotPassword\forgotPasswordView.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\attachmentMetric.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\dateMetric\dateMetric.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\dichotomousMetric\dichotomousMetric.html" />
@@ -269,6 +270,7 @@
     <Content Include="wwwroot\comp\home\surveys\summary\surveysSummaryView.html" />
     <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
     <Content Include="wwwroot\comp\login\loginView.html" />
+    <Content Include="wwwroot\comp\setPassword\setPasswordView.html" />
     <Content Include="wwwroot\css\index.css" />
     <Content Include="wwwroot\css\index.min.css">
       <DependentUpon>index.css</DependentUpon>
@@ -424,6 +426,8 @@
     <Content Include="wwwroot\comp\home\projects\assignments\_assignments.scss" />
     <Content Include="wwwroot\comp\home\surveys\summary\_summary.scss" />
     <Content Include="wwwroot\comp\home\formTemplates\_formTemplates.scss" />
+    <Content Include="wwwroot\comp\forgotPassword\_forgotPassword.scss" />
+    <Content Include="wwwroot\comp\setPassword\_setPassword.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -448,6 +452,7 @@
     <TypeScriptCompile Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\filterControls\_filter\filterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\footer\footerController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\forgotPassword\forgotPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\timeMetric\timeMetricController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\dateMetric\dateMetricController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\dichotomousMetric\dichotomousMetricController.ts" />
@@ -512,6 +517,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\indexController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\login\loginController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\setPassword\setPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\app.config.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\app.run.ts" />
     <Content Include="wwwroot\scripts\app.js" />

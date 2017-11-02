@@ -163,6 +163,62 @@ namespace WebApi.Models
             return Ok();
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ForgotPassword")]
+        public async Task<IHttpActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (model == null || !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await UserManager.FindByNameAsync(model.Email);
+            
+            // uncomment if user has to activate his email to confirm his account.
+            //if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+            //{
+            //    return Ok();
+            //}
+
+            if (user == null)
+            {
+                // don't reveal that user does not exist! return Ok();
+                return BadRequest();
+            }
+
+            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+            // Send an email with this link
+            string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            await UserManager.SendEmailAsync(user.Id, "Reset Password", $"Please reset your password by using this {code}");
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ResetPassword")]
+        public async Task<IHttpActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (model == null || !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await UserManager.FindByNameAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return Ok();
+            }
+
+            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            if (result.Succeeded)
+                return Ok();
+
+            ModelState.Clear();
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error);
+
+            return BadRequest(ModelState);
+        }
+
         // POST api/Account/AddExternalLogin
         [Route("AddExternalLogin")]
         public async Task<IHttpActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
