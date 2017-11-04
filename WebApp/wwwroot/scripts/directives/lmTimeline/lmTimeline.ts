@@ -245,6 +245,8 @@
                                 }
                             });
 
+                            if (impactSum === 0) impactSum = 0.1;
+
                             data.push(impactSum);
                         } else {
                             data.push(0);
@@ -264,7 +266,7 @@
                     datasets.push(ds);
                 });
 
-                return datasets;
+                return datasets.reverse();
             }
 
             function generateTimelineData() {
@@ -551,8 +553,8 @@
                 var dataset = data.datasets[item.datasetIndex];
                 var dataPoint = dataset.data[item.index];
 
-                if (dataPoint === 0)
-                    return '';
+                if (item.yLabel === 0.1)
+                    item.yLabel = 0;
 
                 return `${label}: ${item.yLabel}`;
             }
