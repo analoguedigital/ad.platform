@@ -21,12 +21,12 @@ module App {
 
     class DateMetricController implements IDateMetricController {
 
-        static $inject: string[] = ['$scope'];
+        static $inject: string[] = ['$scope', '$rootScope'];
 
-        constructor(private $scope: IDateMetricContrllerScope) {
+        constructor(private $scope: IDateMetricContrllerScope, private $rootScope: ng.IRootScopeService) {
             $scope.calendar = { isOpen: false };
             $scope.openCalendar = () => { this.openCalendar(); }
-            $scope.dateTimeFormat = "MM/dd/yyyy";
+            $scope.dateTimeFormat = $rootScope.INPUT_DATE_FORMAT;
 
             this.activate();
         }
@@ -44,7 +44,7 @@ module App {
             }
 
             if (this.$scope.metric.hasTimeValue)
-                this.$scope.dateTimeFormat = "MM/dd/yyyy HH:mm a";  
+                this.$scope.dateTimeFormat = this.$rootScope.INPUT_DATE_FORMAT + " HH:mm a";  
         }
     }
 
