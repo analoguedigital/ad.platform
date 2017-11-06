@@ -29,7 +29,7 @@
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="ctrl.openBirthDateCalendar()"><i class="fa fa-calendar"></i></button>
                         </span>
-                        <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.birthDateCalendar.isOpen" class="form-control" type="text" name="birth-date" ng-model="ctrl.user.birthdate" placeholder="birth date" />
+                        <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.birthDateCalendar.isOpen" class="form-control" type="text" name="birth-date" ng-model="ctrl.user.birthdate" placeholder="birth date" />
                     </div>
                 </lm-form-group>
                 <lm-form-group label="Address:">
