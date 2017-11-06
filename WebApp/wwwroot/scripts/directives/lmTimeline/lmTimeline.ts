@@ -245,6 +245,8 @@
                                 }
                             });
 
+                            if (impactSum === 0) impactSum = 0.1;
+
                             data.push(impactSum);
                         } else {
                             data.push(0);
@@ -264,7 +266,7 @@
                     datasets.push(ds);
                 });
 
-                return datasets;
+                return datasets.reverse();
             }
 
             function generateTimelineData() {
@@ -396,8 +398,8 @@
                     dataPoints.push.apply(dataPoints, ds.data);
                 });
 
-                var maxImpact = _.max(dataPoints) + 1;
-                var minImpact = _.min(dataPoints) + -1;
+                var maxImpact = _.max(dataPoints) + 10;
+                var minImpact = _.min(dataPoints) + -10;
 
                 var chartOptions = {
                     responsive: true,
@@ -554,8 +556,8 @@
                 var dataset = data.datasets[item.datasetIndex];
                 var dataPoint = dataset.data[item.index];
 
-                if (dataPoint === 0)
-                    return '';
+                if (item.yLabel === 0.1)
+                    item.yLabel = 0;
 
                 return `${label}: ${item.yLabel}`;
             }
