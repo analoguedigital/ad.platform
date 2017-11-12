@@ -8,7 +8,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
-                <input uib-datepicker-popup="{{'MM/dd/yyyy'}}" is-open="ctrl.startDateCalendar.isOpen" 
+                <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.startDateCalendar.isOpen" 
                        class="form-control" type="text" name="start-date" 
                        ng-model="ctrl.startDate" placeholder="start date" />
             </div>
@@ -18,7 +18,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
-                <input uib-datepicker-popup="{{'MM/dd/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
+                <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
             </div>
         </div>
         <div class="col-md-3 pull-right" style="direction: rtl">
