@@ -31,7 +31,6 @@ var App;
         "chart.js",
         "uiGmapgoogle-maps",
         "minicolors",
-        "ngTagsInput",
         "jtt_angular_xgallerify",
         "angular-loading-bar"
     ]);
