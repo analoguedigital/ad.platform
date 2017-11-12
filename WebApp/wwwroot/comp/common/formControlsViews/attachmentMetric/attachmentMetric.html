@@ -1,26 +1,53 @@
 <div class="row attachment-metric" ng-controller="attachmentMetricController">
     <div class="col-md-12">
-        <div class="photos" lm-zoom-gallery>
-            <div xgallerify="{'margin':5, 'mode':'flickr'}">
-                <a class="mp-link" ng-repeat="attachment in formValue.attachments | filter: {typeString:'image', isDeleted: false} track by $index"
-                   href="{{attachment.url}}" title="{{attachment.fileName}}">
-                    <img ng-src="{{attachment.url}}" alt="{{attachment.fileName}}" ng-click="deleteAttachment($event, attachment)" />
-                </a>
+        <div ng-if="isViewMode || isPrintMode">
+            <div class="photos" lm-zoom-gallery>
+                <div xgallerify="{'margin':5, 'mode':'flickr'}">
+                    <a class="mp-link" ng-repeat="attachment in formValue.attachments | filter: {typeString:'image', isDeleted: false} track by $index"
+                       href="{{attachment.url}}" title="{{attachment.fileName}}">
+                        <img ng-src="{{attachment.url}}" alt="{{attachment.fileName}}" ng-click="deleteAttachment($event, attachment)" />
+                    </a>
+                </div>
+            </div>
+    
+            <div>
+                <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'!image', isDeleted: false} track by $index" ng-click="deleteAttachment($event, attachment)" >
+                    <div class='col-xs-8 file-name'>
+                        <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
+                    </div>
+                    <div class='col-xs-3'>
+                        <div class='info'>
+                            {{attachment.typeString}}{{attachment.fileSize}}
+                        </div>
+                    </div>
+                    <i class="delete-icon fa fa-trash fa-3x"></i>
+                </div>
             </div>
         </div>
 
-        <div>
-            <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'!image', isDeleted: false} track by $index" ng-click="deleteAttachment($event, attachment)" >
-                <div class='col-xs-8 file-name'>
-                    <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
-                </div>
-                <div class='col-xs-3'>
-                    <div class='info'>
-                        {{attachment.typeString}}{{attachment.fileSize}}
-                    </div>
-                </div>
-                <i class="delete-icon fa fa-trash fa-3x"></i>
-            </div>
+        <div ng-if="isExportMode" class="row attachment-metric" ng-controller="attachmentMetricController">
+            <table class="table table-stripped">
+                <thead>
+                    <tr>
+                        <th>FileName</th>
+                        <th class="text-center" width="120">Type</th>
+                        <th class="text-center" width="120">Size (bytes)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat='attachment in formValue.attachments | filter: {isDeleted: false} track by $index'>
+                        <td class='file-name'>
+                            <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
+                        </td>
+                        <td class="info text-center">
+                            {{attachment.typeString}}
+                        </td>
+                        <td class="text-center">
+                            {{attachment.fileSize}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

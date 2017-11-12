@@ -19,13 +19,15 @@ module App {
         formValue: Models.IFormValue;
         isViewMode: boolean;
         isPrintMode: boolean;
+        isExportMode: boolean;
     }
 
     class MetricController implements IMetricController {
 
 
         static readonly surveyViewRouteName: string = "home.surveys.view";
-        static readonly surveyPrintRouteNames: string[] = ["home.surveys.print-single", "home.surveys.print-multiple", "home.projects.summaryPrint"];
+        static readonly surveyPrintRouteNames: string[] = ["home.surveys.print-single", "home.surveys.print-multiple"];
+        static readonly projectSummaryPrintRouteName: string = "home.projects.summaryPrint";
 
         survey: Models.ISurvey;
 
@@ -46,6 +48,10 @@ module App {
 
             if (MetricController.surveyPrintRouteNames.indexOf(this.$state.current.name) !== -1) {
                 this.$scope.isPrintMode = true;
+            }
+
+            if (this.$state.current.name == MetricController.projectSummaryPrintRouteName) {
+                this.$scope.isExportMode = true;
             }
 
             var relatedFormValues: Models.IFormValue[] = [];
