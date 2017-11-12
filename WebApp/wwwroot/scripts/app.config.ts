@@ -39,6 +39,24 @@
                 ncyBreadcrumb: { label: 'Login' },
                 data: { bodyCssClass: "login-page" },
                 module: "public"
+            })
+            .state("forgotPassword", <App.Models.IAppRoute>{
+                parent: "index",
+                url: "/forgot-password",
+                templateUrl: "comp/forgotPassword/forgotPasswordView.html",
+                controller: "forgotPasswordController",
+                ncyBreadcrumb: { label: 'Forgot Password' },
+                data: { bodyCssClass: "forgot-password-page" },
+                module: "public"
+            })
+            .state("setPassword", <App.Models.IAppRoute>{
+                parent: "index",
+                url: "/set-password",
+                templateUrl: "comp/setPassword/setPasswordView.html",
+                controller: "setPasswordController",
+                ncyBreadcrumb: { label: 'Reset Password' },
+                data: { bodyCssClass: "set-password-page" },
+                module: "public"
             });
 
 

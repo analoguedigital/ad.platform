@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Entities;
+using Microsoft.AspNet.Identity;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Services.Identity
@@ -11,8 +10,26 @@ namespace LightMethods.Survey.Models.Services.Identity
     {
         public Task SendAsync(IdentityMessage message)
         {
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            var email = new Email
+            {
+                To = message.Destination,
+                Subject = message.Subject,
+                Content = message.Body
+            };
+
+            var uow = new UnitOfWork(new SurveyContext());
+
+            try
+            {
+                uow.EmailsRepository.InsertOrUpdate(email);
+                uow.Save();
+
+                return Task.FromResult(200);
+            }
+            catch (Exception)
+            {
+                return Task.FromResult(503);
+            }
         }
     }
 }
