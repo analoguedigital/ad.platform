@@ -33,12 +33,5 @@ namespace WebApi.Models
 
         public bool IsMobileUser { get; set; }
 
-        public List<ProjectAssignmentDTO> Assignments { get; set; }
-
-        public OrgUserDTO()
-        {
-            this.Assignments = new List<ProjectAssignmentDTO>();
-        }
-
     }
 }
