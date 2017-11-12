@@ -58,17 +58,33 @@ module App {
         }
 
         activate() {
+            var metricGroup = this.$scope.metricGroup;
+            var survey = this.$scope.ctrl.survey;
 
-            if (this.$scope.metricGroup.type === "IterativeRepeater") {
+            if (metricGroup.type === "IterativeRepeater") {
                 this.$scope.isDataList = false;
-                for (var i = 0; i < this.$scope.metricGroup.numberOfRows; i++) {
-                    this.$scope.rows.push({ rowNumber: i + 1, dataListItem: undefined });
+                if (survey.serial == null) { // new form
+                    for (var i = 0; i < metricGroup.numberOfRows; i++) {
+                        this.$scope.rows.push({ rowNumber: i + 1, dataListItem: undefined });
+                    }
+                } else { // view/edit forms
+                    var metricIds = _.map(metricGroup.metrics, (metric) => { return metric.id });
+                    var formValues = _.filter(survey.formValues, (fv) => {
+                        return _.includes(metricIds, fv.metricId);
+                    });
+
+                    var records = formValues.length / metricGroup.metrics.length;
+                    for (var i = 0; i < records; i++) {
+                        this.$scope.rows.push({ rowNumber: i + 1, dataListItem: undefined });
+                    }
                 }
             }
             else {
+                var dataListItems = this.$scope.dataListItems;
+
                 this.$scope.isDataList = true;
-                this.$scope.relationshipTitles = _.map(this.$scope.dataListItems[0].attributes, 'title');
-                angular.forEach(this.$scope.dataListItems, (item, index) => {
+                this.$scope.relationshipTitles = _.map(dataListItems[0].attributes, 'title');
+                angular.forEach(dataListItems, (item, index) => {
                     this.$scope.rows.push({ rowNumber: index + 1, dataListItem: item });
 
                     //angular.forEach(item.attributes, (attr) => {

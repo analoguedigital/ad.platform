@@ -25,7 +25,6 @@ module App {
             private dataListResource: Resources.IDataListResource) {
 
             $scope.group = group;
-            $scope.globalDataLists = dataListResource.query();
             $scope.close = () => { this.close(); };
             $scope.addAdhocItem = () => { this.addAdhocItem(); };
             $scope.removeAdhocItem = (adhocItem) => { this.removeAdhocItem(adhocItem); }
@@ -35,7 +34,9 @@ module App {
         }
 
         activate() {
-
+            this.dataListResource.get().$promise.then((data: any) => {
+                this.$scope.globalDataLists = data.items;
+            });
         }
 
         removeAdhocItem(adhocItem: Models.IDataListItem) {
