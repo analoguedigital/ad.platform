@@ -81,7 +81,7 @@
 
     configAngularMoment.$inject = ["amMoment", "$locale", "moment", "$rootScope"];
     function configAngularMoment(amMoment, $locale, moment, $rootScope) {
-        var locale = window.navigator.userLanguage || window.navigator.language;
+        var locale = window.navigator.language;
         var localeData = moment().locale(locale).localeData();
         var format = localeData.longDateFormat('L');
 
