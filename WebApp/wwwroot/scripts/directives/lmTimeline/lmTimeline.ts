@@ -396,7 +396,7 @@
                 else
                     ctx.canvas.height = parent.height();
 
-                // compute yAxes max value.
+                // compute yAxis max, and add a little padding
                 var dataPoints = [];
                 _.forEach(scope.chartDatasets, (ds) => {
                     dataPoints.push.apply(dataPoints, ds.data);
@@ -442,10 +442,13 @@
                         yAxes: [{
                             stacked: true,
                             gridLines: {
-                                display: false
+                                display: true,
+                                drawBorder: false
                             },
                             ticks: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                max: maxImpact,
+                                min: minImpact
                             },
                             scaleLabel: {
                                 display: true,

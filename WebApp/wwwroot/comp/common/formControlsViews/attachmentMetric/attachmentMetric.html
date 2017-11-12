@@ -26,7 +26,7 @@
         </div>
 
         <div ng-if="isExportMode" class="row attachment-metric" ng-controller="attachmentMetricController">
-            <table class="table table-stripped">
+            <table class="table table-bordered table-striped" ng-if="formValue.attachments.length">
                 <thead>
                     <tr>
                         <th>FileName</th>

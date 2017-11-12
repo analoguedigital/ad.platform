@@ -1,0 +1,34 @@
+﻿<br />
+<button class="btn btn-default hidden-print" ng-click="ctrl.resetView()">
+    <i class="fa fa-refresh"></i> Reset View
+</button>
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleTimeline()">
+    <span ng-if="ctrl.showTimeline">
+        <i class="fa fa-toggle-on"></i> Hide Timeline
+    </span>
+    <span ng-if="!ctrl.showTimeline">
+        <i class="fa fa-toggle-off"></i> Show Timeline
+    </span>
+</button>
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleMap()">
+    <span ng-if="ctrl.showMap">
+        <i class="fa fa-toggle-on"></i> Hide Map
+    </span>
+    <span ng-if="!ctrl.showMap">
+        <i class="fa fa-toggle-off"></i> Show Map
+    </span>
+</button>
+<button class="btn btn-default hidden-print" ng-click="ctrl.togglePieChart()">
+    <span ng-if="ctrl.showPieChart">
+        <i class="fa fa-toggle-on"></i> Hide Pie Chart
+    </span>
+    <span ng-if="!ctrl.showPieChart">
+        <i class="fa fa-toggle-off"></i> Show Pie Chart
+    </span>
+</button>
+<button class="btn btn-primary hidden-print" ng-click="ctrl.downloadPdf()">
+    <i class="fa fa-file-pdf-o"></i> Download PDF
+</button>
+<button class="btn btn-primary hidden-print" ng-click="ctrl.downloadZip()">
+    <i class="fa fa-file-zip-o"></i> Download Zip
+</button>

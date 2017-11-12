@@ -185,7 +185,7 @@ module App {
         }
 
         print() {
-            let surveys = _.filter(this.displayedSurveys, (r) => { return r.isChecked });
+            let surveys = _.filter(this.surveys, (r) => { return r.isChecked });
             if (surveys.length < 1) {
                 this.toastr.info('Select desired records first', 'Print Surveys');
                 return false;
