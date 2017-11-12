@@ -60,7 +60,33 @@
             }
 
             function generateWebXAxis() {
-                var xAxesTicks = [];
+                // broadcast that we have a month view
+                $rootScope.$broadcast('timeline-in-month-view');
+
+                // first day of month to last
+                var daysInMonth = moment(scope.currentDate).daysInMonth();
+                var currentDay = moment(scope.currentDate).date();
+                var firstDayOfMonth = moment(scope.currentDate).add(-(currentDay - 1), 'day').toDate();
+                var lastDayOfMonth = moment(scope.currentDate).add((daysInMonth - currentDay), 'day').toDate();
+
+                var xAxesTicks = [firstDayOfMonth];
+
+                for (var i = 2; i < daysInMonth; i++) {
+                    var daysToAdd = -(currentDay - i);
+                    var tick = moment(scope.currentDate).add(daysToAdd, 'day').toDate();
+                    xAxesTicks.push(tick);
+                }
+
+                xAxesTicks.push(lastDayOfMonth);
+
+                return xAxesTicks;
+            }
+
+            function generateSnapshot() {
+                var xAxisTicks = [];
+
+                // broadcast that we have a snapshot view
+                $rootScope.$broadcast('timeline-in-snapshot-view');
 
                 var groupedSurveys = _.groupBy(scope.surveys, function (survey) {
                     return moment(survey.date).startOf('day').format();
@@ -74,58 +100,36 @@
                 });
                 occurences = _.sortBy(occurences, 'day');
 
-                if (occurences.length >= 28) {
-                    // broadcast that we have a month view
-                    $rootScope.$broadcast('timeline-in-month-view');
+                // date range with padding
+                _.forEach(occurences, (oc) => {
+                    xAxisTicks.push(oc.day);
+                });
 
-                    // first day of month to last
-                    var daysInMonth = moment(scope.currentDate).daysInMonth();
-                    var currentDay = moment(scope.currentDate).date();
-                    var firstDayOfMonth = moment(scope.currentDate).add(-(currentDay - 1), 'day').toDate();
-                    var lastDayOfMonth = moment(scope.currentDate).add((daysInMonth - currentDay), 'day').toDate();
+                var minDate = _.minBy(occurences, 'day').day;
+                var maxDate = _.maxBy(occurences, 'day').day;
 
-                    xAxesTicks.push(firstDayOfMonth);
-                    for (var i = 2; i < daysInMonth; i++) {
-                        var daysToAdd = -(currentDay - i);
-                        var tick = moment(scope.currentDate).add(daysToAdd, 'day').toDate();
-                        xAxesTicks.push(tick);
-                    }
-                    xAxesTicks.push(lastDayOfMonth);
-                } else {
-                    // broadcast that we have a snapshot view
-                    $rootScope.$broadcast('timeline-in-snapshot-view');
+                var maxTicks = 28;
+                var missingTicks = Math.floor((maxTicks - occurences.length) / 2);
 
-                    // date range with padding
-                    _.forEach(occurences, (oc) => {
-                        xAxesTicks.push(oc.day);
-                    });
-
-                    var minDate = _.minBy(occurences, 'day').day;
-                    var maxDate = _.maxBy(occurences, 'day').day;
-
-                    var maxTicks = 28;
-                    var missingTicks = Math.floor((maxTicks - occurences.length) / 2);
-
-                    // padding to start
-                    for (let i = 1; i <= missingTicks; i++) {
-                        var date = moment(minDate).add(-i, 'days').toDate();
-                        xAxesTicks.unshift(date);
-                    }
-
-                    // padding to end
-                    for (let i = 1; i <= missingTicks; i++) {
-                        var date = moment(maxDate).add(i, 'days').toDate();
-                        xAxesTicks.push(date);
-                    }
-
-                    if (xAxesTicks.length < maxTicks) {
-                        var firstTick = xAxesTicks[0];
-                        var date = new moment(firstTick).add(-1, 'days').toDate();
-                        xAxesTicks.unshift(date);
-                    }
+                // padding to start
+                for (let i = 1; i <= missingTicks; i++) {
+                    var date = moment(minDate).add(-i, 'days').toDate();
+                    xAxisTicks.unshift(date);
                 }
 
-                return xAxesTicks;
+                // padding to end
+                for (let i = 1; i <= missingTicks; i++) {
+                    var date = moment(maxDate).add(i, 'days').toDate();
+                    xAxisTicks.push(date);
+                }
+
+                if (xAxisTicks.length < maxTicks) {
+                    var firstTick = xAxisTicks[0];
+                    var date = new moment(firstTick).add(-1, 'days').toDate();
+                    xAxisTicks.unshift(date);
+                }
+
+                return xAxisTicks;
             }
 
             function generateMobileXAxis() {
@@ -570,7 +574,6 @@
                     buildTimeline();
                 } else {
                     scope.tickData = [];
-                    scope.chartLabels = [];
                     scope.chartDatasets = [];
                     renderTimelineChart();
                 }
