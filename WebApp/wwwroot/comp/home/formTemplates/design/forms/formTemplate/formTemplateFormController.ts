@@ -7,7 +7,6 @@ module App {
         close: () => void;
         formTemplate: Models.IFormTemplate;
         categories: Models.IFormTemplateCategory[];
-        projects: Models.IProject[];
         tags: string[];
         selectedTags: string[];
     }
@@ -15,20 +14,18 @@ module App {
     class FormTemplateFormController implements IFormTemplateFormController {
         errors: string;
         categories: Models.IFormTemplateCategory[];
-        projects: Models.IProject[];
         tags: string[] = [];
         selectedTags: string[] = [];
         descriptionFormatRegex: RegExp = /{{([^}]+)}}/g;
         descriptionFormatValueRegex: RegExp = /{{(.*?)}}/;
 
-        static $inject: string[] = ["$scope", "$q", "$uibModalInstance", "formTemplateCategoryResource", "projectResource", "formTemplate", "calendarDateMetrics", "timelineBarMetrics"];
+        static $inject: string[] = ["$scope", "$q", "$uibModalInstance", "formTemplateCategoryResource", "formTemplate", "calendarDateMetrics", "timelineBarMetrics"];
 
         constructor(
             private $scope: ng.IScope,
             private $q: ng.IQService,
             private $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance,
             private formTemplateCategoryResource: Resources.IFormTemplateCategoryResource,
-            private projectResource: Resources.IProjectResource,
             public formTemplate: Models.IFormTemplate,
             public calendarDateMetrics: any[],
             public timelineBarMetrics: any[]
@@ -39,7 +36,6 @@ module App {
 
         activate() {
             this.categories = this.formTemplateCategoryResource.query();
-            this.projects = this.projectResource.query();
 
             this.$scope.minicolorSettings = {
                 control: 'hue',
@@ -96,13 +92,6 @@ module App {
 
         updateDescriptionFormat() {
             this.formTemplate.descriptionFormat = this.getDescriptionFormat();
-        }
-
-        projectChanged() {
-            if (this.formTemplate.projectId.length) {
-                var project = _.find(this.projects, { 'id': this.formTemplate.projectId });
-                this.formTemplate.projectName = project.name;
-            }
         }
 
     }

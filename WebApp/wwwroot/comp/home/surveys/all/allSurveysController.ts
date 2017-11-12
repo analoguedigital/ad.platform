@@ -97,8 +97,19 @@ module App {
 
         load() {
             var orgUser = this.userContextService.current.orgUser;
-            this.currentUser = orgUser;
-            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
+            if (orgUser !== null) {
+                this.currentUser = orgUser;
+                this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
+            } else {
+                this.assignment = <Models.IProjectAssignment>{
+                    orgUserId: this.userContextService.current.user.id,
+                    canView: true,
+                    canAdd: true,
+                    canEdit: true,
+                    canDelete: true
+                };
+            }
+
             this.formTemplateResource.getFilters({ id: this.formTemplate.id }, (filters) => {
                 this.metricFilters = filters;
             }, (error) => {

@@ -7,11 +7,21 @@
 <div class="wrapper wrapper-content animated fadeInRight surveys-view">
     <div class="box">
         <div class="box-content">
-            <form name="selectProject">
-                <lm-form-group label="User: " class="has-success">
-                    <select name="selectedProject" ng-change="ctrl.selectedProjectChanged()" ng-model="ctrl.selectedProject" 
-                            ng-options="project as project.name for project in ctrl.projects track by project.id"></select>
-                </lm-form-group>
+            <form name="selectProject" class="form-inline">
+                <div label="Type: ">
+                    <div class="radio">
+                        <input type="radio" name="shared-radio" id="shared-radio"
+                               ng-value="true" ng-model="ctrl.isShared" />
+                        <label for="shared-radio">Shared</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="project-radio" id="project-radio" ng-value="false" ng-model="ctrl.isShared" />
+                        <label for="project-radio">Project specific</label>
+                    </div>&nbsp;
+                    <select class="form-control" ng-model="ctrl.selectedProject" ng-show="!ctrl.isShared" ng-change="ctrl.selectedProjectChanged()">
+                        <option ng-repeat="project in ctrl.projects" ng-value="project">{{project.name}}</option>
+                    </select>
+                </div>
             </form>
         </div>
     </div>

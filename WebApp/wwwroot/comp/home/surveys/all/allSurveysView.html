@@ -2,7 +2,8 @@
     <div class="box-title">
         <h4 class="pull-left">
             <span ng-if="ctrl.formTemplate.projectId" class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></span> 
-            <i class="fa fa-windows" ng-if="!ctrl.formTemplate.projectId"></i> 
+            <i class="fa fa-windows" ng-if="!ctrl.formTemplate.projectId"></i>  
+            {{ctrl.formTemplate.title}}
         </h4>
 
         <span class="pull-right">
