@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -20,6 +21,7 @@ namespace WebApi.Controllers
 
         private OrgUserTypesRepository Types { get { return UnitOfWork.OrgUserTypesRepository; } }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         public IHttpActionResult Get()
         {
@@ -33,6 +35,7 @@ namespace WebApi.Controllers
             return Ok(users);
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         public IHttpActionResult Get(Guid id)
         {

@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -15,6 +16,7 @@ namespace WebApi.Controllers
     {
         PaymentsRepository Payments { get { return UnitOfWork.PaymentsRepository; } }
 
+        [DeflateCompression]
         [Route("api/payments")]
         [ResponseType(typeof(IEnumerable<PaymentRecordDTO>))]
         public IHttpActionResult Get()

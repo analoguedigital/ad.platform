@@ -17,6 +17,7 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -27,6 +28,7 @@ namespace WebApi.Controllers
         FilledFormsRepository FilledForms { get { return UnitOfWork.FilledFormsRepository; } }
         FormValuesRepository FormValues { get { return UnitOfWork.FormValuesRepository; } }
 
+        [DeflateCompression]
         [Route("api/surveys")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Get(Guid? projectId = null)
@@ -62,6 +64,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
+        [DeflateCompression]
         [Route("api/surveys/search")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         public IHttpActionResult Search(SearchDTO model)
@@ -87,6 +90,7 @@ namespace WebApi.Controllers
             return Ok(retVal);
         }
 
+        [DeflateCompression]
         [Route("api/projects/{projectId}/formTemplates/{formTemplateId}/data")]
         [ResponseType(typeof(IEnumerable<IEnumerable<string>>))]
         public IHttpActionResult GetDataView(Guid projectId, Guid formTemplateId)
@@ -110,6 +114,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [DeflateCompression]
         [Route("api/surveys/{id}")]
         [ResponseType(typeof(FilledFormDTO))]
         public IHttpActionResult GetSurvey(Guid id)

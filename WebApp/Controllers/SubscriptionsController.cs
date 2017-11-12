@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -21,6 +22,7 @@ namespace WebApi.Controllers
             this.SubscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
         }
 
+        [DeflateCompression]
         [Route("api/subscriptions")]
         [ResponseType(typeof(IEnumerable<SubscriptionDTO>))]
         public IHttpActionResult Get()
@@ -31,6 +33,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [DeflateCompression]
         [Route("api/subscriptions/getLatest")]
         [ResponseType(typeof(LatestSubscriptionDTO))]
         public IHttpActionResult GetLatest()

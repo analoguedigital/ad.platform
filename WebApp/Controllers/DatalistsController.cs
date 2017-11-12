@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -33,6 +34,7 @@ namespace WebApi.Controllers
             return Ok(retVal);
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(DataListDTO))]
         public IHttpActionResult Get(Guid id)
         {
@@ -50,6 +52,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<DataListDTO>(datalist));
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<DataListItemDTO>))]
         [Route("api/datalists/{datalistId}/items")]
         public IHttpActionResult GetDataListItems(Guid datalistId)
@@ -158,6 +161,7 @@ namespace WebApi.Controllers
             }
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(GetDataListReferencesResDto))]
         [Route("api/datalists/{datalistId}/references")]
         public IHttpActionResult GetReferences(Guid datalistId)
