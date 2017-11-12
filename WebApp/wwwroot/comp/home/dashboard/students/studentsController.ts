@@ -17,10 +17,11 @@ module App {
     }
 
     class StudentsController implements IStudentsController {
-        static $inject: string[] = ["$scope", "projectResource"];
+        static $inject: string[] = ["$scope", "$state", "projectResource"];
 
         constructor(
             private $scope: IStudentsControllerScope,
+            private $state: ng.ui.IStateService,
             private projectResource: Resources.IProjectResource) {
 
             $scope.title = "Projects";
@@ -35,6 +36,10 @@ module App {
             this.projectResource.query().$promise.then((projects) => {
                 this.$scope.projects = projects;
                 this.$scope.displayedProjects = [].concat(this.$scope.projects);
+
+                if (projects.length === 1) {
+                    this.$state.go('home.projects.summary', { id: projects[0].id });
+                }
             });
         }
     }
