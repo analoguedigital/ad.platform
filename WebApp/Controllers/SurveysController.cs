@@ -181,12 +181,10 @@ namespace WebApi.Controllers
                 foreach (var val in filledForm.FormValues.Where(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is DateMetric))
                 {
                     var dateMetric = val.Metric as DateMetric;
-                    var _test = val.DateValue.Value.ToString();
-
                     if (val.DateValue.HasValue && !dateMetric.HasTimeValue)
                     {
-                        var dateValue = val.DateValue.Value;
-                        val.DateValue = new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, 0, 0, 0).AddDays(1);
+                        var localValue = TimeZone.CurrentTimeZone.ToLocalTime(val.DateValue.Value);
+                        val.DateValue = new DateTime(localValue.Year, localValue.Month, localValue.Day, 0, 0, 0, DateTimeKind.Utc);
                     }
                 }
 
@@ -273,8 +271,8 @@ namespace WebApi.Controllers
                     var dateMetric = dbrecord.Metric as DateMetric;
                     if (dbrecord.DateValue.HasValue && !dateMetric.HasTimeValue)
                     {
-                        var dateValue = dbrecord.DateValue.Value;
-                        dbrecord.DateValue = new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, 0, 0, 0).AddDays(1);
+                        var localDate = TimeZone.CurrentTimeZone.ToLocalTime(dbrecord.DateValue.Value);
+                        dbrecord.DateValue = new DateTime(localDate.Year, localDate.Month, localDate.Day, 0, 0, 0, DateTimeKind.Utc);
                     }
                 }
 
