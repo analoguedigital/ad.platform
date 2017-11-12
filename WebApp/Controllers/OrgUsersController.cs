@@ -55,7 +55,6 @@ namespace WebApi.Controllers
 
         public IHttpActionResult Post([FromBody]OrgUserDTO value)
         {
-
             if (value.Password.IsEmpty())
                 ModelState.AddModelError("Password", "Please provide password.");
 
@@ -73,6 +72,30 @@ namespace WebApi.Controllers
 
             orguser.Type = UnitOfWork.OrgUserTypesRepository.Find(orguser.TypeId);
             UnitOfWork.UserManager.AssignRolesByUserType(orguser);
+
+            if (value.Type.Name.ToLower() == "administrator")
+            {
+                var projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
+                    .Where(p => p.OrganisationId == this.CurrentOrgUser.OrganisationId);
+
+                foreach (var project in projects)
+                {
+                    var assignment = new Assignment
+                    {
+                        ProjectId = project.Id,
+                        OrgUserId = orguser.Id,
+                        CanView = true,
+                        CanAdd = true,
+                        CanEdit = true,
+                        CanDelete = true
+                    };
+
+                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+                }
+
+                UnitOfWork.Save();
+            }
+
             return Ok();
         }
 
