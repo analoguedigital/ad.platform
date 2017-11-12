@@ -44,6 +44,12 @@ namespace WebApi.Controllers
             var orgUser = user as OrgUser;
             var result = Mapper.Map<OrgUserDTO>(user);
 
+            if (orgUser != null)
+            {
+                var assignments = orgUser.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)).ToList();
+                result.Assignments = assignments;
+            }
+
             return Ok(result);
         }
 
@@ -82,6 +88,9 @@ namespace WebApi.Controllers
             orguser.TypeId = value.Type.Id;
             orguser.IsWebUser = value.IsWebUser;
             orguser.IsMobileUser = value.IsMobileUser;
+            orguser.Gender = value.Gender;
+            orguser.Birthdate = value.Birthdate;
+            orguser.Address = value.Address;
 
             var result = UnitOfWork.UserManager.UpdateSync(orguser);
             if (result.Succeeded)
