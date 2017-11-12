@@ -2,7 +2,7 @@
     <div class="box-title">
         <h4>
             <i class="fa fa-windows" ng-if="!formTemplate.projectId"></i>
-            <span class="color-block" ng-if="formTemplate.projectId" ng-style="{'background-color': ctrl.getTemplateColour(formTemplate.id)}"></span>
+            <span class="color-block" ng-if="formTemplate.projectId" ng-style="{'background-color': formTemplate.colour}"></span>
             {{formTemplate.title}}
             <a class="pull-right" ng-if="ctrl.assignment.canAdd" 
                ui-sref="home.surveys.new({projectId: ctrl.projectId, formTemplateId: formTemplate.id})"><i class="fa fa-plus-square"></i> Add new </a>

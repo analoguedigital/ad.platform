@@ -50,9 +50,10 @@ module App {
 
             function extractLocations() {
                 scope.locations = [];
-
                 angular.forEach(scope.surveys, (survey) => {
                     angular.forEach(survey.locations, (loc) => {
+                        let template = _.find(scope.formTemplates, (template) => { return template.id == survey.formTemplateId; });
+
                         let location: ProjectSummaryController.Models.ISurveyLocation = {
                             accuracy: loc.accuracy,
                             error: loc.error,
@@ -60,7 +61,7 @@ module App {
                             latitude: loc.latitude,
                             longitude: loc.longitude,
                             description: survey.description,
-                            color: getTemplateColour(survey.formTemplateId)
+                            color: template.colour
                         };
 
                         scope.locations.push(location);
@@ -134,14 +135,6 @@ module App {
 
                     scope.markers.push(marker);
                 });
-            }
-
-            function getTemplateColour(id: string) {
-                let template = _.find(scope.formTemplates, (template) => { return template.id == id; });
-                if (template && template.colour && template.colour.length)
-                    return template.colour;
-
-                return '';
             }
         }
     }
