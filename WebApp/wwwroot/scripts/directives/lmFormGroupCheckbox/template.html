@@ -1,0 +1,10 @@
+﻿<div class="form-group" ng-class="{'has-error':hasError}">
+    <div class="col-sm-offset-2 col-sm-10">
+        <div class="checkbox">
+            <label class="form-label" ng-if="label!=undefined" for="{{for}}">
+                <div ng-transclude></div>
+                <span>{{label}}</span>
+            </label>
+        </div>
+    </div>
+</div>

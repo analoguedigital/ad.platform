@@ -1,0 +1,86 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight form-templates">
+    <div class="box" ng-show="ctrl.errors.length">
+        <div class="box-title">
+            <h5>Errors ({{ctrl.errors.length}})</h5>
+            <div class="box-tools">
+                <a ng-click="ctrl.clearErrors()"><i class="fa fa-eraser"></i> Clear</a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="errors">
+                <div ng-repeat="error in ctrl.errors | filter: {key: ''}">
+                    {{error.value}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-title">
+            <h5>All your form templates <span ng-if="selectedProject != null">- {{selectedProject.name}}</span></h5>
+            <div class="box-tools">
+                <a ui-sref="home.formtemplates.edit"><i class="fa fa-plus-square"></i> Add new</a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div st-table="displayedForms" st-safe-src="forms">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <div label="Type: " ng-init="isShared = true">
+                            <div class="radio">
+                                <input type="radio" name="shared-radio" id="shared-radio" ng-value="true" ng-model="isShared" ng-click="ctrl.getSharedTemplates()" />
+                                <label for="shared-radio">Shared</label>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" name="project-radio" id="project-radio" ng-value="false" ng-model="isShared" />
+                                <label for="project-radio">Project specific</label>
+                            </div>&nbsp;
+                            <select class="form-control" ng-model="selectedProject" ng-show="!isShared" ng-change="ctrl.load()">
+                                <option ng-repeat="project in projects" ng-value="project">{{project.name}}</option>
+                            </select>
+                        </div>
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" />
+                        </lm-form-group>
+                    </form>
+                </div>
+                <hr />
+
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th class="sorting" st-sort="code">Code</th>
+                            <th class="hidden-xs" st-sort="name">Category</th>
+                            <th st-sort="startDate">Title</th>
+                            <th st-sort="projectName">Project</th>
+                            <th st-sort="isPublished">Status</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="form in displayedForms">
+                            <td>{{form.code}}</td>
+                            <td class="hidden-xs">{{form.formTemplateCategory.title}}</td>
+                            <td>{{form.title}}</td>
+                            <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
+                            <td ng-if="form.projectName">
+                                <span ng-if="form.projectId" class="color-block" ng-style="{'background-color': form.colour}"></span> {{form.projectName}}
+                            </td>
+                            <td ng-if="form.isPublished">Published (<a ng-bootbox-confirm="Are you sure you want to archive this?" ng-bootbox-confirm-action="archive(form)">archive</a>)</td>
+                            <td ng-if="!form.isPublished">Archived (<a ng-bootbox-confirm="Are you sure you want to publish this?" ng-bootbox-confirm-action="publish(form)">publish</a>)</td>
+                            <td><a ui-sref="home.formtemplates.design({id: form.id})"><i class="fa fa-paint-brush"></i><span class="hidden-xs"> design</span></a></td>
+                            <td>
+                                <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(form.id)">
+                                    <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+        </div>
+    </div>
+</div>

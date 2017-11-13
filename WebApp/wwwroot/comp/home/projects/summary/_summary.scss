@@ -1,0 +1,44 @@
+﻿$break-small: 360px;
+
+.project-summary {
+    .toolbox-heading {
+        margin-top: 15px;
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        font-weight: bold;
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+    .toolbox-buttons {
+        margin-top: 15px;
+    }
+
+    .angular-google-map-container {
+        height: 300px;
+    }
+
+    .color-block {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        display: inline-block;
+        margin-top: 2px;
+    }
+
+    .chart-center {
+        margin: auto;
+
+        @media screen and (max-width: $break-small) {
+            width: 100%;
+        }
+    }
+
+    .timeline-box {
+        border-left: 1px solid #e8e8e8;
+        border-right: 1px solid #e8e8e8;
+        border-bottom: 1px solid #e8e8e8;
+    }
+}

@@ -1,0 +1,17 @@
+<div class="row item item-checkbox" ng-controller="dichotomousMetricController">
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }">
+        <div class="form-group">
+            <div class="radio radio-default radio-inline">
+                <input id="radio-{{inputName}}-yes" name="radio-{{inputName}}-yes" type="radio" ng-model="formValue.boolValue" ng-value="true" ng-required="{{metric.mandatory}}">
+                <label for="radio-{{inputName}}-yes">Yes</label>
+            </div>
+            <div class="radio radio-default radio-inline">
+                <input id="radio-{{inputName}}-no" name="radio-{{inputName}}-no" type="radio" ng-model="formValue.boolValue" ng-value="false" ng-required="{{metric.mandatory}}">
+                <label for="radio-{{inputName}}-no">No</label>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4  text-danger errors" ng-messages="{{inputErrorsKey}}" ng-if="!isCompact">
+        <div ng-message="required"><span translate>This is required</span></div>
+    </div>
+</div>

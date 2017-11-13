@@ -1,0 +1,48 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5><i class="fa fa-wrench"></i> Toolbox</h5>
+    </div>
+    <div class="box-content">
+        <p>
+            Drag &amp; drop the metric you want to add:
+        </p>
+        <hr />
+        <div class="controls btn-block" ui-sortable="ctrl.groupsDraggableOptions" ng-model="ctrl.metricGroupControl">
+            <div class="btn btn-block btn-default"><i class="fa fa-list-alt"></i> Question Group</div>
+        </div>
+        <hr />
+        <div class="row ">
+            <div class="col-md-5">
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.freeTextControl">
+                    <div class="btn btn-block btn-default"><i class="fa fa-font"></i> Text</div>
+                </div>
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.rateControl">
+                    <div class="btn btn-block btn-default"><i class="fa fa-sliders"></i> Rate</div>
+                </div>
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.dateControl">
+                    <div class="btn btn-block btn-default"><i class="fa fa-calendar"></i> Date</div>
+                </div>
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.timeControl">
+                    <div class="btn btn-block btn-default"><i class="fa fa-clock-o"></i> Time</div>
+                </div>
+            </div>
+
+            <div class="col-md-7 no-gutter-left controls">
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.dichotomousControl">
+                    <div class="btn btn-block btn-default"><i class="fa fa-toggle-on"></i> Dichotomous</div>
+                </div>
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.numericControl">
+                    <div class="btn btn-block btn-default"><i class="fa"><b>0-9</b></i> Numeric</div>
+                </div>
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.multipleChoiceControl">
+                    <div class="btn btn-block btn-default"><i class="fa fa-list-ul"></i> Multiple choice</div>
+                </div>
+                <div class="controls btn-block" ui-sortable="ctrl.draggableOptions" ng-model="ctrl.attachmentControl">
+                    <div class="btn btn-block btn-default"><i class="fa fa-paperclip"></i> Attachment</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+

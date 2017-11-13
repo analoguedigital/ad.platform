@@ -1,0 +1,22 @@
+﻿<h2>
+    {{metricGroup.title}}
+</h2>
+<fieldset class="body">
+    <div class="errors">
+        <div ng-repeat="error in ctrl.errors | filter: {key: metricGroup.id}">
+            {{error.value}}
+        </div>
+    </div>
+    <p class="help-block">{{metricGroup.helpContext}}</p>
+    <div class="metrics">
+        <div class="metric" ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false} track by $index ">
+            <div class="metric-body" ng-include="'comp/common/formControls/_metric/metric.html'" ng-controller="metricController"></div>
+            <div class="errors">
+                <div ng-repeat="error in ctrl.errors | filter: {key: metric.id}">
+                    {{error.value}}
+                </div>
+            </div>
+            <div class="hr-line-dashed"></div>
+        </div>
+    </div>
+</fieldset>

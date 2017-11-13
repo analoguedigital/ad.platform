@@ -1,0 +1,20 @@
+﻿
+<div class="modal-header">
+    <h3 class="modal-title">Data list relationship details</h3>
+</div>
+<div class="modal-body">
+    <form name="dataListItemForm">
+        <lm-form-group label="Name">
+            <input type="text" name="name" id="name" ng-model="relationship.name" />
+        </lm-form-group>
+        <lm-form-group label="Data list" ng-if="isAddMode">
+            <select id="datalist" name="datalist" ng-model="relationship.dataList" ng-options="datalist as datalist.name for datalist in availableDataLists track by datalist.id" required></select>
+        </lm-form-group>
+        
+    </form>
+</div>
+<div class="modal-footer">
+    <button ng-show="isAddMode" class="btn btn-primary" type="button" ng-click="saveAndClose()">Add</button>
+    <button ng-show="isAddMode" class="btn btn-warning" type="button" ng-click="close()">Cancel</button>
+    <button ng-show="!isAddMode" class="btn btn-warning" type="button" ng-click="saveAndClose()">Save</button>
+</div>

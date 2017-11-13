@@ -1,0 +1,18 @@
+<div class="row" ng-controller="dateMetricController">
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }" class="item item-input" ng-if="isPersian">
+        <input type="text" name="{{metric.inputName}}" ng-required="metric.mandatory" class="persianDateInput" readonly value="{{dateToString(formValue.dateValue)}}" />
+        <div class="persianCalendar" persiandatepicker="formValue.dateValue"></div>
+    </div>
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }" ng-if="!isPersian">
+        <div class="input-group">
+            <input type="text" name="{{inputName}}" class="form-control" datetime-picker="{{dateTimeFormat}}" 
+                   ng-model="formValue.dateValue" is-open="calendar.isOpen" ng-required="metric.mandatory" enable-time="metric.hasTimeValue" />
+            <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="openCalendar()"><i class="fa fa-calendar"></i></button>
+            </span>
+        </div>
+    </div>
+    <div class="col-md-4 text-danger errors" ng-messages="{{inputErrorsKey}}" ng-if="!isCompact">
+        <div ng-message="required"><span>This is required</span></div>
+    </div>
+</div>

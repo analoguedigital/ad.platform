@@ -1,0 +1,4 @@
+<div ng-controller="multipleChoiceMetricController">
+    <div ng-if="!isMultipleAnswer" ng-include="'comp/common/formControlsViews/multipleChoiceMetric/multipleChoiceMetric_radio.html'"></div>
+    <div ng-if="isMultipleAnswer" ng-include="'comp/common/formControlsViews/multipleChoiceMetric/multipleChoiceMetric_check.html'"></div>
+</div>

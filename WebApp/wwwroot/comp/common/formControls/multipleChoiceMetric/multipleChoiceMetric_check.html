@@ -1,0 +1,10 @@
+﻿<div class="row">
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }">
+        <div class="form-group">
+            <div class="checkbox checkbox-default" ng-repeat="fv in formValues" ng-show="getText(fv.guidValue) !== ''">
+                <input id="check-{{$index}}" name="check-{{$index}}" type="checkbox" ng-model="fv.boolValue">
+                <label for="check-{{$index}}">{{getText(fv.guidValue)}}</label>
+            </div>
+        </div>
+    </div>
+</div>

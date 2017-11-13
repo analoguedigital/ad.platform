@@ -1,0 +1,6 @@
+﻿<div ng-controller="textFilterController">
+    <h4 class="filter-heading">{{metricFilter.shortTitle}}</h4>
+
+    <input type="text" class="form-control" maxlength="{{metricFilter.maxLength}}" ng-model="model.value" ng-if="metricFilter.numberOfLines == 1" placeholder="text to search" />
+    <textarea class="form-control" maxlength="{{metricFilter.maxLength}}" rows="{{metricFilter.numberOfLines}}" ng-model="model.value" ng-if="metricFilter.numberOfLines > 1" placeholder="text to search"></textarea>
+</div>

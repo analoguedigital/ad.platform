@@ -1,0 +1,32 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5>Directory of Users</h5>
+    </div>
+    <div class="box-content">
+        <div st-table="displayedProjects" st-safe-src="projects">
+            <div>
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                    </lm-form-group>
+                </form>
+            </div>
+
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th class="sorting" st-sort="number">No</th>
+                        <th st-sort="name">Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="project in displayedProjects">
+                        <td>{{project.number}}</td>
+                        <td><a ui-sref="home.surveys.list.summary({projectId:project.id})">{{project.name}}</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div st-pagination st-items-by-page="20" st-displayed-pages="7"></div>
+        </div>
+    </div>
+</div>

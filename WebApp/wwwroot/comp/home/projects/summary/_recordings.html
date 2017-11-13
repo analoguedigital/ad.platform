@@ -1,0 +1,71 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5>Recordings ({{ctrl.surveys.length}} records across {{ctrl.getThreadsCount()}} thread(s))</h5>
+        <div class="box-tools">
+            <a title="Select All" ng-click="ctrl.selectAll()"><i class="fa fa-check-square-o"></i> Select All</a>
+            <a title="Select None" ng-click="ctrl.selectNone()"><i class="fa fa-eraser"></i> Clear</a>
+        </div>
+    </div>
+    <div class="box-content">
+        <div st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys">
+            <div>
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" ng-model="tableSearchTerm" />
+                    </lm-form-group>
+                </form>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center" width="60"></th>
+                            <th>Serial</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th valign="middle"></th>
+                            <th class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="survey in ctrl.displayedSurveys track by survey.id">
+                            <td class="text-center">
+                                <div class="checkbox table-checkbox">
+                                    <input type="checkbox" id="record-{{survey.id}}" ng-model="survey.isChecked" />
+                                    <label for="record-{{survey.id}}"></label>
+                                </div>
+                            </td>
+                            <td>{{survey.serial}}</td>
+                            <td><lm-date-time value="survey.date"></lm-date-time></td>
+                            <td>{{survey.description}}</td>
+                            <td valign="middle">
+                                <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(survey.formTemplateId)}"></span>
+                                <span class="template-name">{{ctrl.getFormTemplate(survey.formTemplateId)}}</span>
+                            </td>
+                            <td>
+                                <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
+                                    <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
+                                </a>
+                            </td>
+                            <td>
+                                <a ui-sref="home.surveys.print-single({surveyId: survey.id})" ng-if="ctrl.project.allowView">
+                                    <i class="fa fa-print"></i><span class="hidden-xs"></span> Print
+                                </a>
+                            </td>
+                            <td>
+                                <a ui-sref="home.surveys.edit({surveyId: survey.id})" ng-if="ctrl.project.allowEdit"><i class="fa fa-pencil"></i><span class="hidden-xs"> Edit</span></a>
+                            </td>
+                            <td>
+                                <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey.id)" ng-if="ctrl.project.allowDelete">
+                                    <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+        </div>
+    </div>
+</div>

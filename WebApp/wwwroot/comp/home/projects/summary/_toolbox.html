@@ -1,0 +1,95 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5>Search &amp; Filter</h5>
+    </div>
+    <div class="box-content">
+        <form>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" ng-model="ctrl.searchTerm" placeholder="search term" />
+                </div>
+            </div>
+
+            <div class="toolbox-heading">
+                <i class="fa fa-calendar"></i> Date Range
+            </div>
+
+            <!-- date range -->
+            <div class="row">
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
+                            </span>
+                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" placeholder="start date" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6 col-xs-12">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
+                            </span>
+                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a ng-click="ctrl.clearSearch()">Clear all</a>
+                </div>
+            </div>
+
+            <!-- threads -->
+            <div class="toolbox-heading">
+                <i class="fa fa-list"></i> Threads
+            </div>
+
+            <div id="threads-container">
+                <div class="checkbox checkbox-default" ng-repeat="template in ctrl.formTemplates track by $index">
+                    <input type="checkbox" id="{{template.id}}" ng-model="template.isChecked" />
+                    <label for="{{template.id}}">{{template.title}}</label>
+                </div>
+
+                <a ng-click="ctrl.clearThreads()">Clear all</a>
+            </div>
+
+            <!-- advanced search -->
+            <div ng-if="ctrl.metricFilters.length > 0">
+                <div class="toolbox-heading">
+                    <i class="fa fa-search-plus"></i> Advanced Search
+                </div>
+
+                <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by metricFilter.type+metricFilter.shortTitle">
+                    <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
+                </div>
+            </div>
+
+            <div class="toolbox-buttons">
+                <div class="btn-group btn-group-justified" role="group">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-primary" ng-click="ctrl.search()">
+                            <i class="fa fa-search-plus"></i> Search
+                        </button>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default" ng-click="ctrl.clearAll()">
+                            <i class="fa fa-refresh"></i> Reset
+                        </button>
+                    </div>
+
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-default" ng-click="ctrl.print()">
+                            <i class="fa fa-print"></i> Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+﻿
+<div class="modal-header">
+    <h3 class="modal-title">Metric group</h3>
+</div>
+<div class="modal-body">
+    <form name="metricGroupForm">
+        <lm-form-group label="Title">
+            <input type="text" name="title" id="title" ng-model="group.title" />
+        </lm-form-group>
+        <div class="hr-line-dashed"></div>
+        <lm-form-group label="Help context">
+            <textarea name="helpContext" id="helpContext" ng-model="group.helpContext" />
+        </lm-form-group>
+        <div class="hr-line-dashed"></div>
+        <h3>
+            <label><input type="checkbox" ng-model="group.isRepeater" /> Convert to repeater</label>
+        </h3>
+        <div ng-show="group.isRepeater">
+            <div class="row">
+                <div class="col-md-6">
+                    <label><input type="radio" ng-model="group.isDataListRepeater" ng-value="true" /> Data list repeater</label>
+                </div>
+                <div class="col-md-6">
+                    <label><input type="radio" ng-model="group.isDataListRepeater" ng-value="false" /> Iterative repeater</label>
+                </div>
+            </div>
+            <div class="hr-line-dashed"></div>
+            <div class="row" ng-show="group.isDataListRepeater">
+                <div class="col-md-6">
+                    <label><input type="radio" ng-model="group.isAdHoc" ng-value="false" /> From a data list</label>
+                    <select class="form-control" ng-if="!group.isAdHoc" name="viewType" id="viewType" ng-model="group.dataListId"
+                            ng-options="d.id as d.name for d in globalDataLists"></select>
+                </div>
+                <div class="col-md-6">
+                    <label><input type="radio" ng-model="group.isAdHoc" ng-value="true" ng-change="changeIsAdHoc()" /> Ad-hoc list</label>
+                    <div ui-sortable ng-show="group.isAdHoc">
+                        <div class="row" ng-repeat="adhocItem in group.adHocItems | filter:{'isDeleted':false} track by $index">
+                            <div class="form-group form-group-sm">
+                                <div class="col-xs-7">
+                                    <input class="form-control" type="text" ng-model="adhocItem.text" />
+                                </div>
+                                <div class="col-xs-2"> value:</div>
+                                <div class="col-xs-2">
+                                    <input class="form-control" type="text" ng-model="adhocItem.value" />
+                                </div>
+                                <div class="col-xs-1">
+                                    <a ng-click="removeAdhocItem(adhocItem)"><i class="fa fa-remove"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <a ng-click="addAdhocItem()">Add another...</a>
+                    </div>
+                </div>
+            </div>
+            <div class="row" ng-show="!group.isDataListRepeater">
+                <div class="col-md-6">
+                    <lm-form-group label="Number of rows">
+                        <input type="number" name="numberOfRows" id="numberOfRows" ng-model="group.numberOfRows" />
+                    </lm-form-group>
+                </div>
+                <div class="col-md-6">
+                    <div>
+                        <div>
+                            <label>Can add more rows</label>
+                        </div>
+                        <label><input type="radio" ng-model="group.canAddMoreRows" ng-value="true" /> Yes</label>
+                        <label><input type="radio" ng-model="group.canAddMoreRows" ng-value="false" /> No</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="close()">Close</button>
+</div>

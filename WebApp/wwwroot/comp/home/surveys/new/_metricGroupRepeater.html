@@ -1,0 +1,45 @@
+﻿<div ng-controller="metricGroupRepeaterController">
+    <table class="table table-striped table-bordered table-hover dataTable dtr-inline repeater">
+        <tr>
+            <th></th>
+            <th ng-if="isDataList" ng-repeat="title in relationshipTitles"><div class="table-header-wrapper">{{::title}}</div></th>
+            <th ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false} track by $index ">
+                <div class="table-header-wrapper"> {{::metric.shortTitle}}</div>
+            </th>
+            <th ng-if="!isDataList"></th>
+        </tr>
+        <tr ng-if="isDataList && relationshipTitles.length">
+            <th></th>
+            <th ng-repeat="title in relationshipTitles">
+                <div class="table-header-wrapper">
+                    <select ng-model="search[title]">
+                        <option ng-repeat="val in relationships[title]" value="{{::val}}">{{::val}}</option>
+                    </select>
+                </div>
+            </th>
+            <th ng-repeat="metric in ::metricGroup.metrics">
+            </th>
+        </tr>
+        <tr ng-if="isDataList && $index<maxRow" ng-repeat="dataListItem in filtered = (dataListItems | filter:attrFilter(search))" ng-init="rowNumber = $index + 1" ng-class="$index % 2 != 0 ? 'alt' : ''">
+            <td>{{dataListItem.text}}</td>
+            <td ng-repeat="attr in dataListItem.attributes">{{attr.value}}</td>
+            <td ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false} track by $index " ng-include="'comp/common/formControls/_metric/metric.html'" ng-controller="metricController"></td>
+        </tr>
+        <tr ng-if="!isDataList" ng-repeat="row in rows" ng-init="rowNumber = $index + 1" ng-class="$index % 2 != 0 ? 'alt' : ''">
+            <td>{{$index + 1}}</td>
+            <td ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false} track by $index " ng-include="'comp/common/formControls/_metric/metric.html'" ng-controller="metricController"></td>
+            <td>
+                <a ng-click="deleteRow($index + 1)"><i class="fa fa-remove"></i></a>
+            </td>
+        </tr>
+    </table>
+    <a ng-if="isDataList && maxRow < filtered.length" class="btn btn-default btn-block" ng-click="showAll()"><i class="fa fa-list-alt"></i> Show more</a>
+    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="btn btn-default btn-block" ng-click="addRow()"><i class="fa fa-plus-square"></i> Add row</a>
+</div>
+
+<div class="errors">
+    <div ng-repeat="error in ctrl.errors | filter: {key: metric.id}">
+        {{error.value}}
+    </div>
+</div>
+<div class="hr-line-dashed"></div>

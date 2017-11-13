@@ -1,0 +1,34 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5><i class="fa fa-info-circle"></i> Details</h5>
+        <div class="box-tools">
+            <a ng-click="ctrl.openEditForm()"><i class="fa fa-pencil"></i></a>
+        </div>
+    </div>
+    <div class="box-content">
+        <form class="form" name="formDetails">
+            <lm-form-group label="Title: ">
+                {{ctrl.formTemplate.title}}
+            </lm-form-group>
+            <lm-form-group label="Code: ">
+                {{ctrl.formTemplate.code}}
+            </lm-form-group>
+            <lm-form-group label="Category: ">
+                {{ctrl.formTemplate.formTemplateCategory.title}}
+            </lm-form-group>
+            <lm-form-group label="Project :">
+                <span ng-if="!ctrl.formTemplate.projectId"><i class="fa fa-windows"></i> Shared</span>
+                <span ng-if="ctrl.formTemplate.projectId">{{ctrl.formTemplate.projectName}}</span>
+            </lm-form-group>
+            <lm-form-group label="Description: ">
+                {{ctrl.formTemplate.description}}
+            </lm-form-group>
+            <lm-form-group label="Desc. Format: ">
+                {{ctrl.formTemplate.descriptionFormat}}
+            </lm-form-group>
+            <lm-form-group label="Colour: " ng-if="ctrl.formTemplate.colour.length">
+                <div class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></div>
+            </lm-form-group>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h4 class="pull-left">
+            <span ng-if="ctrl.formTemplate.projectId" class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></span> 
+            <i class="fa fa-windows" ng-if="!ctrl.formTemplate.projectId"></i>  
+            {{ctrl.formTemplate.title}}
+        </h4>
+
+        <span class="pull-right">
+            <span class="radio radio-inline">
+                <input id="chk-data-view" type="radio" ng-model="ctrl.isDataView" ng-value="true" />
+                <label for="chk-data-view">Data view</label>
+            </span>
+            <span class="radio radio-inline">
+                <input id="chk-list-view" type="radio" ng-model="ctrl.isDataView" ng-value="false" />
+                <label for="chk-list-view">List</label>
+            </span>
+        </span>
+        <span class="clearfix"></span>
+    </div>
+    <div class="box-content">
+        <div ng-include="'comp/home/surveys/all/_searchForm.html'"></div>
+        <div ng-include="'comp/home/surveys/all/_dataTable.html'"></div>
+    </div>
+    <div class="box-footer" ng-if="ctrl.project.allowAdd">
+        <a ui-sref="home.surveys.new({formTemplateId: ctrl.formTemplate.id, projectId: ctrl.project.id})"><i class="fa fa-plus-square"></i> Add new </a>
+    </div>
+</div>
+

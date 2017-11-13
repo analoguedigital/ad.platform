@@ -1,0 +1,11 @@
+﻿<div id="{{id}}">
+    <ui-gmap-google-map center="map.center" zoom="map.zoom" options="map.options" draggable="false" ng-if="locations.length">
+        <ui-gmap-marker ng-repeat="marker in markers"
+                        coords="marker.coords"
+                        options="marker.options"
+                        events="marker.events" idKey="marker.id"></ui-gmap-marker>
+    </ui-gmap-google-map>
+    <div ng-if="locations.length == 0">
+        <p>Location Data Not Available</p>
+    </div>
+</div>

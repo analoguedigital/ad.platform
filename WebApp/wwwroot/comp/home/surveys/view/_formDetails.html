@@ -1,0 +1,21 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5><i class="fa fa-info-circle"></i> Details</h5>
+    </div>
+    <div class="box-content">
+        <form class="form" name="formDetails">
+            <lm-form-group label="Serial no: ">
+                {{ctrl.survey.serial}}
+            </lm-form-group>
+            <lm-form-group label="Filled by: ">
+                {{ctrl.survey.filledBy}}
+            </lm-form-group>
+            <lm-form-group label="Date submitted: ">
+                {{ctrl.survey.surveyDate | amDateFormat:'lll'}}
+            </lm-form-group>
+            <lm-form-group label="Date last updated: ">
+                {{ctrl.survey.dateUpdated | amDateFormat:'lll'}}
+            </lm-form-group>
+        </form>
+    </div>
+</div>

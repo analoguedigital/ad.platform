@@ -1,0 +1,10 @@
+﻿<div id="{{id}}">
+    <canvas class="chart chart-pie chart-center" ng-if="data.length"
+            chart-data="data"
+            chart-labels="labels"
+            chart-options="options"
+            chart-colors="colors"></canvas>
+    <div ng-if="data.length == 0">
+        <p>Chart Data Not Available</p>
+    </div>
+</div>

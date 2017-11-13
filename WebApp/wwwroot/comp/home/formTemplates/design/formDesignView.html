@@ -1,0 +1,32 @@
+﻿
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-xs-12">
+        <div>
+            <h2>
+                {{ctrl.title}}
+                <a title="Save changes" class="pull-right btn btn-primary" ng-click="ctrl.save()"><i class="fa fa-floppy-o"></i></a>
+            </h2>
+            <div ncy-breadcrumb>
+            </div>
+
+        </div>
+        <div>
+            {{ctrl.desc}}
+        </div>
+    </div>
+</div>
+<div class="row wrapper-content no-gutter form-design">
+
+    <div class="col-md-8">
+        <div class="wrapper">
+            <div ng-include="'comp/home/formTemplates/design/_formDesign.html'"></div>
+        </div>
+    </div>
+    <div class="col-md-4 ">
+        <div class="animated fadeInRight">
+            <div ng-include="'comp/home/formTemplates/design/_formDetails.html'"></div>
+            <div ng-include="'comp/home/formTemplates/design/_toolbox.html'"></div>
+        </div>
+    </div>
+
+</div>

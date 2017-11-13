@@ -1,0 +1,56 @@
+<div class="row attachment-metric" ng-controller="attachmentMetricController">
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }">
+        <div class="form-group item item-input">
+            <table class="table table-stripped">
+                <tbody>
+                    <tr ng-repeat='attachment in formValue.attachments | filter: {isDeleted: false} track by $index'>
+                        <td class='col-xs-8 file-name'>
+                            <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
+                        </td>
+                        <td class='col-xs-3'>
+                            <div class='info'>
+                                {{attachment.typeString}}{{attachment.fileSize}}
+                            </div>
+                        </td>
+                        <td class='col-xs-1'>
+                            <a ng-click="deleteAttachment($event, attachment)" ><i class="fa fa-trash-o"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-stripped">
+                <tbody>
+                    <tr ng-repeat='f in files'>
+                        <td class='col-xs-8 file-name'>
+                            <div class="alert-danger fa fa-exclamation" ng-if="f.hasError"></div>{{f.name}}
+                        </td>
+                        <td class='col-xs-3'>
+                            <div class='progress'>
+                                <div class='progress-bar ' role='progressbar' aria-valuenow='{{f.progress}}' aria-valuemin='0' aria-valuemax='100' style='min-width: 2em; width: {{f.progress}}%'>{{(f.progress || 0) + '%'}}</div>
+                            </div>
+                        </td>
+                        <td class='col-xs-1'>
+                            <a href='#' ng-click='abortForOneFile($index);' ng-hide="!f.error && f.progress === 100">X</a>
+                            <a ng-click="deleteFile($index)" ng-show="f.progress === 100"><i class="fa fa-trash-o"></i></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <label class="btn btn-primary">
+                <div class="button"
+                     ng-model="files"
+                     ngf-select="uploadFiles()"
+                     ngf-keep="true"
+                     ngf-multiple="true"
+                     ngf-validate-fn="validate($file)">
+                    Select file
+                </div>
+            </label>
+        </div>
+    </div>
+    <div class="col-md-4 text-danger errors" ng-messages="{{inputErrorsKey}}" ng-if="!isCompact">
+        <div ng-message="required"><span translate>This is required</span></div>
+        <div ng-message="min" ng-if="metric.minVal"><span translate>The value must be bigger than {{metric.minVal}} </span></div>
+        <div ng-message="max" ng-if="metric.maxVal"><span translate>The value must be less than {{metric.maxVal}} </span></div>
+    </div>
+</div>

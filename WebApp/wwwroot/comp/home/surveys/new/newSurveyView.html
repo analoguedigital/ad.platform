@@ -1,0 +1,52 @@
+﻿<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-12">
+        <h2>{{ctrl.title}}<a class="btn pull-right" ui-sref="home.surveys.list.summary({projectId: ctrl.survey.projectId})"><i class="fa fa-chevron-left "></i> back</a></h2>
+        <div ncy-breadcrumb></div>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight survey-form">
+    <div class="box">
+        <div class="box-title">
+            {{ctrl.formTemplate.title}} <span ng-show="ctrl.survey.serial !== null"> (#{{ctrl.survey.serial}})</span>
+        </div>
+        <div class="box-content">
+            <div class="steps">
+                <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
+                    <div class="errors">
+                        <div ng-repeat="error in ctrl.errors | filter: {key: ''}">
+                            {{error.value}}
+                        </div>
+                    </div>
+
+                    <uib-tabset active="ctrl.activeTabIndex">
+                        <uib-tab ng-repeat="tab in ctrl.tabs">
+                            <div class="metric-groups">
+                                <div class="content" ng-repeat="metricGroup in ctrl.formTemplate.metricGroups | filter: {page:tab.number} | filter: {isDeleted: false} track by $index ">
+                                    <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/surveys/new/_metricGroup.html'"></div>
+                                    <div ng-if="metricGroup.isRepeater" ng-include="'comp/home/surveys/new/_metricGroupRepeater.html'"></div>
+                                </div>
+                            </div>
+                        </uib-tab>
+                    </uib-tabset>
+
+                    <div class="actions">
+                        <ul>
+                            <li>
+                                <a ui-sref="home.surveys.list.summary({projectId: ctrl.survey.projectId})" class="btn btn-default">Cancel</a>
+                            </li>
+                            <li>
+                                <a ng-show="ctrl.activeTabIndex > 0" ng-click="ctrl.previous()" class="btn btn-default">Previous</a>
+                            </li>
+                            <li>
+                                <a ng-show="ctrl.activeTabIndex + 1 < ctrl.tabs.length" ng-click="ctrl.next()" class="btn btn-primary">Next</a>
+                            </li>
+                            <li>
+                                <a ng-click="ctrl.submit(surveyForm)" class="btn btn-primary">Submit</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

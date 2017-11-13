@@ -1,0 +1,42 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="formTemplateForm" class="form-horizontal" novalidate>
+                <lm-form-group label="Category :">
+                    <div class="input-group">
+                        <select id="category" name="category" ng-model="ctrl.formTemplate.formTemplateCategory" ng-options="category as category.title for category in ctrl.categories track by category.id" required></select>
+                        <span class="input-group-btn">
+                            <button class="btn btn-info" type="button" ng-click="ctrl.addCategory()"><i class="fa fa-plus"></i> Add new</button>
+                        </span>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Project :">
+                    <select id="project" name="project" ng-model="ctrl.formTemplate.projectId" ng-options="project.id as project.name for project in ctrl.projects track by project.id"></select>
+                </lm-form-group>
+                <lm-form-group label="Code: ">
+                    <input type="text" id="code" name="code" ng-model="ctrl.formTemplate.code" required />
+                </lm-form-group>
+                <lm-form-group label="Title: ">
+                    <input type="text" id="title" name="title" ng-model="ctrl.formTemplate.title" required />
+                </lm-form-group>
+                <lm-form-group label="Description: ">
+                    <textarea rows="3" id="description" name="description" ng-model="ctrl.formTemplate.description" required />
+                </lm-form-group>
+                <lm-form-group ng-if="ctrl.errors !== undefined" >
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{ctrl.errors}}
+                        <a class="alert-link pull-right" ng-click="ctrl.clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="ctrl.submit(formTemplateForm)">Submit</button>
+                </lm-form-group>
+                <a ui-sref="home.formtemplates.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+        </div>
+    </div>
+</div>

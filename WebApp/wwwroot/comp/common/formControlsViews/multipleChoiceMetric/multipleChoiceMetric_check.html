@@ -1,0 +1,7 @@
+﻿<div class="row">
+    <div ng-class="{ 'col-md-8': !isCompact }">
+        <p ng-repeat="fValue in formValues" class="checkbox-value">
+            <i class="fa fa-check" ng-show="fValue.boolValue"></i> {{getText(fValue.guidValue)}}
+        </p>
+    </div>
+</div>

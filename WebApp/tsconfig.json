@@ -1,0 +1,16 @@
+﻿{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "outFile": "wwwroot/js/scripts.js",
+    "module": "amd",
+    "target": "es5",
+    "typeRoots": [ "./node_modules/@types" ]
+  },
+  "exclude": [ "wwwroot/lib", "node_modules" ],
+  "include": [ "wwwroot/scripts/**/*.ts", "wwwroot/comp/**/*.ts", "typings/custom.d.ts" ],
+  "types": []
+}

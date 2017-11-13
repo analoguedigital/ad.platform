@@ -1,0 +1,15 @@
+﻿<div ng-controller="timeRangeFilterController">
+    <h4 class="filter-heading">{{metricFilter.shortTitle}}</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <div uib-timepicker ng-model="model.fromValue" hour-step="1" minute-step="15" show-meridian="false"></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group">
+                <div uib-timepicker ng-model="model.toValue" hour-step="1" minute-step="15" show-meridian="false"></div>
+            </div>
+        </div>
+    </div>
+</div>

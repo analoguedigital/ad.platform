@@ -1,0 +1,8 @@
+﻿<div class="metric-group">
+    <h2>{{metricGroup.title}}</h2>
+    <div class="metrics">
+        <div class="metric" ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false} track by $index ">
+            <div class="metric-body" ng-include="'comp/common/formControlsViews/_metric/metric.html'" ng-controller="metricController"></div>
+        </div>
+    </div>
+</div>

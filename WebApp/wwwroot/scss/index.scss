@@ -1,0 +1,140 @@
+﻿$icon-font-path: "../lib/bootstrap-sass/assets/fonts/bootstrap/";
+$fa-font-path: "../lib/Font-Awesome/fonts";
+
+// Core variables and mixins
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/variables";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
+
+// Reset and dependencies
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/normalize";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/print";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/glyphicons";
+
+// Core CSS
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/scaffolding";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/type";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/code";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/grid";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/tables";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/forms";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/buttons";
+
+// Components
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/component-animations";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/dropdowns";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/button-groups";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/input-groups";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/navs";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/navbar";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/breadcrumbs";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/pagination";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/pager";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/labels";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/badges";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/jumbotron";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/thumbnails";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/alerts";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/progress-bars";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/media";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/list-group";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/panels";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/responsive-embed";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/wells";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/close";
+
+// Components w/ JavaScript
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/modals";
+/*@import "../lib/bootstrap-sass/assets/stylesheetsbootstrap/tooltip";
+@import "../lib/bootstrap-sass/assets/stylesheetsbootstrap/popovers";
+@import "../lib/bootstrap-sass/assets/stylesheetsbootstrap/carousel";*/
+
+// Utility classes
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/utilities";
+@import "../lib/bootstrap-sass/assets/stylesheets/bootstrap/responsive-utilities";
+//====================================================
+
+@import "../lib/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.scss";
+
+
+@import "../lib/Font-Awesome/scss/variables";
+@import "../lib/Font-Awesome/scss/mixins";
+@import "../lib/Font-Awesome/scss/path";
+@import "../lib/Font-Awesome/scss/core";
+@import "../lib/Font-Awesome/scss/larger";
+@import "../lib/Font-Awesome/scss/fixed-width";
+@import "../lib/Font-Awesome/scss/list";
+@import "../lib/Font-Awesome/scss/bordered-pulled";
+@import "../lib/Font-Awesome/scss/animated";
+@import "../lib/Font-Awesome/scss/rotated-flipped";
+@import "../lib/Font-Awesome/scss/stacked";
+@import "../lib/Font-Awesome/scss/icons";
+@import "../lib/Font-Awesome/scss/screen-reader";
+//===================================================
+
+
+
+// Google Fonts
+@import url("//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&lang=en");
+
+// Variables, Mixins
+@import "Template/variables";
+@import "Template/mixins";
+
+// INSPINIA Theme Elements
+@import "Template/typography";
+@import "Template/navigation";
+@import "Template/top_navigation";
+@import "Template/buttons";
+@import "Template/badgets_labels";
+@import "Template/elements";
+//@import "Template/sidebar";
+@import "Template/base";
+@import "Template/pages";
+//@import "Template/chat";
+@import "Template/metismenu";
+//@import "Template/spinners";
+
+// Landing page
+//@import "Template/landing";
+
+// RTL Support
+@import "Template/rtl";
+
+// For demo only - config box style
+//@import "Template/theme-config";
+
+// INSPINIA Skins
+//@import "Template/skins";
+//@import "Template/md-skin";
+
+// Media query style
+@import "Template/media";
+
+//Animate
+@import "_animate";
+
+@import "_variables";
+@import "_boxStyles";
+@import "_standard";
+@import "_formTemplate";
+
+// MODULES
+@import "../comp/login/_login";
+@import "../comp/home/_main";
+@import "../comp/home/formTemplates/design/_design";
+@import "../comp/home/surveys/new/_survey";
+@import "../comp/common/formControls/attachmentMetric/attachmentMetric";
+@import "../comp/home/dashboard/updates/updates";
+@import "../comp/home/dashboard/students/chart/studentChart";
+@import "../comp/home/dataLists/edit/_dataListEdit";
+@import "../comp/common/formControlsViews/multipleChoiceMetric/_multipleChoiceMetric";
+@import "../comp/home/surveys/print/_print";
+@import "../comp/home/projects/summary/_summary";
+@import "../comp/home/projects/summary/print/_projectSummaryPrintView";
+@import "../comp/common/filterControls/filterControls";
+@import "../comp/home/projects/assignments/_assignments";
+@import "../comp/home/surveys/summary/_summary";
+@import "../comp/home/formTemplates/_formTemplates";
+@import "../scripts/directives/lmZoomGallery/lmZoomGallery";
+@import "../comp/forgotPassword/_forgotPassword";
+@import "../comp/setPassword/_setPassword";

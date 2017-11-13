@@ -1,0 +1,9 @@
+﻿<div class="form-group {{ formGroupClass }}" ng-class="{'has-error':hasError  && formDirty }">
+    <label ng-class="['control-label' , {'col-sm-2': isFormHorizontal}]" ng-if="label!=undefined" for="{{for}}" ng-bind="label"></label>
+    <div ng-class="[{'col-sm-10': isFormHorizontal, 'col-sm-offset-2': isFormHorizontal && label===undefined}]">
+        <span></span>
+        <div ng-if="formDirty && errors && errors.length > 0" class="help-block animated fadeInDown">
+            <p ng-repeat="error in errors" ng-if="error.notValid" class="text-danger" ng-bind="error.message"></p>
+        </div>
+    </div>
+</div>

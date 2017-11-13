@@ -1,0 +1,25 @@
+﻿.survey-form {
+    .nav-tabs,
+    .nav > li > a {
+        display: none;
+    }
+
+    .actions {
+        & {
+            text-align: right;
+        }
+
+        ul {
+            & {
+                list-style: none;
+                display: inline-block;
+                text-align: right;
+            }
+
+            li {
+                margin: 0 0.5em;
+                float: left;
+            }
+        }
+    }
+}

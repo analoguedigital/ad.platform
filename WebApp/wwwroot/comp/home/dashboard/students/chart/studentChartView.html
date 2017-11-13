@@ -1,0 +1,43 @@
+﻿
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-10">
+        <h2>{{ctrl.title}}</h2>
+    </div>
+</div>
+<div class="student-chart wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Emotional and Social Development Chart</h5>
+        </div>
+        <div class="box-content">
+
+            <table class="table">
+                <tr>
+                    <th></th>
+                    <th ng-repeat="dimension in ctrl.dimensions.items">
+                        {{dimension.text}}
+                    </th>
+                </tr>
+                <tbody ng-repeat="stage in ctrl.stages.items | orderBy:'value':true">
+
+                    <tr ng-repeat="i in [0,1,2,3,4,5]  track by $index">
+                        <td ng-if="i==0" class="stage" rowspan="6"><span class="caption">{{stage.text}}</span></td>
+                        <td class="achievement"
+                            ng-repeat="dimension in ctrl.dimensions.items"
+                            ng-init="achievement =ctrl.getAchievement(stage,dimension,i); summary =ctrl.getAchievementSummary(achievement);"
+                            ng-click="ctrl.openDetails(achievement)"
+                            style="background-color:#{{summary.backgroundColor}}">
+
+                            <span ng-show="summary.numberOfTargets > 0" title="Number of targets defined" class="label label-info number-of-targets">{{summary.numberOfTargets}}</span>
+                            <span ng-show="summary.numberOfEvidenceItems > 0" title="The number of items of evidence" class="label label-primary number-of-evidence-items">{{summary.numberOfEvidenceItems}}</span>
+                            <div popover-title="Guidance" popover-trigger="mouseenter" 
+                                 uib-popover-html="achievement.description">{{achievement.text}}</div>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

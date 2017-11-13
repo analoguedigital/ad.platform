@@ -1,0 +1,8 @@
+﻿<div class="metric-group">
+    <div class="metrics">
+        <div class="metric" ng-class="metric.type" ng-init="uniqueId = survey.id + '-' + metric.id" ng-repeat="metric in metricGroup.metrics  | filter: {isDeleted: false, type: 'AttachmentMetric'} track by $index" ng-click="ctrl.deleteItem(uniqueId)" ng-hide="!ctrl.isItemVisible(uniqueId)">
+            <div ng-include="'comp/common/formControlsViews/_metric/metric.html'" ng-controller="metricController"></div>
+            <i class="delete-icon fa fa-trash fa-3x"></i>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+﻿<div class="survey-print">
+    <br/>
+    <h1>{{ctrl.formTemplate.title}} <span ng-show="ctrl.survey.serial !== null"> (#{{ctrl.survey.serial}})</span></h1>
+    <hr />
+    <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
+        <div class="metric-groups">
+            <div class="content" ng-repeat="metricGroup in ctrl.formTemplate.metricGroups | filter: {isDeleted: false} track by $index ">
+                <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/surveys/print/_metricGroup.html'"></div>
+                <div ng-if="metricGroup.isRepeater" ng-include="'comp/home/surveys/print/_metricGroupRepeater.html'"></div>
+            </div>
+        </div>
+    </form>
+</div>

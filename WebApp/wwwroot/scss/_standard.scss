@@ -1,0 +1,111 @@
+﻿/// <reference path="../lib/bootstrap-sass/assets/stylesheets/_bootstrap.scss" />
+
+body {
+    background-color: $gray;
+}
+
+.panel {
+    @extend .panel-default;
+}
+
+button {
+    @extend .btn;
+    @extend .btn-default;
+}
+
+table.table {
+
+    .st-sort-ascent:before {
+        content: '\25B2';
+    }
+
+    .st-sort-descent:before {
+        content: '\25BC';
+    }
+
+    th[st-sort] {
+        cursor: pointer;
+    }
+}
+
+.table-checkbox {
+    margin: 0;
+}
+
+.table-responsive {
+    padding-right: 10px;
+}
+
+.breadcrumb {
+    background-color: #ffffff;
+    padding: 0;
+    margin-bottom: 0;
+
+    li a {
+        color: inherit;
+    }
+
+    .active {
+        color: inherit;
+        font-weight: bold;
+    }
+}
+
+.wrapper {
+    -vendor-animation-duration: 3s;
+    -vendor-animation-delay: 2s;
+    -vendor-animation-iteration-count: infinite;
+    overflow-y: auto;
+}
+
+#wrapper {
+    overflow-y: auto;
+}
+
+[class*='col-'].no-gutter-left, .no-gutter-left > [class*='col-'] {
+    padding-left: 0;
+}
+
+[class*='col-'].no-gutter-right, .no-gutter-right > [class*='col-'] {
+    padding-right: 0;
+}
+
+[class*='col-'].no-gutter, .no-gutter > [class*='col-'] {
+    padding-right: 0;
+    padding-left: 0;
+}
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none !important;
+}
+
+/* timeline styles */
+canvas {
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+#chartjs-tooltip {
+    opacity: 1;
+    position: absolute;
+    background: rgba(0, 0, 0, .7);
+    color: white;
+    border-radius: 3px;
+    -webkit-transition: all .1s ease;
+    transition: all .1s ease;
+    pointer-events: none;
+    -webkit-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+
+    & table tbody tr td {
+        white-space: nowrap;
+    }
+}
+
+.chartjs-tooltip-key {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 10px;
+}

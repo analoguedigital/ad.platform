@@ -1,0 +1,13 @@
+<h3 ng-hide="isCompact || isExportMode">{{metric.sectionTitle}}</h3>
+<div class="row">
+    <div class="col-lg-3" ng-hide="isExportMode">
+        <p ng-hide="isCompact">{{metric.description}}</p>
+    </div>
+    <div ng-class="{ 'col-lg-9': !isExportMode, 'col-lg-12': isExportMode }">
+        <div ng-include="'comp/common/formControlsViews/'+viewName+'/'+viewName+'.html'"></div>
+    </div>
+</div>
+
+
+
+

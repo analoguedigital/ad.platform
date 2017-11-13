@@ -1,0 +1,671 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.5\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.5\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EC00646C-5983-4B52-B074-D8FBBEF28534}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WebApi</RootNamespace>
+    <AssemblyName>WebApi</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TypeScriptCompileBlocked>false</TypeScriptCompileBlocked>
+    <Use64BitIISExpress />
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AutoMapper, Version=3.3.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AutoMapper.Net4, Version=3.3.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.Core, Version=1.6.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.Core.1.6.15\lib\net45\Hangfire.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer, Version=1.6.15.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.SqlServer.1.6.15\lib\net45\Hangfire.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.5\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Cors, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Cors.3.0.1\lib\net45\Microsoft.Owin.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Net.Http">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.3\lib\net45\System.Web.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Http.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.3\lib\net45\System.Web.Http.Cors.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.Owin, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Owin.5.2.3\lib\net45\System.Web.Http.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="wnvhtmltopdf, Version=14.4.0.0, Culture=neutral, PublicKeyToken=b12703d35a33ff98, processorArchitecture=MSIL">
+      <HintPath>..\packages\WnvHtmlToPdf_x64.14.4\lib\net40\wnvhtmltopdf.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="gulpfile.config.js" />
+    <Content Include="gulpfile.js" />
+    <Content Include="index.html" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryView.html" />
+    <Content Include="wwwroot\comp\common\filterControls\checkboxFilter\checkboxFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\dateRangeFilter\dateRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\numericRangeFilter\numericRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\textFilter\textFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\_filter\filter.html" />
+    <Content Include="wwwroot\comp\common\footer\footerView.html" />
+    <Content Include="wwwroot\comp\forgotPassword\forgotPasswordView.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\attachmentMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\dateMetric\dateMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\dichotomousMetric\dichotomousMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\freeTextMetric\freeTextMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\multipleChoiceMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\multipleChoiceMetric_check.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\multipleChoiceMetric_radio.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\numericMetric\numericMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\rateMetric\rateMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\timeMetric\timeMetric.html" />
+    <Content Include="wwwroot\comp\common\formControlsViews\_metric\metric.html" />
+    <Content Include="wwwroot\comp\common\formControls\timeMetric\timeMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\dateMetric\dateMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\dichotomousMetric\dichotomousMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\freeTextMetric\freeTextMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\multipleChoiceMetric\multipleChoiceMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\multipleChoiceMetric\multipleChoiceMetric_check.html" />
+    <Content Include="wwwroot\comp\common\formControls\multipleChoiceMetric\multipleChoiceMetric_radio.html" />
+    <Content Include="wwwroot\comp\common\formControls\attachmentMetric\attachmentMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\numericMetric\numericMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\rateMetric\rateMetric.html" />
+    <Content Include="wwwroot\comp\common\formControls\_metric\metric.html" />
+    <Content Include="wwwroot\comp\common\navigation\navigationView.html" />
+    <Content Include="wwwroot\comp\common\pageHeader.html" />
+    <Content Include="wwwroot\comp\common\resetPassword\resetPasswordView.html" />
+    <Content Include="wwwroot\comp\common\topnavbar\topnavbarView.html" />
+    <Content Include="wwwroot\comp\home\dashboard\dashboardView.html" />
+    <Content Include="wwwroot\comp\home\dashboard\students\chart\details\chartDetailsView.html" />
+    <Content Include="wwwroot\comp\home\dashboard\students\chart\studentChartView.html" />
+    <Content Include="wwwroot\comp\home\dashboard\students\studentsView.html" />
+    <Content Include="wwwroot\comp\home\dashboard\updates\updatesView.html" />
+    <Content Include="wwwroot\comp\home\dataLists\dataListsView.html" />
+    <Content Include="wwwroot\comp\home\dataLists\edit\dataListEditView.html" />
+    <Content Include="wwwroot\comp\home\dataLists\edit\dataListRelationshipEditView.html" />
+    <Content Include="wwwroot\comp\home\dataLists\edit\dataListItemEditView.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\formDesignView.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\timeMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\formTemplate\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\multipleChoiceMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\dateMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\dichotomousMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\freeTextMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\attachmentMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\rateMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\numericMetric\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\forms\_metricGroup\enter.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\_formDesign.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\_formDetails.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
+    <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_exportToolbox.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroupRepeater.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\projectSummaryView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_chart.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_locations.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_recordings.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
+    <Content Include="wwwroot\comp\home\surveys\all\_dataTable.html" />
+    <Content Include="wwwroot\comp\home\surveys\all\_searchForm.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_formDetails.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_locations.html" />
+    <Content Include="wwwroot\comp\home\myAccount\redeemCode\redeemCode.html" />
+    <Content Include="wwwroot\comp\home\myAccount\subscriptionsView.html" />
+    <Content Include="wwwroot\comp\home\myAccount\_payments.html" />
+    <Content Include="wwwroot\comp\home\surveys\new\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\surveys\new\_metricGroupRepeater.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\_toolbox.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\edit\formTemplateEditView.html" />
+    <Content Include="wwwroot\comp\home\homeView.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\formTemplatesView.html" />
+    <Content Include="wwwroot\comp\home\organisations\edit\organisationEditView.html" />
+    <Content Include="wwwroot\comp\home\organisations\organisationsView.html" />
+    <Content Include="wwwroot\comp\home\projects\edit\projectEditView.html" />
+    <Content Include="wwwroot\comp\home\projects\projectsView.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\print-multiple.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\print-single.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\surveys\print\_metricGroupRepeater.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\survey.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_metricGroup.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_metricGroupRepeater.html" />
+    <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
+    <Content Include="wwwroot\comp\home\users\usersView.html" />
+    <Content Include="wwwroot\comp\home\surveys\all\allSurveysView.html" />
+    <Content Include="wwwroot\comp\home\surveys\new\newSurveyView.html" />
+    <Content Include="wwwroot\comp\home\surveys\summary\surveysSummaryView.html" />
+    <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
+    <Content Include="wwwroot\comp\login\loginView.html" />
+    <Content Include="wwwroot\comp\setPassword\setPasswordView.html" />
+    <Content Include="wwwroot\css\index.css" />
+    <Content Include="wwwroot\css\index.min.css">
+      <DependentUpon>index.css</DependentUpon>
+    </Content>
+    <Content Include="wwwroot\index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Code\CustomMultipartFormDataStreamProvider.cs" />
+    <Compile Include="App_Code\ServiceContext.cs" />
+    <Compile Include="App_Start\AutoMapperConfig.cs" />
+    <Compile Include="App_Start\AuthorizationServerProvider.cs" />
+    <Compile Include="App_Start\HangFireConfig.cs" />
+    <Compile Include="App_Start\Startup.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\.BaseApiController.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ChangePasswordController.cs" />
+    <Compile Include="Controllers\CustomControllers\MBS\MBSController.cs" />
+    <Compile Include="Controllers\CustomControllers\MBS\Models\Achievement.cs" />
+    <Compile Include="Controllers\CustomControllers\MBS\Models\AchievementSummary.cs" />
+    <Compile Include="Controllers\CustomControllers\MBS\Models\Target.cs" />
+    <Compile Include="Controllers\CustomControllers\MBS\Models\Evidence.cs" />
+    <Compile Include="Controllers\CustomControllers\MBS\Models\Update.cs" />
+    <Compile Include="Controllers\FeedbacksController.cs" />
+    <Compile Include="Controllers\ProjectSummaryPrintSessionController.cs" />
+    <Compile Include="Controllers\DataListsController.cs" />
+    <Compile Include="Controllers\FilesController.cs" />
+    <Compile Include="Controllers\FormTemplateCategoriesController.cs" />
+    <Compile Include="Controllers\FormTemplatesController.cs" />
+    <Compile Include="Controllers\MetricGroupsController.cs" />
+    <Compile Include="Controllers\MetricsController.cs" />
+    <Compile Include="Controllers\OrganisationsController.cs" />
+    <Compile Include="Controllers\OrgUserTypesController.cs" />
+    <Compile Include="Controllers\PaymentsController.cs" />
+    <Compile Include="Controllers\ProjectsController.cs" />
+    <Compile Include="Controllers\PromotionCodesController.cs" />
+    <Compile Include="Controllers\SubscriptionsController.cs" />
+    <Compile Include="Controllers\SurveysController.cs" />
+    <Compile Include="Controllers\OrgUsersController.cs" />
+    <Compile Include="Filters\DeflateCompressionAttribute.cs" />
+    <Compile Include="Models\Account\AccountBindingModels.cs" />
+    <Compile Include="Models\Account\AccountViewModels.cs" />
+    <Compile Include="Models\Account\IdentityModels.cs" />
+    <Compile Include="Models\ChangePasswordDTO.cs" />
+    <Compile Include="Models\Feedback.cs" />
+    <Compile Include="Models\ProjectSummaryPrintSession.cs" />
+    <Compile Include="Models\DataList.cs" />
+    <Compile Include="Models\DataListItem.cs" />
+    <Compile Include="Models\DataListItemAttr.cs" />
+    <Compile Include="Models\DataListRelationship.cs" />
+    <Compile Include="Models\DataLists\EditDataListRelationshipReqDto.cs" />
+    <Compile Include="Models\DataLists\AddDataListRelationshipReqDto.cs" />
+    <Compile Include="Models\DataLists\GetDataListReferencesResDto.cs" />
+    <Compile Include="Models\DataLists\GetDataListsResDto.cs" />
+    <Compile Include="Models\FilledForms\FilledForm.cs" />
+    <Compile Include="Models\FilledForms\FilledFormLocation.cs" />
+    <Compile Include="Models\FilledForms\FormValue.cs" />
+    <Compile Include="Models\FormTemplate.cs" />
+    <Compile Include="Models\FormTemplateCategory.cs" />
+    <Compile Include="Models\MetricGroup.cs" />
+    <Compile Include="Models\Metric\Attachment.cs" />
+    <Compile Include="Models\Metric\AttachmentMetric.cs" />
+    <Compile Include="Models\Metric\TimeMetric.cs" />
+    <Compile Include="Models\Metric\DateMetric.cs" />
+    <Compile Include="Models\Metric\DichotomousMetric.cs" />
+    <Compile Include="Models\Metric\FreeTextMetric.cs" />
+    <Compile Include="Models\Metric\Metric.cs" />
+    <Compile Include="Models\Metric\MultipleChoiceMetric.cs" />
+    <Compile Include="Models\Metric\NumericMetric.cs" />
+    <Compile Include="Models\Metric\RateMetric.cs" />
+    <Compile Include="Models\Organisation.cs" />
+    <Compile Include="Models\OrgUserType.cs" />
+    <Compile Include="Models\PaymentRecord.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\ProjectAssignment.cs" />
+    <Compile Include="Models\PromotionCode.cs" />
+    <Compile Include="Models\response\SaveReponse.cs" />
+    <Compile Include="Models\OrgUser.cs" />
+    <Compile Include="Models\Subscription.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\ApplicationOAuthProvider.cs" />
+    <Compile Include="Results\ChallengeResult.cs" />
+    <Compile Include="Services\EmailService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="tslint.json" />
+    <Content Include="tsconfig.json" />
+    <Content Include="package.json" />
+    <Content Include="bower.json" />
+    <Content Include=".bowerrc" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <Content Include="wwwroot\scripts\directives\lmAtWho\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmFormGroupCheckbox\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmFormGroup\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmLocations\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmPieChart\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmTimeline\template.html" />
+    <Content Include="wwwroot\scss\index.css">
+      <DependentUpon>index.scss</DependentUpon>
+    </Content>
+    <Content Include="wwwroot\scss\index.min.css">
+      <DependentUpon>index.css</DependentUpon>
+    </Content>
+    <Content Include="wwwroot\scss\index.scss" />
+    <Content Include="wwwroot\scss\Template\_badgets_labels.scss" />
+    <Content Include="wwwroot\scss\Template\_base.scss" />
+    <Content Include="wwwroot\scss\Template\_buttons.scss" />
+    <Content Include="wwwroot\scss\Template\_chat.scss" />
+    <Content Include="wwwroot\scss\Template\_elements.scss" />
+    <Content Include="wwwroot\scss\Template\_landing.scss" />
+    <Content Include="wwwroot\scss\Template\_md-skin.scss" />
+    <Content Include="wwwroot\scss\Template\_media.scss" />
+    <Content Include="wwwroot\scss\Template\_metismenu.scss" />
+    <Content Include="wwwroot\scss\Template\_mixins.scss" />
+    <Content Include="wwwroot\scss\Template\_navigation.scss" />
+    <Content Include="wwwroot\scss\Template\_pages.scss" />
+    <Content Include="wwwroot\scss\Template\_rtl.scss" />
+    <Content Include="wwwroot\scss\Template\_sidebar.scss" />
+    <Content Include="wwwroot\scss\Template\_skins.scss" />
+    <Content Include="wwwroot\scss\Template\_spinners.scss" />
+    <Content Include="wwwroot\scss\Template\_theme-config.scss" />
+    <Content Include="wwwroot\scss\Template\_top_navigation.scss" />
+    <Content Include="wwwroot\scss\Template\_typography.scss" />
+    <Content Include="wwwroot\scss\Template\_variables.scss" />
+    <Content Include="wwwroot\scss\_standard.scss" />
+    <Content Include="wwwroot\comp\home\_main.scss" />
+    <Content Include="wwwroot\comp\login\_login.scss" />
+    <Content Include="wwwroot\scss\_boxStyles.scss" />
+    <Content Include="wwwroot\scss\_variables.scss" />
+    <Content Include="wwwroot\scss\_animate.scss" />
+    <Content Include="wwwroot\scss\_formTemplate.scss" />
+    <Content Include="wwwroot\comp\home\formTemplates\design\_design.scss" />
+    <Content Include="wwwroot\comp\home\surveys\new\_survey.scss" />
+    <Content Include="wwwroot\comp\common\formControls\attachmentMetric\_attachmentMetric.scss" />
+    <Content Include="wwwroot\comp\home\dashboard\updates\_updates.scss" />
+    <Content Include="wwwroot\comp\home\dashboard\students\chart\_studentChart.scss" />
+    <Content Include="wwwroot\comp\home\dataLists\edit\_dataListEdit.scss" />
+    <Content Include="wwwroot\comp\home\surveys\view\_survey.scss" />
+    <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\_attachmentMetric.scss" />
+    <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\_multipleChoiceMetric.scss" />
+    <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
+    <Content Include="wwwroot\comp\home\projects\summary\_summary.scss" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_projectSummaryPrintView.scss" />
+    <Content Include="wwwroot\comp\common\filterControls\filterControls.scss" />
+    <Content Include="wwwroot\comp\home\projects\assignments\_assignments.scss" />
+    <Content Include="wwwroot\comp\home\surveys\summary\_summary.scss" />
+    <Content Include="wwwroot\comp\home\formTemplates\_formTemplates.scss" />
+    <Content Include="wwwroot\comp\forgotPassword\_forgotPassword.scss" />
+    <Content Include="wwwroot\comp\setPassword\_setPassword.scss" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AppHelper\AppHelper.csproj">
+      <Project>{b935e61f-651b-471b-acdf-f4ed7c52dd16}</Project>
+      <Name>AppHelper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{37d3c74c-ea51-419e-8014-fb272f0a6396}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="typings\custom.d.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\addFormTemplateCategory\addFormTemplateCategoryController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\checkboxFilter\checkboxFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\dateRangeFilter\dateRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\numericRangeFilter\numericRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\textFilter\textFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\filterControls\_filter\filterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\footer\footerController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\forgotPassword\forgotPasswordController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\timeMetric\timeMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\dateMetric\dateMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\dichotomousMetric\dichotomousMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\freeTextMetric\freeTextMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\multipleChoiceMetric\multipleChoiceMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\attachmentMetric\attachmentMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\numericMetric\numericMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\rateMetric\rateMetricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\formControls\_metric\metricController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\navigation\navigationController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\resetPassword\resetPasswordController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\common\topnavbar\topnavbarController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dashboard\dashboardController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dashboard\dashboard.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dashboard\students\chart\details\chartDetailsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dashboard\students\chart\studentChartController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dashboard\students\studentsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dashboard\updates\updatesController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dataLists\dataListsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dataLists\edit\dataListEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dataLists\edit\dataListRelationshipEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dataLists\edit\dataListItemEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\dataLists\dataLists.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\timeMetric\timeMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\formTemplates.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\formDesignController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\formTemplate\formTemplateFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\multipleChoiceMetric\multipleChoiceMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\dateMetric\dateMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\dichotomousMetric\dichotomousMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\freeTextMetric\freeTextMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\attachmentMetric\attachmentMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\rateMetric\rateMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\numericMetric\numericMetricFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\_metricGroup\metricGroupFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryModels.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\redeemCode\redeemCodeController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptions.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptionsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\new\metricGroupRepeaterController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\edit\formTemplateEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\homeController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\formTemplatesController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\edit\organisationEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisationsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\edit\projectEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\projectsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\edit\userEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\users.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\UsersController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\all\allSurveysController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\new\newSurveyController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\summary\SurveysSummaryController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveysController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\indexController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\login\loginController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\setPassword\setPasswordController.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\app.config.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\app.run.ts" />
+    <Content Include="wwwroot\scripts\app.js" />
+    <TypeScriptCompile Include="wwwroot\scripts\app.route.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmAccess\lmAccess.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmAtWho\lmAtWho.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmDateTime\lmDateTime.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmLocations\lmLocations.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmPieChart\lmPieChart.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmTimeline\lmTimeline.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmZoomGallery\lmZoomGallery.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\achievementSummary.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\evidence.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\target.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\update.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\dataListItemAttr.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\dataListItem.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\dataList.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\dataListRelationship.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\filterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\multipleFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\rangeFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\singleFilterValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\checkboxFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\dateRangeFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\metricFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\numericRangeFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\textFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricFilters\timeRangeFilter.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\attachment.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\attachmentMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\timeMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\numericMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\rateMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\multipleChoiceMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\dichotomousMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\dateMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\freeTextMetric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\metric.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metricGroup.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\formTemplate.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\formValue.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\formTemplateCategory.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\metric\survey.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\organisation.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\orgUserType.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\paymentRecord.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\projectSummarySession.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\promotionCode.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\searchDTO.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\subscription.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\user.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\survey.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\custom\MBS\achievementsSummaryResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\custom\MBS\evidenceResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\custom\MBS\targetResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\custom\MBS\updateResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\dataListRelationshipResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\dataListItemResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\dataListResource .ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\dataResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateCategoryResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\metricGroupResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\metricResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\organisationResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\projectSummaryPrintSessionResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\paymentResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\promotionCodeResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\surveyResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\projectResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\services\authInterceptorService.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\services\authService.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\services\httpService.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\services\IAppRootScopeService.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\services\userContextService.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>False</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind>None</TypeScriptModuleKind>
+    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
+    <TypeScriptOutFile />
+    <TypeScriptOutDir />
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
+    <TypeScriptSourceMap>False</TypeScriptSourceMap>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>56051</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:60414/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.5\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.5\build\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <Import Project="..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets" Condition="Exists('..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

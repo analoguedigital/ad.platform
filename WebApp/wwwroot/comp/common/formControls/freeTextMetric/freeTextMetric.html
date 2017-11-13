@@ -1,0 +1,16 @@
+<div class="row" ng-controller="freeTextMetricController">
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }" class="form-group item item-input" ng-if="metric.numberOfLine==1">
+        <input type="text" class="form-control" name="{{inputName}}" maxlength="{{metric.maxLength}}" minlength="{{metric.minLength}}" ng-show="metric.numberOfLine == 1"
+               ng-required="metric.mandatory" ng-model="formValue.textValue">
+    </div>
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }" class="form-group item item-input" ng-if="metric.numberOfLine > 1">
+        <textarea class="form-control" name="{{inputName}}" rows="{{metric.numberOfLine}}" maxlength="{{metric.maxLength}}" minlength="{{metric.minLength}}"
+                  ng-required="metric.mandatory"
+                  ng-model="formValue.textValue"></textarea>
+    </div>
+    <div class="col-md-4 text-danger" ng-messages="{{inputErrorsKey}}" ng-if="!isCompact">
+        <div ng-message="required">This is required</div>
+        <div ng-message="minlength">The length must be more than {{metric.minLength}}</div>
+        <div ng-message="maxlength">The length must be less than {{metric.maxLength}}</div>
+    </div>
+</div>
