@@ -15,9 +15,10 @@ module App {
     }
 
     class RateMetricFormController implements IRateMetricFormController {
-        static $inject: string[] = ["$scope", "$uibModalInstance", "toastr", "metric"];
+        static $inject: string[] = ["$scope", "$rootScope", "$uibModalInstance", "toastr", "metric"];
 
         constructor(private $scope: IRateMetricFormControllerScope,
+            private $rootScope: ng.IRootScopeService,
             private $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance,
             private toastr: any,
             private metric: Models.IRateMetric) {
@@ -91,6 +92,7 @@ module App {
                 this.$scope.metric.maxValue = max.value;
             }
 
+            this.$rootScope.$broadcast('update-rate-metrics');
             this.$uibModalInstance.dismiss('cancel');
         };
     }

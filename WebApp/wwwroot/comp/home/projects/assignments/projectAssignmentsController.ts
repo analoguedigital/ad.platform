@@ -7,7 +7,6 @@ module App {
         project: Models.IProject;
         errors: string;
         userAssignments: IAssignmentUser[];
-
         clearErrors: () => void;
     }
     interface IAssignmentUser {
@@ -19,9 +18,7 @@ module App {
         canDelete: boolean;
     }
 
-
     class ProjectAssignmentsController implements IProjectAssignmentsController {
-
         title: string;
         project: Models.IProject;
         users: Models.IOrgUser[];
@@ -77,38 +74,49 @@ module App {
             });
         }
 
-        updateAssignment(assg: IAssignmentUser, accessLevel: string) {
+        updateAssignment(assignment: IAssignmentUser, accessLevel: string) {
             var params = {
                 id: this.project.id,
-                userId: assg.userId,
+                userId: assignment.userId,
                 accessLevel: accessLevel
             };
 
             var toggled = false;
             switch (accessLevel) {
-                case 'add': {
-                    toggled = assg.canAdd;
+                case 'allowAdd': {
+                    toggled = assignment.canAdd;
                     break;
                 }
-                case 'edit': {
-                    toggled = assg.canEdit;
+                case 'allowEdit': {
+                    toggled = assignment.canEdit;
                     break;
                 }
-                case 'delete': {
-                    toggled = assg.canDelete;
+                case 'allowDelete': {
+                    toggled = assignment.canDelete;
                     break;
                 }
-                case 'view': {
-                    toggled = assg.canView;
+                case 'allowView': {
+                    toggled = assignment.canView;
                     break;
                 }
             }
 
             if (toggled) {
-                this.projectResource.assign(params, (result) => { }, (error) => { });
+                this.projectResource.assign(params, (result: Models.IProjectAssignment) => {
+                    this.refreshAssignment(assignment, result);
+                }, (error) => { });
             } else {
-                this.projectResource.unassign(params, (result) => { }, (error) => { });
+                this.projectResource.unassign(params, (result: Models.IProjectAssignment) => {
+                    this.refreshAssignment(assignment, result);
+                }, (error) => { });
             }
+        }
+
+        refreshAssignment(assignment: IAssignmentUser, newValue: Models.IProjectAssignment) {
+            assignment.canView = newValue.canView;
+            assignment.canAdd = newValue.canAdd;
+            assignment.canEdit = newValue.canEdit;
+            assignment.canDelete = newValue.canDelete;
         }
 
         clearErrors() {

@@ -20,11 +20,12 @@ module App {
     }
 
     class DataListsController implements IDataListsController {
-        static $inject: string[] = ["$scope", "dataListResource"];
+        static $inject: string[] = ["$scope", "dataListResource", "toastr"];
 
         constructor(
             private $scope: IDataListsControllerScope,
-            private dataListResource: Resources.IDataListResource) {
+            private dataListResource: Resources.IDataListResource,
+            private toastr: any) {
 
             $scope.title = "Data Lists";
             $scope.delete = (id) => { this.delete(id); };
@@ -46,7 +47,10 @@ module App {
         delete(id: string) {
             this.dataListResource.delete({ id: id },
                 () => { this.load(); },
-                (err) => { console.log(err); });
+                (err) => {
+                    this.toastr.error(err.data.message);
+                    console.log(err);
+                });
         }
     }
 

@@ -131,7 +131,8 @@ namespace WebApi.Controllers
         {
             var htmlToPdfConverter = new Winnovative.HtmlToPdfConverter();
             htmlToPdfConverter.ConversionDelay = 3;
-            htmlToPdfConverter.MediaType = "print";
+            htmlToPdfConverter.RenderedHtmlElementSelector = ".content";
+            htmlToPdfConverter.PdfDocumentOptions.PdfPageSize = Winnovative.PdfPageSize.A4;
             htmlToPdfConverter.PdfDocumentOptions.TopMargin = 60;
             htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 60;
             htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 30;

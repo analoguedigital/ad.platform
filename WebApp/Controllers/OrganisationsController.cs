@@ -8,6 +8,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -17,6 +18,7 @@ namespace WebApi.Controllers
     {
         private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
         public IHttpActionResult Get()
         {
@@ -28,6 +30,7 @@ namespace WebApi.Controllers
             return Ok(orgs);
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(OrganisationDTO))]
         public IHttpActionResult Get(Guid id)
         {

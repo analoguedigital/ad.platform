@@ -1,14 +1,16 @@
 ﻿<form role="form" class="form-horizontal">
     <div class="form-group">
         <div class="col-md-3">
-            <input type="text" class="form-control" placeholder="Search term..." maxlength="50" ng-model="ctrl.searchTerm" />
+            <input type="text" class="form-control" placeholder="search term" maxlength="50" ng-model="ctrl.searchTerm" />
         </div>
         <div class="col-md-2">
             <div class="input-group">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
-                <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" placeholder="start date" />
+                <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.startDateCalendar.isOpen" 
+                       class="form-control" type="text" name="start-date" 
+                       ng-model="ctrl.startDate" placeholder="start date" />
             </div>
         </div>
         <div class="col-md-2">
@@ -16,7 +18,7 @@
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
-                <input uib-datepicker-popup="{{'dd/MM/yyyy'}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
+                <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
             </div>
         </div>
         <div class="col-md-3 pull-right" style="direction: rtl">

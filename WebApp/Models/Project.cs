@@ -16,5 +16,13 @@ namespace WebApi.Models
         public DateTime? StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
+
+        public bool AllowView { get; set; }
+
+        public bool AllowAdd { get; set; }
+
+        public bool AllowEdit { get; set; }
+
+        public bool AllowDelete { get; set; }
     }
 }

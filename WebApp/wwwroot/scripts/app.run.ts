@@ -79,9 +79,19 @@
         userContextService.initialize();
     }
 
-    configAngularMoment.$inject = ["amMoment", "$locale"];
-    function configAngularMoment(amMoment, $locale) {
-        amMoment.changeLocale($locale.id);
+    configAngularMoment.$inject = ["amMoment", "$locale", "moment", "$rootScope"];
+    function configAngularMoment(amMoment, $locale, moment, $rootScope) {
+        var locale = window.navigator.language;
+        var localeData = moment().locale(locale).localeData();
+        var format = localeData.longDateFormat('L');
+
+        // lower year/day segments for bootstrap datetimepicker to work.
+        var inputFormat = _.replace(format, 'DD', 'dd');
+        inputFormat = _.replace(inputFormat, 'YYYY', 'yyyy');
+
+        $rootScope.INPUT_DATE_FORMAT = inputFormat;
+
+        amMoment.changeLocale(locale);
     }
 
 })();

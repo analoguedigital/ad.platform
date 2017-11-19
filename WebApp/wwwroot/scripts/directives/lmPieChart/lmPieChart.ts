@@ -14,6 +14,7 @@
         colors: string[];
         options: any;
         animation: string;
+        showLegend: string;
     }
 
     interface IlmPieChartAttributes extends ng.IAttributes {
@@ -31,7 +32,8 @@
                 id: '@',
                 formTemplates: '=',
                 surveys: '=',
-                animation: '@'
+                animation: '@',
+                showLegend: '@'
             }
         };
 
@@ -47,11 +49,7 @@
                     type: 'pie',
                     responsive: false,
                     maintainAspectRatio: true,
-                    showTooltips: true,
-                    legend: {
-                        display: true,
-                        position: 'bottom'
-                    }
+                    showTooltips: true
                 };
             } else {
                 scope.options = {
@@ -59,12 +57,15 @@
                     responsive: false,
                     maintainAspectRatio: true,
                     showTooltips: true,
-                    animation: false,
-                    legend: {
-                        display: true,
-                        position: 'bottom'
-                    }
+                    animation: false
                 };
+            }
+
+            if (scope.showLegend && scope.showLegend == 'true') {
+                scope.options.legend = {
+                    display: true,
+                    position: 'bottom'
+                }
             }
 
             scope.$watchGroup(['formTemplates', 'surveys'], () => {

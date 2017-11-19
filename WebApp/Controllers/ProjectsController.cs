@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
+using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
@@ -19,31 +21,44 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
         public IHttpActionResult Get()
         {
-            return Ok(UnitOfWork.ProjectsRepository.GetProjects(CurrentUser)
+            var projects = UnitOfWork.ProjectsRepository
+                .GetProjects(CurrentUser)
                 .OrderByDescending(p => p.DateCreated)
-                .ToList()
-                .Select(p => Mapper.Map<ProjectDTO>(p)).ToList());
+                .ToList();
+
+            var result = new List<ProjectDTO>();
+            foreach (var project in projects)
+            {
+                var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+                var dto = Mapper.Map<ProjectDTO>(project);
+                Mapper.Map(assignment, dto);
+
+                result.Add(dto);
+            }
+
+            return Ok(result);
         }
 
         // GET api/<controller>/5
+        [DeflateCompression]
         [ResponseType(typeof(ProjectDTO))]
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
                 return Ok(Mapper.Map<ProjectDTO>(new Project()));
 
-            var project = UnitOfWork.ProjectsRepository.GetProjects(CurrentUser)
-                .Where(p => p.Id == id)
-                .ToList()
-                .Select(p => Mapper.Map<ProjectDTO>(p))
-                .SingleOrDefault();
-
+            var project = UnitOfWork.ProjectsRepository.GetProjects(CurrentUser).Where(p => p.Id == id).SingleOrDefault();
             if (project == null)
                 return NotFound();
 
-            return Ok(project);
+            var result = Mapper.Map<ProjectDTO>(project);
+            var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+            Mapper.Map(assignment, result);
+
+            return Ok(result);
         }
 
+        [DeflateCompression]
         [Route("api/projects/{id:guid}/assignments")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
         public IHttpActionResult GetAssignments(Guid id)
@@ -58,7 +73,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult AddAssignments(Guid id, Guid userId, string accessLevel)
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, AccessLevels accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
@@ -71,24 +86,15 @@ namespace WebApi.Controllers
             if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
                 return NotFound();
 
-            if (string.IsNullOrEmpty(accessLevel))
-                return BadRequest();
-
             var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
-            if (result == AssignAccessLevelResult.NotFound)
-                return NotFound();
-
-            if (result == AssignAccessLevelResult.BadRequest)
-                return BadRequest();
-
-            return Ok();
+            return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
         }
 
         [HttpDelete]
         [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, string accessLevel)
+        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, AccessLevels accessLevel)
         {
             var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
             if (project == null)
@@ -101,16 +107,11 @@ namespace WebApi.Controllers
             if (assignment == null)
                 return NotFound();
 
-            if (string.IsNullOrEmpty(accessLevel))
-                return BadRequest();
-
             var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
-            if (result == AssignAccessLevelResult.NotFound)
-                return NotFound();
-            if (result == AssignAccessLevelResult.BadRequest)
-                return BadRequest();
+            if (result != null)
+                return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
 
-            return Ok();
+            return Ok(new ProjectAssignmentDTO());
         }
 
         // POST api/<controller>

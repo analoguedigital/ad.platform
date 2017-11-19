@@ -1,8 +1,8 @@
 <div class="row" ng-controller="dateMetricController">
-    <div class="col-md-12 item item-input" ng-if="isPersian">
+    <div ng-class="{ 'col-md-12': !isCompact }" class="item item-input" ng-if="isPersian">
         <p>{{dateToString(formValue.dateValue)}}</p>
     </div>
-    <div class="col-md-12" ng-if="!isPersian">
+    <div ng-class="{ 'col-md-12': !isCompact }" ng-if="!isPersian">
         <lm-date-time value="formValue.dateValue"></lm-date-time>
     </div>
 </div>

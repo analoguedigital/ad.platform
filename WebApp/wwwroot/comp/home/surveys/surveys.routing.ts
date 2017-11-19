@@ -28,16 +28,20 @@
                 templateUrl: "comp/home/surveys/summary/surveysSummaryView.html",
                 controller: "surveysSummaryController",
                 controllerAs: "ctrl",
+                ncyBreadcrumb: { label: 'Summary' },
                 resolve: {
                     project:
                     ['$stateParams', 'projectResource',
                         ($stateParams, projectResource: App.Resources.IProjectResource) => {
-                            return projectResource.get({ id: $stateParams['projectId'] }).$promise.then((data) => {
+                            var projectId = $stateParams['projectId'];
+                            if (projectId == null || projectId.length < 1)
+                                return null;
+
+                            return projectResource.get({ id: projectId }).$promise.then((data) => {
                                 return data;
                             });
                         }]
                 },
-                ncyBreadcrumb: { label: 'Summary' },
                 module: "private"
             })
             .state("home.surveys.new", <App.Models.IAppRoute>{

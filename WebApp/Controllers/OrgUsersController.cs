@@ -3,11 +3,11 @@ using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -21,6 +21,7 @@ namespace WebApi.Controllers
 
         private OrgUserTypesRepository Types { get { return UnitOfWork.OrgUserTypesRepository; } }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         public IHttpActionResult Get()
         {
@@ -34,6 +35,7 @@ namespace WebApi.Controllers
             return Ok(users);
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         public IHttpActionResult Get(Guid id)
         {
@@ -42,15 +44,17 @@ namespace WebApi.Controllers
             var orgUser = user as OrgUser;
             var result = Mapper.Map<OrgUserDTO>(user);
 
-            var assignments = orgUser.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)).ToList();
-            result.Assignments = assignments;
+            if (orgUser != null)
+            {
+                var assignments = orgUser.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)).ToList();
+                result.Assignments = assignments;
+            }
 
             return Ok(result);
         }
 
         public IHttpActionResult Post([FromBody]OrgUserDTO value)
         {
-
             if (value.Password.IsEmpty())
                 ModelState.AddModelError("Password", "Please provide password.");
 
@@ -68,6 +72,30 @@ namespace WebApi.Controllers
 
             orguser.Type = UnitOfWork.OrgUserTypesRepository.Find(orguser.TypeId);
             UnitOfWork.UserManager.AssignRolesByUserType(orguser);
+
+            if (value.Type.Name.ToLower() == "administrator")
+            {
+                var projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
+                    .Where(p => p.OrganisationId == this.CurrentOrgUser.OrganisationId);
+
+                foreach (var project in projects)
+                {
+                    var assignment = new Assignment
+                    {
+                        ProjectId = project.Id,
+                        OrgUserId = orguser.Id,
+                        CanView = true,
+                        CanAdd = true,
+                        CanEdit = true,
+                        CanDelete = true
+                    };
+
+                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+                }
+
+                UnitOfWork.Save();
+            }
+
             return Ok();
         }
 
@@ -77,11 +105,17 @@ namespace WebApi.Controllers
             if (orguser == null)
                 return NotFound();
 
-            Mapper.Map(value, orguser);
-            orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
+            orguser.Email = value.Email;
+            orguser.FirstName = value.FirstName;
+            orguser.Surname = value.Surname;
+            orguser.TypeId = value.Type.Id;
+            orguser.IsWebUser = value.IsWebUser;
+            orguser.IsMobileUser = value.IsMobileUser;
+            orguser.Gender = value.Gender;
+            orguser.Birthdate = value.Birthdate;
+            orguser.Address = value.Address;
 
             var result = UnitOfWork.UserManager.UpdateSync(orguser);
-
             if (result.Succeeded)
                 return Ok();
             else
@@ -100,8 +134,19 @@ namespace WebApi.Controllers
             if (orguser.IsRootUser)
                 return BadRequest();
 
-            Users.Delete(id);
-            UnitOfWork.Save();
+            try
+            {
+                Users.Delete(id);
+                UnitOfWork.Save();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("Could not delete this user!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Ok();
         }

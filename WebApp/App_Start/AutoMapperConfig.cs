@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.FilterValues;
 using System;
@@ -13,6 +14,7 @@ namespace WebApi
         public static void Config()
         {
             Mapper.CreateMap<Project, ProjectDTO>().ReverseMap();
+            Mapper.CreateMap<AssignmentDTO, ProjectDTO>();
             Mapper.CreateMap<Assignment, ProjectAssignmentDTO>()
                 .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
@@ -34,7 +36,8 @@ namespace WebApi
                 .ForMember(f => f.Metrics, opt => opt.Ignore());
 
             Mapper.CreateMap<DataList, DataListDTO>();
-            Mapper.CreateMap<DataListDTO, DataList>();
+            Mapper.CreateMap<DataListDTO, DataList>()
+                .ForMember(x => x.AllItems, opt => opt.MapFrom(src => src.Items));
             Mapper.CreateMap<DataListItem, DataListItemDTO>();
             Mapper.CreateMap<DataListItemDTO, DataListItem>().ForMember(f => f.Attributes, opt => opt.Ignore());
             Mapper.CreateMap<DataListItemAttr, DataListItemAttrDTO>().ReverseMap();

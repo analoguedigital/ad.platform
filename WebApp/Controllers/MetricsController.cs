@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
 using WebApi.Models;
 
 namespace WebApi.Controllers
@@ -41,6 +42,7 @@ namespace WebApi.Controllers
 
 
         // GET api/<controller>/5
+        [DeflateCompression]
         [ResponseType(typeof(MetricDTO))]
         [Route("api/formtemplates/{formTemplateId:Guid}/metrics/{id:Guid}")]
         public IHttpActionResult Get(Guid formTemplateId, Guid id)
