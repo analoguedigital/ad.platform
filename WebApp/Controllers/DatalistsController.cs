@@ -4,9 +4,12 @@ using LightMethods.Survey.Models.DTO.DataLists;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -16,16 +19,19 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<GetDataListsResDTO>))]
         public IHttpActionResult Get()
         {
-            var datalists = UnitOfWork.DataListsRepository.All
+            var datalists = UnitOfWork.DataListsRepository.AllAsNoTracking
                 .Where(d => d.OrganisationId == CurrentOrgUser.OrganisationId)
                 .OrderBy(d => d.Name)
-                .ToList()
+                .ToList();
+
+            var result = datalists
                 .Where(d => !d.IsAdHoc)
                 .Select(d => Mapper.Map<GetDataListsResItemDTO>(d));
 
             return Ok(new GetDataListsResDTO() { Items = datalists.ToList() });
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(DataListDTO))]
         public IHttpActionResult Get(Guid id)
         {
@@ -43,6 +49,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<DataListDTO>(datalist));
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<DataListItemDTO>))]
         [Route("api/datalists/{datalistId}/items")]
         public IHttpActionResult GetDataListItems(Guid datalistId)
@@ -64,30 +71,19 @@ namespace WebApi.Controllers
             ModelState.Clear();
             Validate(dataList);
 
-            if (ModelState.IsValid)
-            {
-                dataList.OrganisationId = CurrentOrganisationId.Value;
-                UnitOfWork.DataListsRepository.InsertOrUpdate(dataList);
-                var order = 1;
-                foreach (var val in dataListDTO.Items)
-                {
-                    if (val.IsDeleted)
-                        continue; // nothing to do
-
-                    var dbItem = new DataListItem();
-                    Mapper.Map(val, dbItem);
-                    dbItem.DataList = dataList;
-                    dbItem.Order = order++;
-                    UnitOfWork.DataListItemsRepository.InsertOrUpdate(dbItem);
-                }
-
-                UnitOfWork.Save();
-                return Ok();
-            }
-            else
-            {
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            }
+
+            dataList.OrganisationId = CurrentOrganisationId.Value;
+
+            var order = 1;
+            foreach (var item in dataList.AllItems)
+                item.Order = order++;
+
+            UnitOfWork.DataListsRepository.InsertOrUpdate(dataList);
+            UnitOfWork.Save();
+
+            return Ok();
         }
 
         public IHttpActionResult Put(Guid id, [FromBody]DataListDTO dataListDTO)
@@ -96,50 +92,69 @@ namespace WebApi.Controllers
             ModelState.Clear();
             Validate(dataList);
 
-            if (ModelState.IsValid)
-            {
-                var dbDataList = UnitOfWork.DataListsRepository.Find(id);
-                dbDataList.Name = dataList.Name;
-                UnitOfWork.DataListsRepository.InsertOrUpdate(dbDataList);
-                var order = 1;
-                foreach (var val in dataListDTO.Items)
-                {
-                    var dbItem = UnitOfWork.DataListItemsRepository.Find(val.Id);
-                    if (dbItem == null)
-                        dbItem = new DataListItem();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-                    if (val.IsDeleted)
+            var dbDataList = UnitOfWork.DataListsRepository.Find(id);
+            dbDataList.Name = dataList.Name;
+            UnitOfWork.DataListsRepository.InsertOrUpdate(dbDataList);
+
+            var order = 1;
+            foreach (var val in dataListDTO.Items)
+            {
+                var dbItem = UnitOfWork.DataListItemsRepository.Find(val.Id);
+                if (dbItem == null)
+                    dbItem = new DataListItem();
+
+                if (val.IsDeleted)
+                    UnitOfWork.DataListItemsRepository.Delete(dbItem);
+                else
+                {
+                    Mapper.Map(val, dbItem);
+
+                    if (dbItem.Attributes != null)
                     {
-                        UnitOfWork.DataListItemsRepository.Delete(dbItem);
-                    }
-                    else
-                    {
-                        Mapper.Map(val, dbItem);
-                        dbItem.Attributes.ToList().ForEach(attr =>
+                        var attributes = dbItem.Attributes.ToList();
+                        foreach (var attr in attributes)
                         {
                             attr.OwnerId = dbItem.Id;
                             Mapper.Map(val.Attributes.SingleOrDefault(a => a.Id == attr.Id), attr);
-                        });
-                        val.Attributes.Where(att => att.Id == Guid.Empty && att.ValueId != Guid.Empty).ToList().ForEach(att =>
-                        {
-                            var newAtt = Mapper.Map<DataListItemAttr>(att);
-                            newAtt.OwnerId = dbItem.Id;
-                            dbItem.Attributes.Add(newAtt);
-                        });
-
-                        dbItem.DataListId = id;
-                        dbItem.Order = order++;
-                        UnitOfWork.DataListItemsRepository.InsertOrUpdate(dbItem);
+                        }
                     }
+
+                    if (val.Attributes != null)
+                    {
+                        var newAttributes = val.Attributes.Where(attr => attr.Id == Guid.Empty && attr.ValueId != Guid.Empty).ToList();
+                        foreach (var attr in newAttributes)
+                        {
+                            var newAttr = Mapper.Map<DataListItemAttr>(attr);
+                            newAttr.OwnerId = dbItem.Id;
+                            dbItem.Attributes.Add(newAttr);
+                        }
+                    }
+
+                    dbItem.DataListId = id;
+                    dbItem.Order = order++;
+                    UnitOfWork.DataListItemsRepository.InsertOrUpdate(dbItem);
                 }
+            }
 
+            UnitOfWork.Save();
+            return Ok();
+        }
 
+        public IHttpActionResult Delete(Guid id)
+        {
+            try
+            {
+                UnitOfWork.DataListsRepository.Delete(id);
                 UnitOfWork.Save();
+
                 return Ok();
             }
-            else
+            catch (DbUpdateException)
             {
-                return BadRequest(ModelState);
+                return BadRequest("This Data List cannot be deleted!");
             }
         }
 
@@ -153,8 +168,10 @@ namespace WebApi.Controllers
         [Route("api/datalists/{datalistId}/references")]
         public IHttpActionResult GetReferences(Guid datalistId)
         {
-            var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
+            if (datalistId == Guid.Empty)
+                return Ok(new GetDataListReferencesResDto { Items = new List<GetDataListReferencesResItemDto>() });
 
+            var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
                 return Ok(new GetDataListReferencesResDTO { Items = new List<GetDataListReferencesResItemDTO>() });
 
@@ -167,7 +184,6 @@ namespace WebApi.Controllers
                             Name = r.Owner.Name
                         }).ToList()
             });
-
         }
 
         [HttpPost]

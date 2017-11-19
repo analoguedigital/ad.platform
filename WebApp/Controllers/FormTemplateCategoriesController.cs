@@ -6,12 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class FormTemplateCategoriesController : BaseApiController
     {
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateCategoryDTO>))]
         public IHttpActionResult Get()
         {
@@ -25,6 +28,7 @@ namespace WebApi.Controllers
                 
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(FormTemplateCategoryDTO))]
         public IHttpActionResult Get(Guid id)
         {

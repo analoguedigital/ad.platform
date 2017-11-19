@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace WebApi.Models
 {
@@ -49,5 +50,26 @@ namespace WebApi.Models
         public string LoginProvider { get; set; }
 
         public string ProviderKey { get; set; }
+    }
+
+    public class ForgotPasswordViewModel
+    {
+        [Required(AllowEmptyStrings = false)]
+        public string Email { get; set; }
+    }
+
+    public class ResetPasswordViewModel
+    {
+        [Required(AllowEmptyStrings = false)]
+        public string Code { get; set; }
+
+        [Required(AllowEmptyStrings = false)]
+        public string Email { get; set; }
+
+        [Required(AllowEmptyStrings = false)]
+        public string Password { get; set; }
+
+        [Required(AllowEmptyStrings = false)]
+        public string ConfirmPassword { get; set; }
     }
 }

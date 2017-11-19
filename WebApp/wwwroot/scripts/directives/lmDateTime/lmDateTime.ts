@@ -29,12 +29,14 @@ module App {
             element: ng.IAugmentedJQuery,
             ctrl: any) {
 
-            var hours = scope.value.getHours();
-            var minutes = scope.value.getMinutes();
-            let formatString = (hours > 0 || minutes > 0) ? 'L LT' : 'L';
-            let result = moment(scope.value).format(formatString);
+            if (scope.value) {
+                var hours = scope.value.getHours();
+                var minutes = scope.value.getMinutes();
+                let formatString = (hours > 0 || minutes > 0) ? 'L LT' : 'L';
+                let result = moment(scope.value).format(formatString);
 
-            scope.resultString = result;
+                scope.resultString = result;
+            }
         }
     }
 

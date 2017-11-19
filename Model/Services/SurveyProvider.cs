@@ -49,18 +49,46 @@ namespace LightMethods.Survey.Models.Services
             return PostLoadFilters(result.ToList());
         }
 
+        public IEnumerable<FormTemplate> GetAllProjectTemplates(Guid? projectId)
+        {
+            var templates = Enumerable.Empty<FormTemplate>().AsQueryable();
+
+            if (this.User != null)
+            {
+                templates = OnlyCanBeAccessedByUser(UOW.FormTemplatesRepository
+                    .AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics)));
+
+                var assignments = UOW.AssignmentsRepository.AllAsNoTracking;
+                if (projectId == null)
+                    assignments = assignments.Where(a => a.OrgUserId == User.Id);
+                else
+                    assignments = assignments.Where(a => a.ProjectId == projectId && a.OrgUserId == User.Id);
+
+                templates = templates.Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
+            }
+            else
+                templates = UOW.FormTemplatesRepository
+                    .AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics))
+                    .Where(t => projectId == null || t.ProjectId == null || t.ProjectId == projectId);
+
+            return PostLoadFilters(templates.ToList());
+        }
+
         private IQueryable<FormTemplate> OnlyCanBeAccessedByUser(IQueryable<FormTemplate> datasource)
         {
-            if(OnlyPublished)
+            if (OnlyPublished)
                 datasource = datasource.Where(t => t.IsPublished);
 
-            if (UserTypesWithFullAccess.Contains(User.Type))
-                return datasource.Where(t => t.OrganisationId == User.OrganisationId);
+            if (this.User != null)
+            {
+                if (UserTypesWithFullAccess.Contains(User.Type))
+                    return datasource.Where(t => t.OrganisationId == User.OrganisationId);
 
-            if (UserTypesWithLimitedAccess.Contains(User.Type))
-                return datasource.Where(t => t.ProjectId == null || !t.Project.Archived && t.Project.Assignments.Select(a => a.OrgUserId).Contains(User.Id));
+                if (UserTypesWithLimitedAccess.Contains(User.Type))
+                    return datasource.Where(t => t.ProjectId == null || !t.Project.Archived && t.Project.Assignments.Select(a => a.OrgUserId).Contains(User.Id));
+            }
 
-            return null;
+            return datasource;
         }
 
         private IEnumerable<FormTemplate> PostLoadFilters(IEnumerable<FormTemplate> templates)

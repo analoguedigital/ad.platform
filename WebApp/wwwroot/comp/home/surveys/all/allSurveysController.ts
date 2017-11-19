@@ -96,9 +96,6 @@ module App {
         }
 
         load() {
-            var orgUser = this.userContextService.current.orgUser;
-            this.currentUser = orgUser;
-            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
             this.formTemplateResource.getFilters({ id: this.formTemplate.id }, (filters) => {
                 this.metricFilters = filters;
             }, (error) => {
@@ -115,7 +112,6 @@ module App {
                     this.displayedSurveysData = [].concat(this.surveysData);
                 });
             });
-
         }
 
         delete(id: string) {

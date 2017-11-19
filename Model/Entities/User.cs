@@ -18,7 +18,7 @@ namespace LightMethods.Survey.Models.Entities
 
     public class User : IdentityUser<Guid, UserLogin, UserRole, UserClaim>, IEntity
     {
-        public enum GenderType { Male = 0, Female = 1 }
+        public enum GenderType { Male = 0, Female = 1, Other = 2 }
 
         public User()
         {

@@ -1,9 +1,9 @@
 <h3 ng-hide="isCompact">{{metric.sectionTitle}}</h3>
 <div class="row">
-    <div class="col-lg-3">
-        <p ng-hide="isCompact">{{metric.description}}</p>
+    <div class="col-lg-3" ng-hide="isCompact">
+        <p>{{metric.description}}</p>
     </div>
-    <div class="col-lg-9">
+    <div ng-class="{ 'col-lg-9': !isCompact, 'col-lg-12': isCompact }">
         <div ng-include="'comp/common/formControls/'+viewName+'/'+viewName+'.html'"></div>
     </div>
 </div>

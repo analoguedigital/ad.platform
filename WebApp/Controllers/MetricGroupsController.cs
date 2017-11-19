@@ -7,12 +7,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
+using WebApi.Filters;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class MetricGroupsController : BaseApiController
     {
         // GET: api/MetricGroups
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<MetricGroupDTO>))]
         [Route("api/formtemplates/{formTemplateId}/metricGroups")]
         public IHttpActionResult Get(Guid formTemplateId)
@@ -26,6 +29,7 @@ namespace WebApi.Controllers
         }
 
         // GET: api/MetricGroups/5
+        [DeflateCompression]
         [ResponseType(typeof(MetricGroupDTO))]
         [Route("api/formtemplates/{formTemplateId}/metricGroups/{id}")]
         public IHttpActionResult Get(Guid formTemplateId, Guid id)

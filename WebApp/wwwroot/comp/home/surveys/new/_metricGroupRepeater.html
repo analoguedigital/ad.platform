@@ -8,7 +8,7 @@
             </th>
             <th ng-if="!isDataList"></th>
         </tr>
-        <tr ng-if="isDataList">
+        <tr ng-if="isDataList && relationshipTitles.length">
             <th></th>
             <th ng-repeat="title in relationshipTitles">
                 <div class="table-header-wrapper">
@@ -32,14 +32,9 @@
                 <a ng-click="deleteRow($index + 1)"><i class="fa fa-remove"></i></a>
             </td>
         </tr>
-
     </table>
-    <a ng-if="isDataList && maxRow < filtered.length" class="button button-block button-stable" ng-click="showAll()">
-        <span>Show more</span>
-    </a>
-    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="button button-block button-stable" ng-click="addRow()">
-        <span>Add row</span>
-    </a>
+    <a ng-if="isDataList && maxRow < filtered.length" class="btn btn-default btn-block" ng-click="showAll()"><i class="fa fa-list-alt"></i> Show more</a>
+    <a ng-if="!isDataList && metricGroup.canAddMoreRows" class="btn btn-default btn-block" ng-click="addRow()"><i class="fa fa-plus-square"></i> Add row</a>
 </div>
 
 <div class="errors">

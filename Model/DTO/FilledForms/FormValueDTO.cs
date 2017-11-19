@@ -28,5 +28,10 @@ namespace LightMethods.Survey.Models.DTO
         public Guid? GuidValue { set; get; }
 
         public IEnumerable<AttachmentDTO> Attachments { set; get; }
+
+        public FormValueDTO()
+        {
+            this.Attachments = new List<AttachmentDTO>();
+        }
     }
 }

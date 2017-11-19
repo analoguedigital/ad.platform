@@ -1,10 +1,10 @@
 <div class="row" ng-controller="timeMetricController">
-    <div class="col-md-8 ">
+    <div ng-class="{ 'col-md-8': !isCompact, 'col-md-12': isCompact }">
         <div class="input-group">
             <div uib-timepicker ng-model="formValue.timeValue" hour-step="1" minute-step="10" show-meridian="false" name="{{inputName}}" ng-required="metric.mandatory" ></div>
         </div>
     </div>
-    <div class="col-md-4 text-danger errors" ng-messages="{{inputErrorsKey}}">
+    <div class="col-md-4 text-danger errors" ng-messages="{{inputErrorsKey}}" ng-if="!isCompact">
         <div ng-message="required"><span>This is required</span></div>
     </div>
 </div>

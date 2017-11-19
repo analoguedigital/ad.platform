@@ -136,6 +136,7 @@
     <Compile Include="DTO\DataLists\DataListRelationshipDTO.cs" />
     <Compile Include="DTO\Metrics\DateMetricDTO.cs" />
     <Compile Include="DTO\Metrics\DichotomousMetricDTO.cs" />
+    <Compile Include="DTO\AssignmentDTO.cs" />
     <Compile Include="DTO\ExportToExcel.cs" />
     <Compile Include="DTO\FormTemplates\FormTemplateCategoryDTO.cs" />
     <Compile Include="DTO\FormTemplates\FormTemplateDTO.cs" />

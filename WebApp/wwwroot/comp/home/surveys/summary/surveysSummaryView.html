@@ -2,10 +2,10 @@
     <div class="box-title">
         <h4>
             <i class="fa fa-windows" ng-if="!formTemplate.projectId"></i>
-            <span class="color-block" ng-if="formTemplate.projectId" ng-style="{'background-color': ctrl.getTemplateColour(formTemplate.id)}"></span>
+            <span class="color-block" ng-if="formTemplate.projectId" ng-style="{'background-color': formTemplate.colour}"></span>
             {{formTemplate.title}}
-            <a class="pull-right" ng-if="ctrl.assignment.canAdd" 
-               ui-sref="home.surveys.new({projectId: ctrl.projectId, formTemplateId: formTemplate.id})"><i class="fa fa-plus-square"></i> Add new </a>
+            <a class="pull-right" ng-if="ctrl.project.allowAdd" 
+               ui-sref="home.surveys.new({projectId: ctrl.project.id, formTemplateId: formTemplate.id})"><i class="fa fa-plus-square"></i> Add new </a>
         </h4>
     </div>
     <div class="box-content">
@@ -13,10 +13,10 @@
             <table class="table table-hover table-striped">
                 <thead>
                     <tr>
-                        <th class="text-center" width="60"></th>
                         <th>Date</th>
                         <th>Serial no</th>
                         <th>Completed by</th>
+                        <th>Description</th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -25,31 +25,25 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="survey in ctrl.surveys | filter: {formTemplateId: formTemplate.id} | orderBy:'-surveyDate' | limitTo : 5">
-                        <td class="text-center">
-                            <div class="checkbox table-checkbox">
-                                <input type="checkbox" ng-model="survey.isChecked" />
-                                <label></label>
-                            </div>
-                        </td>
                         <td>{{survey.date | amDateFormat: 'L'}}</td>
                         <td>{{survey.serial}}</td>
                         <td>{{survey.filledBy}}</td>
                         <td>{{survey.description}}</td>
                         <td>
-                            <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.assignment.canView">
+                            <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
                                 <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
                             </a>
                         </td>
                         <td>
-                            <a ui-sref="home.surveys.print-single({surveyId: survey.id})" ng-if="ctrl.assignment.canView">
+                            <a ui-sref="home.surveys.print-single({surveyId: survey.id})" ng-if="ctrl.project.allowView">
                                 <i class="fa fa-print"></i><span class="hidden-xs"></span> Print
                             </a>
                         </td>
                         <td>
-                            <a ui-sref="home.surveys.edit({surveyId: survey.id})" ng-if="ctrl.assignment.canEdit"><i class="fa fa-pencil"></i><span class="hidden-xs"> Edit</span></a>
+                            <a ui-sref="home.surveys.edit({surveyId: survey.id})" ng-if="ctrl.project.allowEdit"><i class="fa fa-pencil"></i><span class="hidden-xs"> Edit</span></a>
                         </td>
                         <td>
-                            <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey.id)" ng-if="ctrl.assignment.canDelete">
+                            <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey.id)" ng-if="ctrl.project.allowDelete">
                                 <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
                             </a>
                         </td>
@@ -58,13 +52,9 @@
             </table>
         </div>
 
-        <p>
-            <a ui-sref="home.surveys.list.all({formTemplateId: formTemplate.id, projectId: ctrl.projectId})"
+        <p ng-if="ctrl.project.id">
+            <a ui-sref="home.surveys.list.all({formTemplateId: formTemplate.id, projectId: ctrl.project.id})"
                class="text-primary">See all <i class="fa fa-arrow-right"></i></a>
         </p>
     </div>
 </div>
-
-<button class="btn btn-primary" ng-click="ctrl.printSelected()" ng-if="ctrl.assignment.canView">
-    <i class="fa fa-print"></i> Print Selected
-</button><br /><br />

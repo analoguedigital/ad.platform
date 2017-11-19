@@ -6,12 +6,6 @@
         <lm-form-group label="Category: ">
             <select id="category" name="category" ng-model="ctrl.formTemplate.formTemplateCategory" ng-options="category as category.title for category in ctrl.categories track by category.id" required></select>
         </lm-form-group>
-        <lm-form-group label="Project :">
-            <select name="project" ng-model="ctrl.formTemplate.projectId" ng-change="ctrl.projectChanged()">
-                <option value="">(Shared)</option>
-                <option ng-repeat="project in ctrl.projects" value="{{project.id}}" ng-selected="project.id === ctrl.formTemplate.projectId">{{project.name}}</option>
-            </select>
-        </lm-form-group>
         <lm-form-group label="Code: ">
             <input type="text" id="code" name="code" ng-model="ctrl.formTemplate.code" required />
         </lm-form-group>
@@ -37,12 +31,9 @@
             </select>
         </lm-form-group>
         <lm-form-group label="Desc. Format: ">
-            <tags-input ng-model="ctrl.selectedTags" on-tag-added="ctrl.updateDescriptionFormat()" on-tag-removed="ctrl.updateDescriptionFormat()" replace-spaces-with-dashes="false">
-                <auto-complete source="ctrl.loadTags($query)"></auto-complete>
-            </tags-input>
-
-            <h6>Format Preview</h6>
-            <input type="text" ng-model="ctrl.formTemplate.descriptionFormat" placeholder="description format preview" />
+            <lm-at-who id="atwho-input" data="ctrl.tags"
+                       placeholder="start typing with @ to add metrics"
+                       ng-model="ctrl.formTemplate.descriptionFormat"></lm-at-who>
         </lm-form-group>
     </form>
 </div>

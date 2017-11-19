@@ -6,10 +6,6 @@ module App {
         title: string;
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
-        projectId: string;
-        printSelected: () => void;
         activate: () => void;
     }
 
@@ -17,47 +13,43 @@ module App {
         title: string = "Surveys";
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
-        projectId: string;
 
-        static $inject: string[] = ['$state', '$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService'];
-
+        static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource',
+            'surveyResource', 'projectSummaryPrintSessionResource', 'project'];
         constructor(
-            public $state: ng.ui.IStateService,
+            public $scope: ng.IScope,
             public $stateParams: ng.ui.IStateParamsService,
             public toastr: any,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
-            private userContextService: Services.IUserContextService) {
+            private project: Models.IProject) {
 
             this.activate();
         }
 
         activate() {
-            this.projectId = this.$stateParams['projectId'];
             this.load();
         }
 
         load() {
-            if (!this.projectId)
-                return;
+            var projectId = null;
+            if (this.project != null) {
+                projectId = this.project.id;
+            }
 
-            var orgUser = this.userContextService.current.orgUser;
-            this.currentUser = orgUser;
-            this.assignment = _.find(orgUser.assignments, { 'projectId': this.projectId });
-
-            this.formTemplateResource.query({ projectId: this.projectId }).$promise
+            this.formTemplateResource.query({ projectId: projectId }).$promise
                 .then((templates) => {
                     this.formTemplates = templates;
                 }, (err) => {
+                    this.toastr.error(err.data);
                     console.log(err)
                 });
-            this.surveyResource.query({ projectId: this.projectId }).$promise
+            this.surveyResource.query({ projectId: projectId }).$promise
                 .then((surveys) => {
                     this.surveys = surveys;
                 }, (err) => {
+                    this.toastr.error(err.data);
                     console.error(err);
                 });
         }
@@ -69,26 +61,6 @@ module App {
                     console.error(err);
                     this.toastr.error(err.data);
                 });
-        }
-
-        printSelected() {
-            let selectedSurveys = this.surveys.filter((survey) => survey.isChecked == true);
-
-            let printSession = <Models.IProjectSummaryPrintSession>{};
-            printSession.projectId = this.projectId;
-            printSession.surveyIds = _.map(selectedSurveys, (survey) => { return survey.id; });
-
-            this.projectSummaryPrintSessionResource.save(printSession).$promise.then((session) => {
-                this.$state.go("home.projects.summaryPrint", { sessionId: session.id });
-            });
-        }
-
-        getTemplateColour(id: string) {
-            let template = _.find(this.formTemplates, (t) => { return t.id == id; });
-            if (template && template.colour && template.colour.length)
-                return template.colour;
-
-            return '';
         }
 
     }
