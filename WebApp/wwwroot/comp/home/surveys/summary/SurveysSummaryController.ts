@@ -4,13 +4,8 @@ module App {
 
     interface ISurveysSummaryController {
         title: string;
-        project: Models.IProject;
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
-
-        printSelected: () => void;
         activate: () => void;
     }
 
@@ -18,18 +13,17 @@ module App {
         title: string = "Surveys";
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        currentUser: Models.IOrgUser;
-        assignment: Models.IProjectAssignment;
 
-        static $inject: string[] = ['$state', 'toastr', 'project', 'formTemplateResource', 'surveyResource', 'userContextService'];
-
+        static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource',
+            'surveyResource', 'projectSummaryPrintSessionResource', 'project'];
         constructor(
-            public $state: ng.ui.IStateService,
+            public $scope: ng.IScope,
+            public $stateParams: ng.ui.IStateParamsService,
             public toastr: any,
-            public project: Models.IProject,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
-            private userContextService: Services.IUserContextService) {
+            private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
+            private project: Models.IProject) {
 
             this.activate();
         }
@@ -39,28 +33,26 @@ module App {
         }
 
         load() {
+            var projectId = null;
+            if (this.project != null) {
+                projectId = this.project.id;
+            }
 
-            if (this.project == null)
-                return;
-
-            var orgUser = this.userContextService.current.orgUser;
-            this.currentUser = orgUser;
-            this.assignment = _.find(orgUser.assignments, { 'projectId': this.project.id });
-
-            this.assignment.canAdd = true;
-            this.assignment.canEdit = true;
-            this.assignment.canDelete = true;
-            this.assignment.canView = true;
-
-            this.formTemplates = this.formTemplateResource.query({ projectId: this.project.id });
-            this.surveyResource.query({ projectId: this.project.id }).$promise
+            this.formTemplateResource.query({ projectId: projectId }).$promise
+                .then((templates) => {
+                    this.formTemplates = templates;
+                }, (err) => {
+                    this.toastr.error(err.data);
+                    console.log(err)
+                });
+            this.surveyResource.query({ projectId: projectId }).$promise
                 .then((surveys) => {
                     this.surveys = surveys;
                 }, (err) => {
+                    this.toastr.error(err.data);
                     console.error(err);
-                }); 
+                });
         }
-
 
         delete(id: string) {
             this.surveyResource.delete({ id: id },
@@ -69,13 +61,6 @@ module App {
                     console.error(err);
                     this.toastr.error(err.data);
                 });
-        }
-
-        printSelected() {
-            let selectedSurveys = this.surveys.filter((survey) => survey.isChecked == true);
-            let result = selectedSurveys.map((survey) => { return survey.id; });
-
-            this.$state.go('home.surveys.print-multiple', { selectedSurveys: result });
         }
 
     }

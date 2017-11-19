@@ -33,18 +33,15 @@ namespace WebApi.Controllers
             {
                 this.UnitOfWork.FeedbacksRepository.InsertOrUpdate(feedback);
 
-                var orgAdmins = CurrentOrganisation.OrgUsers.Where(u => u.TypeId == OrgUserTypesRepository.Administrator.Id);
-                foreach (var admin in orgAdmins)
+                var rootAdmin = this.UnitOfWork.OrgUsersRepository.AllAsNoTracking.Where(x => x.IsRootUser).FirstOrDefault();
+                var email = new Email
                 {
-                    var email = new Email
-                    {
-                        To = admin.Email,
-                        Subject = "New feedback posted",
-                        Content = feedback.Comment
-                    };
+                    To = rootAdmin.Email,
+                    Subject = $"New feedback posted - {this.CurrentOrgUser.UserName}",
+                    Content = feedback.Comment
+                };
 
-                    this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
-                }
+                this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
                 this.UnitOfWork.Save();
 
                 return Ok();

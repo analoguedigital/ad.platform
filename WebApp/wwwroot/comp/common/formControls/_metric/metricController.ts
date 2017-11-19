@@ -19,13 +19,15 @@ module App {
         formValue: Models.IFormValue;
         isViewMode: boolean;
         isPrintMode: boolean;
+        isExportMode: boolean;
     }
 
     class MetricController implements IMetricController {
 
 
         static readonly surveyViewRouteName: string = "home.surveys.view";
-        static readonly surveyPrintRouteNames: string[] = ["home.surveys.print-single", "home.surveys.print-multiple", "home.projects.summaryPrint"];
+        static readonly surveyPrintRouteNames: string[] = ["home.surveys.print-single", "home.surveys.print-multiple"];
+        static readonly projectSummaryPrintRouteName: string = "home.projects.summaryPrint";
 
         survey: Models.ISurvey;
 
@@ -48,6 +50,10 @@ module App {
                 this.$scope.isPrintMode = true;
             }
 
+            if (this.$state.current.name == MetricController.projectSummaryPrintRouteName) {
+                this.$scope.isExportMode = true;
+            }
+
             var relatedFormValues: Models.IFormValue[] = [];
 
             if (this.$scope.ctrl.survey) {
@@ -58,11 +64,14 @@ module App {
 
 
             if (this.$scope.metricGroup.isRepeater) {
-
-                if (this.$scope.metricGroup.type === "IterativeRepeater") {
-                    relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber });
-                } else {
-                    relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber, 'rowDataListItemId': this.$scope.dataListItem.id });
+                try {
+                    if (this.$scope.metricGroup.type === "IterativeRepeater") {
+                        relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber });
+                    } else {
+                        relatedFormValues = _.filter(this.survey.formValues, { 'metricId': this.$scope.metric.id, 'rowNumber': this.$scope.rowNumber, 'rowDataListItemId': this.$scope.dataListItem.id });
+                    }
+                } catch (e) {
+                    console.error('relatedFormValues error', e);
                 }
 
                 this.$scope.inputName = _.camelCase('m' + this.$scope.metric.id) + this.$scope.rowNumber;

@@ -54,6 +54,9 @@
       <HintPath>..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.Net4.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="DotNetZip, Version=1.10.1.0, Culture=neutral, PublicKeyToken=6583c7c814667745, processorArchitecture=MSIL">
+      <HintPath>..\packages\DotNetZip.1.10.1\lib\net20\DotNetZip.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -145,8 +148,8 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="wnvhtmltopdf, Version=14.2.0.0, Culture=neutral, PublicKeyToken=b12703d35a33ff98, processorArchitecture=MSIL">
-      <HintPath>..\packages\WnvHtmlToPdf_x64.14.2\lib\net40\wnvhtmltopdf.dll</HintPath>
+    <Reference Include="wnvhtmltopdf, Version=14.4.0.0, Culture=neutral, PublicKeyToken=b12703d35a33ff98, processorArchitecture=MSIL">
+      <HintPath>..\packages\WnvHtmlToPdf_x64.14.4\lib\net40\wnvhtmltopdf.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +181,7 @@
     <Content Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilter.html" />
     <Content Include="wwwroot\comp\common\filterControls\_filter\filter.html" />
     <Content Include="wwwroot\comp\common\footer\footerView.html" />
+    <Content Include="wwwroot\comp\forgotPassword\forgotPasswordView.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\attachmentMetric.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\dateMetric\dateMetric.html" />
     <Content Include="wwwroot\comp\common\formControlsViews\dichotomousMetric\dichotomousMetric.html" />
@@ -229,6 +233,7 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\print\_exportToolbox.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroupRepeater.html" />
     <Content Include="wwwroot\comp\home\projects\summary\projectSummaryView.html" />
@@ -269,6 +274,7 @@
     <Content Include="wwwroot\comp\home\surveys\summary\surveysSummaryView.html" />
     <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
     <Content Include="wwwroot\comp\login\loginView.html" />
+    <Content Include="wwwroot\comp\setPassword\setPasswordView.html" />
     <Content Include="wwwroot\css\index.css" />
     <Content Include="wwwroot\css\index.min.css">
       <DependentUpon>index.css</DependentUpon>
@@ -308,6 +314,7 @@
     <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\OrgUsersController.cs" />
+    <Compile Include="Filters\DeflateCompressionAttribute.cs" />
     <Compile Include="Models\Account\AccountBindingModels.cs" />
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\IdentityModels.cs" />
@@ -369,6 +376,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <Content Include="wwwroot\scripts\directives\lmAtWho\template.html" />
     <Content Include="wwwroot\scripts\directives\lmFormGroupCheckbox\template.html" />
     <Content Include="wwwroot\scripts\directives\lmFormGroup\template.html" />
     <Content Include="wwwroot\scripts\directives\lmLocations\template.html" />
@@ -422,6 +430,10 @@
     <Content Include="wwwroot\comp\home\projects\summary\print\_projectSummaryPrintView.scss" />
     <Content Include="wwwroot\comp\common\filterControls\filterControls.scss" />
     <Content Include="wwwroot\comp\home\projects\assignments\_assignments.scss" />
+    <Content Include="wwwroot\comp\home\surveys\summary\_summary.scss" />
+    <Content Include="wwwroot\comp\home\formTemplates\_formTemplates.scss" />
+    <Content Include="wwwroot\comp\forgotPassword\_forgotPassword.scss" />
+    <Content Include="wwwroot\comp\setPassword\_setPassword.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -446,6 +458,7 @@
     <TypeScriptCompile Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\filterControls\_filter\filterController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\footer\footerController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\forgotPassword\forgotPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\timeMetric\timeMetricController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\dateMetric\dateMetricController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\formControls\dichotomousMetric\dichotomousMetricController.ts" />
@@ -490,7 +503,6 @@
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\redeemCode\redeemCodeController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptions.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptionsController.ts" />
-    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryService.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
@@ -511,11 +523,13 @@
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\indexController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\login\loginController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\setPassword\setPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\app.config.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\app.run.ts" />
     <Content Include="wwwroot\scripts\app.js" />
     <TypeScriptCompile Include="wwwroot\scripts\app.route.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmAccess\lmAccess.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmAtWho\lmAtWho.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmDateTime\lmDateTime.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />
@@ -524,6 +538,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmTimeline\lmTimeline.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmZoomGallery\lmZoomGallery.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\achievementSummary.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\evidence.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\target.ts" />

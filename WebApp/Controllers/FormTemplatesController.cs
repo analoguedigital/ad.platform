@@ -13,23 +13,30 @@ using System.Web.Http.Description;
 using WebApi.Models;
 using Newtonsoft.Json;
 using LightMethods.Survey.Models.MetricFilters;
+using System.Data.Entity.Infrastructure;
+using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
     public class FormTemplatesController : BaseApiController
     {
         // GET api/<controller>
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateDTO>))]
         public IHttpActionResult Get(Guid? projectId = null)
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var templates = surveyProvider.GetAllProjectTemplates(projectId);
 
-            return Ok(surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => projectId == null || f.ProjectId == null || f.ProjectId == projectId)
-                .Select(f => Mapper.Map<FormTemplateDTO>(f)));
+            var result = templates
+                .OrderBy(t => t.Title)
+                .Select(t => Mapper.Map<FormTemplateDTO>(t));
+
+            return Ok(result);
         }
 
         // GET api/<controller>/5
+        [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Get(Guid id)
         {
@@ -38,17 +45,14 @@ namespace WebApi.Controllers
 
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .Select(f => Mapper.Map<FormTemplateDTO>(f))
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplatesWithMetrics().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
-            return Ok(form);
+            return Ok(Mapper.Map<FormTemplateDTO>(form));
         }
 
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<MetricFilter>))]
         [Route("api/formtemplates/{id:Guid}/filters")]
         public IHttpActionResult GetFilters(Guid id)
@@ -86,21 +90,19 @@ namespace WebApi.Controllers
         }
 
         // PUT api/<controller>/5
+        [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Put(Guid id, FormTemplateDTO value)
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == value.Id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplatesWithMetrics().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
             Mapper.Map(value, form);
-
             UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
+
             var groupOrder = 1;
             foreach (var valueGroup in value.MetricGroups)
             {
@@ -122,7 +124,6 @@ namespace WebApi.Controllers
                 foreach (var valueMetric in valueGroup.Metrics)
                 {
                     var metric = group.Metrics.Where(m => m.Id == valueMetric.Id)
-                        // .Select(m => Mapper.Map(valueMetric, m))
                         .SingleOrDefault();
 
                     if (metric == null && valueMetric.isDeleted)
@@ -131,9 +132,7 @@ namespace WebApi.Controllers
                     metric = valueMetric.Map(metric, UnitOfWork, CurrentOrganisation);
 
                     if (valueMetric.isDeleted) // Delete
-                    {
                         UnitOfWork.MetricsRepository.Delete(metric);
-                    }
                     else
                     {   // Insert or update
                         metric.FormTemplateId = form.Id;
@@ -152,14 +151,10 @@ namespace WebApi.Controllers
                     }
                 }
 
-                if (valueGroup.isDeleted && group != null)
-                {
+                if (valueGroup.isDeleted && group != null && group.Id != Guid.Empty)
                     UnitOfWork.MetricGroupsRepository.Delete(group);
-                }
                 else
-                {
                     UnitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
-                }
             }
 
             try
@@ -197,16 +192,14 @@ namespace WebApi.Controllers
         }
 
         [HttpPut]
+        [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         [Route("api/formtemplates/{id:Guid}/details")]
         public IHttpActionResult EditBasicDetails(Guid id, EditBasicDetailsRequest value)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false); ;
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplatesWithMetrics().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
@@ -245,20 +238,25 @@ namespace WebApi.Controllers
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
-            var form = surveyProvider.GetAllFormTemplatesWithMetrics()
-                .Where(f => f.Id == id)
-                .SingleOrDefault();
-
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
                 return NotFound();
 
-            UnitOfWork.FormTemplatesRepository.Delete(form);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.FormTemplatesRepository.Delete(form);
+                UnitOfWork.Save();
 
-            return Ok();
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("This Form cannot be deleted!");
+            }
         }
 
         [HttpPost]
+        [DeflateCompression]
         [Route("api/formtemplates/{id:Guid}/clone")]
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Clone(Guid id, CloneRequest request)

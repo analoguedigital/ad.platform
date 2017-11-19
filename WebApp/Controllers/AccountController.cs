@@ -163,6 +163,62 @@ namespace WebApi.Models
             return Ok();
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ForgotPassword")]
+        public async Task<IHttpActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (model == null || !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await UserManager.FindByNameAsync(model.Email);
+            
+            // uncomment if user has to activate his email to confirm his account.
+            //if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+            //{
+            //    return Ok();
+            //}
+
+            if (user == null)
+            {
+                // don't reveal that user does not exist! return Ok();
+                return BadRequest();
+            }
+
+            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+            // Send an email with this link
+            string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            await UserManager.SendEmailAsync(user.Id, "Reset Password", $"Please reset your password by using this {code}");
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ResetPassword")]
+        public async Task<IHttpActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (model == null || !ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await UserManager.FindByNameAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return Ok();
+            }
+
+            var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
+            if (result.Succeeded)
+                return Ok();
+
+            ModelState.Clear();
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error);
+
+            return BadRequest(ModelState);
+        }
+
         // POST api/Account/AddExternalLogin
         [Route("AddExternalLogin")]
         public async Task<IHttpActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
@@ -332,11 +388,14 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var organisation = UnitOfWork.OrganisationRepository.FindByName(model.OrganisationName);
+            if (organisation == null)
+            {
+                ModelState.AddModelError("Organisation", "Organisation was not found!");
+                return BadRequest(ModelState);
+            }
 
             var user = new OrgUser()
             {
@@ -346,17 +405,16 @@ namespace WebApi.Models
                 Email = model.Email,
                 Gender = (User.GenderType)Enum.Parse(typeof(User.GenderType), model.Gender),
                 Address = model.Address,
-                Birthdate = model.Birthdate,
+                Birthdate = new DateTime(model.Birthdate.Year, model.Birthdate.Month, model.Birthdate.Day, 0, 0, 0).AddDays(1),
                 OrganisationId = organisation.Id,
                 IsRootUser = false,
                 IsActive = true,
                 TypeId = OrgUserTypesRepository.TeamUser.Id,
                 IsMobileUser = true,
-                IsWebUser = false
+                IsWebUser = true
             };
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
-
             if (!result.Succeeded)
                 return GetErrorResult(result);
 
@@ -365,11 +423,11 @@ namespace WebApi.Models
 
             var project = new Project()
             {
-                Name = model.Email,
+                Name = $"{model.FirstName} {model.Surname}",
                 StartDate = DateTimeService.UtcNow,
-                OrganisationId = organisation.Id,
+                OrganisationId = organisation.Id
             };
-            
+
             UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
             UnitOfWork.Save();
 
@@ -377,11 +435,13 @@ namespace WebApi.Models
             {
                 ProjectId = project.Id,
                 OrgUserId = user.Id,
+                CanView = true,
+                CanAdd = true
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
             UnitOfWork.Save();
-            
+
             return Ok();
         }
 

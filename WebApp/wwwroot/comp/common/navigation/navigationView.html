@@ -27,28 +27,28 @@
             </li>
 
             <li ng-class="{'active':$state.includes('home.dashboard.layout')}">
-                <a ui-sref="home.dashboard.layout"><i class="fa fa-home"></i> <span class="nav-label">Dashboard</span> </a>
+                <a ui-sref="home.dashboard.layout" ui-sref-opts="{reload: true}"><i class="fa fa-home"></i> <span class="nav-label">Dashboard</span> </a>
             </li>
             <li lm-access="System administrator" ng-class="{'active':$state.includes('home.organisations')}">
-                <a ui-sref="home.organisations.list"><i class="fa fa-building-o"></i> <span class="nav-label">Organisations</span></a>
+                <a ui-sref="home.organisations.list" ui-sref-opts="{reload: true}"><i class="fa fa-building-o"></i> <span class="nav-label">Organisations</span></a>
             </li>
             <li lm-access="Organisation administrator" ng-class="{'active':$state.includes('home.projects')}">
-                <a ui-sref="home.projects.list"><i class="fa fa-folder-o"></i> <span class="nav-label">Users</span></a>
+                <a ui-sref="home.projects.list" ui-sref-opts="{reload: true}"><i class="fa fa-folder-o"></i> <span class="nav-label">Users</span></a>
             </li>
             <li lm-access="Organisation user" ng-class="{'active':$state.includes('home.surveys')}">
                 <a ui-sref="home.surveys.list" ui-sref-opts="{reload: true}"><i class="fa fa-file-text-o"></i> <span class="nav-label">Forms</span></a>
             </li>
             <li lm-access="Organisation administrator" ng-class="{'active':$state.includes('home.users')}">
-                <a ui-sref="home.users.list"><i class="fa fa-users"></i> <span class="nav-label">User Management</span></a>
+                <a ui-sref="home.users.list" ui-sref-opts="{reload: true}"><i class="fa fa-users"></i> <span class="nav-label">User Management</span></a>
             </li>
             <li lm-access="Organisation administrator" ui-sref-active="active">
                 <a ui-sref="home.designer" aria-expanded="false"><i class="fa fa-paint-brush"></i> <span class="nav-label">Designer</span><span class="fa arrow"></span></a>
                 <ul lm-access="Organisation administrator" aria-expanded="false" class="nav nav-second-level collapse in">
                     <li ui-sref-active="active">
-                        <a ui-sref="home.formtemplates.list">Form Templates</a>
+                        <a ui-sref="home.formtemplates.list" ui-sref-opts="{reload: true}">Form Templates</a>
                     </li>
                     <li ui-sref-active="active">
-                        <a ui-sref="home.datalists.list">Data lists</a>
+                        <a ui-sref="home.datalists.list" ui-sref-opts="{reload: true}">Data lists</a>
                     </li>
                 </ul>
             </li>

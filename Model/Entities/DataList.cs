@@ -264,6 +264,15 @@ namespace LightMethods.Survey.Models.Entities
             return list;
         }
 
+        public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (!this.AllItems.Any())
+                yield return new ValidationResult("Data list is empty! Add data items first.", new[] { "dataList" });
+
+            var items = this.AllItems.Select(x => x.Value).ToList();
+            if (items.Count != items.Distinct().Count())
+                yield return new ValidationResult("data items cannot contain duplicate values.", new[] { "dataList" });
+        }
 
     }
 }

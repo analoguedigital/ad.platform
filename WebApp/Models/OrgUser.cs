@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using LightMethods.Survey.Models.Entities;
 using Newtonsoft.Json;
+using static LightMethods.Survey.Models.Entities.User;
 
 namespace WebApi.Models
 {
@@ -35,10 +36,15 @@ namespace WebApi.Models
 
         public List<ProjectAssignmentDTO> Assignments { get; set; }
 
+        public GenderType Gender { get; set; }
+
+        public DateTime? Birthdate { set; get; }
+
+        public string Address { set; get; }
+
         public OrgUserDTO()
         {
             this.Assignments = new List<ProjectAssignmentDTO>();
         }
-
     }
 }

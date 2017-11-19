@@ -18,14 +18,14 @@ module App {
 
         constructor(private $scope: IRateMetricControllerScope) {
             this.activate();
-            //$scope.$watch('metric', () => { this.activate(); });
+            $scope.$on('update-rate-metrics', () => { this.activate(); });
         }
 
         activate() {
             if (!this.$scope.metric.isAdHoc) {
                 // basic slider (min/max bound)
                 this.$scope.sliderOptions = {
-                    floor: 1,
+                    floor: this.$scope.metric.minValue,
                     ceil: this.$scope.metric.maxValue,
                     showTicks: true
                 };

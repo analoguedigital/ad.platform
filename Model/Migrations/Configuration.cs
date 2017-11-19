@@ -150,19 +150,19 @@ namespace LightMethods.Survey.Models.Migrations
 
                 var dataList = new DataList() { Id = Guid.Parse("884505e1-97c8-4602-8c00-f75ae08d99ab"), OrganisationId = org.Id, Name = "Colors" };
                 context.DataLists.AddOrUpdate(dataList);
-                context.SaveChanges();
 
                 context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("0a138f19-2e98-4030-b9e9-78527043c1c2"), DataListId = dataList.Id, Text = "Black", Value = 0, Order = 1 });
                 context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("32d75f9b-7da6-43b5-8f3f-b7830dc6e5f7"), DataListId = dataList.Id, Text = "White", Value = 1, Order = 2 });
                 context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("298cdd84-4cd1-481f-875e-c2c9adce43bc"), DataListId = dataList.Id, Text = "Blue", Value = 2, Order = 3 });
                 context.DataListItems.AddOrUpdate(new DataListItem { Id = Guid.Parse("8e63ad2d-6872-4e6d-86e6-55782450f991"), DataListId = dataList.Id, Text = "Red", Value = 3, Order = 4 });
+
                 context.SaveChanges();
 
                 var cat = new FormTemplateCategory() { Id = Guid.Parse("5e7d5a6f-6838-4e09-bcee-e07778c26f44"), Title = "First category", OrganisationId = org.Id };
                 context.FormTemplateCategories.AddOrUpdate(cat);
                 context.SaveChanges();
 
-                var template = new FormTemplate() { Id = Guid.Parse("52692cf5-fd17-4fc6-b72b-b65b7e8d4e98"), ProjectId = CurrentProject.Id, Code = "101", Title = "First Form", Description = "This is the first from.", Version = 1.0, FormTemplateCategoryId = cat.Id, IsPublished = true, OrganisationId = org.Id, CreatedById = user.Id };
+                var template = new FormTemplate() { Id = Guid.Parse("52692cf5-fd17-4fc6-b72b-b65b7e8d4e98"), ProjectId = CurrentProject.Id, Code = "101", Title = "First Form", Description = "This is the first from.", Colour = "#ddff00", Version = 1.0, FormTemplateCategoryId = cat.Id, IsPublished = true, OrganisationId = org.Id, CreatedById = user.Id };
                 context.FormTemplates.AddOrUpdate(template);
                 context.SaveChanges();
 
