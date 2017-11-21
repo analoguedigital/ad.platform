@@ -28,7 +28,7 @@ namespace WebApi.Controllers
                 .Where(d => !d.IsAdHoc)
                 .Select(d => Mapper.Map<GetDataListsResItemDTO>(d));
 
-            return Ok(new GetDataListsResDTO() { Items = datalists.ToList() });
+            return Ok(new GetDataListsResDTO() { Items = result.ToList() });
         }
 
         [DeflateCompression]
@@ -158,18 +158,12 @@ namespace WebApi.Controllers
             }
         }
 
-        public void Delete(Guid id)
-        {
-            UnitOfWork.DataListsRepository.Delete(id);
-            UnitOfWork.Save();
-        }
-
         [ResponseType(typeof(GetDataListReferencesResDTO))]
         [Route("api/datalists/{datalistId}/references")]
         public IHttpActionResult GetReferences(Guid datalistId)
         {
             if (datalistId == Guid.Empty)
-                return Ok(new GetDataListReferencesResDto { Items = new List<GetDataListReferencesResItemDto>() });
+                return Ok(new GetDataListReferencesResDTO { Items = new List<GetDataListReferencesResItemDTO>() });
 
             var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)

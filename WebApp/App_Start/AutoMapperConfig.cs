@@ -47,7 +47,7 @@ namespace WebApi
             //.ForMember(dest => dest.Owner, opts => opts.Ignore())
             //.ForMember(dest => dest.DataList, opts => opts.Ignore());
 
-            Mapper.CreateMap<DataList, GetDataListsResItemDto>();
+            Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 
             #endregion Data Lists
 
