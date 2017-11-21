@@ -8,14 +8,6 @@
     </div>
     <div class="box-content">
         <div st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys">
-            <div>
-                <form name="search-form" class="form-inline">
-                    <lm-form-group label="Search: ">
-                        <input st-search type="text" id="search" name="search" ng-model="tableSearchTerm" />
-                    </lm-form-group>
-                </form>
-            </div>
-
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -23,7 +15,7 @@
                             <th class="text-center" width="60"></th>
                             <th>Serial</th>
                             <th>Date</th>
-                            <th>Description</th>
+                            <th>Your record</th>
                             <th valign="middle"></th>
                             <th class="text-center"></th>
                         </tr>

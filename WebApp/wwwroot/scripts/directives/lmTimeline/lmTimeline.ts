@@ -11,6 +11,7 @@
 
         height: number;
         renderMode: string;
+        enableSnapshotView: boolean;
 
         currentDate: Date;
         chartLabels: Date[];
@@ -36,7 +37,8 @@
                 formTemplates: '=',
                 surveys: '=',
                 height: '@',
-                renderMode: '@'
+                renderMode: '@',
+                enableSnapshotView: '='
             }
         };
 
@@ -60,33 +62,37 @@
             }
 
             function generateWebXAxis() {
-                // broadcast that we have a month view
-                $rootScope.$broadcast('timeline-in-month-view');
+                if (!scope.enableSnapshotView) {
+                    // broadcast that we have a month view
+                    $rootScope.$broadcast('timeline-in-month-view');
 
-                // first day of month to last
-                var daysInMonth = moment(scope.currentDate).daysInMonth();
-                var currentDay = moment(scope.currentDate).date();
-                var firstDayOfMonth = moment(scope.currentDate).add(-(currentDay - 1), 'day').toDate();
-                var lastDayOfMonth = moment(scope.currentDate).add((daysInMonth - currentDay), 'day').toDate();
+                    // first day of month to last
+                    var daysInMonth = moment(scope.currentDate).daysInMonth();
+                    var currentDay = moment(scope.currentDate).date();
+                    var firstDayOfMonth = moment(scope.currentDate).add(-(currentDay - 1), 'day').toDate();
+                    var lastDayOfMonth = moment(scope.currentDate).add((daysInMonth - currentDay), 'day').toDate();
 
-                var xAxesTicks = [firstDayOfMonth];
+                    var xAxesTicks = [firstDayOfMonth];
 
-                for (var i = 2; i < daysInMonth; i++) {
-                    var daysToAdd = -(currentDay - i);
-                    var tick = moment(scope.currentDate).add(daysToAdd, 'day').toDate();
-                    xAxesTicks.push(tick);
+                    for (var i = 2; i < daysInMonth; i++) {
+                        var daysToAdd = -(currentDay - i);
+                        var tick = moment(scope.currentDate).add(daysToAdd, 'day').toDate();
+                        xAxesTicks.push(tick);
+                    }
+
+                    xAxesTicks.push(lastDayOfMonth);
+
+                    return xAxesTicks;
+                } else {
+                    // broadcast that we have a snapshot view
+                    $rootScope.$broadcast('timeline-in-snapshot-view');
+
+                    return generateSnapshot();
                 }
-
-                xAxesTicks.push(lastDayOfMonth);
-
-                return xAxesTicks;
             }
 
             function generateSnapshot() {
                 var xAxisTicks = [];
-
-                // broadcast that we have a snapshot view
-                $rootScope.$broadcast('timeline-in-snapshot-view');
 
                 var groupedSurveys = _.groupBy(scope.surveys, function (survey) {
                     return moment(survey.date).startOf('day').format();
@@ -591,6 +597,10 @@
                 if (newValue !== oldValue) {
                     buildTimeline();
                 }
+            });
+
+            scope.$watch('enableSnapshotView', (newValue, oldValue) => {
+                buildTimeline();
             });
 
             $rootScope.$on('timeline-next-month', () => {
