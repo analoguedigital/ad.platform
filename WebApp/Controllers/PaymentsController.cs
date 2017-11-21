@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DAL;
-using System;
+using LightMethods.Survey.Models.DTO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;

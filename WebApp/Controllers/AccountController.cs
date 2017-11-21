@@ -1,26 +1,22 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
+using LightMethods.Survey.Models.Services.Identity;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.OAuth;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.OAuth;
-using WebApi.Models;
-using WebApi.Providers;
-using LightMethods.Survey.Models.Services.Identity;
-using WebApi.Results;
-using LightMethods.Survey.Models.Entities;
 using WebApi.Controllers;
-using LightMethods.Survey.Models.DAL;
-using LightMethods.Survey.Models.Services;
+using WebApi.Providers;
+using WebApi.Results;
 
 namespace WebApi.Models
 {

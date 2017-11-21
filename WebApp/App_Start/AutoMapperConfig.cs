@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.DTO.DataLists;
 using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.FilterValues;
 using System;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
-using WebApi.Models;
 
 namespace WebApi
 {
@@ -31,7 +30,7 @@ namespace WebApi
 
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
-            Mapper.CreateMap<Controllers.FormTemplatesController.EditBasicDetailsRequest, FormTemplate>();
+            Mapper.CreateMap<EditBasicDetailsReqDTO, FormTemplate>();
 
             #endregion Form Templates and Categories
 
@@ -151,6 +150,9 @@ namespace WebApi
                 .ForMember(dest => dest.Type, opts => opts.Ignore())
                 .AfterMap((src, dest) => { dest.TypeId = src.Type.Id; });
             Mapper.CreateMap<OrgUserType, OrgUserTypeDTO>().ReverseMap();
+
+
+            Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 
             Mapper.CreateMap<PaymentRecord, PaymentRecordDTO>().ReverseMap();
             Mapper.CreateMap<PromotionCode, PromotionCodeDTO>().ReverseMap();

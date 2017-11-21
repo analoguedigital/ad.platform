@@ -100,7 +100,8 @@ module App {
         multipleChoiceControl = [];
         attachmentControl = [];
 
-        static $inject: string[] = ["$scope", "$state", "$stateParams", "$uibModal", "formTemplateResource", "metricGroupResource", "metricResource", "newMetricResource", "$ngBootbox"];
+        static $inject: string[] = ["$scope", "$state", "$stateParams", "$uibModal", "formTemplateResource", "metricGroupResource",
+            "metricResource", "newMetricResource", "$ngBootbox", "toastr"];
 
         constructor(
             private $scope: ng.IScope,
@@ -111,7 +112,8 @@ module App {
             private metricGroupResource: Resources.IMetricGroupResource,
             private metricResource: Resources.IMetricResource,
             private newMetricResource: Resources.INewMetricResource,
-            private $ngBootbox: BootboxStatic) {
+            private $ngBootbox: BootboxStatic,
+            private toastr: any) {
 
             this.formId = $stateParams["id"];
             this.survey = <Models.ISurvey>{};
@@ -254,7 +256,7 @@ module App {
                     this.$ngBootbox.alert("Form template saved successfully!");
                 }
                 , (reason) => {
-                    console.log(reason);
+                    console.error('reason', reason);
 
                     this.errors = [];
                     for (var key in reason.data.modelState) {
@@ -263,8 +265,11 @@ module App {
                         }
                     }
 
-                    this.$ngBootbox.alert("Something went wrong! please check errors and try again.");
+                    _.forEach(reason.data.validationErrors, (ve: any) => {
+                        this.errors.push(<Error>{ key: ve.memberNames[0], value: ve.errorMessage });
+                    });
 
+                    this.$ngBootbox.alert("Something went wrong! please check errors and try again.");
                 });
         }
 

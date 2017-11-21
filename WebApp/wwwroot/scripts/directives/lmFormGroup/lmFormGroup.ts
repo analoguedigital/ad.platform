@@ -68,6 +68,8 @@ module App {
             var inputId = $input.attr("id");
             var inputName = $input.attr("name");
 
+            if (!inputId && !inputName) return;
+
             if (inputName) {
                 var form = element.closest('form');
             }
