@@ -106,33 +106,35 @@
                 });
                 occurences = _.sortBy(occurences, 'day');
 
-                // date range with padding
-                _.forEach(occurences, (oc) => {
-                    xAxisTicks.push(oc.day);
-                });
+                if (occurences && occurences.length) {
+                    // date range with padding
+                    _.forEach(occurences, (oc) => {
+                        xAxisTicks.push(oc.day);
+                    });
 
-                var minDate = _.minBy(occurences, 'day').day;
-                var maxDate = _.maxBy(occurences, 'day').day;
+                    var minDate = _.minBy(occurences, 'day').day;
+                    var maxDate = _.maxBy(occurences, 'day').day;
 
-                var maxTicks = 28;
-                var missingTicks = Math.floor((maxTicks - occurences.length) / 2);
+                    var maxTicks = 28;
+                    var missingTicks = Math.floor((maxTicks - occurences.length) / 2);
 
-                // padding to start
-                for (let i = 1; i <= missingTicks; i++) {
-                    var date = moment(minDate).add(-i, 'days').toDate();
-                    xAxisTicks.unshift(date);
-                }
+                    // padding to start
+                    for (let i = 1; i <= missingTicks; i++) {
+                        var date = moment(minDate).add(-i, 'days').toDate();
+                        xAxisTicks.unshift(date);
+                    }
 
-                // padding to end
-                for (let i = 1; i <= missingTicks; i++) {
-                    var date = moment(maxDate).add(i, 'days').toDate();
-                    xAxisTicks.push(date);
-                }
+                    // padding to end
+                    for (let i = 1; i <= missingTicks; i++) {
+                        var date = moment(maxDate).add(i, 'days').toDate();
+                        xAxisTicks.push(date);
+                    }
 
-                if (xAxisTicks.length < maxTicks) {
-                    var firstTick = xAxisTicks[0];
-                    var date = new moment(firstTick).add(-1, 'days').toDate();
-                    xAxisTicks.unshift(date);
+                    if (xAxisTicks.length < maxTicks) {
+                        var firstTick = xAxisTicks[0];
+                        var date = new moment(firstTick).add(-1, 'days').toDate();
+                        xAxisTicks.unshift(date);
+                    }
                 }
 
                 return xAxisTicks;

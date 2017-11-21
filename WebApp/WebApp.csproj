@@ -443,9 +443,9 @@
       <Project>{b935e61f-651b-471b-acdf-f4ed7c52dd16}</Project>
       <Name>AppHelper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Model\Model.csproj">
+    <ProjectReference Include="..\Models\Models.csproj">
       <Project>{37d3c74c-ea51-419e-8014-fb272f0a6396}</Project>
-      <Name>Model</Name>
+      <Name>Models</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
