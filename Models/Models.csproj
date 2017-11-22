@@ -481,6 +481,10 @@
     <Compile Include="Migrations\201709170919422_Update_assignments.Designer.cs">
       <DependentUpon>201709170919422_Update_assignments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711221816077_Make_gender_optional.cs" />
+    <Compile Include="Migrations\201711221816077_Make_gender_optional.Designer.cs">
+      <DependentUpon>201711221816077_Make_gender_optional.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -611,6 +615,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709170919422_Update_assignments.resx">
       <DependentUpon>201709170919422_Update_assignments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711221816077_Make_gender_optional.resx">
+      <DependentUpon>201711221816077_Make_gender_optional.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
