@@ -56,15 +56,12 @@ namespace WebApi.Models
         [Required]
         public string Surname { set; get; }
 
-        [Required]
         public string Address { set; get; }
 
-        [Required]
         public string Gender { set; get; }
 
-        [Required]
         [DataType(DataType.Date)]
-        public DateTime Birthdate { set; get; }
+        public DateTime? Birthdate { set; get; }
 
         public string OrganisationName { set; get; }
     }

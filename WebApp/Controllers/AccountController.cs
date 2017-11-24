@@ -399,9 +399,6 @@ namespace WebApi.Models
                 Surname = model.Surname,
                 UserName = model.Email,
                 Email = model.Email,
-                Gender = (User.GenderType)Enum.Parse(typeof(User.GenderType), model.Gender),
-                Address = model.Address,
-                Birthdate = new DateTime(model.Birthdate.Year, model.Birthdate.Month, model.Birthdate.Day, 0, 0, 0).AddDays(1),
                 OrganisationId = organisation.Id,
                 IsRootUser = false,
                 IsActive = true,
@@ -409,6 +406,15 @@ namespace WebApi.Models
                 IsMobileUser = true,
                 IsWebUser = true
             };
+
+            if (!string.IsNullOrEmpty(model.Address))
+                user.Address = model.Address;
+
+            if (!string.IsNullOrEmpty(model.Gender))
+                user.Gender = (User.GenderType)Enum.Parse(typeof(User.GenderType), model.Gender);
+
+            if (model.Birthdate.HasValue)
+                user.Birthdate = new DateTime(model.Birthdate.Value.Year, model.Birthdate.Value.Month, model.Birthdate.Value.Day, 0, 0, 0).AddDays(1);
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

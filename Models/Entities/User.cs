@@ -29,7 +29,7 @@ namespace LightMethods.Survey.Models.Entities
         [Display(Name = "Last Login")]
         public DateTime? LastLogin { set; get; }
 
-        public GenderType Gender { set; get; }
+        public GenderType? Gender { set; get; }
 
         public DateTime? Birthdate { set; get; }
 
