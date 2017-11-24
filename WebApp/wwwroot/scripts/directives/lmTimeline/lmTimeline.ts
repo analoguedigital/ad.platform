@@ -405,13 +405,19 @@
                     ctx.canvas.height = parent.height();
 
                 // compute yAxis max, and add a little padding
-                var dataPoints = [];
-                _.forEach(scope.chartDatasets, (ds) => {
-                    dataPoints.push.apply(dataPoints, ds.data);
+                var dailyImpact = [];
+                _.forEach(scope.chartLabels, function (tick, index) {
+                    var impact = 0;
+                    for (var i = 0; i < scope.chartDatasets.length; i++) {
+                        impact += scope.chartDatasets[i].data[index];
+                    }
+                    dailyImpact.push(impact);
                 });
 
-                var maxImpact = _.max(dataPoints) + 10;
-                var minImpact = _.min(dataPoints) + -10;
+                var maxImpact = _.max(dailyImpact) + 2;
+                var minImpact = _.min(dailyImpact);
+
+                if (minImpact < 0) minImpact += -2;
 
                 var chartOptions = {
                     responsive: true,
