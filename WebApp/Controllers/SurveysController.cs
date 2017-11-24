@@ -63,6 +63,32 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [DeflateCompression]
+        [Route("api/surveys/user/{projectId}")]
+        [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
+        public IHttpActionResult GetUserSurveys(Guid projectId)
+        {
+            if (projectId == null || projectId == Guid.Empty)
+                return BadRequest("Project not found");
+
+            var project = this.UnitOfWork.ProjectsRepository.Find(projectId);
+            if (project == null)
+                return BadRequest("Project not found");
+
+            var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
+            if (assignment == null || !assignment.CanView)
+                return Content(HttpStatusCode.Forbidden, "Accedd Denied");
+
+            var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                .Where(s => s.ProjectId == projectId && s.FilledById == this.CurrentOrgUser.Id)
+                .OrderByDescending(s => s.DateCreated);
+
+            var result = surveys.ToList()
+                .Select(s => Mapper.Map<FilledFormDTO>(s));
+
+            return Ok(result);
+        }
+
         [HttpPost]
         [DeflateCompression]
         [Route("api/surveys/search")]
