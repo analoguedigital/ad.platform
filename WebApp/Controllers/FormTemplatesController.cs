@@ -5,18 +5,10 @@ using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
-using System.Web.Http.Results;
-using WebApi.Models;
-using Newtonsoft.Json;
-using LightMethods.Survey.Models.MetricFilters;
-using System.Data.Entity.Infrastructure;
 using WebApi.Filters;
 
 namespace WebApi.Controllers

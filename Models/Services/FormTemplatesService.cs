@@ -27,23 +27,9 @@ namespace LightMethods.Survey.Models.Services
         public IEnumerable<FormTemplateDTO> Get(Guid? projectId)
         {
             var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
-
-            var templates = surveyProvider.GetAllFormTemplates();
-
-            if (projectId == null || projectId == Guid.Empty)
-                templates = templates.Where(t => t.ProjectId == null);
-            else
-            {
-                var assignments = this.unitOfWork.AssignmentsRepository.AllAsNoTracking
-                    .Where(a => a.ProjectId == projectId && a.OrgUserId == this.OrgUser.Id)
-                    .ToList();
-
-                templates = templates
-                    .Where(t => t.ProjectId == projectId || t.ProjectId == null)
-                    .Where(t => assignments.Any(a => a.ProjectId == t.ProjectId || t.ProjectId == null));
-            }
-
+            var templates = surveyProvider.GetAllProjectTemplates(projectId);
             var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
+
             return result;
         }
 
