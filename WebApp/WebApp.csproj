@@ -318,42 +318,9 @@
     <Compile Include="Models\Account\AccountBindingModels.cs" />
     <Compile Include="Models\Account\AccountViewModels.cs" />
     <Compile Include="Models\Account\IdentityModels.cs" />
-    <Compile Include="Models\ChangePasswordDTO.cs" />
-    <Compile Include="Models\Feedback.cs" />
+    <Compile Include="Models\Account\ChangePasswordDTO.cs" />
     <Compile Include="Models\ProjectSummaryPrintSession.cs" />
-    <Compile Include="Models\DataList.cs" />
-    <Compile Include="Models\DataListItem.cs" />
-    <Compile Include="Models\DataListItemAttr.cs" />
-    <Compile Include="Models\DataListRelationship.cs" />
-    <Compile Include="Models\DataLists\EditDataListRelationshipReqDto.cs" />
-    <Compile Include="Models\DataLists\AddDataListRelationshipReqDto.cs" />
-    <Compile Include="Models\DataLists\GetDataListReferencesResDto.cs" />
-    <Compile Include="Models\DataLists\GetDataListsResDto.cs" />
-    <Compile Include="Models\FilledForms\FilledForm.cs" />
-    <Compile Include="Models\FilledForms\FilledFormLocation.cs" />
-    <Compile Include="Models\FilledForms\FormValue.cs" />
-    <Compile Include="Models\FormTemplate.cs" />
-    <Compile Include="Models\FormTemplateCategory.cs" />
-    <Compile Include="Models\MetricGroup.cs" />
-    <Compile Include="Models\Metric\Attachment.cs" />
-    <Compile Include="Models\Metric\AttachmentMetric.cs" />
-    <Compile Include="Models\Metric\TimeMetric.cs" />
-    <Compile Include="Models\Metric\DateMetric.cs" />
-    <Compile Include="Models\Metric\DichotomousMetric.cs" />
-    <Compile Include="Models\Metric\FreeTextMetric.cs" />
-    <Compile Include="Models\Metric\Metric.cs" />
-    <Compile Include="Models\Metric\MultipleChoiceMetric.cs" />
-    <Compile Include="Models\Metric\NumericMetric.cs" />
-    <Compile Include="Models\Metric\RateMetric.cs" />
-    <Compile Include="Models\Organisation.cs" />
-    <Compile Include="Models\OrgUserType.cs" />
-    <Compile Include="Models\PaymentRecord.cs" />
-    <Compile Include="Models\Project.cs" />
-    <Compile Include="Models\ProjectAssignment.cs" />
-    <Compile Include="Models\PromotionCode.cs" />
-    <Compile Include="Models\response\SaveReponse.cs" />
-    <Compile Include="Models\OrgUser.cs" />
-    <Compile Include="Models\Subscription.cs" />
+    <Compile Include="Models\SaveReponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
@@ -443,9 +410,9 @@
       <Project>{b935e61f-651b-471b-acdf-f4ed7c52dd16}</Project>
       <Name>AppHelper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Model\Model.csproj">
+    <ProjectReference Include="..\Models\Models.csproj">
       <Project>{37d3c74c-ea51-419e-8014-fb272f0a6396}</Project>
-      <Name>Model</Name>
+      <Name>Models</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

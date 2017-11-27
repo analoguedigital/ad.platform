@@ -1,26 +1,22 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
+using LightMethods.Survey.Models.Services.Identity;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using Microsoft.Owin.Security;
+using Microsoft.Owin.Security.OAuth;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.OAuth;
-using WebApi.Models;
-using WebApi.Providers;
-using LightMethods.Survey.Models.Services.Identity;
-using WebApi.Results;
-using LightMethods.Survey.Models.Entities;
 using WebApi.Controllers;
-using LightMethods.Survey.Models.DAL;
-using LightMethods.Survey.Models.Services;
+using WebApi.Providers;
+using WebApi.Results;
 
 namespace WebApi.Models
 {
@@ -403,9 +399,6 @@ namespace WebApi.Models
                 Surname = model.Surname,
                 UserName = model.Email,
                 Email = model.Email,
-                Gender = (User.GenderType)Enum.Parse(typeof(User.GenderType), model.Gender),
-                Address = model.Address,
-                Birthdate = new DateTime(model.Birthdate.Year, model.Birthdate.Month, model.Birthdate.Day, 0, 0, 0).AddDays(1),
                 OrganisationId = organisation.Id,
                 IsRootUser = false,
                 IsActive = true,
@@ -413,6 +406,15 @@ namespace WebApi.Models
                 IsMobileUser = true,
                 IsWebUser = true
             };
+
+            if (!string.IsNullOrEmpty(model.Address))
+                user.Address = model.Address;
+
+            if (!string.IsNullOrEmpty(model.Gender))
+                user.Gender = (User.GenderType)Enum.Parse(typeof(User.GenderType), model.Gender);
+
+            if (model.Birthdate.HasValue)
+                user.Birthdate = new DateTime(model.Birthdate.Value.Year, model.Birthdate.Value.Month, model.Birthdate.Value.Day, 0, 0, 0).AddDays(1);
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)

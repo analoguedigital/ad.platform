@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.DTO.DataLists;
 using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.FilterValues;
 using System;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
-using WebApi.Models;
 
 namespace WebApi
 {
@@ -13,27 +12,29 @@ namespace WebApi
     {
         public static void Config()
         {
+
+            #region Projects and Assignments
+
             Mapper.CreateMap<Project, ProjectDTO>().ReverseMap();
             Mapper.CreateMap<AssignmentDTO, ProjectDTO>();
             Mapper.CreateMap<Assignment, ProjectAssignmentDTO>()
                 .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
+
+            #endregion Projects and Assignments
+
+            #region Form Templates and Categories
+
             Mapper.CreateMap<FormTemplateCategory, FormTemplateCategoryDTO>().ReverseMap();
             Mapper.CreateMap<FormTemplate, FormTemplateDTO>();
 
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
-            Mapper.CreateMap<Controllers.FormTemplatesController.EditBasicDetailsRequest, FormTemplate>();
+            Mapper.CreateMap<EditBasicDetailsReqDTO, FormTemplate>();
 
-            Mapper.CreateMap<MetricGroup, MetricGroupDTO>()
-                .AfterMap((src, dest) =>
-                {
-                    dest.IsAdHoc = src.DataList?.IsAdHoc ?? false;
-                    dest.IsDataListRepeater = src.DataListId.HasValue;
-                    dest.AdHocItems = src.DataList?.IsAdHoc ?? false ? src.DataList.Items.Select(i => Mapper.Map<DataListItemDTO>(i)).ToList() : Enumerable.Empty<DataListItemDTO>().ToList();
-                });
-            Mapper.CreateMap<MetricGroupDTO, MetricGroup>()
-                .ForMember(f => f.Metrics, opt => opt.Ignore());
+            #endregion Form Templates and Categories
+
+            #region Data Lists
 
             Mapper.CreateMap<DataList, DataListDTO>();
             Mapper.CreateMap<DataListDTO, DataList>()
@@ -45,6 +46,26 @@ namespace WebApi
             Mapper.CreateMap<DataListRelationshipDTO, DataListRelationship>();
             //.ForMember(dest => dest.Owner, opts => opts.Ignore())
             //.ForMember(dest => dest.DataList, opts => opts.Ignore());
+
+            Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
+
+            #endregion Data Lists
+
+            #region Metric Groups
+
+            Mapper.CreateMap<MetricGroup, MetricGroupDTO>()
+                .AfterMap((src, dest) =>
+                {
+                    dest.IsAdHoc = src.DataList?.IsAdHoc ?? false;
+                    dest.IsDataListRepeater = src.DataListId.HasValue;
+                    dest.AdHocItems = src.DataList?.IsAdHoc ?? false ? src.DataList.Items.Select(i => Mapper.Map<DataListItemDTO>(i)).ToList() : Enumerable.Empty<DataListItemDTO>().ToList();
+                });
+            Mapper.CreateMap<MetricGroupDTO, MetricGroup>()
+                .ForMember(f => f.Metrics, opt => opt.Ignore());
+
+            #endregion Metric Groups
+
+            #region Metrics
 
             // config metrics mappings
             Mapper.CreateMap<Metric, MetricDTO>()
@@ -95,6 +116,10 @@ namespace WebApi
             Mapper.CreateMap<AttachmentMetricDTO, AttachmentMetric>()
                 .ForMember(m => m.AllowedAttachmentTypes, opt => opt.Ignore());
 
+            #endregion Metrics
+
+            #region Form Values and Filled Forms
+
             Mapper.CreateMap<FormValue, FormValueDTO>().ForMember(m => m.TimeValue, opt => opt.Ignore())
                 .AfterMap((src, dest) =>
                 {
@@ -115,6 +140,10 @@ namespace WebApi
 
             Mapper.CreateMap<FilledFormLocation, FilledFormLocationDTO>().ReverseMap();
 
+            #endregion Form Values and Filled Forms
+
+            #region Organisations and Users
+
             Mapper.CreateMap<Organisation, OrganisationDTO>().ReverseMap();
             Mapper.CreateMap<OrgUser, OrgUserDTO>();
             Mapper.CreateMap<OrgUserDTO, OrgUser>()
@@ -122,11 +151,14 @@ namespace WebApi
                 .AfterMap((src, dest) => { dest.TypeId = src.Type.Id; });
             Mapper.CreateMap<OrgUserType, OrgUserTypeDTO>().ReverseMap();
 
-            Mapper.CreateMap<DataList, GetDataListsResItemDto>();
+
+            Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 
             Mapper.CreateMap<PaymentRecord, PaymentRecordDTO>().ReverseMap();
             Mapper.CreateMap<PromotionCode, PromotionCodeDTO>().ReverseMap();
             Mapper.CreateMap<Subscription, SubscriptionDTO>().ReverseMap();
+
+            #endregion Organisations and Users
 
             Mapper.CreateMap<Feedback, FeedbackDTO>().ReverseMap();
         }

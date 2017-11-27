@@ -13,7 +13,7 @@ namespace WebApi.Filters
         public override void OnActionExecuted(HttpActionExecutedContext actContext)
         {
             var content = actContext.Response.Content;
-            var contentType = actContext.Response.Content.Headers.ContentType.ToString();
+            var contentType = content == null ? "text/plain" : actContext.Response.Content.Headers.ContentType.ToString();
             var bytes = content == null ? null : content.ReadAsByteArrayAsync().Result;
             var zlibbedContent = bytes == null ? new byte[0] : CompressionHelper.DeflateByte(bytes);
 

@@ -5,7 +5,6 @@ module App {
     "use strict";
 
     interface IProjectSummaryControllerScope extends ng.IScope {
-        tableSearchTerm: string;
         safeSurveys: Models.ISurvey[];
         displayedSurveys: Models.ISurvey[];
         currentPage: number;
@@ -60,7 +59,7 @@ module App {
         surveys: Models.ISurvey[] = [];
         displayedSurveys: Models.ISurvey[] = [];
         selectedTemplates: Models.IFormTemplate[] = [];
-        timelineSnapshotView: boolean;
+        timelineSnapshotView: boolean = true;
         metricFilters: Models.IMetricFilter[];
 
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",

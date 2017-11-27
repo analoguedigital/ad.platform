@@ -11,6 +11,7 @@
 
         height: number;
         renderMode: string;
+        enableSnapshotView: boolean;
 
         currentDate: Date;
         chartLabels: Date[];
@@ -36,7 +37,8 @@
                 formTemplates: '=',
                 surveys: '=',
                 height: '@',
-                renderMode: '@'
+                renderMode: '@',
+                enableSnapshotView: '='
             }
         };
 
@@ -60,33 +62,37 @@
             }
 
             function generateWebXAxis() {
-                // broadcast that we have a month view
-                $rootScope.$broadcast('timeline-in-month-view');
+                if (!scope.enableSnapshotView) {
+                    // broadcast that we have a month view
+                    $rootScope.$broadcast('timeline-in-month-view');
 
-                // first day of month to last
-                var daysInMonth = moment(scope.currentDate).daysInMonth();
-                var currentDay = moment(scope.currentDate).date();
-                var firstDayOfMonth = moment(scope.currentDate).add(-(currentDay - 1), 'day').toDate();
-                var lastDayOfMonth = moment(scope.currentDate).add((daysInMonth - currentDay), 'day').toDate();
+                    // first day of month to last
+                    var daysInMonth = moment(scope.currentDate).daysInMonth();
+                    var currentDay = moment(scope.currentDate).date();
+                    var firstDayOfMonth = moment(scope.currentDate).add(-(currentDay - 1), 'day').toDate();
+                    var lastDayOfMonth = moment(scope.currentDate).add((daysInMonth - currentDay), 'day').toDate();
 
-                var xAxesTicks = [firstDayOfMonth];
+                    var xAxesTicks = [firstDayOfMonth];
 
-                for (var i = 2; i < daysInMonth; i++) {
-                    var daysToAdd = -(currentDay - i);
-                    var tick = moment(scope.currentDate).add(daysToAdd, 'day').toDate();
-                    xAxesTicks.push(tick);
+                    for (var i = 2; i < daysInMonth; i++) {
+                        var daysToAdd = -(currentDay - i);
+                        var tick = moment(scope.currentDate).add(daysToAdd, 'day').toDate();
+                        xAxesTicks.push(tick);
+                    }
+
+                    xAxesTicks.push(lastDayOfMonth);
+
+                    return xAxesTicks;
+                } else {
+                    // broadcast that we have a snapshot view
+                    $rootScope.$broadcast('timeline-in-snapshot-view');
+
+                    return generateSnapshot();
                 }
-
-                xAxesTicks.push(lastDayOfMonth);
-
-                return xAxesTicks;
             }
 
             function generateSnapshot() {
                 var xAxisTicks = [];
-
-                // broadcast that we have a snapshot view
-                $rootScope.$broadcast('timeline-in-snapshot-view');
 
                 var groupedSurveys = _.groupBy(scope.surveys, function (survey) {
                     return moment(survey.date).startOf('day').format();
@@ -100,33 +106,35 @@
                 });
                 occurences = _.sortBy(occurences, 'day');
 
-                // date range with padding
-                _.forEach(occurences, (oc) => {
-                    xAxisTicks.push(oc.day);
-                });
+                if (occurences && occurences.length) {
+                    // date range with padding
+                    _.forEach(occurences, (oc) => {
+                        xAxisTicks.push(oc.day);
+                    });
 
-                var minDate = _.minBy(occurences, 'day').day;
-                var maxDate = _.maxBy(occurences, 'day').day;
+                    var minDate = _.minBy(occurences, 'day').day;
+                    var maxDate = _.maxBy(occurences, 'day').day;
 
-                var maxTicks = 28;
-                var missingTicks = Math.floor((maxTicks - occurences.length) / 2);
+                    var maxTicks = 28;
+                    var missingTicks = Math.floor((maxTicks - occurences.length) / 2);
 
-                // padding to start
-                for (let i = 1; i <= missingTicks; i++) {
-                    var date = moment(minDate).add(-i, 'days').toDate();
-                    xAxisTicks.unshift(date);
-                }
+                    // padding to start
+                    for (let i = 1; i <= missingTicks; i++) {
+                        var date = moment(minDate).add(-i, 'days').toDate();
+                        xAxisTicks.unshift(date);
+                    }
 
-                // padding to end
-                for (let i = 1; i <= missingTicks; i++) {
-                    var date = moment(maxDate).add(i, 'days').toDate();
-                    xAxisTicks.push(date);
-                }
+                    // padding to end
+                    for (let i = 1; i <= missingTicks; i++) {
+                        var date = moment(maxDate).add(i, 'days').toDate();
+                        xAxisTicks.push(date);
+                    }
 
-                if (xAxisTicks.length < maxTicks) {
-                    var firstTick = xAxisTicks[0];
-                    var date = new moment(firstTick).add(-1, 'days').toDate();
-                    xAxisTicks.unshift(date);
+                    if (xAxisTicks.length < maxTicks) {
+                        var firstTick = xAxisTicks[0];
+                        var date = new moment(firstTick).add(-1, 'days').toDate();
+                        xAxisTicks.unshift(date);
+                    }
                 }
 
                 return xAxisTicks;
@@ -397,13 +405,19 @@
                     ctx.canvas.height = parent.height();
 
                 // compute yAxis max, and add a little padding
-                var dataPoints = [];
-                _.forEach(scope.chartDatasets, (ds) => {
-                    dataPoints.push.apply(dataPoints, ds.data);
+                var dailyImpact = [];
+                _.forEach(scope.chartLabels, function (tick, index) {
+                    var impact = 0;
+                    for (var i = 0; i < scope.chartDatasets.length; i++) {
+                        impact += scope.chartDatasets[i].data[index];
+                    }
+                    dailyImpact.push(impact);
                 });
 
-                var maxImpact = _.max(dataPoints) + 10;
-                var minImpact = _.min(dataPoints) + -10;
+                var maxImpact = _.max(dailyImpact) + 2;
+                var minImpact = _.min(dailyImpact);
+
+                if (minImpact < 0) minImpact += -2;
 
                 var chartOptions = {
                     responsive: true,
@@ -591,6 +605,10 @@
                 if (newValue !== oldValue) {
                     buildTimeline();
                 }
+            });
+
+            scope.$watch('enableSnapshotView', (newValue, oldValue) => {
+                buildTimeline();
             });
 
             $rootScope.$on('timeline-next-month', () => {
