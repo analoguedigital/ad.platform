@@ -21,6 +21,7 @@
 
     }
 
+    lmPieChart.$inject = ['$injector'];
     function lmPieChart($injector: ng.auto.IInjectorService): IlmPieChart {
         return {
             restrict: 'E',

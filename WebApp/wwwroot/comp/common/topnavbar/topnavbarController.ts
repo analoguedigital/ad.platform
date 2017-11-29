@@ -16,7 +16,7 @@ module App {
 
     class TopnavbarController implements ITopnavbarController {
 
-        static $inject: string[] = ["$scope", "userContextService"];
+        static $inject = ["$scope", "userContextService"];
         constructor(
             private $scope: ITopnavbarControllerScope,
             private userContext: Services.IUserContextService) {

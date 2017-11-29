@@ -68,7 +68,10 @@ gulp.task('css', function () {
 gulp.task('js', function () {
     return domSrc({ file: 'wwwroot/index.html', selector: 'script', attribute: 'src' })
         .pipe(concat('app.full.min.js'))
-        .pipe(uglify())
+        .pipe(uglify({
+            mangle: false,
+            compress: false
+        }))
         .pipe(gulp.dest('wwwroot/dist/'));
 });
 
@@ -80,6 +83,7 @@ gulp.task('indexHtml', function () {
             $('body').append('<script src="app.full.min.js"></script>');
             $('body').append('<script src="app.components-tpl.min.js"></script>');
             $('body').append('<script src="app.directives-tpl.min.js"></script>');
+            $('body').append("<script src='//maps.googleapis.com/maps/api/js?key=AIzaSyCESw4TSMh0XnrLzrdpoBgxNX_iZiVKqSk'></script>");
             $('head').append('<link rel="stylesheet" href="app.full.min.css">');
         }))
         .pipe(gulp.dest('wwwroot/dist/'));

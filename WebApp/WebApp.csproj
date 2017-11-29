@@ -349,12 +349,6 @@
     <Content Include="wwwroot\scripts\directives\lmLocations\template.html" />
     <Content Include="wwwroot\scripts\directives\lmPieChart\template.html" />
     <Content Include="wwwroot\scripts\directives\lmTimeline\template.html" />
-    <Content Include="wwwroot\scss\index.css">
-      <DependentUpon>index.scss</DependentUpon>
-    </Content>
-    <Content Include="wwwroot\scss\index.min.css">
-      <DependentUpon>index.css</DependentUpon>
-    </Content>
     <Content Include="wwwroot\scss\index.scss" />
     <Content Include="wwwroot\scss\Template\_badgets_labels.scss" />
     <Content Include="wwwroot\scss\Template\_base.scss" />
