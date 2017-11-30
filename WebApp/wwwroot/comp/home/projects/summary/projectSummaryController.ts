@@ -113,6 +113,10 @@ module App {
 
                 _.map(this.formTemplates, (t) => { t.isChecked = true });
 
+                this.formTemplates = _.filter(this.formTemplates, (t) => {
+                    return t.projectId == this.project.id;
+                });
+
                 var templateIds = _.map(this.formTemplates, (template) => { return template.id; });
                 this.getMetricFilters(templateIds);
 
