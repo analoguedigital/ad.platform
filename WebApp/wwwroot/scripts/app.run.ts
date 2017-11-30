@@ -91,7 +91,7 @@
 
         $rootScope.INPUT_DATE_FORMAT = inputFormat;
 
-        amMoment.changeLocale(locale);
+        amMoment.changeLocale('en-GB');
     }
 
 })();
