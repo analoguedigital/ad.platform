@@ -81,7 +81,7 @@ module App {
         activate() {
             this.$scope.title = this.project.name;
             this.$scope.today = new Date();
-            this.$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            this.$scope.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             this.startDate = moment().add('-1', 'month').toDate();
 
             this.$rootScope.$on('timeline-in-snapshot-view', () => {
