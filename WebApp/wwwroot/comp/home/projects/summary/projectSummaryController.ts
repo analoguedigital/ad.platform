@@ -13,8 +13,6 @@ module App {
 
         today: Date;
         months: string[];
-
-        filterValues: Models.IFilterValue[];
     }
 
     interface IProjectSummaryController {
@@ -32,7 +30,6 @@ module App {
         selectedTemplates: Models.IFormTemplate[];
 
         timelineSnapshotView: boolean;
-        metricFilters: Models.IMetricFilter[];
 
         activate: () => void;
         clearSearch: () => void;
@@ -60,7 +57,6 @@ module App {
         displayedSurveys: Models.ISurvey[] = [];
         selectedTemplates: Models.IFormTemplate[] = [];
         timelineSnapshotView: boolean = true;
-        metricFilters: Models.IMetricFilter[];
 
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
             "projectSummaryPrintSessionResource", "projectResource",
@@ -88,9 +84,6 @@ module App {
             this.$scope.months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             this.startDate = moment().add('-1', 'month').toDate();
 
-            this.metricFilters = [];
-            this.$scope.filterValues = [];
-
             this.$rootScope.$on('timeline-in-snapshot-view', () => {
                 this.timelineSnapshotView = true;
             });
@@ -116,9 +109,6 @@ module App {
                 this.formTemplates = _.filter(this.formTemplates, (t) => {
                     return t.projectId == this.project.id;
                 });
-
-                var templateIds = _.map(this.formTemplates, (template) => { return template.id; });
-                this.getMetricFilters(templateIds);
 
                 // populate data sets
                 this.displayedSurveys = this.surveys;
@@ -260,70 +250,7 @@ module App {
                 (err) => { console.error(err); });
         }
 
-        getFilterValues() {
-            var filterValues = [];
-
-            _.forEach(this.$scope.filterValues, (filterValue) => {
-                switch (filterValue.type) {
-                    case "single": {
-                        var singleValue = <Models.ISingleFilterValue>filterValue;
-                        if (singleValue.value && singleValue.value.length)
-                            filterValues.push(filterValue);
-
-                        break;
-                    }
-                    case "range": {
-                        var rangeValue = <Models.IRangeFilterValue>filterValue;
-                        var fromValue = rangeValue.fromValue;
-                        var toValue = rangeValue.toValue;
-
-                        if (fromValue || toValue)
-                            filterValues.push(filterValue);
-
-                        break;
-                    }
-                    case "multiple": {
-                        var multipleValue = <Models.IMultipleFilterValue>filterValue;
-                        if (multipleValue.values && multipleValue.values.length)
-                            filterValues.push(multipleValue);
-
-                        break;
-                    }
-                }
-            });
-
-            return filterValues;
-        }
-
-        getMetricFilters(templateIds: string[]) {
-            let filterPromises: ng.IPromise<any>[] = [];
-            _.forEach(templateIds, (id) => {
-                filterPromises.push(this.formTemplateResource.getFilters({ id: id }, (res) => { }).$promise);
-            });
-
-            this.$q.all(filterPromises)
-                .then((metricFilters) => {
-                    var filters: Models.IMetricFilter[] = [];
-                    _.forEach(metricFilters, (mf) => {
-                        filters = filters.concat(mf);
-                    });
-
-                    if (templateIds.length == 1) {
-                        this.metricFilters = filters;
-                    } else {
-                        var matchedFilters = [];
-                        _.forEach(filters, (f) => {
-                            var found = this.findMetricFilter(f, filters);
-                            if (found) matchedFilters.push(found);
-                        });
-
-                        this.metricFilters = _.uniqBy(matchedFilters, 'shortTitle');
-                    }
-                });
-        }
-
         search() {
-            var filterValues = this.getFilterValues();
             var templateIds = _.map(_.filter(this.formTemplates, (template) => { return template.isChecked == true }), (template) => { return template.id });
 
             var searchModel: Models.SearchDTO = {
@@ -332,7 +259,7 @@ module App {
                 term: this.searchTerm,
                 startDate: this.startDate,
                 endDate: this.endDate,
-                filterValues: filterValues
+                filterValues: []
             };
 
             this.surveyResource.search(searchModel, (surveys: Models.ISurvey[]) => {
@@ -340,12 +267,8 @@ module App {
                 this.displayedSurveys = [].concat(this.surveys);
                 this.$scope.displayedSurveys = this.displayedSurveys;
 
-                if (templateIds.length < 1) {
+                if (templateIds.length < 1)
                     this.selectedTemplates = [];
-                } else {
-                    // reload advanced search UI
-                    this.getMetricFilters(templateIds);
-                }
             }, (error) => {
                 console.error(error);
             });

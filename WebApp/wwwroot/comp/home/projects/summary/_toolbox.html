@@ -72,17 +72,6 @@
                 </div>
             </div>
 
-            <!-- advanced search -->
-            <div ng-if="ctrl.metricFilters.length > 0">
-                <div class="toolbox-heading">
-                    <i class="fa fa-search-plus"></i> Advanced Search
-                </div>
-
-                <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by metricFilter.type+metricFilter.shortTitle">
-                    <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
-                </div>
-            </div>
-
             <div class="toolbox-buttons">
                 <div class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group">
