@@ -1,6 +1,14 @@
 ﻿$break-small: 360px;
 
 .project-summary {
+    #threads-container {
+        padding-bottom: 15px;
+    }
+
+    .m-0 {
+        margin: 0 !important;
+    }
+
     .toolbox-heading {
         margin-top: 15px;
         background: #f9f9f9;

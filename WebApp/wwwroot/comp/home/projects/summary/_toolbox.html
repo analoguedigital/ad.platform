@@ -15,6 +15,22 @@
         <h5>Search &amp; Filter</h5>
     </div>
     <div class="box-content">
+        <!-- threads -->
+        <div class="toolbox-heading m-0">
+            <i class="fa fa-list"></i> Threads
+        </div>
+
+        <div id="threads-container">
+            <div class="checkbox checkbox-default" ng-repeat="template in ctrl.formTemplates track by $index">
+                <input type="checkbox" id="{{template.id}}" ng-model="template.isChecked" />
+                <label for="{{template.id}}">
+                    <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(template.id)}"></span> {{template.title}}
+                </label>
+            </div>
+
+            <a ng-click="ctrl.clearThreads()">Clear all</a>
+        </div>
+
         <form>
             <div class="form-group">
                 <div class="input-group">
@@ -54,20 +70,6 @@
                 <div class="col-md-12">
                     <a ng-click="ctrl.clearSearch()">Clear all</a>
                 </div>
-            </div>
-
-            <!-- threads -->
-            <div class="toolbox-heading">
-                <i class="fa fa-list"></i> Threads
-            </div>
-
-            <div id="threads-container">
-                <div class="checkbox checkbox-default" ng-repeat="template in ctrl.formTemplates track by $index">
-                    <input type="checkbox" id="{{template.id}}" ng-model="template.isChecked" />
-                    <label for="{{template.id}}">{{template.title}}</label>
-                </div>
-
-                <a ng-click="ctrl.clearThreads()">Clear all</a>
             </div>
 
             <!-- advanced search -->
