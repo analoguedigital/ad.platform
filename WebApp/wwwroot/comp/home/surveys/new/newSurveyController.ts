@@ -25,10 +25,11 @@ module App {
         //survey: Models.ISurvey;
         activeTabIndex: number = 0;
 
-        static $inject: string[] = ["$scope", "$state", "$timeout", "toastr", "surveyResource", "formTemplate", "project", "survey"];
+        static $inject: string[] = ["$scope", "$rootScope", "$state", "$timeout", "toastr", "surveyResource", "formTemplate", "project", "survey"];
 
         constructor(
             private $scope: INewSurveyScope,
+            private $rootScope: ng.IRootScopeService,
             private $state: ng.ui.IStateService,
             private $timeout: ng.ITimeoutService,
             private toastr: any,
@@ -120,6 +121,12 @@ module App {
                 return;
 
             this.activeTabIndex -= 1;
+        }
+
+        previousState() {
+            var prevState = this.$rootScope.previousState;
+            var prevParams = this.$rootScope.previousStateParams;
+            this.$state.go(prevState.name, prevParams);
         }
 
         submit(form: ng.IFormController) {

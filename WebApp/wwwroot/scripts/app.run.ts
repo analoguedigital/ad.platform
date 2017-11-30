@@ -72,6 +72,18 @@
                     }
                 }
             });
+
+        $rootScope.$on("$stateChangeSuccess",
+            function (
+                event: ng.IAngularEvent,
+                toState: ng.ui.IState,
+                toParams: ng.ui.IStateParamsService,
+                fromState: ng.ui.IState,
+                fromParams: ng.ui.IStateParamsService) {
+
+                $rootScope.previousState = fromState;
+                $rootScope.previousStateParams = fromParams;
+            });
     }
 
     initializeUserContextService.$inject = ["userContextService"];
