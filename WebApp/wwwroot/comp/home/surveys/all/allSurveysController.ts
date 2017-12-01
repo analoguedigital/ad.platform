@@ -218,6 +218,22 @@ module App {
                 console.error(error);
             });
         }
+
+        getDescriptionHeading() {
+            if (this.formTemplate.descriptionFormat.length) {
+                var metricTitles = [];
+                let descFormat = this.formTemplate.descriptionFormat;
+                var pattern = /{{\s*([^}]+)\s*}}/g;
+                var segment;
+
+                while (segment = pattern.exec(descFormat))
+                    metricTitles.push(segment[1]);
+
+                return metricTitles.join(' - ');
+            }
+
+            return "Your record";
+        }
     }
 
     angular.module("app").controller("allSurveysController", AllSurveysController);

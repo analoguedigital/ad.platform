@@ -273,6 +273,27 @@ module App {
                 console.error(error);
             });
         }
+
+        getDescriptionHeading() {
+            var templateIds = _.uniq(_.map(this.displayedSurveys, (s) => { return s.formTemplateId; }));
+            var templates = _.filter(this.formTemplates, (t) => {
+                return _.includes(templateIds, t.id);
+            });
+
+            if (templates.length == 1) {
+                var metricTitles = [];
+                let descFormat = templates[0].descriptionFormat;
+                var pattern = /{{\s*([^}]+)\s*}}/g;
+                var segment;
+
+                while (segment = pattern.exec(descFormat))
+                    metricTitles.push(segment[1]);
+
+                return metricTitles.join(' - ');
+            }
+
+            return "Record";
+        }
     }
 
     angular.module("app").controller("projectSummaryController", ProjectSummaryController);
