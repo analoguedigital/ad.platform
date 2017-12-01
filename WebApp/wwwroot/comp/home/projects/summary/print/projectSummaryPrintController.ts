@@ -20,6 +20,7 @@
         showMap: boolean;
         showPieChart: boolean;
         showTimeline: boolean;
+        enableSnapshotView: boolean;
 
         totalFormTemplates: number;
         totalSurveys: number;
@@ -36,6 +37,7 @@
         showMap: boolean = false;
         showPieChart: boolean = false;
         showTimeline: boolean = true;
+        enableSnapshotView: boolean = true;
         totalFormTemplates: number;
         totalSurveys: number;
         totalImpact: number = 0;
@@ -44,10 +46,12 @@
         private MAP_TOGGLE_KEY: string = 'show_map';
         private PIE_CHART_TOGGLE_KEY: string = 'show_pie_chart';
 
-        static $inject: string[] = ["$http", "session", "$state", "$stateParams", "$q",
+        static $inject: string[] = ["$http", "$scope", "$rootScope", "session", "$state", "$stateParams", "$q",
             "projectSummaryPrintSessionResource", "formTemplateResource", "surveyResource", "projectResource", "localStorageService"];
         constructor(
             private $http: ng.IHttpService,
+            private $scope: IProjectSummaryPrintScope,
+            private $rootScope: ng.IRootScopeService,
             private session: App.Models.IProjectSummaryPrintSession,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
@@ -116,6 +120,17 @@
                     this.totalImpact += this.getTotalImpact(template);
                 });
             });
+
+            this.$rootScope.$on('timeline-in-snapshot-view', () => {
+                this.enableSnapshotView = true;
+            });
+
+            this.$rootScope.$on('timeline-in-month-view', () => {
+                this.enableSnapshotView = false;
+            });
+
+            this.$scope.today = new Date();
+            this.$scope.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         }
 
         getTotalImpact(template: Models.IFormTemplate) {
@@ -251,6 +266,21 @@
             this.showPieChart = !this.showPieChart;
             this.localStorageService.set(this.PIE_CHART_TOGGLE_KEY, this.showPieChart);
         }
+
+        toggleSnapshotView() {
+            this.enableSnapshotView = !this.enableSnapshotView;
+        }
+
+        timelineNextMonth() {
+            this.$scope.today = moment(this.$scope.today).add(1, 'months').toDate();
+            this.$rootScope.$broadcast('timeline-next-month');
+        }
+
+        timelinePreviousMonth() {
+            this.$scope.today = moment(this.$scope.today).subtract(1, 'months').toDate();
+            this.$rootScope.$broadcast('timeline-previous-month');
+        }
+
     }
 
     angular.module("app").controller("projectSummaryPrintController", ProjectSummaryPrintController);

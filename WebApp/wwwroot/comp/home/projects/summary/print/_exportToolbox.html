@@ -10,6 +10,14 @@
         <i class="fa fa-toggle-off"></i> Show Timeline
     </span>
 </button>
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleSnapshotView()" ng-if="ctrl.showTimeline">
+    <span ng-if="ctrl.enableSnapshotView">
+        <i class="fa fa-toggle-on"></i> Compressed View
+    </span>
+    <span ng-if="!ctrl.enableSnapshotView">
+        <i class="fa fa-toggle-off"></i> Monthly View
+    </span>
+</button>
 <button class="btn btn-default hidden-print" ng-click="ctrl.toggleMap()">
     <span ng-if="ctrl.showMap">
         <i class="fa fa-toggle-on"></i> Hide Map

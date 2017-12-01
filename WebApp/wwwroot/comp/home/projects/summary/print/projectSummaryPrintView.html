@@ -9,17 +9,21 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <h1 class="inline mr-15">
+                <h2 class="inline mr-15">
                     <i class="fa fa-folder-o"></i> Threads: {{ctrl.totalFormTemplates}}
-                </h1>
-                <h1 class="inline">
+                </h2>
+                <h2 class="inline">
                     <i class="fa fa-wpforms"></i> Records: {{ctrl.totalSurveys}}
-                </h1>
+                </h2>
+                <h2 class="inline pull-right">
+                    <a ng-if="!ctrl.enableSnapshotView && ctrl.showTimeline" title="Previous Month" ng-click="ctrl.timelinePreviousMonth()">{{months[(today.getMonth()+11)%12]}} <i class="fa fa-arrow-left"></i></a>
+                    <a ng-if="!ctrl.enableSnapshotView && ctrl.showTimeline" title="Next Month" ng-click="ctrl.timelineNextMonth()"><i class="fa fa-arrow-right"></i> {{months[((today.getMonth()+1)%12)]}}</a>
+                </h2>
             </div>
         </div>
         <div class="row timeline-row">
             <div class="col-md-12" ng-if="ctrl.showTimeline">
-                <lm-timeline form-templates="ctrl.formTemplates" surveys="ctrl.surveys" height="250" render-mode="web"></lm-timeline>
+                <lm-timeline form-templates="ctrl.formTemplates" surveys="ctrl.surveys" height="250" render-mode="web" enable-snapshot-view="ctrl.enableSnapshotView"></lm-timeline>
             </div>
         </div>
         <div class="row charts-row">
@@ -27,7 +31,7 @@
                 <lm-locations form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" location-count="ctrl.locationCount"></lm-locations>
             </div>
             <div class="col-md-6" ng-if="ctrl.showPieChart">
-                <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys"></lm-pie-chart>
+                <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" show-legend="true"></lm-pie-chart>
             </div>
         </div>
         
