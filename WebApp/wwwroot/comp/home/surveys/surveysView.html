@@ -8,21 +8,15 @@
     <div class="box">
         <div class="box-content">
             <form name="selectProject" class="form-inline">
-                <div label="Type: ">
-                    <div class="radio">
-                        <input type="radio" name="shared-radio" id="shared-radio"
-                               ng-value="true" ng-model="ctrl.isShared" />
-                        <label for="shared-radio">Shared</label>
-                    </div>
-                    <div class="radio">
-                        <input type="radio" name="project-radio" id="project-radio" ng-value="false" ng-model="ctrl.isShared" />
-                        <label for="project-radio">Project specific</label>
-                    </div>&nbsp;
-                    <select class="form-control" ng-model="ctrl.selectedProject" ng-show="!ctrl.isShared" ng-change="ctrl.selectedProjectChanged()">
-                        <option ng-repeat="project in ctrl.projects" ng-value="project">{{project.name}}</option>
-                    </select>
-                </div>
+                <select class="form-control project-select" ng-model="ctrl.selectedProject" ng-change="ctrl.selectedProjectChanged()">
+                    <option ng-repeat="project in ctrl.projects" ng-value="project">{{project.name}}</option>
+                </select>
             </form>
+            
+            <div ng-if="ctrl.selectedProject == null">
+                <br />
+                <div class="alert alert-info">Select a project to get started.</div>
+            </div>
         </div>
     </div>
     <ui-view />
