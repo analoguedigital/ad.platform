@@ -20,6 +20,10 @@
         activate() {
             var filter = this.$scope.metricFilter;
 
+            _.map(filter.dataList, (item: any) => {
+                item.selected = true;
+            });
+
             this.$scope.model = {
                 shortTitle: filter.shortTitle,
                 type: Models.FilterValueTypes.MultipleFilterValue,

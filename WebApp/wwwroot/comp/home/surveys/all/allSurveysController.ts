@@ -155,7 +155,7 @@ module App {
                     case "multiple": {
                         var multipleValue = <Models.IMultipleFilterValue>fv;
                         multipleValue.values = [];
-                        _.forEach(multipleValue.options, (opt) => { opt.selected = false });
+                        _.forEach(multipleValue.options, (opt) => { opt.selected = true });
 
                         break;
                     }
