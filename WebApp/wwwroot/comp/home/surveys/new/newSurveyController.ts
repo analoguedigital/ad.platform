@@ -58,7 +58,7 @@ module App {
 
             this.$timeout(() => {
                 this.$scope.$broadcast('rzSliderForceRender');
-            }, 100);
+            }, 200);
 
             this.getLocations();
         }
