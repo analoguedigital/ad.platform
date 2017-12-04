@@ -7,6 +7,7 @@ module App {
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
         activate: () => void;
+        getAttachmentsCount: (survey: Models.ISurvey) => number;
     }
 
     class SurveysSummaryController implements ISurveysSummaryController {
@@ -78,6 +79,16 @@ module App {
             }
 
             return "Your record";
+        }
+
+        getAttachmentsCount(survey: Models.ISurvey) {
+            var attachmentCount = 0;
+            _.forEach(survey.formValues, (fv) => {
+                if (fv.attachments.length > 0)
+                    attachmentCount += fv.attachments.length;
+            });
+
+            return attachmentCount;
         }
     }
 

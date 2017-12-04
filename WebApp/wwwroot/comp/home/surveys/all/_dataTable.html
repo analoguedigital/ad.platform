@@ -9,6 +9,7 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -17,6 +18,9 @@
                 <td>{{survey.serial}}</td>
                 <td>{{survey.filledBy}}</td>
                 <td>{{survey.description}}</td>
+                <td>
+                    <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
+                </td>
                 <td>
                     <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
                         <i class="fa fa-eye"></i><span class="hidden-xs"></span> View

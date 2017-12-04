@@ -16,7 +16,10 @@
                             <th>Serial</th>
                             <th>Date</th>
                             <th>{{ctrl.getDescriptionHeading()}}</th>
-                            <th valign="middle"></th>
+                            <th></th>
+                            <th class="text-center"></th>
+                            <th class="text-center"></th>
+                            <th class="text-center"></th>
                             <th class="text-center"></th>
                         </tr>
                     </thead>
@@ -34,6 +37,9 @@
                             <td valign="middle">
                                 <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(survey.formTemplateId)}"></span>
                                 <span class="template-name">{{ctrl.getFormTemplate(survey.formTemplateId)}}</span>
+                            </td>
+                            <td>
+                                <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
                             </td>
                             <td>
                                 <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
