@@ -461,6 +461,7 @@
                             },
                             ticks: {
                                 beginAtZero: true,
+                                stepSize: 1,
                                 max: maxImpact,
                                 min: minImpact
                             },
