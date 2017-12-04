@@ -1,6 +1,6 @@
 ﻿<div class="box">
     <div class="box-title">
-        <h5>Recordings ({{ctrl.surveys.length}} records across {{ctrl.getThreadsCount()}} thread(s))</h5>
+        <h5>Records ({{ctrl.surveys.length}} records across {{ctrl.getThreadsCount()}} thread(s))</h5>
         <div class="box-tools">
             <a title="Select All" ng-click="ctrl.selectAll()"><i class="fa fa-check-square-o"></i> Select All</a>
             <a title="Select None" ng-click="ctrl.selectNone()"><i class="fa fa-eraser"></i> Clear</a>
@@ -15,8 +15,11 @@
                             <th class="text-center" width="60"></th>
                             <th>Serial</th>
                             <th>Date</th>
-                            <th>Your record</th>
-                            <th valign="middle"></th>
+                            <th>{{ctrl.getDescriptionHeading()}}</th>
+                            <th></th>
+                            <th class="text-center"></th>
+                            <th class="text-center"></th>
+                            <th class="text-center"></th>
                             <th class="text-center"></th>
                         </tr>
                     </thead>
@@ -36,13 +39,11 @@
                                 <span class="template-name">{{ctrl.getFormTemplate(survey.formTemplateId)}}</span>
                             </td>
                             <td>
-                                <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
-                                    <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
-                                </a>
+                                <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
                             </td>
                             <td>
-                                <a ui-sref="home.surveys.print-single({surveyId: survey.id})" ng-if="ctrl.project.allowView">
-                                    <i class="fa fa-print"></i><span class="hidden-xs"></span> Print
+                                <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
+                                    <i class="fa fa-eye"></i> <span class="hidden-xs"> View</span>
                                 </a>
                             </td>
                             <td>

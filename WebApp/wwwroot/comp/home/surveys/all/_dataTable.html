@@ -5,7 +5,8 @@
                 <th>Date</th>
                 <th>Serial no</th>
                 <th>Completed by</th>
-                <th>Your record</th>
+                <th>{{ctrl.getDescriptionHeading()}}</th>
+                <th></th>
                 <th></th>
                 <th></th>
                 <th></th>
@@ -18,13 +19,11 @@
                 <td>{{survey.filledBy}}</td>
                 <td>{{survey.description}}</td>
                 <td>
-                    <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
-                        <i class="fa fa-eye"></i><span class="hidden-xs"></span> View
-                    </a>
+                    <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
                 </td>
                 <td>
-                    <a ui-sref="home.surveys.print-single({surveyId: survey.id})" ng-if="ctrl.project.allowView">
-                        <i class="fa fa-print"></i><span class="hidden-xs"> Print</span>
+                    <a ui-sref="home.surveys.view({surveyId: survey.id})" ng-if="ctrl.project.allowView">
+                        <i class="fa fa-eye"></i><span class="hidden-xs"></span> View
                     </a>
                 </td>
                 <td>

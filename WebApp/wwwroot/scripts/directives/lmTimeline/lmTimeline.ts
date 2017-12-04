@@ -461,6 +461,7 @@
                             },
                             ticks: {
                                 beginAtZero: true,
+                                stepSize: 1,
                                 max: maxImpact,
                                 min: minImpact
                             },
@@ -574,10 +575,12 @@
                 var dataset = data.datasets[item.datasetIndex];
                 var dataPoint = dataset.data[item.index];
 
-                if (item.yLabel === 0.1)
-                    item.yLabel = 0;
+                if (item.yLabel > 0) {
+                    if (item.yLabel === 0.1)
+                        return `${label}: 0`;
 
-                return `${label}: ${item.yLabel}`;
+                    return `${label}: ${item.yLabel}`;
+                }
             }
 
             scope.timelineNextMonth = function () {

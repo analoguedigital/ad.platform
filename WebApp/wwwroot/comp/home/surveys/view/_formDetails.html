@@ -7,14 +7,11 @@
             <lm-form-group label="Serial no: ">
                 {{ctrl.survey.serial}}
             </lm-form-group>
-            <lm-form-group label="Filled by: ">
+            <lm-form-group label="Completed by: ">
                 {{ctrl.survey.filledBy}}
             </lm-form-group>
-            <lm-form-group label="Date submitted: ">
+            <lm-form-group label="Date uploaded: ">
                 {{ctrl.survey.surveyDate | amDateFormat:'lll'}}
-            </lm-form-group>
-            <lm-form-group label="Date last updated: ">
-                {{ctrl.survey.dateUpdated | amDateFormat:'lll'}}
             </lm-form-group>
         </form>
     </div>

@@ -1,4 +1,10 @@
 ﻿<div ng-controller="textFilterController">
     <h4 class="filter-heading">{{metricFilter.shortTitle}}</h4>
-    <input type="text" class="form-control" maxlength="{{metricFilter.maxLength}}" ng-model="model.value" placeholder="text to search" />
+
+    <div class="input-group">
+        <span class="input-group-addon">
+            <i class="fa fa-search"></i>
+        </span>
+        <input type="text" class="form-control" maxlength="{{metricFilter.maxLength}}" ng-model="model.value" placeholder="Word search 'What happened' records" />
+    </div>
 </div>

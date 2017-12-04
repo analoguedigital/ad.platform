@@ -1,6 +1,6 @@
 ﻿<div class="row wrapper border-bottom white-bg page-heading">
     <div class="col-lg-12">
-        <h2>{{ctrl.title}}<a class="btn pull-right" ui-sref="home.surveys.list.summary({projectId: ctrl.survey.projectId})"><i class="fa fa-chevron-left "></i> back</a></h2>
+        <h2>{{ctrl.title}}<a class="btn pull-right" ng-click="ctrl.previousState()"><i class="fa fa-chevron-left "></i> back</a></h2>
         <div ncy-breadcrumb></div>
     </div>
 </div>
@@ -27,7 +27,7 @@
                         <div class="actions">
                             <ul>
                                 <li>
-                                    <a ui-sref="home.surveys.list.summary({projectId: ctrl.survey.projectId})" class="btn btn-default"><i class="fa fa-arrow-left"></i> Back to List</a>
+                                    <a ng-click="ctrl.previousState()" class="btn btn-default"><i class="fa fa-arrow-left"></i> Back to List</a>
                                 </li>
                                 <li>
                                     <a ng-show="ctrl.activeTabIndex > 0" ng-click="ctrl.previous()" class="btn btn-default">Previous</a>

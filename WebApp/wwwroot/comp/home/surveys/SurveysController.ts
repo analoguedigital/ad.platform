@@ -8,7 +8,6 @@ module App {
         selectedProject: Models.IProject;
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
-        isShared: boolean;
         activate: () => void;
     }
 
@@ -22,7 +21,6 @@ module App {
         formTemplates: Models.IFormTemplate[];
         projects: Models.IProject[];
         surveys: Models.ISurvey[];
-        isShared: boolean;
 
         static $inject: string[] = ['$scope', '$stateParams', '$state', 'toastr', 'projectResource', 'formTemplateResource', 'surveyResource'];
 
@@ -40,10 +38,6 @@ module App {
 
         activate() {
             this.load();
-
-            this.$scope.$watch('ctrl.isShared', (val) => {
-                if (val == true) this.loadSharedForms();
-            });
         }
 
         load() {
@@ -53,12 +47,9 @@ module App {
                     var projectId = this.$state.params['projectId'];
                     if (projectId !== undefined) {
                         this.selectedProject = _.find(this.projects, { id: this.$state.params['projectId'] });
-                        this.isShared = false;
                     }
                     else {
                         this.selectedProject = null;
-                        this.isShared = true;
-                        this.selectedProjectChanged();
                     }
                 } else {
                     this.toastr.error('No Projects Found');
@@ -68,21 +59,12 @@ module App {
             });
         }
 
-        loadSharedForms() {
-            this.$state.go("home.surveys.list.summary", { projectId: null }, { reload: false });
-        }
-
         selectedProjectChanged() {
-            if (this.selectedProject == null)
-                this.loadSharedForms();
-            else
-            {
-                if (this.$state.current.name === 'home.surveys.list.all') {
-                    this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id }, { reload: true });
-                }
-                else {
-                    this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
-                }
+            if (this.$state.current.name === 'home.surveys.list.all') {
+                this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id }, { reload: true });
+            }
+            else {
+                this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
             }
         }
 

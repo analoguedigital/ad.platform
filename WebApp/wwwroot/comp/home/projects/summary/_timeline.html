@@ -1,11 +1,27 @@
 ﻿<div class="box">
     <div class="box-title">
         <h5 ng-if="!ctrl.timelineSnapshotView">Timeline ({{months[today.getMonth()]}})</h5>
-        <h5 ng-if="ctrl.timelineSnapshotView">Timeline (snapshot view)</h5>
+        <h5 ng-if="ctrl.timelineSnapshotView">Timeline (compressed view)</h5>
 
-        <div class="box-tools" ng-if="!ctrl.timelineSnapshotView">
-            <a title="Previous Month" ng-click="ctrl.timelinePreviousMonth()">{{months[(today.getMonth()+11)%12]}} <i class="fa fa-arrow-left"></i></a>
-            <a title="Next Month" ng-click="ctrl.timelineNextMonth()"><i class="fa fa-arrow-right"></i> {{months[((today.getMonth()+1)%12)]}}</a>
+        <div class="box-tools">
+            <a ng-if="!ctrl.timelineSnapshotView" title="Previous Month" ng-click="ctrl.timelinePreviousMonth()">{{months[(today.getMonth()+11)%12]}} <i class="fa fa-arrow-left"></i></a>
+            <a ng-if="!ctrl.timelineSnapshotView" title="Next Month" ng-click="ctrl.timelineNextMonth()"><i class="fa fa-arrow-right"></i> {{months[((today.getMonth()+1)%12)]}}</a>
+
+            <a class="dropdown-toggle" data-toggle="dropdown" href="" aria-expanded="false">
+                <i class="fa fa-wrench"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-user">
+                <li>
+                    <a href="" ng-click="ctrl.timelineSnapshotView = true">
+                        <i class="fa fa-check" ng-if="ctrl.timelineSnapshotView"></i> Compressed view
+                    </a>
+                </li>
+                <li>
+                    <a href="" ng-click="ctrl.timelineSnapshotView = false">
+                        <i class="fa fa-check" ng-if="!ctrl.timelineSnapshotView"></i> Monthly view
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
     <div class="box-content timeline-box">

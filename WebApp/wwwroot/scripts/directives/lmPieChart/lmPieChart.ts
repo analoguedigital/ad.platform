@@ -49,7 +49,10 @@
                     type: 'pie',
                     responsive: false,
                     maintainAspectRatio: true,
-                    showTooltips: true
+                    showTooltips: true,
+                    hover: {
+                        mode: false
+                    }
                 };
             } else {
                 scope.options = {
@@ -57,7 +60,10 @@
                     responsive: false,
                     maintainAspectRatio: true,
                     showTooltips: true,
-                    animation: false
+                    animation: false,
+                    hover: {
+                        mode: false
+                    }
                 };
             }
 

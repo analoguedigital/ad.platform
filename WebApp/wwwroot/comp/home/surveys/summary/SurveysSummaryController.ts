@@ -7,6 +7,7 @@ module App {
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
         activate: () => void;
+        getAttachmentsCount: (survey: Models.ISurvey) => number;
     }
 
     class SurveysSummaryController implements ISurveysSummaryController {
@@ -63,6 +64,32 @@ module App {
                 });
         }
 
+        getDescriptionHeading(id: string) {
+            var template = _.filter(this.formTemplates, (t) => { return t.id === id; });
+            if (template.length) {
+                var metricTitles = [];
+                let descFormat = template[0].descriptionFormat;
+                var pattern = /{{\s*([^}]+)\s*}}/g;
+                var segment;
+
+                while (segment = pattern.exec(descFormat))
+                    metricTitles.push(segment[1]);
+
+                return metricTitles.join(' - ');
+            }
+
+            return "Your record";
+        }
+
+        getAttachmentsCount(survey: Models.ISurvey) {
+            var attachmentCount = 0;
+            _.forEach(survey.formValues, (fv) => {
+                if (fv.attachments.length > 0)
+                    attachmentCount += fv.attachments.length;
+            });
+
+            return attachmentCount;
+        }
     }
 
     angular.module("app").controller("surveysSummaryController", SurveysSummaryController);
