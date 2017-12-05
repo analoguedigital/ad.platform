@@ -59,6 +59,8 @@ namespace WebApi.Models
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
+            var orgUser = this.CurrentUser as OrgUser;
+
             return new UserInfoViewModel
             {
                 Email = User.Identity.GetUserName(),
@@ -68,8 +70,47 @@ namespace WebApi.Models
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
                 Language = this.CurrentOrganisation?.DefaultLanguage?.Calture,
                 Calendar = this.CurrentOrganisation?.DefaultCalendar?.SystemName,
-                Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id)
+                Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id),
+                Profile = new UserProfileDTO
+                {
+                    FirstName = orgUser.FirstName,
+                    Surname = orgUser.Surname,
+                    Gender = orgUser.Gender,
+                    Birthdate = orgUser.Birthdate,
+                    Address = orgUser.Address
+                }
             };
+        }
+
+        // POST api/Account/UpdateProfile
+        [HttpPost]
+        [Route("UpdateProfile")]
+        public IHttpActionResult UpdateProfileInfo(UserProfileDTO model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var orgUser = this.UnitOfWork.OrgUsersRepository.Find(this.CurrentUser.Id);
+            if (orgUser == null)
+                return BadRequest("User not found!");
+
+            orgUser.FirstName = model.FirstName;
+            orgUser.Surname = model.Surname;
+            orgUser.Gender = model.Gender;
+            orgUser.Birthdate = model.Birthdate;
+            orgUser.Address = model.Address;
+
+            try
+            {
+                this.UnitOfWork.OrgUsersRepository.InsertOrUpdate(orgUser);
+                this.UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // POST api/Account/Logout
@@ -168,7 +209,7 @@ namespace WebApi.Models
                 return BadRequest(ModelState);
 
             var user = await UserManager.FindByNameAsync(model.Email);
-            
+
             // uncomment if user has to activate his email to confirm his account.
             //if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
             //{
