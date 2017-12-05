@@ -43,16 +43,14 @@ module App {
         load() {
             this.projectResource.query().$promise.then((projects) => {
                 this.projects = projects;
-                if (this.projects.length > 0) {
+
+                if (this.projects.length < 1) 
+                    this.selectedProject = null;
+                else {
                     var projectId = this.$state.params['projectId'];
-                    if (projectId !== undefined) {
-                        this.selectedProject = _.find(this.projects, { id: this.$state.params['projectId'] });
+                    if (projectId !== undefined && projectId.length) {
+                        this.selectedProject = _.find(this.projects, { id: projectId });
                     }
-                    else {
-                        this.selectedProject = null;
-                    }
-                } else {
-                    this.toastr.error('No Projects Found');
                 }
             }, (error) => {
                 console.error(error);
@@ -60,11 +58,11 @@ module App {
         }
 
         selectedProjectChanged() {
-            if (this.$state.current.name === 'home.surveys.list.all') {
-                this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id }, { reload: true });
-            }
-            else {
-                this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
+            if (this.selectedProject) {
+                if (this.$state.current.name === 'home.surveys.list.all')
+                    this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id }, { reload: true });
+                else
+                    this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
             }
         }
 
