@@ -43,15 +43,15 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}")]
-        public HttpResponseMessage DownloadPdf(Guid id)
+        [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
+        public HttpResponseMessage DownloadPdf(Guid id, bool timeline, bool locations, bool piechart)
         {
             var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
                 return null;
 
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
             var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
             var pdfFileName = $"{projectName}.pdf";

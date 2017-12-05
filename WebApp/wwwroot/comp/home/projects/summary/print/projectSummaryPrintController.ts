@@ -34,9 +34,9 @@
         surveys: Array<Models.ISurvey> = [];
         uniqFormTemplates: Models.IFormTemplate[];
         locationCount: number;
-        showMap: boolean = true;
-        showPieChart: boolean = true;
-        showTimeline: boolean = true;
+        showMap: boolean;
+        showPieChart: boolean;
+        showTimeline: boolean;
         enableSnapshotView: boolean = true;
         totalFormTemplates: number;
         totalSurveys: number;
@@ -46,7 +46,7 @@
         private MAP_TOGGLE_KEY: string = 'show_map';
         private PIE_CHART_TOGGLE_KEY: string = 'show_pie_chart';
 
-        static $inject: string[] = ["$http", "$scope", "$rootScope", "session", "$state", "$stateParams", "$q",
+        static $inject: string[] = ["$http", "$scope", "$rootScope", "session", "$state", "$stateParams", "$q", "$location", 
             "projectSummaryPrintSessionResource", "formTemplateResource", "surveyResource", "projectResource", "localStorageService"];
         constructor(
             private $http: ng.IHttpService,
@@ -56,29 +56,50 @@
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
             private $q: ng.IQService,
+            private $location: ng.ILocationService,
             private projectSummaryPrintSessionResource: App.Resources.IProjectSummaryPrintSessionResource,
             private formTemplateResource: App.Resources.IFormTemplateResource,
             private surveyResource: App.Resources.ISurveyResource,
             private projectResource: App.Resources.IProjectResource,
             private localStorageService: ng.local.storage.ILocalStorageService) {
 
-            // read chart toggles
-            var timelineToggle = this.localStorageService.get(this.TIMELINE_TOGGLE_KEY);
-            if (timelineToggle !== null)
-                this.showTimeline = <boolean>timelineToggle;
-
-            var mapToggle = this.localStorageService.get(this.MAP_TOGGLE_KEY);
-            if (mapToggle !== null)
-                this.showMap = <boolean>mapToggle;
-
-            var pieChartToggle = this.localStorageService.get(this.PIE_CHART_TOGGLE_KEY);
-            if (pieChartToggle !== null)
-                this.showPieChart = <boolean>pieChartToggle;
-
             this.activate();
         }
 
         activate() {
+            var self = this;
+
+            var _timeline = this.$location.search().timeline;
+            var _locations = this.$location.search().locations;
+            var _pieChart = this.$location.search().piechart;
+
+            if (_timeline && _timeline.length) {
+                self.showTimeline = _.toLower(_timeline) === 'true' ? true : false;
+            }
+            else {
+                var toggle = this.localStorageService.get(this.TIMELINE_TOGGLE_KEY);
+                if (toggle !== null)
+                    self.showTimeline = <boolean>toggle;
+            }
+
+            if (_locations && _locations.length)
+                self.showMap = _.toLower(_locations) === 'true' ? true : false;
+            else {
+                var toggle = this.localStorageService.get(this.MAP_TOGGLE_KEY);
+                if (toggle !== null)
+                    self.showMap = <boolean>toggle;
+            }
+
+            if (_pieChart && _pieChart.length)
+                self.showPieChart = _.toLower(_pieChart) === 'true' ? true : false;
+            else {
+                var toggle = this.localStorageService.get(this.PIE_CHART_TOGGLE_KEY);
+                if (toggle !== null)
+                    self.showPieChart = <boolean>toggle;
+                else
+                    self.showPieChart = false;
+            }
+
             let formTemplates = [];
             let surveys = [];
             let promises = [];
@@ -180,11 +201,16 @@
 
         resetView() {
             this.session.removedItemIds = [];
+            this.showTimeline = true;
+            this.showMap = true;
+            this.showPieChart = true;
         }
 
         downloadPdf() {
             this.session.$save().then(() => {
-                this.$http.get("/api/projectSummaryPrintSession/downloadPdf/" + this.session.id, { responseType: 'arraybuffer' }).then((result) => {
+                var requestUrl = "/api/projectSummaryPrintSession/downloadPdf/" + this.session.id + "/" + this.showTimeline + "/" + this.showMap + "/" + this.showPieChart;
+
+                this.$http.get(requestUrl, { responseType: 'arraybuffer' }).then((result) => {
                     let headers = result.headers();
 
                     var filename = headers['x-filename'];
