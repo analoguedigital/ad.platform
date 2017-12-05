@@ -9,14 +9,10 @@
         <div class="box-content">
             <form name="selectProject" class="form-inline">
                 <select class="form-control project-select" ng-model="ctrl.selectedProject" ng-change="ctrl.selectedProjectChanged()">
+                    <option value="">Select a project to get started</option>
                     <option ng-repeat="project in ctrl.projects" ng-value="project">{{project.name}}</option>
                 </select>
             </form>
-            
-            <div ng-if="ctrl.selectedProject == null">
-                <br />
-                <div class="alert alert-info">Select a project to get started.</div>
-            </div>
         </div>
     </div>
     <ui-view />
