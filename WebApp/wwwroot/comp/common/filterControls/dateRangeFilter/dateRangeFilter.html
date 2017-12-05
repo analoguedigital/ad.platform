@@ -7,7 +7,7 @@
                     <button type="button" class="btn btn-default" ng-click="openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
                 <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
-                       ng-model="model.fromValue" is-open="startDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="start date" />
+                       ng-model="model.fromValue" is-open="startDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="start ({{metricFilter.shortTitle}})" />
             </div>
         </div>
         <div class="col-md-6">
@@ -16,7 +16,7 @@
                     <button type="button" class="btn btn-default" ng-click="openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
                 <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
-                       ng-model="model.toValue" is-open="endDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="end date" />
+                       ng-model="model.toValue" is-open="endDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="end ({{metricFilter.shortTitle}})" />
             </div>
         </div>
     </div>
