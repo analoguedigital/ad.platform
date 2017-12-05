@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using static LightMethods.Survey.Models.Entities.User;
 
 namespace WebApi.Models
 {
@@ -43,6 +44,23 @@ namespace WebApi.Models
         public string Calendar { set; get; }
 
         public IList<string> Roles { set; get; }
+
+        public UserProfileDTO Profile { get; set; }
+    }
+
+    public class UserProfileDTO
+    {
+        [Required(AllowEmptyStrings = false)]
+        public string FirstName { get; set; }
+
+        [Required(AllowEmptyStrings = false)]
+        public string Surname { get; set; }
+
+        public GenderType? Gender { get; set; }
+
+        public DateTime? Birthdate { get; set; }
+
+        public string Address { get; set; }
     }
 
     public class UserLoginInfoViewModel
