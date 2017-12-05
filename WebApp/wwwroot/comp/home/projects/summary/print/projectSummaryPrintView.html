@@ -27,10 +27,10 @@
             </div>
         </div>
         <div class="row charts-row">
-            <div class="col-md-6" ng-if="ctrl.showMap">
+            <div ng-class="{ 'col-md-6': ctrl.showMap && ctrl.showPieChart, 'col-md-12': ctrl.showMap && !ctrl.showPieChart }" ng-if="ctrl.showMap">
                 <lm-locations form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" location-count="ctrl.locationCount"></lm-locations>
             </div>
-            <div class="col-md-6" ng-if="ctrl.showPieChart">
+            <div ng-class="{ 'col-md-6': ctrl.showPieChart && ctrl.showMap, 'col-md-12': ctrl.showPieChart && !ctrl.showMap }" ng-if="ctrl.showPieChart">
                 <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" show-legend="true"></lm-pie-chart>
             </div>
         </div>
