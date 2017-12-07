@@ -19,7 +19,7 @@ namespace WebApi.Services
             this.UnitOfWork = new UnitOfWork(new SurveyContext(autoDetectChangesEnabled: false));
         }
 
-        public void ProcessEmails()
+        public async Task ProcessEmails()
         {
             var emails = this.UnitOfWork.EmailsRepository.AllAsNoTracking
                 .Where(e => !e.IsSent)
@@ -27,29 +27,26 @@ namespace WebApi.Services
                 .ToList();
 
             foreach (var email in emails)
-                BackgroundJob.Enqueue(() => this.SendEmail(email));
-        }
-
-        public async Task SendEmail(Email email)
-        {
-            var message = new MailMessage();
-            message.To.Add(email.To);
-            message.Subject = email.Subject;
-            message.Body = email.Content;
-            message.IsBodyHtml = true;
-
-            try
             {
-                var client = new SmtpClient();
-                await client.SendMailAsync(message);
+                var message = new MailMessage();
+                message.To.Add(email.To);
+                message.Subject = email.Subject;
+                message.Body = email.Content;
+                message.IsBodyHtml = true;
 
-                email.IsSent = true;
-                this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
-                this.UnitOfWork.Save();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                try
+                {
+                    var client = new SmtpClient();
+                    await client.SendMailAsync(message);
+
+                    email.IsSent = true;
+                    this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+                    this.UnitOfWork.Save();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
             }
         }
     }
