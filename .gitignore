@@ -77,10 +77,10 @@ _[Ss]cripts
 *.sdf
 .vs/
 WebApp/node_modules/
-WebApp/wwwroot/lib/
 WebApp/typings/
+WebApp/Uploads/
+WebApp/Attachments/
+WebApp/wwwroot/lib/
 WebApp/wwwroot/css/
 WebApp/wwwroot/js/
-WebApp/Attachments/
-WebApp/Uploads/
 WebApp/wwwroot/dist/

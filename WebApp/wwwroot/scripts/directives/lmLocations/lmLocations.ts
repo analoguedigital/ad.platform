@@ -21,6 +21,7 @@ module App {
 
     }
 
+    lmLocations.$inject = ['$injector'];
     function lmLocations($injector: ng.auto.IInjectorService): IlmLocations {
         return {
             restrict: 'E',

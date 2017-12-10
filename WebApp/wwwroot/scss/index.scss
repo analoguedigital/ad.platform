@@ -1,4 +1,22 @@
-﻿$icon-font-path: "../lib/bootstrap-sass/assets/fonts/bootstrap/";
+﻿@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Light.ttf') format('truetype');
+    font-weight: 200;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+}
+
+$icon-font-path: "../lib/bootstrap-sass/assets/fonts/bootstrap/";
 $fa-font-path: "../lib/Font-Awesome/fonts";
 
 // Core variables and mixins
@@ -55,7 +73,6 @@ $fa-font-path: "../lib/Font-Awesome/fonts";
 
 @import "../lib/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.scss";
 
-
 @import "../lib/Font-Awesome/scss/variables";
 @import "../lib/Font-Awesome/scss/mixins";
 @import "../lib/Font-Awesome/scss/path";
@@ -70,11 +87,6 @@ $fa-font-path: "../lib/Font-Awesome/fonts";
 @import "../lib/Font-Awesome/scss/icons";
 @import "../lib/Font-Awesome/scss/screen-reader";
 //===================================================
-
-
-
-// Google Fonts
-@import url("//fonts.googleapis.com/css?family=Open+Sans:300,400,600,700&lang=en");
 
 // Variables, Mixins
 @import "Template/variables";
