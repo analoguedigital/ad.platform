@@ -23,8 +23,6 @@
                         <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(template.id)}"></span> {{template.title}}
                     </label>
                 </div>
-
-                <a ng-click="ctrl.clearThreads()">Clear all</a>
             </div>
 
             <div class="toolbox-heading">
@@ -54,9 +52,15 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <a ng-click="ctrl.clearSearch()">Clear all</a>
+
+            <!-- advanced search -->
+            <div ng-if="ctrl.metricFilters.length > 0">
+                <div class="toolbox-heading">
+                    <i class="fa fa-search-plus"></i> Advanced Search
+                </div>
+
+                <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by metricFilter.type+metricFilter.shortTitle">
+                    <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
                 </div>
             </div>
 
