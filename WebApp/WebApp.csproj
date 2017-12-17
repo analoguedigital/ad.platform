@@ -395,6 +395,9 @@
     <Content Include="wwwroot\comp\home\formTemplates\_formTemplates.scss" />
     <Content Include="wwwroot\comp\forgotPassword\_forgotPassword.scss" />
     <Content Include="wwwroot\comp\setPassword\_setPassword.scss" />
+    <Content Include="wwwroot\fonts\OpenSans-Light.ttf" />
+    <Content Include="wwwroot\fonts\OpenSans-Regular.ttf" />
+    <Content Include="wwwroot\fonts\OpenSans-SemiBold.ttf" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

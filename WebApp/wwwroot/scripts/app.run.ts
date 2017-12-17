@@ -101,6 +101,9 @@
         var inputFormat = _.replace(format, 'DD', 'dd');
         inputFormat = _.replace(inputFormat, 'YYYY', 'yyyy');
 
+        // hard-code to en-GB format
+        inputFormat = 'dd/MM/yyyy';
+
         $rootScope.INPUT_DATE_FORMAT = inputFormat;
 
         amMoment.changeLocale('en-GB');
