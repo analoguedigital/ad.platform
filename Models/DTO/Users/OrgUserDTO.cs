@@ -42,6 +42,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Address { set; get; }
 
+        public string PhoneNumber { get; set; }
+
         public OrgUserDTO()
         {
             this.Assignments = new List<ProjectAssignmentDTO>();

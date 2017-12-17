@@ -35,6 +35,9 @@
                 <lm-form-group label="Address:">
                     <input type="text" name="address" id="address" ng-model="ctrl.user.address" />
                 </lm-form-group>
+                <lm-form-group label="Phone Number:">
+                    <input type="text" name="phoneNumber" id="phoneNumber" ng-model="ctrl.user.phoneNumber" />
+                </lm-form-group>
                 <lm-form-group label="Type:">
                     <div class="input-group">
                         <select id="type" name="type" ng-model="ctrl.user.type" ng-options="type as type.name for type in ctrl.types track by type.id" required></select>

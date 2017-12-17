@@ -115,6 +115,7 @@ namespace WebApi.Controllers
             orguser.Gender = value.Gender;
             orguser.Birthdate = value.Birthdate;
             orguser.Address = value.Address;
+            orguser.PhoneNumber = string.IsNullOrEmpty(value.PhoneNumber) ? null : value.PhoneNumber;
 
             var result = UnitOfWork.UserManager.UpdateSync(orguser);
             if (result.Succeeded)

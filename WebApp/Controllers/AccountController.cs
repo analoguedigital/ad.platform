@@ -77,7 +77,8 @@ namespace WebApi.Models
                     Surname = orgUser.Surname,
                     Gender = orgUser.Gender,
                     Birthdate = orgUser.Birthdate,
-                    Address = orgUser.Address
+                    Address = orgUser.Address,
+                    PhoneNumber = orgUser.PhoneNumber
                 }
             };
         }
@@ -99,6 +100,7 @@ namespace WebApi.Models
             orgUser.Gender = model.Gender;
             orgUser.Birthdate = model.Birthdate;
             orgUser.Address = model.Address;
+            orgUser.PhoneNumber = string.IsNullOrEmpty(model.PhoneNumber) ? null : model.PhoneNumber;
 
             try
             {
