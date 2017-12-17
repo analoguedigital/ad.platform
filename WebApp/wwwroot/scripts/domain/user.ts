@@ -25,6 +25,7 @@ module App.Models {
         gender: number;
         birthdate?: Date;
         address: string;
+        phoneNumber: string;
         assignments: IProjectAssignment[];
     }
        
