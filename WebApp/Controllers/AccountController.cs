@@ -455,7 +455,10 @@ namespace WebApi.Models
                 user.Gender = (User.GenderType)Enum.Parse(typeof(User.GenderType), model.Gender);
 
             if (model.Birthdate.HasValue)
-                user.Birthdate = new DateTime(model.Birthdate.Value.Year, model.Birthdate.Value.Month, model.Birthdate.Value.Day, 0, 0, 0).AddDays(1);
+            {
+                var localValue = TimeZone.CurrentTimeZone.ToLocalTime(model.Birthdate.Value);
+                user.Birthdate = new DateTime(localValue.Year, localValue.Month, localValue.Day, 0, 0, 0, DateTimeKind.Utc);
+            }
 
             IdentityResult result = await UserManager.CreateAsync(user, model.Password);
             if (!result.Succeeded)
