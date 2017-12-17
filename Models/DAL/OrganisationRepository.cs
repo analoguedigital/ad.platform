@@ -78,7 +78,7 @@ namespace LightMethods.Survey.Models.DAL
 
         public Organisation FindByName(string name)
         {
-            return All.Where(o => o.Name == name).SingleOrDefault();
+            return All.Where(o => o.Name == name).FirstOrDefault();
         }
     }
 }
