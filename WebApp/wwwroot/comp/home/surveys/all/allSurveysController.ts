@@ -56,9 +56,10 @@ module App {
         isAdvSearchOpen: boolean;
         metricFilters: Models.IMetricFilter[];
 
-        static $inject: string[] = ["$scope", "$timeout", "project", "formTemplate", "formTemplateResource", "surveyResource", "dataResource", "userContextService"];
+        static $inject: string[] = ["$scope", "$rootScope", "$timeout", "project", "formTemplate", "formTemplateResource", "surveyResource", "dataResource", "userContextService"];
         constructor(
             private $scope: IAllSurveysControllerScope,
+            private $rootScope: ng.IRootScopeService,
             private $timeout: ng.ITimeoutService,
             public project: Models.IProject,
             private formTemplate: Models.IFormTemplate,
