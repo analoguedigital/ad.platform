@@ -5,11 +5,11 @@
     </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight surveys-view">
-    <div class="box">
+    <div class="box" ng-if="ctrl.projects.length > 1">
         <div class="box-content">
             <form name="selectProject" class="form-inline">
                 <select class="form-control project-select" ng-model="ctrl.selectedProject" ng-change="ctrl.selectedProjectChanged()">
-                    <option value="">Select a project to get started</option>
+                    <option value="">Select a user to get started</option>
                     <option ng-repeat="project in ctrl.projects" ng-value="project">{{project.name}}</option>
                 </select>
             </form>

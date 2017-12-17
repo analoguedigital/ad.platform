@@ -50,6 +50,12 @@ module App {
                     var projectId = this.$state.params['projectId'];
                     if (projectId !== undefined && projectId.length) {
                         this.selectedProject = _.find(this.projects, { id: projectId });
+                    } else {
+                        if (this.projects.length === 1)
+                        {
+                            this.selectedProject = this.projects[0];
+                            this.selectedProjectChanged();
+                        }
                     }
                 }
             }, (error) => {
