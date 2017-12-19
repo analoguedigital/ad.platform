@@ -17,7 +17,7 @@
             })
             .state("home.formtemplates.list", <App.Models.IAppRoute>{
                 url: "",
-                templateUrl: "comp/home/formtemplates/formtemplatesView.html",
+                templateUrl: "comp/home/formTemplates/formTemplatesView.html",
                 controller: "formTemplatesController",
                 controllerAs: 'ctrl',
                 ncyBreadcrumb: { label: 'Form templates' },
@@ -25,7 +25,7 @@
             })
             .state("home.formtemplates.design", <App.Models.IAppRoute>{
                 url: "/design/:id",
-                templateUrl: "comp/home/formtemplates/design/formDesignView.html",
+                templateUrl: "comp/home/formTemplates/design/formDesignView.html",
                 controller: "formDesignController",
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Design', parent: 'home.formtemplates.list' },
@@ -33,7 +33,7 @@
             })
             .state("home.formtemplates.edit", <App.Models.IAppRoute>{
                 url: "/edit/:id",
-                templateUrl: "comp/home/formtemplates/edit/formTemplateEditView.html",
+                templateUrl: "comp/home/formTemplates/edit/formTemplateEditView.html",
                 controller: "formTemplateEditController",
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Edit', parent: 'home.formtemplates.list' },

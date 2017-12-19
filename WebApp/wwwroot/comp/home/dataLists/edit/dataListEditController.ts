@@ -73,7 +73,7 @@ module App {
             var d = this.dataList;
             var modalInstance = this.$uibModal.open({
                 animation: true,
-                templateUrl: 'comp/home/datalists/edit/dataListItemEditView.html',
+                templateUrl: 'comp/home/dataLists/edit/dataListItemEditView.html',
                 controller: 'dataListItemEditController',
                 size: 'lg',
                 resolve: {
@@ -92,7 +92,7 @@ module App {
             var d = this.dataList;
             var modalInstance = this.$uibModal.open({
                 animation: true,
-                templateUrl: 'comp/home/datalists/edit/dataListItemEditView.html',
+                templateUrl: 'comp/home/dataLists/edit/dataListItemEditView.html',
                 controller: 'dataListItemEditController',
                 size: 'lg',
                 resolve: {
@@ -118,7 +118,7 @@ module App {
             var d = this.dataList;
             var modalInstance = this.$uibModal.open({
                 animation: true,
-                templateUrl: 'comp/home/datalists/edit/dataListRelationshipEditView.html',
+                templateUrl: 'comp/home/dataLists/edit/dataListRelationshipEditView.html',
                 controller: 'dataListRelationshipEditController',
                 resolve: {
                     dataListRelationship: () => {
@@ -143,7 +143,7 @@ module App {
             var d = this.dataList;
             var modalInstance = this.$uibModal.open({
                 animation: true,
-                templateUrl: 'comp/home/datalists/edit/dataListRelationshipEditView.html',
+                templateUrl: 'comp/home/dataLists/edit/dataListRelationshipEditView.html',
                 controller: 'dataListRelationshipEditController',
                 resolve: {
                     dataListRelationship: () => {
