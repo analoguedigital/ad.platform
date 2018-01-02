@@ -398,6 +398,7 @@
     <Content Include="wwwroot\fonts\OpenSans-Light.ttf" />
     <Content Include="wwwroot\fonts\OpenSans-Regular.ttf" />
     <Content Include="wwwroot\fonts\OpenSans-SemiBold.ttf" />
+    <Content Include="wwwroot\comp\login\_slideshow.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,4 +1,22 @@
-﻿<div class="login col-md-8 col-md-offset-2" ng-controller="loginController">
+﻿<ul class="cb-slideshow">
+    <li>
+        <span>Image 01</span>
+    </li>
+    <li>
+        <span>Image 02</span>
+    </li>
+    <li>
+        <span>Image 03</span>
+    </li>
+    <li>
+        <span>Image 04</span>
+    </li>
+    <li>
+        <span>Image 05</span>
+    </li>
+</ul>
+
+<div class="login col-md-8 col-md-offset-2" ng-controller="loginController">
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
 
@@ -6,20 +24,28 @@
                 <h2>analogue.<strong>DIGITAL</strong> platform</h2>
             </div>
 
-            <div class="panel m-t">
+            <div class="panel panel-default m-t">
                 <div class="panel-heading">
-                    Login
+                    <h3 class="panel-title">Log in to your access your dashboard</h3>
                 </div>
                 <div class="panel-body">
                     <form name="loginForm" novalidate>
-
-                        <lm-form-group label="Email">
-                            <input name="email" id="email" type="email" ng-model="loginData.email" placeholder="Email" required autofocus>
-                        </lm-form-group>
-
-                        <lm-form-group label="Password">
-                            <input id="password" name="password" ng-model="loginData.password" placeholder="Password" type="password" required>
-                        </lm-form-group>
+                        <div class="form-group">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="username-addon">
+                                    <i class="fa fa-user-o"></i>
+                                </span>
+                                <input name="email" id="email" class="form-control input-lg" type="email" ng-model="loginData.email" placeholder="Email Address" required autofocus aria-describedby="username-addon">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-addon" id="password-addon">
+                                    <i class="fa fa-key"></i>
+                                </span>
+                                <input id="password" name="password" class="form-control input-lg" ng-model="loginData.password" placeholder="Password" type="password" required aria-describedby="password-addon">
+                            </div>
+                        </div>
 
                         <div ng-show="loginForm.$submitted" ng-animate="'animate'">
                             <span ng-show="loginForm.email.$error.required">Email is required</span>
@@ -27,8 +53,8 @@
                             <span ng-show="loginForm.password.$error.required">Password is required</span>
                         </div>
 
-                        <a ui-sref="forgotPassword">Forget password?</a>
-                        <button class="pull-right" type="submit" ng-click="login(loginForm)">Login <i class="fa fa-sign-in"></i></button>
+                        <a ui-sref="forgotPassword">Forgot your password?</a>
+                        <button class="pull-right btn btn-info btn-lg" type="submit" ng-click="login(loginForm)">Login <i class="fa fa-sign-in"></i></button>
 
                     </form>
                 </div>
@@ -38,7 +64,7 @@
     </div>
     <div class="row">
         <div class="copyright text-center">
-            Copyright <a href="http://analogue.digital">analogue.digital</a> ©2016
+            Copyright <a href="http://analogue.digital">analogue.digital</a> ©2018
         </div>
     </div>
 </div>
