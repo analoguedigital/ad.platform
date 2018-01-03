@@ -225,9 +225,36 @@ namespace WebApi.Models
             }
 
             // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-            // Send an email with this link
+
             string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-            await UserManager.SendEmailAsync(user.Id, "Reset Password", $"Please reset your password by using this {code}");
+
+            var messageBody = @"<html>
+                <head>
+                    <style>
+                        .message-container {
+                            border: 1px solid #e8e8e8;
+                            border-radius: 2px;
+                            padding: 10px 15px;
+                        }
+                    </style>
+                </head>
+                <body>
+                <div class='message-container'>
+                    <p>Please reset your password using the following token:</p>
+                    <p style='color: gray'>" + code + @"</p>
+                    <br>
+
+                    <p>
+                        Or click on <a href='http://localhost:8081/wwwroot/#!/set-password?email=" + model.Email + "&token=" + code + @"'>this link</a> to continue.
+                    </p>
+
+                    <br><br>
+                    <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                </div>
+
+                </body></html>";
+
+            await UserManager.SendEmailAsync(user.Id, "Password reset request", messageBody);
 
             return Ok();
         }

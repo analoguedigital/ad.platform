@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -33,6 +34,10 @@ namespace WebApi.Services
                 message.Subject = email.Subject;
                 message.Body = email.Content;
                 message.IsBodyHtml = true;
+                message.SubjectEncoding = Encoding.UTF8;
+                message.BodyEncoding = Encoding.UTF8;
+                message.DeliveryNotificationOptions = DeliveryNotificationOptions.None;
+                message.Priority = MailPriority.High;
 
                 try
                 {
