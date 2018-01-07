@@ -35,3 +35,10 @@ var App;
         "angular-loading-bar"
     ]);
 })(App || (App = {}));
+
+function load() {
+    $('.loading').fadeOut(function () {
+        $('.loading').remove();
+    });
+}
+window.onload = load;

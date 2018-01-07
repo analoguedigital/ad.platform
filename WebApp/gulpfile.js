@@ -80,11 +80,16 @@ gulp.task('indexHtml', function () {
         .pipe(cheerio(function ($) {
             $('script').remove();
             $('link').remove();
+
+            $('head').append('<link href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet"/>');
+            $('head').append('<link rel="stylesheet" href="app.full.min.css"/>');
+
             $('body').append('<script src="app.full.min.js"></script>');
             $('body').append('<script src="app.components-tpl.min.js"></script>');
             $('body').append('<script src="app.directives-tpl.min.js"></script>');
+            $('body').append('<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>');
+            $('body').append('<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>');
             $('body').append("<script src='//maps.googleapis.com/maps/api/js?key=AIzaSyCESw4TSMh0XnrLzrdpoBgxNX_iZiVKqSk'></script>");
-            $('head').append('<link rel="stylesheet" href="app.full.min.css">');
         }))
         .pipe(gulp.dest('wwwroot/dist/'));
 });
