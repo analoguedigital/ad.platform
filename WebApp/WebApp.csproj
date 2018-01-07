@@ -274,6 +274,7 @@
     <Content Include="wwwroot\comp\home\surveys\summary\surveysSummaryView.html" />
     <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
     <Content Include="wwwroot\comp\login\loginView.html" />
+    <Content Include="wwwroot\comp\login\_loginForm.html" />
     <Content Include="wwwroot\comp\setPassword\setPasswordView.html" />
     <Content Include="wwwroot\css\index.css" />
     <Content Include="wwwroot\css\index.min.css">
@@ -398,6 +399,7 @@
     <Content Include="wwwroot\fonts\OpenSans-Light.ttf" />
     <Content Include="wwwroot\fonts\OpenSans-Regular.ttf" />
     <Content Include="wwwroot\fonts\OpenSans-SemiBold.ttf" />
+    <Content Include="wwwroot\comp\login\_particles.scss" />
     <Content Include="wwwroot\comp\login\_slideshow.scss" />
   </ItemGroup>
   <ItemGroup>
@@ -499,6 +501,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmLocations\lmLocations.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmParticles\lmParticles.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmPieChart\lmPieChart.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />

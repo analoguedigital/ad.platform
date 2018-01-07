@@ -1,12 +1,13 @@
 ﻿/// <reference path="../../lib/bootstrap-sass/assets/stylesheets/_bootstrap.scss" />
-@import "_slideshow.scss";
+@import "_particles.scss";
+/*@import "_slideshow.scss";*/
 
 .login {
     margin-top: 13%;
     
     .panel {
-        opacity: .6;
-        transition: opacity ease-in-out .2s;
+        opacity: .65;
+        transition: opacity ease-in-out .25s;
     }
 
     .panel:hover {
@@ -19,5 +20,15 @@
 
     h2, .copyright {
         color: #f4f4f4;
+    }
+}
+
+.login_button {
+    background-color: transparent;
+    transition: all ease-in-out .25s;
+    color: #00a3e1;
+
+    & :hover {
+        background-color: inherit;
     }
 }
