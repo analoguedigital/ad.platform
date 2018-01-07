@@ -42,8 +42,10 @@ module App {
                     this.$state.go("setPassword");
                 },
                 (err) => {
-                    console.log(err);
-                    alert(err.data.message);
+                    console.error(err);
+                    if (err.status === 400) {
+                        this.toastr.error('Seriously? For real?', 'Bad Request');
+                    }
                 });
         }
     }
