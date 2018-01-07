@@ -51,7 +51,7 @@
             })
             .state("setPassword", <App.Models.IAppRoute>{
                 parent: "index",
-                url: "/set-password",
+                url: "/set-password?email&token",
                 templateUrl: "comp/setPassword/setPasswordView.html",
                 controller: "setPasswordController",
                 ncyBreadcrumb: { label: 'Reset Password' },

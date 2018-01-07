@@ -1,0 +1,41 @@
+﻿<form name="loginForm" novalidate>
+    <div class="form-group" style="margin-bottom: 0;">
+        <div class="input-group input-group-lg">
+            <span class="input-group-addon" id="username-addon" style="border-bottom-left-radius: 0; padding: 2px 15px; font-size: 30px" ng-disabled="isWorking">
+                <i class="icon ion-ios-person-outline"></i>
+            </span>
+            <input name="email" id="email" class="form-control input-lg" type="email" ng-model="loginData.email" placeholder="Email Address" required autofocus aria-describedby="username-addon" style="border-bottom-right-radius: 0" ng-disabled="isWorking">
+        </div>
+    </div>
+    <div class="form-group" style="margin-top: -1px">
+        <div class="input-group input-group-lg">
+            <span class="input-group-addon" id="password-addon" style="border-top-left-radius: 0; padding: 2px 15px; font-size: 30px">
+                <i class="icon ion-ios-locked-outline"></i>
+            </span>
+            <input id="password" name="password" class="form-control input-lg" ng-model="loginData.password" placeholder="Password" type="password" required aria-describedby="password-addon" style="border-top-right-radius: 0" ng-disabled="isWorking">
+        </div>
+    </div>
+
+    <div ng-show="loginForm.$submitted" ng-animate="'animate'">
+        <p style="color: crimson" ng-show="loginForm.email.$error.required"><i class="fa fa-exclamation"></i> Email is required</p>
+        <p style="color: crimson" ng-show="loginForm.email.$error.email"><i class="fa fa-exclamation"></i> Email is not valid</p>
+        <p style="color: crimson" ng-show="loginForm.password.$error.required"><i class="fa fa-exclamation"></i> Password is required</p>
+    </div>
+
+    <p>
+        <center>
+            <button class="btn btn-info btn-lg btn-block login_button" type="submit" ng-click="login(loginForm)" ng-disabled="isWorking">
+                <i class="fa fa-sign-in" ng-if="!isWorking"></i>
+                <i class="fa fa-spin fa-cog" ng-if="isWorking"></i> 
+                <span ng-if="!isWorking">Log in</span> 
+                <span ng-if="isWorking">Logging in...</span>
+            </button>
+        </center>
+    </p>
+
+    <p>
+        <center>
+            <a ui-sref="forgotPassword">Forgot my password</a>
+        </center>
+    </p>
+</form>

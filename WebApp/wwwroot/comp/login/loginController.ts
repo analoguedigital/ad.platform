@@ -5,6 +5,7 @@ module App {
     interface ILoginControllerScope extends ng.IScope {
         title: string;
         loginData: Services.ILoginData;
+        isWorking: boolean;
         login: (form: ng.IFormController) => void;
     }
 
@@ -36,9 +37,11 @@ module App {
                 return;
             }
 
-            this.userContextService.login(this.$scope.loginData).then(
-                () => { this.$state.go('home.dashboard.layout'); },
-                (err) => { alert(err); });
+            this.$scope.isWorking = true;
+            this.userContextService.login(this.$scope.loginData)
+                .then(() => { this.$state.go('home.dashboard.layout'); },
+                (err) => { alert(err); })
+                .finally(() => { this.$scope.isWorking = false; });
         };
     }
 

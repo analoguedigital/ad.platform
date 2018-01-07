@@ -1,45 +1,33 @@
-﻿<div class="login col-md-8 col-md-offset-2" ng-controller="loginController">
+﻿<lm-particles></lm-particles>
+
+<!--<ul class="cb-slideshow">
+    <li>
+        <span>Image 01</span>
+    </li>
+    <li>
+        <span>Image 02</span>
+    </li>
+    <li>
+        <span>Image 03</span>
+    </li>
+</ul>-->
+
+<div class="login col-md-6 col-md-offset-3" ng-controller="loginController">
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
-
             <div class="text-center">
                 <h2>analogue.<strong>DIGITAL</strong> platform</h2>
-            </div>
+            </div><br />
 
-            <div class="panel m-t">
-                <div class="panel-heading">
-                    Login
-                </div>
-                <div class="panel-body">
-                    <form name="loginForm" novalidate>
-
-                        <lm-form-group label="Email">
-                            <input name="email" id="email" type="email" ng-model="loginData.email" placeholder="Email" required autofocus>
-                        </lm-form-group>
-
-                        <lm-form-group label="Password">
-                            <input id="password" name="password" ng-model="loginData.password" placeholder="Password" type="password" required>
-                        </lm-form-group>
-
-                        <div ng-show="loginForm.$submitted" ng-animate="'animate'">
-                            <span ng-show="loginForm.email.$error.required">Email is required</span>
-                            <span ng-show="loginForm.email.$error.email">Email is not valid</span>
-                            <span ng-show="loginForm.password.$error.required">Password is required</span>
-                        </div>
-
-                        <a ui-sref="forgotPassword">Forget password?</a>
-                        <button class="pull-right" type="submit" ng-click="login(loginForm)">Login <i class="fa fa-sign-in"></i></button>
-
-                    </form>
-                </div>
-            </div>
-
+            <div ng-include="'comp/login/_loginForm.html'"></div>
         </div>
     </div>
     <div class="row">
-        <div class="copyright text-center">
-            Copyright <a href="http://analogue.digital">analogue.digital</a> ©2016
+        <div class="col-md-12">
+            <p><br /><br /></p>
+            <div class="copyright text-center">
+                Copyright <a href="http://analogue.digital">analogue.digital</a> &copy; 2018
+            </div>
         </div>
     </div>
 </div>
-
