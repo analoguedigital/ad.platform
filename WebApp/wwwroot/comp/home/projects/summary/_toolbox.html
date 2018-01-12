@@ -7,27 +7,12 @@
             <div class="form-group">
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-search"></i></div>
-                    <input type="text" class="form-control" ng-model="ctrl.searchTerm" placeholder="search term" />
+                    <input type="text" class="form-control" ng-model="ctrl.searchTerm"
+                           placeholder="search keywords (e.g. Jon Doe)" />
                 </div>
             </div>
 
-            <!-- threads -->
-            <div class="toolbox-heading">
-                <i class="fa fa-list"></i> Threads
-            </div>
-
-            <div id="threads-container">
-                <div class="checkbox checkbox-default" ng-repeat="template in ctrl.formTemplates track by $index">
-                    <input type="checkbox" id="{{template.id}}" ng-model="template.isChecked" />
-                    <label for="{{template.id}}">
-                        <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(template.id)}"></span> {{template.title}}
-                    </label>
-                </div>
-            </div>
-
-            <div class="toolbox-heading">
-                <i class="fa fa-calendar"></i> Date Range: Uploaded
-            </div>
+            <h4>Upload Date Range</h4>
 
             <!-- date range -->
             <div class="row">
@@ -37,7 +22,7 @@
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
                             </span>
-                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" placeholder="start date" />
+                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" placeholder="from date" />
                         </div>
                     </div>
                 </div>
@@ -47,18 +32,24 @@
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
                             </span>
-                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end date" />
+                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="to date" />
                         </div>
                     </div>
                 </div>
             </div>
 
+            <h4>Threads</h4>
+            <div id="threads-container">
+                <div class="checkbox checkbox-default" ng-repeat="template in ctrl.formTemplates track by $index">
+                    <input type="checkbox" id="{{template.id}}" ng-model="template.isChecked" />
+                    <label for="{{template.id}}">
+                        <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(template.id)}"></span> {{template.title}}
+                    </label>
+                </div>
+            </div>
+
             <!-- advanced search -->
             <div ng-if="ctrl.metricFilters.length > 0">
-                <div class="toolbox-heading">
-                    <i class="fa fa-search-plus"></i> Advanced Search
-                </div>
-
                 <div class="metric-filter-content" ng-repeat="metricFilter in ctrl.metricFilters track by metricFilter.type+metricFilter.shortTitle">
                     <div ng-include="'comp/common/filterControls/_filter/filter.html'" ng-controller="filterController"></div>
                 </div>
