@@ -34,11 +34,34 @@ namespace WebApi.Controllers
                 this.UnitOfWork.FeedbacksRepository.InsertOrUpdate(feedback);
 
                 var rootAdmin = this.UnitOfWork.OrgUsersRepository.AllAsNoTracking.Where(x => x.IsRootUser).FirstOrDefault();
+                var messageBody = @"<html>
+                <head>
+                    <style>
+                        .message-container {
+                            border: 1px solid #e8e8e8;
+                            border-radius: 2px;
+                            padding: 10px 15px;
+                        }
+                    </style>
+                </head>
+                <body>
+                <div class='message-container'>
+                    <p>New feedback from: <strong>" + this.CurrentOrgUser.UserName + @"</strong></p>
+                    <br>
+
+                    <p>" + feedback.Comment + @"</p>
+
+                    <br><br>
+                    <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                </div>
+
+                </body></html>";
+
                 var email = new Email
                 {
                     To = rootAdmin.Email,
                     Subject = $"New feedback posted - {this.CurrentOrgUser.UserName}",
-                    Content = feedback.Comment
+                    Content = messageBody
                 };
 
                 this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
