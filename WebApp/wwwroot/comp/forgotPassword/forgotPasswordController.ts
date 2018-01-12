@@ -9,6 +9,7 @@ module App {
     interface IForgotPasswordControllerScope extends ng.IScope {
         model: IForgotPasswordModel;
         resetPassword: (form: ng.IFormController) => void;
+        requestSent: boolean;
     }
 
     interface IForgotPasswordController {
@@ -38,8 +39,7 @@ module App {
 
             this.$resource("/api/account/forgotPassword").save(this.$scope.model).$promise.then(
                 (result) => {
-                    this.toastr.info("A password reset token has been sent", "Check your inbox!");
-                    this.$state.go("setPassword");
+                    this.$scope.requestSent = true;
                 },
                 (err) => {
                     console.error(err);
