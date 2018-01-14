@@ -4,6 +4,7 @@ var App;
     angular.module("app", [
         "ngResource",
         "ngMessages",
+        "ui.bootstrap.tooltip",
         "ui.bootstrap.multiMap",
         "ui.bootstrap.dropdown",
         "ui.bootstrap.position",

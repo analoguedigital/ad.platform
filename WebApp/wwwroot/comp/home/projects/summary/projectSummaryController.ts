@@ -198,8 +198,20 @@ module App {
             });
         }
 
+        selectAllRecords() {
+            _.forEach(this.surveys, (survey) => {
+                survey.isChecked = true;
+            });
+        }
+
         selectNone() {
             _.forEach(this.displayedSurveys, (survey) => {
+                survey.isChecked = false;
+            });
+        }
+
+        clearAllRecords() {
+            _.forEach(this.surveys, (survey) => {
                 survey.isChecked = false;
             });
         }

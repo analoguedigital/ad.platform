@@ -8,7 +8,11 @@
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-search"></i></div>
                     <input type="text" class="form-control" ng-model="ctrl.searchTerm"
-                           placeholder="search keywords (e.g. Jon Doe)" />
+                           placeholder="search keywords (e.g. Jon Doe)"
+                           uib-popover-template="'comp/home/projects/summary/popovers/_keywordSearch.html'"
+                           popover-title="Search Term"
+                           popover-trigger="'mouseenter'"
+                           popover-placement="left"/>
                 </div>
             </div>
 
@@ -22,7 +26,13 @@
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
                             </span>
-                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.startDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.startDate" placeholder="from date" />
+                            <input class="form-control" type="text" name="start-date" ng-model="ctrl.startDate"
+                                   is-open="ctrl.startDateCalendar.isOpen" placeholder="from date"
+                                   uib-datepicker-popup="{{INPUT_DATE_FORMAT}}"
+                                   uib-popover="Filter records by upload date, starting from a particular date."
+                                   popover-title="Upload Date: Start"
+                                   popover-trigger="'mouseenter'"
+                                   popover-placement="left"/>
                         </div>
                     </div>
                 </div>
@@ -32,7 +42,12 @@
                             <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
                             </span>
-                            <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="to date" />
+                            <input class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="to date"
+                                   uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen"
+                                   uib-popover="Filter records by upload date, up to a particular date."
+                                   popover-title="Upload Date: End"
+                                   popover-trigger="'mouseenter'"
+                                   popover-placement="left"/>
                         </div>
                     </div>
                 </div>

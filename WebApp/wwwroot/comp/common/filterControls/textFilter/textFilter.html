@@ -5,6 +5,11 @@
         <span class="input-group-addon">
             <i class="fa fa-search"></i>
         </span>
-        <input type="text" class="form-control" maxlength="{{metricFilter.maxLength}}" ng-model="model.value" placeholder="keywords in '{{metricFilter.shortTitle}}' values" />
+        <input type="text" class="form-control" maxlength="{{metricFilter.maxLength}}" ng-model="model.value"
+               placeholder="keywords in '{{metricFilter.shortTitle}}' values"
+               uib-popover-template="'comp/common/filterControls/textFilter/_popover.html'"
+               popover-title="{{metricFilter.shortTitle}}"
+               popover-trigger="'mouseenter'"
+               popover-placement="left"/>
     </div>
 </div>
