@@ -7,7 +7,11 @@
                     <button type="button" class="btn btn-default" ng-click="openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
                 <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
-                       ng-model="model.fromValue" is-open="startDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="from date" />
+                       ng-model="model.fromValue" is-open="startDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="from date"
+                       uib-popover-html="Filter records by date of event, starting from a particular date."
+                       popover-title="{{metricFilter.shortTitle}}"
+                       popover-trigger="'mouseenter'"
+                       popover-placement="left"/>
             </div>
         </div>
         <div class="col-md-6">
@@ -16,7 +20,11 @@
                     <button type="button" class="btn btn-default" ng-click="openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
                 </span>
                 <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
-                       ng-model="model.toValue" is-open="endDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="to date" />
+                       ng-model="model.toValue" is-open="endDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="to date"
+                       uib-popover="Filter records by date of event, up to a particular date."
+                       popover-title="{{metricFilter.shortTitle}}"
+                       popover-trigger="'mouseenter'"
+                       popover-placement="left"/>
             </div>
         </div>
     </div>

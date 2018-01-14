@@ -178,6 +178,7 @@
     <Content Include="wwwroot\comp\common\filterControls\dateRangeFilter\dateRangeFilter.html" />
     <Content Include="wwwroot\comp\common\filterControls\numericRangeFilter\numericRangeFilter.html" />
     <Content Include="wwwroot\comp\common\filterControls\textFilter\textFilter.html" />
+    <Content Include="wwwroot\comp\common\filterControls\textFilter\_popover.html" />
     <Content Include="wwwroot\comp\common\filterControls\timeRangeFilter\timeRangeFilter.html" />
     <Content Include="wwwroot\comp\common\filterControls\_filter\filter.html" />
     <Content Include="wwwroot\comp\common\footer\footerView.html" />
@@ -240,6 +241,7 @@
     <Content Include="wwwroot\comp\home\projects\summary\_chart.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_locations.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_recordings.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\popovers\_keywordSearch.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
     <Content Include="wwwroot\comp\home\surveys\all\_dataTable.html" />
