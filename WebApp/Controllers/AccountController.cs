@@ -226,9 +226,11 @@ namespace WebApi.Models
 
             // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
 
-            string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            string token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            var encodedToken = HttpUtility.UrlEncode(token);
+
             var baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-            var redirectLink = baseUrl + "/wwwroot/#!/set-password?email=" + model.Email + "&token=" + code;
+            var redirectLink = baseUrl + "/wwwroot/dist/index.html#!/set-password?email=" + model.Email + "&token=" + encodedToken;
 
             var messageBody = @"<html>
                 <head>
@@ -243,7 +245,7 @@ namespace WebApi.Models
                 <body>
                 <div class='message-container'>
                     <p>Please reset your password using the following token:</p>
-                    <p style='color: gray'>" + code + @"</p>
+                    <p style='color: gray'>" + token + @"</p>
                     <br>
 
                     <p>
