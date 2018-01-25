@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -32,14 +33,14 @@ namespace WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}")]
-        public HttpResponseMessage DownloadZip(Guid id)
+        [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
+        public HttpResponseMessage DownloadZip(Guid id, bool timeline, bool locations, bool piechart)
         {
             var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
                 return null;
 
-            return ExportZipFile(session, id);
+            return ExportZipFile(session, id, timeline, locations, piechart);
         }
 
         [HttpGet]
@@ -51,7 +52,7 @@ namespace WebApi.Controllers
                 return null;
 
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/dist/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
             var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
             var pdfFileName = $"{projectName}.pdf";
@@ -60,10 +61,10 @@ namespace WebApi.Controllers
             return CreatePdfResponseMessage(pdfData, projectName);
         }
 
-        private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id)
+        private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
         {
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/dist/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
             var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => session.SurveyIds.Contains(s.Id)).ToList();
@@ -83,7 +84,7 @@ namespace WebApi.Controllers
                     string folderPath = string.Empty;
                     if (!string.IsNullOrEmpty(survey.Description))
                     {
-                        var sanitizedFileName = SanitizeFileName(survey.Description);
+                        var sanitizedFileName = SanitizeFileName(survey.FormTemplate.Title);
                         folderPath = HostingEnvironment.MapPath($"/ExportTemp/{survey.Serial}_{sanitizedFileName}");
                     }
                     else
@@ -92,10 +93,17 @@ namespace WebApi.Controllers
                     if (!Directory.Exists(folderPath))
                         Directory.CreateDirectory(folderPath);
 
-                    var filePath = HostingEnvironment.MapPath(attch.Url);
-                    var fileInfo = new FileInfo(filePath);
-                    var dest = Path.Combine(folderPath, attch.FileName);
-                    fileInfo.CopyTo(dest);
+                    try
+                    {
+                        var filePath = HostingEnvironment.MapPath(attch.Url);
+                        var fileInfo = new FileInfo(filePath);
+                        var dest = Path.Combine(folderPath, attch.FileName);
+                        fileInfo.CopyTo(dest);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine(ex);
+                    }
                 }
             }
 
@@ -148,6 +156,8 @@ namespace WebApi.Controllers
             result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
             result.Content.Headers.ContentDisposition.FileName = fileName;
             result.Content.Headers.Add("x-filename", fileName);
+            result.Content.Headers.ContentLength = data.Length;
+
             return result;
         }
 
