@@ -70,7 +70,7 @@ module App {
 
             this.$resource("/api/account/resetPassword").save(this.$scope.model).$promise.then(
                 (result) => {
-                    this.toastr.success("You can now sign in with your new password", "Password Set!");
+                    this.toastr.success("You can now sign in with your new password");
                     this.$state.go("login");
                 },
                 (err) => {
