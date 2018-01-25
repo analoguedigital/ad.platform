@@ -8,9 +8,9 @@
                 <div class="input-group">
                     <div class="input-group-addon"><i class="fa fa-search"></i></div>
                     <input type="text" class="form-control" ng-model="ctrl.searchTerm"
-                           placeholder="search keywords (e.g. Jon Doe)"
+                           placeholder="Search for words or numbers"
                            uib-popover-template="'comp/home/projects/summary/popovers/_keywordSearch.html'"
-                           popover-title="Search Term"
+                           popover-title="Search for words or numbers"
                            popover-trigger="'mouseenter'"
                            popover-placement="left"/>
                 </div>
@@ -29,8 +29,8 @@
                             <input class="form-control" type="text" name="start-date" ng-model="ctrl.startDate"
                                    is-open="ctrl.startDateCalendar.isOpen" placeholder="from date"
                                    uib-datepicker-popup="{{INPUT_DATE_FORMAT}}"
-                                   uib-popover="Filter records by upload date, starting from a particular date."
-                                   popover-title="Upload Date: Start"
+                                   uib-popover="Filter records by the dates the records were uploaded (not necessarily the dates events occurred), starting from a particular date."
+                                   popover-title="Upload Range: Start Date"
                                    popover-trigger="'mouseenter'"
                                    popover-placement="left"/>
                         </div>
@@ -44,8 +44,8 @@
                             </span>
                             <input class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="to date"
                                    uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen"
-                                   uib-popover="Filter records by upload date, up to a particular date."
-                                   popover-title="Upload Date: End"
+                                   uib-popover="Filter records by the dates the records were uploaded (not necessarily the dates events occurred), ending at a particular date."
+                                   popover-title="Upload Range: End Date"
                                    popover-trigger="'mouseenter'"
                                    popover-placement="left"/>
                         </div>

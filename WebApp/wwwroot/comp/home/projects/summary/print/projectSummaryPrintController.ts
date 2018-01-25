@@ -239,7 +239,7 @@
 
         downloadZip() {
             this.session.$save().then(() => {
-                this.$http.get("/api/projectSummaryPrintSession/downloadZip/" + this.session.id, { responseType: 'arraybuffer' }).then((result) => {
+                this.$http.get("/api/projectSummaryPrintSession/downloadZip/" + this.session.id + "/" + this.showTimeline + "/" + this.showMap + "/" + this.showPieChart, { responseType: 'arraybuffer' }).then((result) => {
                     let headers = result.headers();
 
                     var filename = headers['x-filename'];

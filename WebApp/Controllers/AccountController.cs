@@ -244,16 +244,15 @@ namespace WebApi.Models
                 </head>
                 <body>
                 <div class='message-container'>
-                    <p>Please reset your password using the following token:</p>
-                    <p style='color: gray'>" + token + @"</p>
-                    <br>
-
                     <p>
-                        Or click on <a href='" + redirectLink + @"'>this link</a> to continue.
+                        Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.
                     </p>
+                    <br>
+                    <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
+                    <p style='color: gray; font-weight: italic'>" + token + @"</p>
 
                     <br><br>
-                    <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                    <small style='color: gray;'>Copyright &copy; 2018. analogueDIGITAL platform</small>
                 </div>
 
                 </body></html>";
