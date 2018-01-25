@@ -8,8 +8,8 @@
                 </span>
                 <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
                        ng-model="model.fromValue" is-open="startDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="from date"
-                       uib-popover-html="Filter records by date of event, starting from a particular date."
-                       popover-title="{{metricFilter.shortTitle}}"
+                       uib-popover="Filter records by the dates events occurred, starting from a particular date."
+                       popover-title="{{metricFilter.shortTitle}}: Start"
                        popover-trigger="'mouseenter'"
                        popover-placement="left"/>
             </div>
@@ -21,8 +21,8 @@
                 </span>
                 <input type="text" class="form-control" datetime-picker="{{dateTimeFormat}}"
                        ng-model="model.toValue" is-open="endDateCalendar.isOpen" enable-time="metricFilter.canSelectTime" placeholder="to date"
-                       uib-popover="Filter records by date of event, up to a particular date."
-                       popover-title="{{metricFilter.shortTitle}}"
+                       uib-popover="Filter records by the dates events occurred, ending at a particular date."
+                       popover-title="{{metricFilter.shortTitle}}: End"
                        popover-trigger="'mouseenter'"
                        popover-placement="left"/>
             </div>
