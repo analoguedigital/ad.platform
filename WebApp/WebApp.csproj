@@ -282,6 +282,7 @@
     <Content Include="wwwroot\css\index.min.css">
       <DependentUpon>index.css</DependentUpon>
     </Content>
+    <Content Include="wwwroot\favicon.png" />
     <Content Include="wwwroot\index.html" />
   </ItemGroup>
   <ItemGroup>
