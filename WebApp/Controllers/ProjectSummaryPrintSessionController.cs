@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -43,6 +44,15 @@ namespace WebApi.Controllers
             return ExportZipFile(session, id, timeline, locations, piechart);
         }
 
+        private string GetRootIndexPath()
+        {
+            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
+            if (!string.IsNullOrEmpty(rootIndexPath))
+                return rootIndexPath;
+
+            return "wwwroot/index.html";
+        }
+
         [HttpGet]
         [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
         public HttpResponseMessage DownloadPdf(Guid id, bool timeline, bool locations, bool piechart)
@@ -51,8 +61,9 @@ namespace WebApi.Controllers
             if (session == null)
                 return null;
 
+            var rootIndex = GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/dist/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
             var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
             var pdfFileName = $"{projectName}.pdf";
@@ -63,8 +74,9 @@ namespace WebApi.Controllers
 
         private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
         {
+            var rootIndex = GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/wwwroot/dist/index.html?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
             var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => session.SurveyIds.Contains(s.Id)).ToList();
