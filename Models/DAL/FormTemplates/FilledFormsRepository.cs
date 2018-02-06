@@ -88,8 +88,11 @@ namespace LightMethods.Survey.Models.DAL
 
             foreach (var template in templates)
             {
-                var surveys = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
+                var safeSurveys = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
                     .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id);
+
+                var surveys = safeSurveys;
+
                 var surveyCount = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
                     .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
 
@@ -125,8 +128,22 @@ namespace LightMethods.Survey.Models.DAL
                         surveys = surveys.Where(metric.GetFilterExpression(filterValue));
                 }
 
+                var finalResult = new List<FilledForm>();
                 var result = surveys.OrderByDescending(s => s.SurveyDate).ToList();
-                foundSurveys.AddRange(result);
+
+                finalResult.AddRange(result);
+
+                // filter serial numbers. but 'OR' the result.
+                if (!String.IsNullOrEmpty(model.Term))
+                {
+                    var punctuation = model.Term.Where(Char.IsPunctuation).Distinct().ToArray();
+                    var words = model.Term.Split().Select(x => x.Trim(punctuation));
+
+                    var foundSerials = safeSurveys.Where(s => words.Any(w => s.Serial.ToString() == w));
+                    finalResult.AddRange(foundSerials.OrderByDescending(s => s.SurveyDate).ToList());
+                }
+
+                foundSurveys.AddRange(finalResult.Distinct());
             }
 
             return foundSurveys;

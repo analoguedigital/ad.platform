@@ -12,20 +12,22 @@
                 </form>
             </div>
 
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th class="sorting" st-sort="number">No</th>
-                        <th st-sort="name">Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="project in displayedProjects">
-                        <td>{{project.number}}</td>
-                        <td><a ui-sref="home.surveys.list.summary({projectId:project.id})">{{project.name}}</a></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th st-sort="name">Name</th>
+                            <th width="100"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="project in displayedProjects">
+                            <td><a ui-sref="home.surveys.list.summary({projectId:project.id})">{{project.name}}</a></td>
+                            <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <div st-pagination st-items-by-page="20" st-displayed-pages="7"></div>
         </div>
     </div>
