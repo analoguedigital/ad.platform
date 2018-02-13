@@ -65,6 +65,7 @@ namespace WebApi.Controllers
             var orguser = Mapper.Map<OrgUser>(value);
             orguser.UserName = orguser.Email;
             orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
+            orguser.AccountType = AccountType.WebAccount;
 
             var identityResult = ServiceContext.UserManager.CreateSync(orguser, value.Password);
 
@@ -88,7 +89,9 @@ namespace WebApi.Controllers
                         CanView = true,
                         CanAdd = true,
                         CanEdit = true,
-                        CanDelete = true
+                        CanDelete = true,
+                        CanExportPdf = true,
+                        CanExportZip = true
                     };
 
                     UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
