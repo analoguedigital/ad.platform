@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
-    public class Assignment : Entity
+    public class ThreadAssignment : Entity
     {
-        [Index("IX_User_Project", 2, IsUnique = true)]
+        [Index("IX_User_Thread", 2, IsUnique = true)]
         public Guid OrgUserId { get; set; }
         public virtual OrgUser OrgUser { get; set; }
 
-        [Index("IX_User_Project", 1, IsUnique = true)]
-        public Guid ProjectId { get; set; }
-        public virtual Project Project { get; set; }
+        [Index("IX_User_Thread", 1, IsUnique = true)]
+        public Guid FormTemplateId { get; set; }
+        public virtual FormTemplate FormTemplate { get; set; }
 
         public bool CanAdd { get; set; }
 
@@ -23,9 +24,5 @@ namespace LightMethods.Survey.Models.Entities
         public bool CanDelete { get; set; }
 
         public bool CanView { get; set; }
-
-        public bool CanExportPdf { get; set; }
-
-        public bool CanExportZip { get; set; }
     }
 }

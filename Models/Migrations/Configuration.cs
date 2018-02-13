@@ -34,12 +34,14 @@ namespace LightMethods.Survey.Models.Migrations
             var roleManager = new ApplicationRoleManager(new ApplicationRoleStore(context));
 
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("cadbeb33-4c7a-428c-9520-6756a00c8697"), Name = Role.SYSTEM_ADMINSTRATOR });
+            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("6d923482-7907-422a-b054-1b58b1bbbc81"), Name = Role.PLATFORM_ADMINISTRATOR });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("c452e933-dc83-44f2-a3ab-59cf2eb7b0a2"), Name = Role.ORG_ADMINSTRATOR });
-            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("52e030ef-e3d4-4976-b3d7-a2353978b099"), Name = Role.ORG_TEMPLATES_MANAGMENT });
+            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("09898aea-0925-4472-9124-11026a17302a"), Name = Role.ORG_TEAM_USER });
+            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("f7bb6773-d74a-42aa-8686-333f5a753d24"), Name = Role.ORG_TEAM_MANAGER });
+            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("1ee7f025-0c19-4cb8-a7c9-e24497833df3"), Name = Role.ORG_USER });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("453a3eee-2de3-47d5-b041-3ff01ea13cd9"), Name = Role.ORG_USER_MANAGMENT });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("9aaa8582-12fd-45d2-ac19-65d5f1deabfc"), Name = Role.ORG_PROJECT_MANAGMENT });
-            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("1ee7f025-0c19-4cb8-a7c9-e24497833df3"), Name = Role.ORG_USER });
-
+            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("52e030ef-e3d4-4976-b3d7-a2353978b099"), Name = Role.ORG_TEMPLATES_MANAGMENT });
 
             var adminEmail = "khajoo@gmail.com";
             var superUser = new SuperUser() { Id = Guid.Parse("427eecf5-8ed4-4a6f-820d-7901acedf3bb"), UserName = adminEmail, Email = adminEmail };

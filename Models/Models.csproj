@@ -161,6 +161,8 @@
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
+    <Compile Include="Entities\OrganisationTeam.cs" />
+    <Compile Include="Entities\ThreadAssignment.cs" />
     <Compile Include="EntityConfig\AdultAddressConfig.cs" />
     <Compile Include="EntityConfig\AdultConfig.cs" />
     <Compile Include="EntityConfig\AdultContactNumberConfig.cs" />
@@ -191,6 +193,7 @@
     <Compile Include="EntityConfig\ReportTemplateCategoryConfig.cs" />
     <Compile Include="EntityConfig\ReportTemplateConfig.cs" />
     <Compile Include="EntityConfig\SubscriptionConfig.cs" />
+    <Compile Include="EntityConfig\ThreadAssignmentConfig.cs" />
     <Compile Include="Extenstions\JsonCreationConverter.cs" />
     <Compile Include="FilterValues\FilterValue.cs" />
     <Compile Include="FilterValues\MultipleFilterValue.cs" />
@@ -485,6 +488,30 @@
     <Compile Include="Migrations\201711221816077_Make_gender_optional.Designer.cs">
       <DependentUpon>201711221816077_Make_gender_optional.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802100726288_Add_account_type_to_OrgUser.cs" />
+    <Compile Include="Migrations\201802100726288_Add_account_type_to_OrgUser.Designer.cs">
+      <DependentUpon>201802100726288_Add_account_type_to_OrgUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100728027_Add_created_by_to_project.cs" />
+    <Compile Include="Migrations\201802100728027_Add_created_by_to_project.Designer.cs">
+      <DependentUpon>201802100728027_Add_created_by_to_project.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100729548_Add_thread_assignments.cs" />
+    <Compile Include="Migrations\201802100729548_Add_thread_assignments.Designer.cs">
+      <DependentUpon>201802100729548_Add_thread_assignments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100739044_Add_export_flags_to_assignment.cs" />
+    <Compile Include="Migrations\201802100739044_Add_export_flags_to_assignment.Designer.cs">
+      <DependentUpon>201802100739044_Add_export_flags_to_assignment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.cs" />
+    <Compile Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.Designer.cs">
+      <DependentUpon>201802100740272_Add_is_subscribed_to_OrgUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802121603137_Add_organisation_teams.cs" />
+    <Compile Include="Migrations\201802121603137_Add_organisation_teams.Designer.cs">
+      <DependentUpon>201802121603137_Add_organisation_teams.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -506,6 +533,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Entities\%40Entities.cd" />
+    <Compile Include="EntityConfig\OrganisationTeamConfig.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -618,6 +646,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711221816077_Make_gender_optional.resx">
       <DependentUpon>201711221816077_Make_gender_optional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100726288_Add_account_type_to_OrgUser.resx">
+      <DependentUpon>201802100726288_Add_account_type_to_OrgUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100728027_Add_created_by_to_project.resx">
+      <DependentUpon>201802100728027_Add_created_by_to_project.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100729548_Add_thread_assignments.resx">
+      <DependentUpon>201802100729548_Add_thread_assignments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100739044_Add_export_flags_to_assignment.resx">
+      <DependentUpon>201802100739044_Add_export_flags_to_assignment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.resx">
+      <DependentUpon>201802100740272_Add_is_subscribed_to_OrgUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802121603137_Add_organisation_teams.resx">
+      <DependentUpon>201802121603137_Add_organisation_teams.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -15,5 +15,9 @@ namespace LightMethods.Survey.Models.DTO
         public bool AllowEdit { get; set; }
 
         public bool AllowDelete { get; set; }
+
+        public bool AllowPdfExport { get; set; }
+
+        public bool AllowZipExport { get; set; }
     }
 }

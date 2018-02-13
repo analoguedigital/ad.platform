@@ -60,8 +60,7 @@ namespace WebApi.Models
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
             var orgUser = this.CurrentUser as OrgUser;
-
-            return new UserInfoViewModel
+            var userInfo = new UserInfoViewModel
             {
                 Email = User.Identity.GetUserName(),
                 UserId = this.CurrentUser.Id,
@@ -70,8 +69,12 @@ namespace WebApi.Models
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
                 Language = this.CurrentOrganisation?.DefaultLanguage?.Calture,
                 Calendar = this.CurrentOrganisation?.DefaultCalendar?.SystemName,
-                Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id),
-                Profile = new UserProfileDTO
+                Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id)
+            };
+
+            if (orgUser != null)
+            {
+                userInfo.Profile = new UserProfileDTO
                 {
                     FirstName = orgUser.FirstName,
                     Surname = orgUser.Surname,
@@ -79,8 +82,10 @@ namespace WebApi.Models
                     Birthdate = orgUser.Birthdate,
                     Address = orgUser.Address,
                     PhoneNumber = orgUser.PhoneNumber
-                }
-            };
+                };
+            }
+
+            return userInfo;
         }
 
         // POST api/Account/UpdateProfile

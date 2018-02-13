@@ -37,12 +37,14 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<OrgUserType> OrgUserTypes { get; set; }
         public DbSet<SeverityLevel> SeverityLevels { get; set; }
         public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<ThreadAssignment> ThreadAssignments { get; set; }
         public DbSet<ContactNumberType> ContactNumberTypes { get; set; }
         public DbSet<ContactNumber> ContactNumbers { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<AddressType> AddressTypes { get; set; }
         public DbSet<SuperUser> SupersUsers { get; set; }
         public DbSet<Organisation> Organisations { get; set; }
+        public DbSet<OrganisationTeam> OrganisationTeams { get; set; }
         public DbSet<AdultTitle> AdultTitles { get; set; }
         public DbSet<File> Files { set; get; }
         public DbSet<Guidance> Guidance { set; get; }
@@ -173,8 +175,10 @@ namespace LightMethods.Survey.Models.DAL
             // projects and organisations config
             modelBuilder.Configurations.Add(new ProjectConfig());
             modelBuilder.Configurations.Add(new AssignmentConfig());
+            modelBuilder.Configurations.Add(new ThreadAssignmentConfig());
             modelBuilder.Configurations.Add(new OrganisationConfig());
             modelBuilder.Configurations.Add(new OrganisationWorkerConfig());
+            modelBuilder.Configurations.Add(new OrganisationTeamConfig());
 
             // users config
             modelBuilder.Configurations.Add(new OrgUserConfig());

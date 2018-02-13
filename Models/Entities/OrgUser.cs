@@ -9,6 +9,12 @@ using AppHelper;
 
 namespace LightMethods.Survey.Models.Entities
 {
+    public enum AccountType
+    {
+        MobileAccount = 0,
+        WebAccount = 1
+    }
+
     public class OrgUser : User
     {
         [Display(Name = "First names")]
@@ -28,17 +34,24 @@ namespace LightMethods.Survey.Models.Entities
         [ScaffoldColumn(false)]
         [ReadOnly(true)]
         public bool IsRootUser { set; get; }
-
+        
         public Guid? CurrentProjectId { set; get; }
         public virtual Project CurrentProject { set; get; }
 
         public virtual ICollection<Assignment> Assignments { get; set; }
+        public virtual ICollection<ThreadAssignment> ThreadAssignments { get; set; }
 
         public bool IsWebUser { get; set; }
         public bool IsMobileUser { get; set; }
 
         public virtual ICollection<PaymentRecord> Payments { get; set; }
         public virtual ICollection<Subscription> Subscriptions { get; set; }
+
+        public AccountType AccountType { get; set; }
+
+        public bool IsSubscribed { get; set; }
+
+        public virtual ICollection<OrganisationTeam> Teams { get; set; }
 
         public OrgUser()
         {

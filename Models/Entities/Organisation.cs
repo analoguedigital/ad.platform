@@ -69,6 +69,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual ICollection<PromotionCode> PromotionCodes { get; set; }
 
+        public virtual ICollection<OrganisationTeam> Teams { get; set; }
+
         public Organisation()
         {
             IsActive = true;

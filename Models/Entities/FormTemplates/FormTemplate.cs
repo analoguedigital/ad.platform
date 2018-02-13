@@ -66,6 +66,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual ICollection<MetricGroup> MetricGroups { get; set; }
 
+        public virtual ICollection<ThreadAssignment> Assignments { get; set; }
+
         public FormTemplate()
         {
             Version = 1.0;
