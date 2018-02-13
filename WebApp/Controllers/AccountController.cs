@@ -482,7 +482,8 @@ namespace WebApi.Models
                 IsActive = true,
                 TypeId = OrgUserTypesRepository.TeamUser.Id,
                 IsMobileUser = true,
-                IsWebUser = true
+                IsWebUser = true,   // should be turned off by default
+                AccountType = AccountType.MobileAccount
             };
 
             if (!string.IsNullOrEmpty(model.Address))
@@ -508,7 +509,8 @@ namespace WebApi.Models
             {
                 Name = $"{model.FirstName} {model.Surname}",
                 StartDate = DateTimeService.UtcNow,
-                OrganisationId = organisation.Id
+                OrganisationId = organisation.Id,
+                CreatedById = user.Id
             };
 
             UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
@@ -519,10 +521,36 @@ namespace WebApi.Models
                 ProjectId = project.Id,
                 OrgUserId = user.Id,
                 CanView = true,
-                CanAdd = true
+                CanAdd = true,
+                CanExportPdf = true,
+                CanExportZip = true
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+
+            // assign organisation admin to this project
+            if (organisation.RootUser != null)
+            {
+                UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
+                {
+                    ProjectId = project.Id,
+                    OrgUserId = organisation.RootUserId.Value,
+                    CanView = true,
+                    CanAdd = true,
+                    CanEdit = true,
+                    CanDelete = true,
+                    CanExportPdf = true,
+                    CanExportZip = true
+                });
+            }
+
+            UnitOfWork.Save();
+
+            // set user's current project
+            var _orgUser = UnitOfWork.OrgUsersRepository.Find(user.Id);
+            _orgUser.CurrentProjectId = project.Id;
+
+            UnitOfWork.OrgUsersRepository.InsertOrUpdate(_orgUser);
             UnitOfWork.Save();
 
             return Ok();
