@@ -18,7 +18,8 @@ namespace WebApi
             Mapper.CreateMap<Project, ProjectDTO>().ReverseMap();
             Mapper.CreateMap<AssignmentDTO, ProjectDTO>();
             Mapper.CreateMap<Assignment, ProjectAssignmentDTO>()
-                .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); });
+                .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); })
+                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
 
             #endregion Projects and Assignments
@@ -26,11 +27,16 @@ namespace WebApi
             #region Form Templates and Categories
 
             Mapper.CreateMap<FormTemplateCategory, FormTemplateCategoryDTO>().ReverseMap();
-            Mapper.CreateMap<FormTemplate, FormTemplateDTO>();
-
+            Mapper.CreateMap<FormTemplate, FormTemplateDTO>().ReverseMap();
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
             Mapper.CreateMap<EditBasicDetailsReqDTO, FormTemplate>();
+
+            Mapper.CreateMap<ThreadAssignmentDTO, FormTemplateDTO>();
+            Mapper.CreateMap<ThreadAssignment, ThreadAssignmentDTO>()
+                .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); })
+                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; });
+            Mapper.CreateMap<ThreadAssignmentDTO, ThreadAssignment>();
 
             #endregion Form Templates and Categories
 
@@ -151,6 +157,8 @@ namespace WebApi
                 .AfterMap((src, dest) => { dest.TypeId = src.Type.Id; });
             Mapper.CreateMap<OrgUserType, OrgUserTypeDTO>().ReverseMap();
 
+            Mapper.CreateMap<OrganisationTeam, OrganisationTeamDTO>().ReverseMap();
+            Mapper.CreateMap<OrgTeamUser, OrgTeamUserDTO>().ReverseMap();
 
             Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 
