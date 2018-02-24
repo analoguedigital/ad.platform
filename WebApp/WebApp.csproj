@@ -217,6 +217,7 @@
     <Content Include="wwwroot\comp\home\dataLists\edit\dataListEditView.html" />
     <Content Include="wwwroot\comp\home\dataLists\edit\dataListRelationshipEditView.html" />
     <Content Include="wwwroot\comp\home\dataLists\edit\dataListItemEditView.html" />
+    <Content Include="wwwroot\comp\home\formTemplates\assignments\formTemplateAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\formDesignView.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\forms\timeMetric\enter.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\forms\formTemplate\enter.html" />
@@ -409,6 +410,7 @@
     <Content Include="wwwroot\comp\login\_particles.scss" />
     <Content Include="wwwroot\comp\home\teams\_teams.scss" />
     <Content Include="wwwroot\comp\home\teams\manage\_teamManageView.scss" />
+    <Content Include="wwwroot\comp\home\formTemplates\assignments\_formTemplateAssignments.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -457,6 +459,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\dataLists\edit\dataListRelationshipEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\dataLists\edit\dataListItemEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\dataLists\dataLists.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\assignments\formTemplateAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\timeMetric\timeMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\formTemplates.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\formDesignController.ts" />

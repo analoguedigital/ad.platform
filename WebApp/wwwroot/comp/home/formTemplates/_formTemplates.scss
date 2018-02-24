@@ -7,3 +7,19 @@
         border-radius: 3px;
     }
 }
+
+.form-templates-edit {
+    .color-block {
+        width: 24px;
+        height: 24px;
+        display: inline-block;
+        vertical-align: middle;
+        border-radius: 3px;
+    }
+
+    @media (min-width: 768px) {
+        .form-horizontal .control-label {
+            padding-top: 0;
+        }
+    }
+}

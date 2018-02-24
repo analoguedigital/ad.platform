@@ -8,6 +8,7 @@ module App {
         formTemplate: Models.IFormTemplate;
         categories: Models.IFormTemplateCategory[];
         projects: Models.IProject[];
+        assignments: Models.IThreadAssignment[];
         errors: string;
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
@@ -19,6 +20,7 @@ module App {
         formTemplate: Models.IFormTemplate;
         categories: Models.IFormTemplateCategory[];
         projects: Models.IProject[];
+        assignments: Models.IThreadAssignment[];
         errors: string;
 
         static $inject: string[] = ["$scope", "formTemplateResource", "formTemplateCategoryResource", "projectResource", "$state", "$stateParams", "$uibModal"];
@@ -33,6 +35,15 @@ module App {
             private $uibModal: ng.ui.bootstrap.IModalService
         ) {
             this.formTemplateId = $stateParams['id'];
+
+            $scope.minicolorSettings = {
+                control: 'hue',
+                format: 'hex',
+                opacity: false,
+                theme: 'bootstrap',
+                position: 'top left'
+            };
+
             this.activate();
         }
 
@@ -43,6 +54,10 @@ module App {
             this.formTemplateResource.get({ id: this.formTemplateId })
                 .$promise.then((form) => {
                     this.formTemplate = form;
+
+                    this.formTemplateResource.getAssignments({ id: this.formTemplateId }, (assignments) => {
+                        this.assignments = assignments;
+                    });
                 });
 
             this.categories = this.formTemplateCategoryResource.query();
