@@ -12,15 +12,24 @@ module App.Models {
         notes: string;
         archived: boolean;
 
+        allowView: boolean;
+        allowAdd: boolean;
+        allowEdit: boolean;
+        allowDelete: boolean;
+        allowExportPdf: boolean;
+        allowExportZip: boolean;
     }
 
     export interface IProjectAssignment {
         orgUserId: string;
         orgUserName: string;
+        isRootUser: boolean;
         projectId: string;
         canAdd: boolean;
         canEdit: boolean;
         canView: boolean;
         canDelete: boolean;
+        canExportPdf: boolean;
+        canExportZip: boolean;
     }
 }

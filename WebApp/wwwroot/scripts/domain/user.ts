@@ -27,6 +27,9 @@ module App.Models {
         address: string;
         phoneNumber: string;
         assignments: IProjectAssignment[];
+        isMember: boolean;
+        isManager: boolean;
+        isSelected: boolean;
     }
        
 
