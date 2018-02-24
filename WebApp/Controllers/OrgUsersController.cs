@@ -24,16 +24,44 @@ namespace WebApi.Controllers
 
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(Guid? organisationId = null)
         {
-            var users = Users.AllIncluding(u => u.Type)
-                .Where(u => u.OrganisationId == CurrentOrganisationId)
-                .OrderBy(u => u.Surname)
-                .ThenBy(u => u.FirstName)
-                .ToList()
-                .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+            var result = new List<OrgUserDTO>();
 
-            return Ok(users);
+            if (this.CurrentOrgUser != null)
+            {
+                var users = Users.AllIncluding(u => u.Type)
+                    .Where(u => u.OrganisationId == CurrentOrganisationId)
+                    .OrderBy(u => u.Surname)
+                    .ThenBy(u => u.FirstName)
+                    .ToList()
+                    .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+                result = users;
+            }
+            else
+            {
+                if (organisationId.HasValue)
+                {
+                    var users = Users.AllIncluding(u => u.Type)
+                        .Where(u => u.OrganisationId == organisationId)
+                        .OrderBy(u => u.Surname)
+                        .ThenBy(u => u.FirstName)
+                        .ToList()
+                        .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+                    result = users;
+                }
+                else
+                {
+                    var users = Users.AllIncluding(u => u.Type)
+                      .OrderBy(u => u.Surname)
+                      .ThenBy(u => u.FirstName)
+                      .ToList()
+                      .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+                    result = users;
+                }
+            }
+
+            return Ok(result);
         }
 
         [DeflateCompression]
