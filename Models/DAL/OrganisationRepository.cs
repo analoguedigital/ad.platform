@@ -39,7 +39,8 @@ namespace LightMethods.Survey.Models.DAL
                 IsMobileUser = false,
                 UserName = dto.RootUserEmail,
                 Email =  dto.RootUserEmail,
-                TypeId = OrgUserTypesRepository.Administrator.Id
+                TypeId = OrgUserTypesRepository.Administrator.Id,
+                AccountType = AccountType.WebAccount
             };
 
             CurrentUOW.OrganisationRepository.InsertOrUpdate(org);
