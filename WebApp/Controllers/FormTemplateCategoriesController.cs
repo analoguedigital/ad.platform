@@ -18,27 +18,48 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FormTemplateCategoryDTO>))]
         public IHttpActionResult Get()
         {
-            if (CurrentOrgUser == null)
-                return Unauthorized();
+            var result = new List<FormTemplateCategoryDTO>();
 
-            return Ok(UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
-                .Where(c => c.OrganisationId == CurrentOrgUser.OrganisationId)
-                .ToList()
-                .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c)));
-                
+            if (CurrentOrgUser != null)
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .Where(c => c.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .ToList();
+            }
+            else
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .ToList();
+            }
+
+            return Ok(result);
+
         }
 
         [DeflateCompression]
         [ResponseType(typeof(FormTemplateCategoryDTO))]
         public IHttpActionResult Get(Guid id)
         {
-            if (CurrentOrgUser == null)
-                return Unauthorized();
+            var result = new FormTemplateCategoryDTO();
 
-            return Ok(UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
-                .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId)
-                .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
-                .SingleOrDefault());
+            if (CurrentOrgUser != null)
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .SingleOrDefault();
+            }
+            else
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .Where(c => c.Id == id)
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .SingleOrDefault();
+            }
+
+            return Ok(result);
         }
 
         [ResponseType(typeof(FormTemplateCategoryDTO))]
