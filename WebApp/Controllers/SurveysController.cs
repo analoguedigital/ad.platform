@@ -198,8 +198,20 @@ namespace WebApi.Controllers
         {
             if (this.CurrentOrgUser != null)
             {
-                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
-                if (assignment == null || !assignment.CanAdd)
+                var threadAssignment = this.CurrentOrgUser.ThreadAssignments.SingleOrDefault(a => a.FormTemplateId == survey.FormTemplateId);
+                var projectAssignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+
+                if (projectAssignment == null && threadAssignment == null)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+
+                var authorized = false;
+                if (projectAssignment != null)
+                    authorized = projectAssignment.CanAdd;
+
+                if (threadAssignment != null)
+                    authorized = threadAssignment.CanAdd;
+
+                if (!authorized)
                     return Content(HttpStatusCode.Forbidden, "Access Denied");
             }
 
@@ -258,8 +270,20 @@ namespace WebApi.Controllers
         {
             if (this.CurrentOrgUser != null)
             {
-                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == surveyDTO.ProjectId);
-                if (assignment == null || !assignment.CanEdit)
+                var threadAssignment = this.CurrentOrgUser.ThreadAssignments.SingleOrDefault(a => a.FormTemplateId == surveyDTO.FormTemplateId);
+                var projectAssignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == surveyDTO.ProjectId);
+
+                if (projectAssignment == null && threadAssignment == null)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+
+                var authorized = false;
+                if (projectAssignment != null)
+                    authorized = projectAssignment.CanEdit;
+
+                if (threadAssignment != null)
+                    authorized = threadAssignment.CanEdit;
+
+                if (!authorized)
                     return Content(HttpStatusCode.Forbidden, "Access Denied");
             }
 
@@ -356,8 +380,20 @@ namespace WebApi.Controllers
 
             if (this.CurrentOrgUser != null)
             {
-                var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
-                if (assignment == null || !assignment.CanDelete)
+                var threadAssignment = this.CurrentOrgUser.ThreadAssignments.SingleOrDefault(a => a.FormTemplateId == survey.FormTemplateId);
+                var projectAssignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == survey.ProjectId);
+
+                if (projectAssignment == null && threadAssignment == null)
+                    return Content(HttpStatusCode.Forbidden, "Access Denied");
+
+                var authorized = false;
+                if (projectAssignment != null)
+                    authorized = projectAssignment.CanDelete;
+
+                if (threadAssignment != null)
+                    authorized = threadAssignment.CanDelete;
+
+                if (!authorized)
                     return Content(HttpStatusCode.Forbidden, "Access Denied");
             }
 
