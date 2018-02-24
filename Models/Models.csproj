@@ -114,6 +114,8 @@
     <Compile Include="DAL\FormTemplates\AttachmentsRepository.cs" />
     <Compile Include="DAL\FormTemplates\AttachmentMetricsRepository.cs" />
     <Compile Include="DAL\FormTemplates\TimeMetricsRepository.cs" />
+    <Compile Include="DAL\OrganisationTeamsRepository.cs" />
+    <Compile Include="DAL\OrgTeamUsersRepository.cs" />
     <Compile Include="DAL\PaymentsRepository.cs" />
     <Compile Include="DAL\PromotionCodesRepository.cs" />
     <Compile Include="DAL\RolesRepository.cs" />

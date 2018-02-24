@@ -118,6 +118,30 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
+        private OrganisationTeamsRepository _OrganisationTeamsRepository;
+        public OrganisationTeamsRepository OrganisationTeamsRepository
+        {
+            get
+            {
+                if (this._OrganisationTeamsRepository == null)
+                    this._OrganisationTeamsRepository = new OrganisationTeamsRepository(this);
+
+                return _OrganisationTeamsRepository;
+            }
+        }
+
+        private OrgTeamUsersRepository _OrgTeamUsersRepository;
+        public OrgTeamUsersRepository OrgTeamUsersRepository
+        {
+            get
+            {
+                if (this._OrgTeamUsersRepository == null)
+                    this._OrgTeamUsersRepository = new OrgTeamUsersRepository(this);
+
+                return _OrgTeamUsersRepository;
+            }
+        }
+
         private AssignmentsRepository _AssignmentsRepository;
         public AssignmentsRepository AssignmentsRepository
         {
