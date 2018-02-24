@@ -73,7 +73,7 @@ namespace LightMethods.Survey.Models.DAL
         {
             var result = new ThreadAssignmentDTO();
 
-            if (this.CurrentUOW.UserManager.RolesContainsAny(userId, Role.ORG_PROJECT_MANAGMENT, Role.ORG_ADMINSTRATOR, Role.ORG_TEAM_MANAGER))
+            if (this.CurrentUOW.UserManager.RolesContainsAny(userId, Role.ORG_ADMINSTRATOR))
             {
                 result.CanView = true;
                 result.CanAdd = true;
