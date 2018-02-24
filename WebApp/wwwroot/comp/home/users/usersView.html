@@ -26,14 +26,14 @@
                                 <th>First names</th>
                                 <th>Surname</th>
                                 <th class="hidden-xs">Type</th>
-                                <th></th>
-                                <th></th>
+                                <th lm-access="System administrator,Platform administrator"></th>
+                                <th lm-access="System administrator,Platform administrator"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="user in displayedUsers">
                                 <td>
-                                    <i class="fa fa-user-md" ng-if="user.type.name == 'Administrator'"></i>
+                                    <i class="fa fa-user-secret" ng-if="user.type.name == 'Administrator'"></i>
                                     <i class="fa fa-user-o" ng-if="user.type.name !== 'Administrator'"></i>
                                     &nbsp;
                                     <a ui-sref="home.users.edit({id:user.id})">{{user.email}}</a>
@@ -41,8 +41,8 @@
                                 <td>{{user.firstName}}</td>
                                 <td>{{user.surname}}</td>
                                 <td class="hidden-xs">{{user.type.name}}</td>
-                                <td><a ng-click="resetPassword(user)"><i class="fa fa-key"></i><span class="hidden-xs"> Reset Password</span></a></td>
-                                <td>
+                                <td lm-access="System administrator,Platform administrator"><a ng-click="resetPassword(user)"><i class="fa fa-key"></i><span class="hidden-xs"> Reset Password</span></a></td>
+                                <td lm-access="System administrator,Platform administrator">
                                     <a ng-if="!user.isRootUser" ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(user.id)">
                                         <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
                                     </a>
