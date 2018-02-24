@@ -24,7 +24,7 @@ module App {
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
-            private project: Models.IProject) {
+            public project: Models.IProject) {
 
             this.activate();
         }
@@ -89,6 +89,31 @@ module App {
             });
 
             return attachmentCount;
+        }
+
+        hasAccess(template: Models.IFormTemplate, flag: string): boolean {
+            var authorized = false;
+
+            switch (flag) {
+                case 'view': {
+                    authorized = template.canView === null ? this.project.allowView : template.canView;
+                    break;
+                }
+                case 'add': {
+                    authorized = template.canAdd === null ? this.project.allowAdd : template.canAdd;
+                    break;
+                }
+                case 'edit': {
+                    authorized = template.canEdit === null ? this.project.allowEdit : template.canEdit;
+                    break;
+                }
+                case 'delete': {
+                    authorized = template.canDelete === null ? this.project.allowDelete : template.canDelete;
+                    break;
+                }
+            }
+
+            return authorized;
         }
     }
 
