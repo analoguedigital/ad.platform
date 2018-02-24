@@ -28,7 +28,28 @@ namespace LightMethods.Survey.Models.Services
         {
             var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
             var templates = surveyProvider.GetAllProjectTemplates(projectId);
-            var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
+
+            var result = new List<FormTemplateDTO>();
+
+            foreach (var template in templates)
+            {
+                var dto = Mapper.Map<FormTemplateDTO>(template);
+
+                if (this.OrgUser != null)
+                {
+                    var assignment = this.unitOfWork.FormTemplatesRepository.GetUserAssignment(template, this.OrgUser.Id);
+                    Mapper.Map(assignment, dto);
+                }
+                else
+                {
+                    dto.CanView = true;
+                    dto.CanEdit = true;
+                    dto.CanAdd = true;
+                    dto.CanDelete = true;
+                }
+
+                result.Add(dto);
+            }
 
             return result;
         }
@@ -42,7 +63,22 @@ namespace LightMethods.Survey.Models.Services
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null) return null;
 
-            return Mapper.Map<FormTemplateDTO>(form);
+            var result = Mapper.Map<FormTemplateDTO>(form);
+
+            if (this.OrgUser != null)
+            {
+                var assignment = this.unitOfWork.FormTemplatesRepository.GetUserAssignment(form, this.OrgUser.Id);
+                Mapper.Map(assignment, result);
+            }
+            else
+            {
+                result.CanView = true;
+                result.CanAdd = true;
+                result.CanEdit = true;
+                result.CanDelete = true;
+            }
+
+            return result;
         }
 
         public OperationResult Create(FormTemplate entity)
