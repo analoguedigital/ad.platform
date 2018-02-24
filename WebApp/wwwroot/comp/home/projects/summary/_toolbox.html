@@ -84,7 +84,7 @@
                         </button>
                     </div>
 
-                    <div class="btn-group" role="group">
+                    <div class="btn-group" role="group" ng-if="ctrl.project.allowExportPdf || ctrl.project.allowExportZip">
                         <button class="btn btn-default" ng-click="ctrl.print()">
                             <i class="fa fa-print"></i> Export
                         </button>

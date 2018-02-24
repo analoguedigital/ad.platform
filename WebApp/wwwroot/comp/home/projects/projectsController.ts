@@ -20,14 +20,16 @@ module App {
     }
 
     class ProjectsController implements IProjectsController {
-        static $inject: string[] = ["$scope", "projectResource"];
+        static $inject: string[] = ["$scope", "$stateParams", "projectResource"];
 
         constructor(
             private $scope: IProjectsControllerScope,
+            private $stateParams: ng.ui.IStateParamsService,
             private projectResource: Resources.IProjectResource) {
 
-            $scope.title = "Users";
+            $scope.title = "Cases";
             $scope.delete = (id) => { this.delete(id); };
+
             this.activate();
         }
 
@@ -36,10 +38,18 @@ module App {
         }
 
         load() {
-            this.projectResource.query().$promise.then((projects) => {
-                this.$scope.projects = projects;
-                this.$scope.displayedProjects = [].concat(this.$scope.projects);
-            });
+            var organisationId = this.$stateParams["organisationId"];
+            if (organisationId === '') {
+                this.projectResource.query().$promise.then((projects) => {
+                    this.$scope.projects = projects;
+                    this.$scope.displayedProjects = [].concat(this.$scope.projects);
+                });
+            } else {
+                this.projectResource.query({ organisationId: organisationId }).$promise.then((projects) => {
+                    this.$scope.projects = projects;
+                    this.$scope.displayedProjects = [].concat(this.$scope.projects);
+                });
+            }
         }
 
         delete(id: string) {

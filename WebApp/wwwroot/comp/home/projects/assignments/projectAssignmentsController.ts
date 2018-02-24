@@ -7,15 +7,23 @@ module App {
         project: Models.IProject;
         errors: string;
         userAssignments: IAssignmentUser[];
+        displayedAssignments: IAssignmentUser[];
+        searchTerm: string;
         clearErrors: () => void;
     }
     interface IAssignmentUser {
         userId: string;
         name: string;
+        email: string;
+        isRootUser: boolean;
+        isWebUser: boolean;
+        isMobileUser: boolean;
         canAdd: boolean;
         canEdit: boolean;
         canView: boolean;
         canDelete: boolean;
+        canExportPdf: boolean;
+        canExportZip: boolean;
     }
 
     class ProjectAssignmentsController implements IProjectAssignmentsController {
@@ -24,6 +32,8 @@ module App {
         users: Models.IOrgUser[];
         assignments: Models.IProjectAssignment[];
         userAssignments: IAssignmentUser[];
+        displayedAssignments: IAssignmentUser[];
+        searchTerm: string;
         errors: string;
 
         static $inject: string[] = ["projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
@@ -62,14 +72,22 @@ module App {
                         var record: IAssignmentUser = {
                             userId: user.id,
                             name: userName,
+                            email: user.email,
+                            isRootUser: user.isRootUser,
+                            isWebUser: user.isWebUser,
+                            isMobileUser: user.isMobileUser,
                             canAdd: userAssignment ? userAssignment.canAdd : false,
                             canEdit: userAssignment ? userAssignment.canEdit : false,
                             canView: userAssignment ? userAssignment.canView : false,
-                            canDelete: userAssignment ? userAssignment.canDelete : false
+                            canDelete: userAssignment ? userAssignment.canDelete : false,
+                            canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
+                            canExportZip: userAssignment ? userAssignment.canExportZip : false
                         };
 
                         this.userAssignments.push(record);
                     });
+
+                    this.displayedAssignments = [].concat(this.userAssignments);
                 });
             });
         }
@@ -99,6 +117,14 @@ module App {
                     toggled = assignment.canView;
                     break;
                 }
+                case 'allowExportPdf': {
+                    toggled = assignment.canExportPdf;
+                    break;
+                }
+                case 'allowExportZip': {
+                    toggled = assignment.canExportZip;
+                    break;
+                }
             }
 
             if (toggled) {
@@ -117,6 +143,8 @@ module App {
             assignment.canAdd = newValue.canAdd;
             assignment.canEdit = newValue.canEdit;
             assignment.canDelete = newValue.canDelete;
+            assignment.canExportPdf = newValue.canExportPdf;
+            assignment.canExportZip = newValue.canExportZip;
         }
 
         clearErrors() {

@@ -75,7 +75,7 @@ module App {
             private projectResource: Resources.IProjectResource,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
-            private project: Models.IProject,
+            public project: Models.IProject,
             private toastr: any) {
 
             this.activate();
@@ -380,6 +380,33 @@ module App {
 
             return attachmentCount;
         }
+
+        hasAccess(templateId: string, flag: string): boolean {
+            var template = _.filter(this.formTemplates, (t) => { return t.id === templateId; })[0];
+
+            var authorized = false;
+            switch (flag) {
+                case 'view': {
+                    authorized = template.canView === null ? this.project.allowView : template.canView;
+                    break;
+                }
+                case 'add': {
+                    authorized = template.canAdd === null ? this.project.allowAdd : template.canAdd;
+                    break;
+                }
+                case 'edit': {
+                    authorized = template.canEdit === null ? this.project.allowEdit : template.canEdit;
+                    break;
+                }
+                case 'delete': {
+                    authorized = template.canDelete === null ? this.project.allowDelete : template.canDelete;
+                    break;
+                }
+            }
+
+            return authorized;
+        }
+
     }
 
     angular.module("app").controller("projectSummaryController", ProjectSummaryController);

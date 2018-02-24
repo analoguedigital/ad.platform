@@ -34,10 +34,10 @@
         <i class="fa fa-toggle-off"></i> Show Pie Chart
     </span>
 </button>
-<button class="btn btn-primary hidden-print" ng-click="ctrl.downloadPdf()">
+<button class="btn btn-primary hidden-print" ng-if="ctrl.project.allowExportPdf" ng-click="ctrl.downloadPdf()">
     <i class="fa fa-file-pdf-o"></i> Download PDF
 </button>
-<button class="btn btn-primary hidden-print" ng-click="ctrl.downloadZip()">
+<button class="btn btn-primary hidden-print" ng-if="ctrl.project.allowExportZip" ng-click="ctrl.downloadZip()">
     <i class="fa fa-file-zip-o"></i> Download Zip
 </button>
 

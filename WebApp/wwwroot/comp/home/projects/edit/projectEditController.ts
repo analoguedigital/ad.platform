@@ -9,6 +9,7 @@ module App {
         startDateCalendar: any;
         endDateCalendar: any;
         project: Models.IProject;
+        assignments: Models.IProjectAssignment[];
         errors: string;
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
@@ -47,10 +48,20 @@ module App {
         activate() {
             var projectId = this.$stateParams['id'];
             if (projectId === '')
+            {
                 projectId = '00000000-0000-0000-0000-000000000000';
-            this.projectResource.get({ id: projectId }).$promise.then((project) => {
-                this.$scope.project = project;
-            });
+                this.projectResource.get({ id: projectId }).$promise.then((project) => {
+                    this.$scope.project = project;
+                });
+            } else {
+                this.projectResource.get({ id: projectId }).$promise.then((project) => {
+                    this.$scope.project = project;
+
+                    this.projectResource.assignments({ id: projectId }, (assignments) => {
+                        this.$scope.assignments = assignments;
+                    });
+                });
+            }
         }
 
         openStartDateCalendar() {

@@ -10,7 +10,7 @@
                     <input type="text" id="number" name="number" ng-model="project.number" />
                 </lm-form-group>
                 <lm-form-group label="Name: ">
-                    <input type="text" id="name" name="name" ng-model="project.name" required/>
+                    <input type="text" id="name" name="name" ng-model="project.name" required />
                 </lm-form-group>
                 <lm-form-group label="Start date: ">
                     <div class="input-group">
@@ -46,6 +46,60 @@
                 </lm-form-group>
                 <a ui-sref="home.projects.list"><i class="fa fa-arrow-left"></i> Back to list</a>
             </form>
+        </div>
+    </div>
+    <div class="box">
+        <div class="box-title">
+            <h5>Assignments</h5>
+        </div>
+        <div class="box-content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-file-pdf-o"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-file-zip-o"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="user in assignments">
+                            <td>
+                                <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
+                                <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.orgUserName}}
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canView"></i>
+                                <i class="fa fa-times" ng-if="!user.canView"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canAdd"></i>
+                                <i class="fa fa-times" ng-if="!user.canAdd"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canEdit"></i>
+                                <i class="fa fa-times" ng-if="!user.canEdit"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canDelete"></i>
+                                <i class="fa fa-times" ng-if="!user.canDelete"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canExportPdf"></i>
+                                <i class="fa fa-times" ng-if="!user.canExportPdf"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canExportZip"></i>
+                                <i class="fa fa-times" ng-if="!user.canExportZip"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

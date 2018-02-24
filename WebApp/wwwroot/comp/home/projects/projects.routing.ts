@@ -16,7 +16,7 @@
                 template: "<ui-view />"
             })
             .state("home.projects.list", <App.Models.IAppRoute>{
-                url: "",
+                url: "/:organisationId",
                 templateUrl: "comp/home/projects/projectsView.html",
                 controller: "projectsController",
                 ncyBreadcrumb: { label: 'Directory' },
