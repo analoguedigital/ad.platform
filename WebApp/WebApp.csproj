@@ -268,6 +268,10 @@
     <Content Include="wwwroot\comp\home\surveys\view\survey.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_metricGroup.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_metricGroupRepeater.html" />
+    <Content Include="wwwroot\comp\home\teams\assign\teamAssignView.html" />
+    <Content Include="wwwroot\comp\home\teams\edit\teamEditView.html" />
+    <Content Include="wwwroot\comp\home\teams\manage\teamManageView.html" />
+    <Content Include="wwwroot\comp\home\teams\teamsView.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
     <Content Include="wwwroot\comp\home\users\usersView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\allSurveysView.html" />
@@ -403,6 +407,8 @@
     <Content Include="wwwroot\fonts\OpenSans-Regular.ttf" />
     <Content Include="wwwroot\fonts\OpenSans-SemiBold.ttf" />
     <Content Include="wwwroot\comp\login\_particles.scss" />
+    <Content Include="wwwroot\comp\home\teams\_teams.scss" />
+    <Content Include="wwwroot\comp\home\teams\manage\_teamManageView.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -483,6 +489,11 @@
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisationsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\edit\projectEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projectsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\teams\assign\teamAssignController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\teams\edit\teamEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\teams\manage\teamManageController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\teams\teams.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\teams\TeamsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\edit\userEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\users.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\UsersController.ts" />
@@ -543,6 +554,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\formTemplateCategory.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\survey.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\organisation.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\orgTeam.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\orgUserType.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\paymentRecord.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
@@ -565,6 +577,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\metricResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\organisationResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\orgTeamResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectSummaryPrintSessionResource.ts" />

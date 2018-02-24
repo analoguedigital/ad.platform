@@ -1,0 +1,69 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight organisation-teams">
+    <div class="box">
+        <div class="box-title">
+            <h5>Directory of Teams</h5>
+        </div>
+        <div class="box-content">
+            <p lm-access="System administrator,Platform administrator,Organisation administrator">
+                <a ui-sref="home.teams.edit"><i class="fa fa-plus-square"></i> Add new</a>
+            </p>
+
+            <div st-table="displayedUsers" st-safe-src="users">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th class="text-center">IsActive</th>
+                                <th class="text-center" width="100"></th>
+                                <th class="text-center" width="100"></th>
+                                <th class="text-center" width="100"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="team in displayedTeams">
+                                <td>
+                                    <a ui-sref="home.teams.edit({id:team.id})">
+                                        <span ng-if="team.colour" class="color-block" ng-style="{'background-color': team.colour}"></span> {{team.name}}
+                                    </a>
+                                </td>
+                                <td>{{team.description}}</td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="team.isActive"></i>
+                                    <i class="fa fa-times" ng-if="!team.isActive"></i>
+                                </td>
+                                <td>
+                                    <a ui-sref="home.teams.assign({id:team.id})">
+                                        <i class="fa fa-link"></i> assign
+                                    </a>
+                                </td>
+                                <td>
+                                    <a ui-sref="home.teams.manage({id:team.id})">
+                                        <i class="fa fa-magic"></i> manage
+                                    </a>
+                                </td>
+                                <td>
+                                    <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(team.id)">
+                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+        </div>
+    </div>
+</div>

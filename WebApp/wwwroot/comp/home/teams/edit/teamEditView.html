@@ -1,0 +1,87 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="teamform" class="form-horizontal" novalidate>
+                <lm-form-group label="Name: ">
+                    <input type="text" id="name" name="name" ng-model="team.name" required />
+                </lm-form-group>
+                <lm-form-group label="Description: ">
+                    <input type="text" id="description" name="description" ng-model="team.description" required />
+                </lm-form-group>
+                <lm-form-group label="Colour: ">
+                    <input id="colour" name="colour" type="text" class="form-control" minicolors="minicolorSettings" ng-model="team.colour" />
+                </lm-form-group>
+                <lm-form-group label="Is Active: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="is-active" ng-model="team.isActive" />
+                        <label for="is-active"></label>
+                    </div>
+                </lm-form-group>
+                <lm-form-group ng-if="errors !== undefined" class="">
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{errors}}
+                        <a class="alert-link pull-right" ng-click="clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="submit(teamform)">Submit</button>
+                </lm-form-group>
+
+                <a ui-sref="home.teams.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+        </div>
+    </div>
+    <div class="box">
+        <div class="box-title">
+            <h5>Team Users</h5>
+        </div>
+        <div class="box-content">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th class="text-center">Is Manager</th>
+                        <th class="text-center" width="100">Web User</th>
+                        <th class="text-center" width="100">Mobile User</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="member in team.users">
+                        <td>
+                            <i class="fa fa-user-o" ng-if="!member.isManager"></i>
+                            <i class="fa fa-user-md" ng-if="member.isManager"></i>
+
+                            {{member.orgUser.firstName}} {{member.orgUser.surname}}
+                        </td>
+                        <td>{{member.orgUser.email}}</td>
+                        <td class="text-center">
+                            <div class="checkbox checkbox-primary no-margins">
+                                <input type="checkbox" id="chk-{{member.orgUser.id}}" ng-model="member.isManager" ng-change="updateStatus(member.id, member.isManager)" />
+                                <label for="chk-{{member.orgUser.id}}"></label>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <i class="fa fa-check" ng-if="member.orgUser.isWebUser"></i>
+                            <i class="fa fa-times" ng-if="!member.orgUser.isWebUser"></i>
+                        </td>
+                        <td class="text-center">
+                            <i class="fa fa-check" ng-if="member.orgUser.isMobileUser"></i>
+                            <i class="fa fa-times" ng-if="!member.orgUser.isMobileUser"></i>
+                        </td>
+                        <td>
+                            <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(member)">
+                                <i class="fa fa-remove"></i> revoke
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight organisation-teams">
+    <div class="box">
+        <div class="box-title">
+            <h5>Assign Users</h5>
+            <div class="box-tools">
+                <a ng-bootbox-confirm="Are you sure you want to do this?" ng-bootbox-confirm-action="ctrl.submit()" style="color: inherit">
+                    <i class="fa fa-check"></i><span class="hidden-xs"> Assign users</span>
+                </a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="well">
+                <h3>
+                    <span ng-if="team.colour" class="color-block" ng-style="{'background-color': team.colour}"></span> {{team.name}}
+                </h3>
+                <p class="text-muted">{{team.description}}</p>
+            </div>
+
+            <div st-table="displayedAssignments" st-safe-src="assignments">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>User name</th>
+                                <th class="text-center" width="100"></th>
+                                <th class="text-center" width="100"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in displayedAssignments track by $index">
+                                <td>
+                                    <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
+                                    <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.userName}}
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="manager-{{user.userId}}" ng-model="user.isManager" ng-change="user.isMember = user.isManager" />
+                                        <label for="manager-{{user.userId}}">Manager</label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="member-{{user.userId}}" ng-model="user.isMember" />
+                                        <label for="member-{{user.userId}}">Member</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+
+            <a ui-sref="home.teams.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+        </div>
+    </div>
+</div>
