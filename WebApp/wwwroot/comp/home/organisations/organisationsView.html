@@ -23,13 +23,31 @@
                         <tr>
                             <th st-sort="name">Name</th>
                             <th class="hidden-xs">Root user email</th>
-                            <th></th>
+                            <th class="text-center" width="80"></th>
+                            <th class="text-center" width="80"></th>
+                            <th class="text-center" width="80"></th>
+                            <th class="text-center" width="80"></th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="organisation in displayedOrganisations">
                             <td><a ui-sref="home.organisations.edit({id:organisation.id})">{{organisation.name}}</a></td>
                             <td class="hidden-xs">{{organisation.rootUser.email}}</td>
+                            <td>
+                                <a ui-sref="home.projects.list({organisationId:organisation.id})">
+                                    <i class="fa fa-folder-o"></i> <span class="hidden-xs"> cases</span>
+                                </a>
+                            </td>
+                            <td>
+                                <a ui-sref="home.teams.list({organisationId:organisation.id})">
+                                    <i class="fa fa-comments-o"></i> <span class="hidden-xs"> teams</span>
+                                </a>
+                            </td>
+                            <td>
+                                <a ui-sref="home.organisations.assignments({id:organisation.id})">
+                                    <i class="fa fa-link"></i> assign
+                                </a>
+                            </td>
                             <td>
                                 <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(organisation.id)">
                                     <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>

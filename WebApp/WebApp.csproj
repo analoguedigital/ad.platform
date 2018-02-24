@@ -232,6 +232,7 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDesign.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDetails.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
+    <Content Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_exportToolbox.html" />
@@ -472,6 +473,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\rateMetric\rateMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\numericMetric\numericMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\_metricGroup\metricGroupFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
