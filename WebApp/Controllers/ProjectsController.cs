@@ -17,14 +17,35 @@ namespace WebApi.Controllers
     {
         // GET api/<controller>
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(Guid? organisationId = null)
         {
-            var projects = UnitOfWork.ProjectsRepository
-                .GetProjects(CurrentUser)
-                .OrderByDescending(p => p.DateCreated)
-                .ToList();
-
+            var projects = new List<Project>();
             var result = new List<ProjectDTO>();
+
+            if (this.CurrentOrgUser != null)
+            {
+                projects = UnitOfWork.ProjectsRepository
+                    .GetProjects(CurrentUser)
+                    .OrderByDescending(p => p.DateCreated)
+                    .ToList();
+            }
+            else
+            {
+                if (organisationId.HasValue)
+                {
+                    projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
+                        .Where(x => x.OrganisationId == organisationId.Value)
+                        .OrderByDescending(x => x.DateCreated)
+                        .ToList();
+                }
+                else
+                {
+                    projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
+                        .OrderByDescending(x => x.DateCreated)
+                        .ToList();
+                }
+            }
+            
             foreach (var project in projects)
             {
                 var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
