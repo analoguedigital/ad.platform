@@ -33,7 +33,8 @@ var App;
         "uiGmapgoogle-maps",
         "minicolors",
         "jtt_angular_xgallerify",
-        "angular-loading-bar"
+        "angular-loading-bar",
+        "ui.select"
     ]);
 })(App || (App = {}));
 

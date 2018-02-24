@@ -42,7 +42,8 @@
     "bootstrap-ui-datetime-picker": "^2.6.0",
     "caret.js": "0.3.1",
     "jquery.atwho": "1.5.4",
-    "magnific-popup": "1.1.0"
+    "magnific-popup": "1.1.0",
+    "angular-ui-select": "0.19.8"
   },
   "resolutions": {
     "bootstrap": "3.3.7",
