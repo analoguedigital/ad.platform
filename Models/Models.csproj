@@ -162,6 +162,7 @@
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
     <Compile Include="Entities\OrganisationTeam.cs" />
+    <Compile Include="Entities\OrgTeamUser.cs" />
     <Compile Include="Entities\ThreadAssignment.cs" />
     <Compile Include="EntityConfig\AdultAddressConfig.cs" />
     <Compile Include="EntityConfig\AdultConfig.cs" />
@@ -185,6 +186,7 @@
     <Compile Include="EntityConfig\MultipleChoiceMetricConfig.cs" />
     <Compile Include="EntityConfig\OrganisationConfig.cs" />
     <Compile Include="EntityConfig\OrganisationWorkerConfig.cs" />
+    <Compile Include="EntityConfig\OrgTeamUserConfig.cs" />
     <Compile Include="EntityConfig\OrgUserConfig.cs" />
     <Compile Include="EntityConfig\PaymentRecordConfig.cs" />
     <Compile Include="EntityConfig\ProjectConfig.cs" />
@@ -508,9 +510,9 @@
     <Compile Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.Designer.cs">
       <DependentUpon>201802100740272_Add_is_subscribed_to_OrgUser.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802121603137_Add_organisation_teams.cs" />
-    <Compile Include="Migrations\201802121603137_Add_organisation_teams.Designer.cs">
-      <DependentUpon>201802121603137_Add_organisation_teams.cs</DependentUpon>
+    <Compile Include="Migrations\201802180150191_Add_organisation_teams.cs" />
+    <Compile Include="Migrations\201802180150191_Add_organisation_teams.Designer.cs">
+      <DependentUpon>201802180150191_Add_organisation_teams.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -662,8 +664,8 @@
     <EmbeddedResource Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.resx">
       <DependentUpon>201802100740272_Add_is_subscribed_to_OrgUser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802121603137_Add_organisation_teams.resx">
-      <DependentUpon>201802121603137_Add_organisation_teams.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201802180150191_Add_organisation_teams.resx">
+      <DependentUpon>201802180150191_Add_organisation_teams.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

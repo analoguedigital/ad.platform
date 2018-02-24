@@ -13,7 +13,7 @@ namespace LightMethods.Survey.Models.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201802121603137_Add_organisation_teams"; }
+            get { return "201802180150191_Add_organisation_teams"; }
         }
         
         string IMigrationMetadata.Source

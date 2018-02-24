@@ -16,24 +16,6 @@ namespace LightMethods.Survey.Models.EntityConfig
                 .WithMany(o => o.Teams)
                 .HasForeignKey(p => p.OrganisationId)
                 .WillCascadeOnDelete(false);
-
-            this.HasMany<OrgUser>(u => u.Managers)
-                .WithMany()
-                .Map(x =>
-                {
-                    x.MapLeftKey("OrganisationTeamId");
-                    x.MapRightKey("OrgUserId");
-                    x.ToTable("OrganisationTeamManagers");
-                });
-
-            this.HasMany<OrgUser>(u => u.Members)
-                .WithMany()
-                .Map(x =>
-                {
-                    x.MapLeftKey("OrganisationTeamId");
-                    x.MapRightKey("OrgUserId");
-                    x.ToTable("OrganisationTeamMembers");
-                });
         }
     }
 }

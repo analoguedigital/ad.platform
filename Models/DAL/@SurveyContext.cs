@@ -45,6 +45,7 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<SuperUser> SupersUsers { get; set; }
         public DbSet<Organisation> Organisations { get; set; }
         public DbSet<OrganisationTeam> OrganisationTeams { get; set; }
+        public DbSet<OrgTeamUser> OrgTeamUsers { get; set; }
         public DbSet<AdultTitle> AdultTitles { get; set; }
         public DbSet<File> Files { set; get; }
         public DbSet<Guidance> Guidance { set; get; }
@@ -179,6 +180,7 @@ namespace LightMethods.Survey.Models.DAL
             modelBuilder.Configurations.Add(new OrganisationConfig());
             modelBuilder.Configurations.Add(new OrganisationWorkerConfig());
             modelBuilder.Configurations.Add(new OrganisationTeamConfig());
+            modelBuilder.Configurations.Add(new OrgTeamUserConfig());
 
             // users config
             modelBuilder.Configurations.Add(new OrgUserConfig());

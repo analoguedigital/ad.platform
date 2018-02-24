@@ -27,8 +27,6 @@ namespace LightMethods.Survey.Models.Entities
 
         public bool IsActive { get; set; }
 
-        public virtual ICollection<OrgUser> Managers { get; set; }
-
-        public virtual ICollection<OrgUser> Members { get; set; }
+        public virtual ICollection<OrgTeamUser> Users { get; set; }
     }
 }

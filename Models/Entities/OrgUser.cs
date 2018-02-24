@@ -51,8 +51,6 @@ namespace LightMethods.Survey.Models.Entities
 
         public bool IsSubscribed { get; set; }
 
-        public virtual ICollection<OrganisationTeam> Teams { get; set; }
-
         public OrgUser()
         {
             IsRootUser = false;
