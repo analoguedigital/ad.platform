@@ -132,6 +132,7 @@
     <Compile Include="DTO\FilledForms\FormValueDTO.cs" />
     <Compile Include="DTO\FormTemplates\CloneReqDTO.cs" />
     <Compile Include="DTO\FormTemplates\EditBasicDetailsReqDTO.cs" />
+    <Compile Include="DTO\FormTemplates\ThreadAssignmentDTO.cs" />
     <Compile Include="DTO\Metrics\AttachmentMetricDTO.cs" />
     <Compile Include="DTO\DataLists\DataListDTO.cs" />
     <Compile Include="DTO\DataLists\DataListItemAttrDTO.cs" />
@@ -152,6 +153,8 @@
     <Compile Include="DTO\Metrics\TimeMetricDTO.cs" />
     <Compile Include="DTO\OperationResult.cs" />
     <Compile Include="DTO\Users\OrganisationDTO.cs" />
+    <Compile Include="DTO\Users\OrganisationTeamDTO.cs" />
+    <Compile Include="DTO\Users\OrgTeamUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserTypeDTO.cs" />
     <Compile Include="DTO\Users\PaymentRecordDTO.cs" />
