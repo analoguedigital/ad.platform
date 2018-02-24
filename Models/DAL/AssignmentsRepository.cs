@@ -14,8 +14,8 @@ namespace LightMethods.Survey.Models.DAL
             AllowAdd,
             AllowEdit,
             AllowDelete,
-            AllowPdfExport,
-            AllowZipExport
+            AllowExportPdf,
+            AllowExportZip
         }
 
         private Assignment FlagAccessLevel(Assignment assignment, AccessLevels accessLevel, bool grant)
@@ -45,13 +45,13 @@ namespace LightMethods.Survey.Models.DAL
                         if (grant) assignment.CanView = true;
                         break;
                     }
-                case AccessLevels.AllowPdfExport:
+                case AccessLevels.AllowExportPdf:
                     {
                         assignment.CanExportPdf = grant;
                         if (grant) assignment.CanView = true;
                         break;
                     }
-                case AccessLevels.AllowZipExport:
+                case AccessLevels.AllowExportZip:
                     {
                         assignment.CanExportZip = grant;
                         if (grant) assignment.CanView = true;

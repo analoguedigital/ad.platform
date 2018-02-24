@@ -43,8 +43,8 @@ namespace LightMethods.Survey.Models.DAL
                 result.AllowAdd = true;
                 result.AllowEdit = true;
                 result.AllowDelete = true;
-                result.AllowPdfExport = true;
-                result.AllowZipExport = true;
+                result.AllowExportPdf = true;
+                result.AllowExportZip = true;
             }
             else
             {
@@ -55,8 +55,8 @@ namespace LightMethods.Survey.Models.DAL
                     result.AllowAdd = assignment.CanAdd;
                     result.AllowEdit = assignment.CanEdit;
                     result.AllowDelete = assignment.CanDelete;
-                    result.AllowPdfExport = assignment.CanExportPdf;
-                    result.AllowZipExport = assignment.CanExportZip;
+                    result.AllowExportPdf = assignment.CanExportPdf;
+                    result.AllowExportZip = assignment.CanExportZip;
                 }
             }
 

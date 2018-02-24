@@ -21,5 +21,24 @@ namespace LightMethods.Survey.Models.DTO
         public bool AllowEdit { get; set; }
 
         public bool AllowDelete { get; set; }
+
+        public bool AllowExportPdf { get; set; }
+        
+        public bool AllowExportZip { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var item = obj as ProjectDTO;
+
+            if (item == null)
+                return false;
+
+            return this.Id.Equals(item.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }

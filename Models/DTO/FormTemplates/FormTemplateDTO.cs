@@ -11,6 +11,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public Guid? ProjectId { set; get; }
 
+        public OrganisationDTO Organisation { get; set; }
+
         public Guid CreatedById { set; get; }
 
         public string ProjectName { get; set; }
@@ -33,5 +35,28 @@ namespace LightMethods.Survey.Models.DTO
         public Guid? TimelineBarMetricId { set; get; }
 
         public ICollection<MetricGroupDTO> MetricGroups { set; get; }
+
+        public bool? CanView { get; set; }
+
+        public bool? CanAdd { get; set; }
+
+        public bool? CanEdit { get; set; }
+
+        public bool? CanDelete { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var item = obj as FormTemplateDTO;
+
+            if (item == null)
+                return false;
+
+            return this.Id.Equals(item.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }
