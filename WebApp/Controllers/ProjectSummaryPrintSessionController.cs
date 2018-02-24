@@ -61,6 +61,14 @@ namespace WebApi.Controllers
             if (session == null)
                 return null;
 
+            if (this.CurrentOrgUser != null)
+            {
+                var project = UnitOfWork.ProjectsRepository.Find(session.ProjectId);
+                var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == this.CurrentOrgUser.Id);
+                if (assignment == null || !assignment.CanExportPdf)
+                    return new HttpResponseMessage(HttpStatusCode.Forbidden);
+            }
+
             var rootIndex = GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
@@ -74,6 +82,14 @@ namespace WebApi.Controllers
 
         private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
         {
+            if (this.CurrentOrgUser != null)
+            {
+                var project = UnitOfWork.ProjectsRepository.Find(session.ProjectId);
+                var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == this.CurrentOrgUser.Id);
+                if (assignment == null || !assignment.CanExportZip)
+                    return new HttpResponseMessage(HttpStatusCode.Forbidden);
+            }
+
             var rootIndex = GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
