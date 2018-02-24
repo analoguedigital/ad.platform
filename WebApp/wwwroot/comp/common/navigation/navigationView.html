@@ -2,7 +2,6 @@
     <div class="sidebar-collapse">
         <ul lm-side-bar class="nav metismenu" id="side-menu">
             <li class="nav-header">
-
                 <div class="dropdown profile-element" uib-dropdown>
                     <a class="dropdown-toggle" uib-dropdown-toggle>
                         <span class="clear">
@@ -13,7 +12,6 @@
                         </span>
                     </a>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <!--<li><a href="">My profile</a></li>-->
                         <li><a ui-sref="home.subscriptions.list">Subscriptions</a></li>
                         <li><a ng-click="resetPassword()">Reset password</a></li>
                         <li class="divider"></li>
@@ -21,27 +19,28 @@
                     </ul>
                 </div>
                 <div class="logo-element">ON</div>
-
             </li>
-
             <li ng-class="{'active':$state.includes('home.dashboard.layout')}">
                 <a ui-sref="home.dashboard.layout" ui-sref-opts="{reload: true}"><i class="fa fa-home"></i> <span class="nav-label">Dashboard</span> </a>
             </li>
-            <li lm-access="System administrator" ng-class="{'active':$state.includes('home.organisations')}">
+            <li lm-access="System administrator,Platform administrator" ng-class="{'active':$state.includes('home.organisations')}">
                 <a ui-sref="home.organisations.list" ui-sref-opts="{reload: true}"><i class="fa fa-building-o"></i> <span class="nav-label">Organisations</span></a>
             </li>
-            <li lm-access="Organisation administrator" ng-class="{'active':$state.includes('home.projects')}">
-                <a ui-sref="home.projects.list" ui-sref-opts="{reload: true}"><i class="fa fa-folder-o"></i> <span class="nav-label">Users</span></a>
+            <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation team manager" ng-class="{ 'active': $state.includes('home.teams')}">
+                <a ui-sref="home.teams.list" ui-sref-opts="{reload: true}"><i class="fa fa-comments-o"></i> <span class="nav-label">Teams</span></a>
             </li>
-            <li lm-access="Organisation user" ng-class="{'active':$state.includes('home.surveys')}">
+            <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{'active':$state.includes('home.projects')}">
+                <a ui-sref="home.projects.list" ui-sref-opts="{reload: true}"><i class="fa fa-folder-o"></i> <span class="nav-label">Cases</span></a>
+            </li>
+            <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation user" ng-class="{'active':$state.includes('home.surveys')}">
                 <a ui-sref="home.surveys.list" ui-sref-opts="{reload: true}"><i class="fa fa-file-text-o"></i> <span class="nav-label">Forms</span></a>
             </li>
-            <li lm-access="Organisation administrator" ng-class="{'active':$state.includes('home.users')}">
-                <a ui-sref="home.users.list" ui-sref-opts="{reload: true}"><i class="fa fa-users"></i> <span class="nav-label">User Management</span></a>
+            <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{'active':$state.includes('home.users')}">
+                <a ui-sref="home.users.list" ui-sref-opts="{reload: true}"><i class="fa fa-user-md"></i> <span class="nav-label">User Management</span></a>
             </li>
-            <li lm-access="Organisation administrator" ui-sref-active="active">
+            <li lm-access="System administrator,Platform administrator,Organisation administrator" ui-sref-active="active">
                 <a ui-sref="home.designer" aria-expanded="false"><i class="fa fa-paint-brush"></i> <span class="nav-label">Designer</span><span class="fa arrow"></span></a>
-                <ul lm-access="Organisation administrator" aria-expanded="false" class="nav nav-second-level collapse in">
+                <ul lm-access="System administrator,Platform administrator,Organisation administrator" aria-expanded="false" class="nav nav-second-level collapse in">
                     <li ui-sref-active="active">
                         <a ui-sref="home.formtemplates.list" ui-sref-opts="{reload: true}">Form Templates</a>
                     </li>
@@ -50,10 +49,6 @@
                     </li>
                 </ul>
             </li>
-            <!--<li ui-sref-active="active">
-                <a ui-sref="home.settings"><i class="fa fa-gears"></i> <span class="nav-label">Settings</span></a>
-            </li>-->
         </ul>
-
     </div>
 </nav>
