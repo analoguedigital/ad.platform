@@ -16,6 +16,7 @@ namespace WebApi.Controllers
     public class OrganisationsController : BaseApiController
     {
         private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
+        private OrgUsersRepository OrgUsers { get { return UnitOfWork.OrgUsersRepository; } }
 
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
@@ -83,6 +84,108 @@ namespace WebApi.Controllers
         {
             Organisations.Delete(id);
             UnitOfWork.Save();
+        }
+
+        [HttpPost]
+        [Route("api/organisations/{id:guid}/assign")]
+        public IHttpActionResult AssignUsers(Guid id, OrganisationAssignmentDTO model)
+        {
+            if (id == Guid.Empty)
+                return NotFound();
+
+            var org = this.Organisations.Find(id);
+            if (org == null)
+                return NotFound();
+
+            foreach (var userId in model.OrgUsers)
+            {
+                var orgUser = this.OrgUsers.Find(userId);
+                orgUser.OrganisationId = id;    // update organisation
+
+                if (orgUser.CurrentProject != null) // update current project, if viable
+                    if (orgUser.CurrentProject.CreatedById == orgUser.Id)
+                    {
+                        var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
+                        project.OrganisationId = org.Id;    // update project organisation
+
+                        // update threads under this project
+                        var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
+                            .Where(t => t.ProjectId == project.Id)
+                            .ToList();
+
+                        foreach (var form in threads)
+                        {
+                            form.OrganisationId = org.Id;
+                            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
+                        }
+
+                        // assign Org root user to the project
+                        UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
+                        {
+                            ProjectId = orgUser.CurrentProjectId.Value,
+                            OrgUserId = org.RootUserId.Value,
+                            CanAdd = true,
+                            CanEdit = true,
+                            CanDelete = true,
+                            CanView = true,
+                            CanExportPdf = true,
+                            CanExportZip = true
+                        });
+                    }
+            }
+
+            UnitOfWork.Save();
+
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("api/organisations/{id:guid}/revoke/{userId:guid}")]
+        public IHttpActionResult RevokeUser(Guid id, Guid userId)
+        {
+            var org = this.Organisations.Find(id);
+            if (org == null)
+                return NotFound();
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(userId);
+            if (orgUser == null)
+                return NotFound();
+
+            // OnRecord ID: cfa81eb0-9fc7-4932-a3e8-1c822370d034
+            var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
+                .Where(x => x.Name == "OnRecord").FirstOrDefault();
+
+            orgUser.OrganisationId = onrecord.Id;
+            if (orgUser.CurrentProject != null)
+                if (orgUser.CurrentProject.CreatedById == orgUser.Id)
+                {
+                    var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
+                    project.OrganisationId = onrecord.Id;    // update project organisation
+
+                    var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
+                           .Where(t => t.ProjectId == project.Id)
+                           .ToList();
+
+                    foreach (var form in threads)
+                    {
+                        form.OrganisationId = onrecord.Id;
+                        UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
+                    }
+
+                    var rootUserAssignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
+                        .Where(x => x.OrgUserId == org.RootUserId && x.ProjectId == project.Id).FirstOrDefault();
+
+                    UnitOfWork.AssignmentsRepository.Delete(rootUserAssignment);
+                }
+
+            UnitOfWork.Save();
+
+            return Ok();
+        }
+
+        public class OrganisationAssignmentDTO
+        {
+            public List<Guid> OrgUsers { get; set; }
         }
     }
 }
