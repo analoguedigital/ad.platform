@@ -229,6 +229,18 @@ namespace LightMethods.Survey.Models.DAL
                 return _FormValuesRepository;
             }
         }
-              
+
+        private ThreadAssignmentsRepository _ThreadAssignmentsRepository;
+        public ThreadAssignmentsRepository ThreadAssignmentsRepository
+        {
+            get
+            {
+
+                if (this._ThreadAssignmentsRepository == null)
+                    this._ThreadAssignmentsRepository = new ThreadAssignmentsRepository(this);
+
+                return _ThreadAssignmentsRepository;
+            }
+        }
     }
 }

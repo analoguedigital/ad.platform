@@ -120,6 +120,7 @@
     <Compile Include="DAL\PromotionCodesRepository.cs" />
     <Compile Include="DAL\RolesRepository.cs" />
     <Compile Include="DAL\SubscriptionsRepository.cs" />
+    <Compile Include="DAL\ThreadAssignmentsRepository.cs" />
     <Compile Include="DTO\AttachmentDTO.cs" />
     <Compile Include="DTO\DataLists\AddDataListRelationshipReqDTO.cs" />
     <Compile Include="DTO\DataLists\EditDataListRelationshipReqDTO.cs" />
