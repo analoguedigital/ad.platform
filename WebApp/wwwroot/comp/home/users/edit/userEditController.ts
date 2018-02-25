@@ -13,6 +13,7 @@ module App {
         types: Models.IOrgUserType[];
         errors: string;
         birthDateCalendar: any;
+        teams: Models.IOrgTeam[];
 
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
@@ -27,15 +28,16 @@ module App {
         isInsertMode: boolean;
         errors: string;
         genderTypes: GenderType[];
-
         birthDateCalendar = { isOpen: false };
+        teams: Models.IOrgTeam[];
 
-        static $inject: string[] = ["orgUserResource", "orgUserTypeResource", "$state", "$stateParams"];
+        static $inject: string[] = ["orgUserResource", "orgUserTypeResource", "$state", "$stateParams", "orgTeamResource"];
         constructor(
             private orgUserResource: Resources.IOrgUserResource,
             private orgUserTypeResource: Resources.IOrgUserTypeResource,
             private $state: ng.ui.IStateService,
-            private $stateParams: ng.ui.IStateParamsService
+            private $stateParams: ng.ui.IStateParamsService,
+            private orgTeamResource: Resources.IOrgTeamResource
         ) {
             this.title = "Users";
             this.genderTypes = [
@@ -59,6 +61,10 @@ module App {
             } else {
                 this.orgUserResource.get({ id: userId }).$promise.then((user) => {
                     this.user = user;
+
+                    this.orgTeamResource.getUserTeams({ userId: user.id }, (teams) => {
+                        this.teams = teams;
+                    });
                 });
             }
         }

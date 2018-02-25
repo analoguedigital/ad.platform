@@ -412,6 +412,7 @@
     <Content Include="wwwroot\comp\home\teams\_teams.scss" />
     <Content Include="wwwroot\comp\home\teams\manage\_teamManageView.scss" />
     <Content Include="wwwroot\comp\home\formTemplates\assignments\_formTemplateAssignments.scss" />
+    <Content Include="wwwroot\comp\home\users\edit\_userEditView.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -78,6 +78,24 @@ namespace WebApi.Controllers
         }
 
         [DeflateCompression]
+        [ResponseType(typeof(IEnumerable<OrganisationTeamDTO>))]
+        [Route("api/orgteams/getuserteams/{userId:guid}")]
+        public IHttpActionResult GetUserTeams(Guid userId)
+        {
+            if (userId == Guid.Empty)
+                return NotFound();
+
+            var teams = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
+                .Where(u => u.OrgUserId == userId)
+                .Select(t => t.OrganisationTeam)
+                .ToList()
+                .Select(x => Mapper.Map<OrganisationTeamDTO>(x))
+                .ToList();
+
+            return Ok(teams);
+        }
+
+        [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         [Route("api/orgteams/{id:guid}/assignableusers")]
         public IHttpActionResult GetAssignableUsers(Guid id)
