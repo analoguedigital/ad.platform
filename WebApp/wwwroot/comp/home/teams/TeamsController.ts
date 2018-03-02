@@ -59,7 +59,9 @@ module App {
 
             this.orgTeamResource.delete({ id: id },
                 () => { this.load(); },
-                (err) => { console.log(err); });
+                (err) => {
+                    this.toastr.error(err.data.message);
+                });
         }
     }
 

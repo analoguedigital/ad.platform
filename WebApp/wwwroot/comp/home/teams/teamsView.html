@@ -24,6 +24,7 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Description</th>
+                                <th class="text-center" lm-access="System administrator,Platform administrator">Organisation</th>
                                 <th class="text-center">IsActive</th>
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="100"></th>
@@ -38,6 +39,7 @@
                                     </a>
                                 </td>
                                 <td>{{team.description}}</td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator">{{team.organisation.name}}</td>
                                 <td class="text-center">
                                     <i class="fa fa-check" ng-if="team.isActive"></i>
                                     <i class="fa fa-times" ng-if="!team.isActive"></i>
