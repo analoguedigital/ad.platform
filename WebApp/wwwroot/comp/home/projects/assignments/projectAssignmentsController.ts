@@ -51,43 +51,43 @@ module App {
 
         activate() {
             var projectId = this.$stateParams['id'];
-            var projectPromise = this.projectResource.get({ id: projectId }).$promise;
-            projectPromise.then((project) => { this.project = project; });
+            var projectPromise = this.projectResource.get({ id: projectId }, (project) => {
+                this.project = project;
 
-            var usersPromise = this.orgUserResource.query().$promise;
-            usersPromise.then((users) => { this.users = users; });
+                this.orgUserResource.query({ organisationId: this.project.organisation.id }, (users) => {
+                    this.users = users;
 
-            this.$q.all([projectPromise, usersPromise]).then(() => {
-                this.projectResource.assignments({ id: projectId }, (assignments) => {
-                    this.userAssignments = [];
+                    this.projectResource.assignments({ id: projectId }, (assignments) => {
+                        this.userAssignments = [];
 
-                    _.forEach(this.users, (user) => {
-                        var userName = user.email;
-                        if (user.firstName || user.surname)
-                            userName = `${user.firstName} ${user.surname}`;
+                        _.forEach(this.users, (user) => {
+                            var userName = user.email;
+                            if (user.firstName || user.surname)
+                                userName = `${user.firstName} ${user.surname}`;
 
-                        var assgn = _.find(assignments, { 'orgUserId': user.id });
-                        var userAssignment = <Models.IProjectAssignment>assgn;
+                            var assgn = _.find(assignments, { 'orgUserId': user.id });
+                            var userAssignment = <Models.IProjectAssignment>assgn;
 
-                        var record: IAssignmentUser = {
-                            userId: user.id,
-                            name: userName,
-                            email: user.email,
-                            isRootUser: user.isRootUser,
-                            isWebUser: user.isWebUser,
-                            isMobileUser: user.isMobileUser,
-                            canAdd: userAssignment ? userAssignment.canAdd : false,
-                            canEdit: userAssignment ? userAssignment.canEdit : false,
-                            canView: userAssignment ? userAssignment.canView : false,
-                            canDelete: userAssignment ? userAssignment.canDelete : false,
-                            canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
-                            canExportZip: userAssignment ? userAssignment.canExportZip : false
-                        };
+                            var record: IAssignmentUser = {
+                                userId: user.id,
+                                name: userName,
+                                email: user.email,
+                                isRootUser: user.isRootUser,
+                                isWebUser: user.isWebUser,
+                                isMobileUser: user.isMobileUser,
+                                canAdd: userAssignment ? userAssignment.canAdd : false,
+                                canEdit: userAssignment ? userAssignment.canEdit : false,
+                                canView: userAssignment ? userAssignment.canView : false,
+                                canDelete: userAssignment ? userAssignment.canDelete : false,
+                                canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
+                                canExportZip: userAssignment ? userAssignment.canExportZip : false
+                            };
 
-                        this.userAssignments.push(record);
+                            this.userAssignments.push(record);
+                        });
+
+                        this.displayedAssignments = [].concat(this.userAssignments);
                     });
-
-                    this.displayedAssignments = [].concat(this.userAssignments);
                 });
             });
         }
