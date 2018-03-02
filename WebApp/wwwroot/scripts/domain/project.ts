@@ -11,7 +11,7 @@ module App.Models {
         endDate: Date;
         notes: string;
         archived: boolean;
-
+        organisation: Models.IOrganisation;
         allowView: boolean;
         allowAdd: boolean;
         allowEdit: boolean;

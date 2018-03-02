@@ -14,6 +14,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public DateTime? EndDate { get; set; }
 
+        public OrganisationDTO Organisation { get; set; }
+
         public bool AllowView { get; set; }
 
         public bool AllowAdd { get; set; }

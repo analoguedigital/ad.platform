@@ -16,6 +16,7 @@ module App.Models {
     export interface IOrgUser extends IUserBase, ng.resource.IResource<IOrgUser> {
 
         organisationId: string;
+        organisation: IOrganisation;
         firstName: string;
         surname: string;
         type: IOrgUserType;

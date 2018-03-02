@@ -22,6 +22,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public Guid OrganisationId { get; set; }
 
+        public OrganisationDTO Organisation { get; set; }
+
         public bool IsRootUser { set; get; }
 
         public OrgUserTypeDTO Type { get; set; }
