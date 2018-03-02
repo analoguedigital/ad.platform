@@ -217,6 +217,7 @@
     <Content Include="wwwroot\comp\home\dataLists\edit\dataListEditView.html" />
     <Content Include="wwwroot\comp\home\dataLists\edit\dataListRelationshipEditView.html" />
     <Content Include="wwwroot\comp\home\dataLists\edit\dataListItemEditView.html" />
+    <Content Include="wwwroot\comp\downloads\downloadsView.html" />
     <Content Include="wwwroot\comp\home\formTemplates\assignments\formTemplateAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\formDesignView.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\forms\timeMetric\enter.html" />
@@ -308,6 +309,7 @@
     <Compile Include="Controllers\CustomControllers\MBS\Models\Target.cs" />
     <Compile Include="Controllers\CustomControllers\MBS\Models\Evidence.cs" />
     <Compile Include="Controllers\CustomControllers\MBS\Models\Update.cs" />
+    <Compile Include="Controllers\DownloadsController.cs" />
     <Compile Include="Controllers\FeedbacksController.cs" />
     <Compile Include="Controllers\OrgTeamsController.cs" />
     <Compile Include="Controllers\ProjectSummaryPrintSessionController.cs" />
@@ -463,6 +465,8 @@
     <TypeScriptCompile Include="wwwroot\comp\home\dataLists\edit\dataListRelationshipEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\dataLists\edit\dataListItemEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\dataLists\dataLists.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\downloads\downloads.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\downloads\downloadsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\assignments\formTemplateAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\timeMetric\timeMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\formTemplates.routing.ts" />
@@ -581,6 +585,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\dataListItemResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\dataListResource .ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\dataResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\downloadResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateCategoryResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\metricGroupResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateResource.ts" />

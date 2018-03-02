@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.DTO.DataLists;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
@@ -116,7 +117,8 @@ namespace WebApi
                 });
             Mapper.CreateMap<AttachmentDTO, Attachment>();
             Mapper.CreateMap<Attachment, AttachmentDTO>()
-                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name; });
+                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name; })
+                .AfterMap((src, dest) => { dest.OneTimeAccessId = OneTimeAccessService.AddFileIdForTicket(src.Id); });
 
             Mapper.CreateMap<AttachmentMetric, AttachmentMetricDTO>();
             Mapper.CreateMap<AttachmentMetricDTO, AttachmentMetric>()

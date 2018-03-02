@@ -162,6 +162,7 @@
     <Compile Include="DTO\Projects\ProjectDTO.cs" />
     <Compile Include="DTO\Users\PromotionCodeDTO.cs" />
     <Compile Include="DTO\Users\SubscriptionDTO.cs" />
+    <Compile Include="DTO\Users\UserDTO.cs" />
     <Compile Include="Entities\Email.cs" />
     <Compile Include="Entities\Feedback.cs" />
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
@@ -535,6 +536,7 @@
     <Compile Include="Services\Identity\EmailService.cs" />
     <Compile Include="Services\Identity\SmsService.cs" />
     <Compile Include="Services\Identity\ApplicationUserStore.cs" />
+    <Compile Include="Services\OneTimeAccessService.cs" />
     <Compile Include="Services\SubscriptionService.cs" />
     <Compile Include="Services\SurveyProvider.cs" />
   </ItemGroup>

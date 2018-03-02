@@ -4,7 +4,7 @@
     export interface IAttachment {
 
         id: string;
-        url: string;
+        oneTimeAccessId: string;
         fileName: string;
         typeString: string;
         fileSize: number;

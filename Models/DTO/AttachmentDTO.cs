@@ -10,10 +10,10 @@ namespace LightMethods.Survey.Models.DTO
 
         public string FileName { set; get; }
 
-        public string Url { set; get; }
-
         public string TypeString { set; get; }
 
         public bool isDeleted { set; get; }
+
+        public string OneTimeAccessId { get; set; }
     }
 }

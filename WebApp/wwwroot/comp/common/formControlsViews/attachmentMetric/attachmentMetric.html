@@ -4,14 +4,14 @@
             <div class="photos" lm-zoom-gallery>
                 <div xgallerify="{'margin':5, 'mode':'flickr'}">
                     <a class="mp-link" ng-repeat="attachment in formValue.attachments | filter: {typeString:'image', isDeleted: false} track by $index"
-                       href="{{attachment.url}}" title="{{attachment.fileName}}">
-                        <img ng-src="{{attachment.url}}" alt="{{attachment.fileName}}" ng-click="deleteAttachment($event, attachment)" />
+                       href="/api/downloads/{{attachment.oneTimeAccessId}}" title="{{attachment.fileName}}">
+                        <img ng-src="/api/downloads/{{attachment.oneTimeAccessId}}" alt="{{attachment.fileName}}" ng-click="deleteAttachment($event, attachment)" />
                     </a>
                 </div>
             </div>
-    
+
             <div>
-                <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'!image', isDeleted: false} track by $index" ng-click="deleteAttachment($event, attachment)" >
+                <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'!image', isDeleted: false} track by $index" ng-click="deleteAttachment($event, attachment)">
                     <div class='col-xs-8 file-name'>
                         <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
                     </div>
@@ -37,7 +37,7 @@
                 <tbody>
                     <tr ng-repeat='attachment in formValue.attachments | filter: {isDeleted: false} track by $index'>
                         <td class='file-name'>
-                            <a href="{{attachment.url}}" target="_blank">{{attachment.fileName}}</a>
+                            <a href="https://platform.onrecord.tech/app/index.html#!/downloads/{{attachment.id}}">{{attachment.fileName}}</a>
                         </td>
                         <td class="info text-center">
                             {{attachment.typeString}}

@@ -9,6 +9,9 @@
         .config(ConfigDateTransformer)
         .config(ConfigLoadingBar);
 
+    angular.module("app")
+        .value('RedirectUrlAfterLogin', { url: '/' });
+
     ConfigRoutes.$inject = ["$stateProvider", "$urlRouterProvider"];
     function ConfigRoutes($stateProvider: angular.ui.IStateProvider,
         $urlRouterProvider: angular.ui.IUrlRouterProvider) {
