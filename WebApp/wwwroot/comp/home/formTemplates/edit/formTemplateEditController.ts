@@ -49,16 +49,22 @@ module App {
 
         activate() {
             if (this.formTemplateId === '')
+            {
                 this.formTemplateId = '00000000-0000-0000-0000-000000000000';
-
-            this.formTemplateResource.get({ id: this.formTemplateId })
-                .$promise.then((form) => {
-                    this.formTemplate = form;
-
-                    this.formTemplateResource.getAssignments({ id: this.formTemplateId }, (assignments) => {
-                        this.assignments = assignments;
+                this.formTemplateResource.get({ id: this.formTemplateId }).$promise
+                    .then((form) => {
+                        this.formTemplate = form;
                     });
-                });
+            } else {
+                this.formTemplateResource.get({ id: this.formTemplateId })
+                    .$promise.then((form) => {
+                        this.formTemplate = form;
+
+                        this.formTemplateResource.getAssignments({ id: this.formTemplateId }, (assignments) => {
+                            this.assignments = assignments;
+                        });
+                    });
+            }
 
             this.categories = this.formTemplateCategoryResource.query();
             this.projects = this.projectResource.query();

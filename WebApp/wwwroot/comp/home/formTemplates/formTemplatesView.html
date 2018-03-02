@@ -17,36 +17,38 @@
     </div>
 
     <div class="box">
+        <div class="box-content">
+            <form class="form-inline">
+                <div label="Type: " ng-init="isShared = true">
+                    <div class="radio" style="padding-left: 0">
+                        <input type="radio" name="shared-radio" id="shared-radio" ng-value="true" ng-model="isShared" ng-click="ctrl.getSharedTemplates()" />
+                        <label for="shared-radio">Shared</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="project-radio" id="project-radio" ng-value="false" ng-model="isShared" />
+                        <label for="project-radio">Project specific</label>
+                    </div>
+                </div>
+            </form>
+            <ui-select append-to-body="true" ng-model="ctrl.$scope.selectedProject" on-select="ctrl.load()" ng-show="!isShared">
+                <ui-select-match placeholder="Select a project">
+                    <span ng-bind="$select.selected.name"></span>
+                </ui-select-match>
+                <ui-select-choices repeat="project in (projects | filter: $select.search) track by project.id">
+                    <span ng-bind="project.name"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+
+    <div class="box">
         <div class="box-title">
             <h5>All your form templates <span ng-if="selectedProject != null">- {{selectedProject.name}}</span></h5>
             <div class="box-tools">
-                <a ui-sref="home.formtemplates.edit"><i class="fa fa-plus-square"></i> Add new</a>
+                <a ui-sref="home.formtemplates.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
             </div>
         </div>
         <div class="box-content">
-            <div>
-                <form class="form-inline">
-                    <div label="Type: " ng-init="isShared = true">
-                        <div class="radio">
-                            <input type="radio" name="shared-radio" id="shared-radio" ng-value="true" ng-model="isShared" ng-click="ctrl.getSharedTemplates()" />
-                            <label for="shared-radio">Shared</label>
-                        </div>
-                        <div class="radio">
-                            <input type="radio" name="project-radio" id="project-radio" ng-value="false" ng-model="isShared" />
-                            <label for="project-radio">Project specific</label>
-                        </div>
-                    </div>
-                </form>
-                <ui-select append-to-body="true" ng-model="ctrl.$scope.selectedProject" on-select="ctrl.load()" ng-show="!isShared">
-                    <ui-select-match placeholder="Select a project">
-                        <span ng-bind="$select.selected.name"></span>
-                    </ui-select-match>
-                    <ui-select-choices repeat="project in (projects | filter: $select.search) track by project.id">
-                        <span ng-bind="project.name"></span>
-                    </ui-select-choices>
-                </ui-select>
-            </div>
-
             <div st-table="displayedForms" st-safe-src="forms">
                 <div>
                     <form name="search-form" class="form-inline">
