@@ -1,0 +1,25 @@
+﻿
+<div class="modal-header">
+    <h3 class="modal-title">
+        <i class="fa fa-user-plus"></i> Add new super user
+    </h3>
+</div>
+<div class="modal-body">
+    <form name="addSuperUserForm">
+        <lm-form-group label="Email address:">
+            <input type="email" name="email" id="email" ng-model="ctrl.model.email" required />
+        </lm-form-group>
+
+        <lm-form-group label="Password:">
+            <input type="password" name="password" id="password" ng-model="ctrl.model.password" required ng-minlength="6" ng-em-minlength="Passwords must be at least 6 characters." />
+        </lm-form-group>
+        <lm-form-group label="Confirm password:">
+            <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.model.confirmPassword" ng-change="ctrl.checkMatch()" required />
+            <p ng-show="!ctrl.isMatch" class="text-danger">Passwords are not match.</p>
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.createSuperUser(addSuperUserForm)">Create Super User</button>
+</div>

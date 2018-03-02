@@ -275,6 +275,7 @@
     <Content Include="wwwroot\comp\home\teams\manage\teamManageView.html" />
     <Content Include="wwwroot\comp\home\teams\teamsView.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
+    <Content Include="wwwroot\comp\home\users\superuser\addSuperUserView.html" />
     <Content Include="wwwroot\comp\home\users\usersView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\allSurveysView.html" />
     <Content Include="wwwroot\comp\home\surveys\new\newSurveyView.html" />
@@ -324,6 +325,7 @@
     <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\OrgUsersController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Filters\DeflateCompressionAttribute.cs" />
     <Compile Include="Models\Account\AccountBindingModels.cs" />
     <Compile Include="Models\Account\AccountViewModels.cs" />
@@ -501,6 +503,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\teams\teams.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\TeamsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\edit\userEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\superuser\addSuperUserController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\users.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\UsersController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\all\allSurveysController.ts" />

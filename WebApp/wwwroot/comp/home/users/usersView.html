@@ -6,7 +6,9 @@
         </div>
         <div class="box-content">
             <p>
-                <a ui-sref="home.users.edit"><i class="fa fa-plus-square"></i> Add new</a>
+                <a ui-sref="home.users.edit"><i class="fa fa-plus-square-o"></i> Add user</a> &nbsp;
+
+                <a lm-access="System administrator" ng-click="addSuperUser()"><i class="fa fa-user-plus"></i> Add super user</a>
             </p>
 
             <div st-table="displayedUsers" st-safe-src="users">
@@ -22,12 +24,14 @@
                     <table class="table table-hover table-striped">
                         <thead>
                             <tr>
-                                <th>Email</th>
-                                <th>First names</th>
-                                <th>Surname</th>
-                                <th class="hidden-xs">Type</th>
-                                <th lm-access="System administrator,Platform administrator"></th>
-                                <th lm-access="System administrator,Platform administrator"></th>
+                                <th st-sort="email">Email address</th>
+                                <th width="150" st-sort="firstName">First name</th>
+                                <th width="150" st-sort="surname">Surname</th>
+                                <th class="text-center" width="150" st-sort="organisation.name">Organisation</th>
+                                <th class="text-center" width="150" st-sort="type.name">Type</th>
+                                <th class="text-center" width="150" lm-access="System administrator,Platform administrator"></th>
+                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator"></th>
+                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,11 +44,17 @@
                                 </td>
                                 <td>{{user.firstName}}</td>
                                 <td>{{user.surname}}</td>
-                                <td class="hidden-xs">{{user.type.name}}</td>
-                                <td lm-access="System administrator,Platform administrator"><a ng-click="resetPassword(user)"><i class="fa fa-key"></i><span class="hidden-xs"> Reset Password</span></a></td>
-                                <td lm-access="System administrator,Platform administrator">
+                                <td class="text-center">{{user.organisation.name}}</td>
+                                <td class="text-center">{{user.type.name}}</td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator"><a ng-click="resetPassword(user)"><i class="fa fa-key"></i><span class="hidden-xs"> Reset Password</span></a></td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator">
                                     <a ng-if="!user.isRootUser" ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(user.id)">
                                         <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                    </a>
+                                </td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator">
+                                    <a ng-bootbox-confirm="Are you sure you want to revoke this user?" ng-bootbox-confirm-action="revoke(user)" ng-if="user.organisation.name !== 'OnRecord' && !user.isRootUser">
+                                        <i class="fa fa-unlink"></i><span class="hidden-xs"> revoke</span>
                                     </a>
                                 </td>
                             </tr>
@@ -52,7 +62,7 @@
                     </table>
                 </div>
 
-                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
             </div>
         </div>
     </div>

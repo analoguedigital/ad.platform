@@ -6,7 +6,9 @@ module App.Resources {
         update(user: Models.IOrgUser, success: Function, error?: Function): Models.IOrgUser;
     }
 
-    export interface IUserResource extends ng.resource.IResourceClass<Models.IUser> { }
+    export interface IUserResource extends ng.resource.IResourceClass<Models.IUser> {
+        createSuperUser(params: Object, success: Function, error?: Function): Models.IUser;
+    }
 
     OrgUserResource.$inject = ["$resource"];
     export function OrgUserResource($resource: ng.resource.IResourceService): IOrgUserResource {
@@ -34,7 +36,11 @@ module App.Resources {
 
     UserResource.$inject = ["$resource"];
     export function UserResource($resource: ng.resource.IResourceService): IUserResource {
-        return <IUserResource>$resource('/api/users/:id', { id: '@id' });
+        var _resource = <IUserResource>$resource('/api/users/:id', { id: '@id' }, {
+            'createSuperUser': { method: 'POST', url: '/api/users/createsuperuser' }
+        });
+
+        return _resource;
     }
 
     angular.module("app").factory("userResource", UserResource);
