@@ -12,7 +12,7 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
-    [Authorize(Roles = "System administrator")]
+    [Authorize(Roles = "System administrator,Platform administrator")]
     public class OrganisationsController : BaseApiController
     {
         private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
@@ -100,19 +100,30 @@ namespace WebApi.Controllers
             foreach (var userId in model.OrgUsers)
             {
                 var orgUser = this.OrgUsers.Find(userId);
-                orgUser.OrganisationId = id;    // update organisation
 
-                if (orgUser.CurrentProject != null) // update current project, if viable
+                // remove this user from any teams in current organisation.
+                var records = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
+                    .Where(x => x.OrgUserId == orgUser.Id && x.OrganisationTeam.OrganisationId == orgUser.OrganisationId)
+                    .ToList();
+
+                foreach(var item in records)
+                    UnitOfWork.OrgTeamUsersRepository.Delete(item);
+
+                orgUser.OrganisationId = id;    // update user's organisation
+
+                if (orgUser.CurrentProject != null) // update user's current project, if exists
+                {
                     if (orgUser.CurrentProject.CreatedById == orgUser.Id)
                     {
                         var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
-                        project.OrganisationId = org.Id;    // update project organisation
+                        project.OrganisationId = org.Id;    // update project's organisation
 
                         // update threads under this project
                         var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
                             .Where(t => t.ProjectId == project.Id)
                             .ToList();
 
+                        // update form templates' organisation
                         foreach (var form in threads)
                         {
                             form.OrganisationId = org.Id;
@@ -132,6 +143,7 @@ namespace WebApi.Controllers
                             CanExportZip = true
                         });
                     }
+                }
             }
 
             UnitOfWork.Save();
@@ -155,26 +167,35 @@ namespace WebApi.Controllers
             var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
                 .Where(x => x.Name == "OnRecord").FirstOrDefault();
 
-            orgUser.OrganisationId = onrecord.Id;
+            // remove this user from any teams in current organisation.
+            var records = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
+                .Where(x => x.OrgUserId == userId && x.OrganisationTeam.OrganisationId == orgUser.OrganisationId)
+                .ToList();
+
+            foreach (var item in records)
+                UnitOfWork.OrgTeamUsersRepository.Delete(item);
+
+            orgUser.OrganisationId = onrecord.Id;   // update user's organisation
+
             if (orgUser.CurrentProject != null)
                 if (orgUser.CurrentProject.CreatedById == orgUser.Id)
                 {
                     var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
-                    project.OrganisationId = onrecord.Id;    // update project organisation
+                    project.OrganisationId = onrecord.Id;    // update project's organisation
 
                     var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
                            .Where(t => t.ProjectId == project.Id)
                            .ToList();
 
-                    foreach (var form in threads)
+                    foreach (var form in threads)   // update form templates' organisation
                     {
                         form.OrganisationId = onrecord.Id;
                         UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
                     }
 
+                    // remove the assignment for current organisation's root user
                     var rootUserAssignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
                         .Where(x => x.OrgUserId == org.RootUserId && x.ProjectId == project.Id).FirstOrDefault();
-
                     UnitOfWork.AssignmentsRepository.Delete(rootUserAssignment);
                 }
 
