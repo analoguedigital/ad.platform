@@ -30,6 +30,7 @@ namespace WebApi.Controllers
             else
             {
                 result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .ToList()
                     .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
                     .ToList();
             }
