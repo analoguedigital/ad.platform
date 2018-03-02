@@ -43,10 +43,10 @@ namespace LightMethods.Survey.Models.Migrations
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("9aaa8582-12fd-45d2-ac19-65d5f1deabfc"), Name = Role.ORG_PROJECT_MANAGMENT });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("52e030ef-e3d4-4976-b3d7-a2353978b099"), Name = Role.ORG_TEMPLATES_MANAGMENT });
 
-            var adminEmail = "khajoo@gmail.com";
-            var superUser = new SuperUser() { Id = Guid.Parse("427eecf5-8ed4-4a6f-820d-7901acedf3bb"), UserName = adminEmail, Email = adminEmail };
+            var adminEmail = "god@onrecord.com";
+            var superUser = new SuperUser() { Id = Guid.Parse("427eecf5-8ed4-4a6f-820d-7901acedf3bc"), UserName = adminEmail, Email = adminEmail };
 
-            userManager.AddOrUpdateUser(superUser, "Test1234");
+            userManager.AddOrUpdateUser(superUser, "!godAdmin-Lm0ht!");
             userManager.AddToRole(superUser.Id, Role.SYSTEM_ADMINSTRATOR);
 
             context.AddressTypes.AddOrUpdate(new AddressType() { Id = Guid.Parse("2d006d8c-8543-42c7-a506-6b1a6570a7e1"), Name = "Home" });
@@ -119,8 +119,8 @@ namespace LightMethods.Survey.Models.Migrations
 
                 var org = new Organisation()
                 {
-                    Id = Guid.Parse("55ce7ae6-9378-4a68-8d05-c703556c69d8"),
-                    Name = "First test organisation",
+                    Id = Guid.Parse("cfa81eb0-9fc7-4932-a3e8-1c822370d034"),    // this is the ID on our production database
+                    Name = "OnRecord",
                     TelNumber = "0209390499",
                     AddressLine1 = "110 Kings road",
                     AddressLine2 = "Regent street",
@@ -135,7 +135,7 @@ namespace LightMethods.Survey.Models.Migrations
                 };
 
                 context.Organisations.AddOrUpdate(org);
-                var user = new OrgUser() { Id = Guid.Parse("b3c19356-d11d-48f2-a3a8-69392a7b4e7b"), OrganisationId = org.Id, IsRootUser = true, Email = "admin@test.t", UserName = "admin@test.t", TypeId = OrgUserTypesRepository.Administrator.Id, LastLogin = new DateTime(2015, 1, 1), IsWebUser = true, IsMobileUser = true };
+                var user = new OrgUser() { Id = Guid.Parse("b3c19356-d11d-48f2-a3a8-69392a7b4e7b"), OrganisationId = org.Id, IsRootUser = true, Email = "admin@onrecord.com", UserName = "admin@onrecord.com", TypeId = OrgUserTypesRepository.Administrator.Id, LastLogin = new DateTime(2015, 1, 1), IsWebUser = true, IsMobileUser = true };
                 userManager.AddOrUpdateUser(user, "Test1234");
 
                 OrgUserTypesRepository.Administrator.GetRoles().ToList().ForEach(role => userManager.AddToRole(user.Id, role));
@@ -143,8 +143,6 @@ namespace LightMethods.Survey.Models.Migrations
                 context.SaveChanges();
                 org.RootUser = user;
                 context.SaveChanges();
-
-
 
                 CurrentProject = new Project() { Id = Guid.Parse("cb7f09a2-1823-4f60-820e-3fedc462fe76"), Number = "123", Name = "Test Project 1", StartDate = new DateTime(2015, 1, 1), Flagged = true, OrganisationId = org.Id };
                 context.Projects.AddOrUpdate(CurrentProject);
@@ -160,7 +158,7 @@ namespace LightMethods.Survey.Models.Migrations
 
                 context.SaveChanges();
 
-                var cat = new FormTemplateCategory() { Id = Guid.Parse("5e7d5a6f-6838-4e09-bcee-e07778c26f44"), Title = "First category", OrganisationId = org.Id };
+                var cat = new FormTemplateCategory() { Id = Guid.Parse("8DBFEC4D-96E0-4135-A726-D144D5707858"), Title = "Recordings", OrganisationId = org.Id };
                 context.FormTemplateCategories.AddOrUpdate(cat);
                 context.SaveChanges();
 
