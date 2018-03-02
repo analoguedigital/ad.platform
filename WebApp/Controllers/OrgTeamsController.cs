@@ -4,6 +4,7 @@ using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -206,10 +207,26 @@ namespace WebApi.Controllers
             UnitOfWork.Save();
         }
 
-        public void Delete(Guid id)
+        public IHttpActionResult Delete(Guid id)
         {
-            Teams.Delete(id);
-            UnitOfWork.Save();
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            try
+            {
+                var team = this.Teams.Find(id);
+                if (team == null)
+                    return NotFound();
+
+                Teams.Delete(team);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("This team cannot be deleted!");
+            }
         }
 
         [HttpDelete]
