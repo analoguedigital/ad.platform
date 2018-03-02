@@ -24,6 +24,7 @@
                             <tr>
                                 <!--<th class="sorting" st-sort="number">No</th>-->
                                 <th st-sort="name">Name</th>
+                                <th class="text-center" st-sort="number" width="100">Number</th>
                                 <th class="hidden-xs" st-sort="startDate" width="120">Start date</th>
                                 <th width="100"></th>
                                 <th width="100"></th>
@@ -32,8 +33,11 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="project in displayedProjects">
-                                <!--<td>{{project.number}}</td>-->
                                 <td><a ui-sref="home.projects.edit({id:project.id})">{{project.name}}</a></td>
+                                <td class="text-center">
+                                    <span ng-if="project.number.length">{{project.number}}</span>
+                                    <span ng-if="!project.number.length">-</span>
+                                </td>
                                 <td class="hidden-xs"><i class="fa fa-calendar-o"></i> {{project.startDate | date : "dd/MM/yyyy": d}}</td>
                                 <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
                                 <td><a ui-sref="home.projects.assignments({id:project.id})"><i class="fa fa-chain"></i><span class="hidden-xs"> assign</span></a></td>
