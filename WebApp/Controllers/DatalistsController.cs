@@ -19,15 +19,32 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<GetDataListsResDTO>))]
         public IHttpActionResult Get()
         {
-            var datalists = UnitOfWork.DataListsRepository.AllAsNoTracking
-                .Where(d => d.OrganisationId == CurrentOrgUser.OrganisationId)
-                .OrderBy(d => d.Name)
-                .ToList();
+            var result = new List<GetDataListsResItemDTO>();
 
-            var result = datalists
-                .Where(d => !d.IsAdHoc)
-                .Select(d => Mapper.Map<GetDataListsResItemDTO>(d));
+            if (this.CurrentOrgUser != null)
+            {
+                var datalists = UnitOfWork.DataListsRepository.AllAsNoTracking
+                    .Where(d => d.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .OrderBy(d => d.Name)
+                    .ToList();
 
+                result = datalists
+                    .Where(d => !d.IsAdHoc)
+                    .Select(d => Mapper.Map<GetDataListsResItemDTO>(d))
+                    .ToList();
+            }
+            else
+            {
+                var datalists = UnitOfWork.DataListsRepository.AllAsNoTracking
+                    .OrderBy(d => d.Name)
+                    .ToList();
+
+                result = datalists
+                    .Where(d => !d.IsAdHoc)
+                    .Select(d => Mapper.Map<GetDataListsResItemDTO>(d))
+                    .ToList();
+            }
+            
             return Ok(new GetDataListsResDTO() { Items = result.ToList() });
         }
 
