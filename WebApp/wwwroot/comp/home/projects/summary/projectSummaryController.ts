@@ -385,23 +385,27 @@ module App {
             var template = _.filter(this.formTemplates, (t) => { return t.id === templateId; })[0];
 
             var authorized = false;
-            switch (flag) {
-                case 'view': {
-                    authorized = template.canView === null ? this.project.allowView : template.canView;
-                    break;
+            if (template) {
+                switch (flag) {
+                    case 'view': {
+                        authorized = template.canView === null ? this.project.allowView : template.canView;
+                        break;
+                    }
+                    case 'add': {
+                        authorized = template.canAdd === null ? this.project.allowAdd : template.canAdd;
+                        break;
+                    }
+                    case 'edit': {
+                        authorized = template.canEdit === null ? this.project.allowEdit : template.canEdit;
+                        break;
+                    }
+                    case 'delete': {
+                        authorized = template.canDelete === null ? this.project.allowDelete : template.canDelete;
+                        break;
+                    }
                 }
-                case 'add': {
-                    authorized = template.canAdd === null ? this.project.allowAdd : template.canAdd;
-                    break;
-                }
-                case 'edit': {
-                    authorized = template.canEdit === null ? this.project.allowEdit : template.canEdit;
-                    break;
-                }
-                case 'delete': {
-                    authorized = template.canDelete === null ? this.project.allowDelete : template.canDelete;
-                    break;
-                }
+            } else {
+                authorized = true;
             }
 
             return authorized;
