@@ -431,6 +431,7 @@
     <Content Include="wwwroot\comp\emailConfirmation\sendToken\_sendEmailTokenView.scss" />
     <Content Include="wwwroot\comp\emailConfirmation\verifyToken\_verifyEmailTokenView.scss" />
     <Content Include="wwwroot\comp\home\users\editSuperUser\_superUserEditView.scss" />
+    <Content Include="wwwroot\comp\home\projects\edit\_projectEditView.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,11 +1,14 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content animated fadeInRight project-edit-view">
     <div class="box">
         <div class="box-title">
             <h5>Details</h5>
         </div>
         <div class="box-content">
             <form name="projectform" class="form-horizontal" novalidate>
+                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
+                    <select id="organisation" name="organisation" ng-model="project.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
+                </lm-form-group>
                 <lm-form-group label="Number: ">
                     <input type="text" id="number" name="number" ng-model="project.number" />
                 </lm-form-group>
@@ -35,6 +38,9 @@
                 <lm-form-group-checkbox label="Archived">
                     <input type="checkbox" id="archived" name="archived" ng-model="project.isArchived" />
                 </lm-form-group-checkbox>
+                <lm-form-group label="Last Entry" ng-if="project.lastEntry">
+                    <input type="text" id="lastEntry" name="lastEntry" ng-model="project.lastEntry" disabled />
+                </lm-form-group>
                 <lm-form-group ng-if="errors !== undefined" class="">
                     <div class="alert alert-danger animated fadeInDown">
                         {{errors}}
@@ -48,7 +54,7 @@
             </form>
         </div>
     </div>
-    <div class="box">
+    <div class="box" ng-if="!ctrl.isInsertMode">
         <div class="box-title">
             <h5>Assignments</h5>
         </div>
@@ -95,6 +101,38 @@
                             <td class="text-center">
                                 <i class="fa fa-check" ng-if="user.canExportZip"></i>
                                 <i class="fa fa-times" ng-if="!user.canExportZip"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="box" ng-if="!ctrl.isInsertMode">
+        <div class="box-title">
+            <h5>Teams</h5>
+        </div>
+        <div class="box-content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th class="text-center">IsActive</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="team in teams">
+                            <td>
+                                <a ui-sref="home.teams.edit({id:team.id})">
+                                    <span ng-if="team.colour" class="color-block" ng-style="{'background-color': team.colour}"></span> {{team.name}}
+                                </a>
+                            </td>
+                            <td>{{team.description}}</td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="team.isActive"></i>
+                                <i class="fa fa-times" ng-if="!team.isActive"></i>
                             </td>
                         </tr>
                     </tbody>

@@ -34,9 +34,9 @@
         surveys: Array<Models.ISurvey> = [];
         uniqFormTemplates: Models.IFormTemplate[];
         locationCount: number;
-        showMap: boolean;
-        showPieChart: boolean;
-        showTimeline: boolean;
+        showMap: boolean = false;
+        showPieChart: boolean = false;
+        showTimeline: boolean = true;
         enableSnapshotView: boolean = true;
         totalFormTemplates: number;
         totalSurveys: number;

@@ -2,8 +2,11 @@
 module App {
     "use strict";
 
-    interface IProjectAssignmentsController {
+    interface IProjectAssignmentsControllerScope extends ng.IScope {
         title: string;
+    }
+
+    interface IProjectAssignmentsController {
         project: Models.IProject;
         errors: string;
         userAssignments: IAssignmentUser[];
@@ -27,7 +30,6 @@ module App {
     }
 
     class ProjectAssignmentsController implements IProjectAssignmentsController {
-        title: string;
         project: Models.IProject;
         users: Models.IOrgUser[];
         assignments: Models.IProjectAssignment[];
@@ -36,8 +38,9 @@ module App {
         searchTerm: string;
         errors: string;
 
-        static $inject: string[] = ["projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
+        static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
         constructor(
+            private $scope: IProjectAssignmentsControllerScope,
             private projectResource: Resources.IProjectResource,
             private orgUserResource: Resources.IOrgUserResource,
             private $q: angular.IQService,
@@ -45,11 +48,12 @@ module App {
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService) {
 
-            this.title = "Projects";
             this.activate();
         }
 
         activate() {
+            this.$scope.title = "Case Assignments"
+
             var projectId = this.$stateParams['id'];
             var projectPromise = this.projectResource.get({ id: projectId }, (project) => {
                 this.project = project;

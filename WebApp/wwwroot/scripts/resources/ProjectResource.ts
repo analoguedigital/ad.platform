@@ -7,6 +7,7 @@ module App.Resources {
         assignments(params: Object, success: Function, error?: Function): Models.IProjectAssignment[];
         assign(params: Object, success: Function, error?: Function);
         unassign(params: Object, success: Function, error?: Function);
+        teams(params: Object, success: Function, error?: Function);
     }
 
     ProjectResource.$inject = ["$resource"];
@@ -16,7 +17,8 @@ module App.Resources {
             'update': { method: 'PUT' },
             'assignments': { method: 'GET', isArray: true, url: '/api/projects/:id/assignments', params: { id: '@id' } },
             'assign': { method: 'POST', url: '/api/projects/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
-            'unassign': { method: 'DELETE', url: '/api/projects/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } }
+            'unassign': { method: 'DELETE', url: '/api/projects/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
+            'teams': { method: 'GET', isArray: true, url: '/api/projects/:id/teams', params: { id: '@id' } }
         });
     }
 

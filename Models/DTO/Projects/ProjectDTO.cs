@@ -16,6 +16,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public OrganisationDTO Organisation { get; set; }
 
+        public string Notes { get; set; }
+
         public bool AllowView { get; set; }
 
         public bool AllowAdd { get; set; }
@@ -27,6 +29,14 @@ namespace LightMethods.Survey.Models.DTO
         public bool AllowExportPdf { get; set; }
         
         public bool AllowExportZip { get; set; }
+
+        public UserDTO CreatedBy { get; set; }
+
+        public DateTime? LastEntry { get; set; }
+
+        public int AssignmentsCount { get; set; }
+
+        public int TeamsCount { get; set; }
 
         public override bool Equals(object obj)
         {

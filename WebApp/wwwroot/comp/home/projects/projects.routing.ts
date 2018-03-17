@@ -54,7 +54,7 @@
                 templateUrl: "comp/home/projects/assignments/projectAssignmentsView.html",
                 controller: "projectAssignmentsController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Assignments', parent: 'home.projects.caseassignments' },
+                ncyBreadcrumb: { label: 'Assignments', parent: 'home.caseManagement.caseAssignments' },
                 module: "private"
             })
             .state("home.projects.summary", <App.Models.IAppRoute>{

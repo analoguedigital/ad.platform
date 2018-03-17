@@ -18,6 +18,9 @@ module App.Models {
         allowDelete: boolean;
         allowExportPdf: boolean;
         allowExportZip: boolean;
+        lastEntry?: Date;
+        assignmentsCount: number;
+        teamsCount: number;
     }
 
     export interface IProjectAssignment {
