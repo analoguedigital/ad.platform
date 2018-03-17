@@ -4,6 +4,7 @@ using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -50,6 +51,8 @@ namespace WebApi.Controllers
             var createOrganisation = new CreateOrganisation();
             createOrganisation.Name = value.Name;
             createOrganisation.RootUserEmail = value.RootUser.Email;
+            createOrganisation.RootUserFirstName = value.RootUser.FirstName;
+            createOrganisation.RootUserSurname = value.RootUser.Surname;
             createOrganisation.RootPassword = value.RootUser.Password;
             createOrganisation.RootConfirmPassword = value.RootUser.ConfirmPassword;
             createOrganisation.AddressLine1 = value.AddressLine1;
@@ -80,10 +83,19 @@ namespace WebApi.Controllers
             UnitOfWork.Save();
         }
 
-        public void Delete(Guid id)
+        public IHttpActionResult Delete(Guid id)
         {
-            Organisations.Delete(id);
-            UnitOfWork.Save();
+            try
+            {
+                Organisations.Delete(id);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("This organisation cannot be deleted!");
+            }
         }
 
         [HttpPost]
@@ -106,7 +118,7 @@ namespace WebApi.Controllers
                     .Where(x => x.OrgUserId == orgUser.Id && x.OrganisationTeam.OrganisationId == orgUser.OrganisationId)
                     .ToList();
 
-                foreach(var item in records)
+                foreach (var item in records)
                     UnitOfWork.OrgTeamUsersRepository.Delete(item);
 
                 orgUser.OrganisationId = id;    // update user's organisation

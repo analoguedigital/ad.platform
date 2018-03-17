@@ -3,12 +3,11 @@
     <div class="box">
         <div class="box-title">
             <h5>Organisations</h5>
+            <div class="box-tools">
+                <a ui-sref="home.organisations.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
+            </div>
         </div>
         <div class="box-content">
-            <p>
-                <a ui-sref="home.organisations.edit"><i class="fa fa-plus-square"></i> Add new</a>
-            </p>
-
             <div st-table="displayedOrganisations" st-safe-src="organisations">
                 <div>
                     <form name="search-form" class="form-inline">
@@ -18,11 +17,11 @@
                     </form>
                 </div>
 
-                <table class="table table-hover table-striped">
+                <table class="table table-hover table-mail">
                     <thead>
                         <tr>
                             <th st-sort="name">Name</th>
-                            <th class="hidden-xs">Root user email</th>
+                            <th class="hidden-xs" st-sort="email">Root user email</th>
                             <th class="text-center">Subscriptions</th>
                             <th class="text-center" width="80"></th>
                             <th class="text-center" width="80"></th>

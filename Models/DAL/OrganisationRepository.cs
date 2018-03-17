@@ -39,6 +39,8 @@ namespace LightMethods.Survey.Models.DAL
                 IsMobileUser = false,
                 UserName = dto.RootUserEmail,
                 Email =  dto.RootUserEmail,
+                FirstName = dto.RootUserFirstName,
+                Surname = dto.RootUserSurname,
                 TypeId = OrgUserTypesRepository.Administrator.Id,
                 AccountType = AccountType.WebAccount
             };

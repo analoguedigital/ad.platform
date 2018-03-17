@@ -24,21 +24,26 @@
 
 
                 <div ng-if="isInsertMode">
-                    <br/>
+                    <br />
                     <br />
                     <h5>Root user's details</h5>
                     <div class="hr-line-dashed"></div>
 
-                    <lm-form-group ng-if="isInsertMode" label="Email: ">
+                    <lm-form-group label="Email: ">
                         <input type="email" id="email" name="email" ng-model="organisation.rootUser.email" required />
                     </lm-form-group>
-                    <lm-form-group ng-if="isInsertMode" label="Password: ">
+                    <lm-form-group label="Password: ">
                         <input type="password" id="password" name="password" ng-model="organisation.rootUser.password" required />
                     </lm-form-group>
-                    <lm-form-group ng-if="isInsertMode" label="Confirm Password: ">
+                    <lm-form-group label="Confirm Password: ">
                         <input type="password" id="confirmPassword" name="confirmPassword" ng-model="organisation.rootUser.confirmPassword" required />
                     </lm-form-group>
-                    
+                    <lm-form-group label="First Name: ">
+                        <input type="text" id="firstName" name="firstName" ng-model="organisation.rootUser.firstName" />
+                    </lm-form-group>
+                    <lm-form-group label="Surname: ">
+                        <input type="text" id="surname" name="surname" ng-model="organisation.rootUser.surname" />
+                    </lm-form-group>
                 </div>
 
                 <br />
@@ -96,10 +101,10 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th class="text-center" width="100">Web User</th>
-                                <th class="text-center" width="100">Mobile User</th>
+                                <th st-sort="[firstName,surname]">Name</th>
+                                <th st-sort="email">Email</th>
+                                <th class="text-center" st-sort="isWebUser" width="120">Web User</th>
+                                <th class="text-center" st-sort="isMobileUser" width="120">Mobile User</th>
                                 <th class="text-center" width="100"></th>
                             </tr>
                         </thead>

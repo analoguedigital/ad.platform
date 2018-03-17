@@ -20,11 +20,12 @@ module App {
     }
 
     class OrganisationsController implements IOrganisationsController {
-        static $inject: string[] = ["$scope", "organisationResource"];
+        static $inject: string[] = ["$scope", "organisationResource", "toastr"];
 
         constructor(
             private $scope: IOrganisationsControllerScope,
-            private organisationResource: Resources.IOrganisationResource) {
+            private organisationResource: Resources.IOrganisationResource,
+            private toastr: any) {
 
             $scope.title = "Organisations";
             $scope.delete = (id) => { this.delete(id); };
@@ -44,8 +45,13 @@ module App {
 
         delete(id: string) {
             this.organisationResource.delete({ id: id },
-                () => { this.load(); },
-                (err) => { console.log(err); });
+                () => {
+                    this.load();
+                },
+                (err) => {
+                    console.error(err);
+                    this.toastr.error(err.data.message);
+                });
         }
     }
 
