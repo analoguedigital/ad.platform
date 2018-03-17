@@ -89,8 +89,9 @@ module App.Services {
             this.httpService.getUserInfo()
                 .then((userinfo) => {
                     this.current.user = <Models.IUser>{
-                        email: authenticationData.email,
                         id: userinfo.userId,
+                        email: authenticationData.email,
+                        emailConfirmed: userinfo.emailConfirmed,
                         roles: userinfo.roles
                     };
                     if (userinfo.organisationId !== null) {

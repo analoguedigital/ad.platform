@@ -154,3 +154,5 @@ $fa-font-path: "../lib/Font-Awesome/fonts";
 @import "../comp/home/teams/_teams";
 @import "../comp/home/teams/manage/_teamManageView";
 @import "../comp/home/users/edit/_userEditView";
+@import "../comp/emailConfirmation/sendToken/_sendEmailTokenView";
+@import "../comp/emailConfirmation/verifyToken/_verifyEmailTokenView";

@@ -40,6 +40,12 @@ namespace WebApi.Providers
                 return;
             }
 
+            if (user is OrgUser && !user.EmailConfirmed)
+            {
+                context.SetError("email_not_verified", "The email address has not been verified yet.");
+                return;
+            }
+
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
                OAuthDefaults.AuthenticationType);
             

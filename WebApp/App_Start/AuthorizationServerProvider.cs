@@ -57,8 +57,17 @@ namespace WebApi
 
             if (result is OrgUser)
             {
-                if (OrgUserHasAccess(result as OrgUser))
-                    await GenerateUserIdentity(context, result as OrgUser);
+                var orgUser = result as OrgUser;
+                if (OrgUserHasAccess(orgUser))
+                {
+                    if (!result.EmailConfirmed)
+                    {
+                        context.SetError("email_not_verified", "The email address has not been verified yet.");
+                        return;
+                    }
+
+                    await GenerateUserIdentity(context, orgUser);
+                }
                 else
                 {
                     context.SetError("invalid_grant", "You do not have access to this software.");

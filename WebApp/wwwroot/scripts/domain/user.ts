@@ -3,9 +3,9 @@ module App.Models {
     "use strict";
 
     export interface IUserBase {
-
         id: string;
         email: string;
+        emailConfirmed: boolean;
         password: string;
         confirmPassword: string;
         roles: string[];

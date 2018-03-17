@@ -60,6 +60,24 @@
                 ncyBreadcrumb: { label: 'Reset Password' },
                 data: { bodyCssClass: "set-password-page" },
                 module: "public"
+            })
+            .state("confirmEmail", <App.Models.IAppRoute>{
+                parent: "index",
+                url: "/confirm-email",
+                templateUrl: "comp/emailConfirmation/sendToken/sendEmailTokenView.html",
+                controller: "confirmEmailController",
+                ncyBreadcrumb: { label: 'Confirm Email Address' },
+                data: { bodyCssClass: "confirm-email-page" },
+                module: "public"
+            })
+            .state("verifyEmail", <App.Models.IAppRoute>{
+                parent: "index",
+                url: "/verify-email?userId&code",
+                templateUrl: "comp/emailConfirmation/verifyToken/verifyEmailTokenView.html",
+                controller: "verifyEmailController",
+                ncyBreadcrumb: { label: 'Verify Email Address' },
+                data: { bodyCssClass: 'verify-email-page' },
+                module: "public"
             });
 
 

@@ -35,6 +35,8 @@ namespace WebApi.Models
 
         public string Email { get; set; }
 
+        public bool EmailConfirmed { get; set; }
+
         public bool HasRegistered { get; set; }
 
         public string LoginProvider { get; set; }

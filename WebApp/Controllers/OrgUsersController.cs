@@ -2,10 +2,16 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
@@ -19,8 +25,14 @@ namespace WebApi.Controllers
 
         private OrgUsersRepository Users { get { return UnitOfWork.OrgUsersRepository; } }
         private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
-
         private OrgUserTypesRepository Types { get { return UnitOfWork.OrgUserTypesRepository; } }
+
+        private ApplicationUserManager _userManager;
+        public ApplicationUserManager UserManager
+        {
+            get { return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
+            private set { _userManager = value; }
+        }
 
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
@@ -82,7 +94,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        public IHttpActionResult Post([FromBody]OrgUserDTO value)
+        public async Task<IHttpActionResult> Post([FromBody]OrgUserDTO value)
         {
             if (value.Password.IsEmpty())
                 ModelState.AddModelError("Password", "Please provide password.");
@@ -128,6 +140,18 @@ namespace WebApi.Controllers
                 UnitOfWork.Save();
             }
 
+            // send account confirmation email
+            var code = await this.UserManager.GenerateEmailConfirmationTokenAsync(orguser.Id);
+            var encodedCode = HttpUtility.UrlEncode(code);
+
+            var rootIndex = GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var callbackUrl = $"{baseUrl}#!/verify-email?userId={orguser.Id}&code={encodedCode}";
+
+            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
+
+            await UserManager.SendEmailAsync(orguser.Id, "Confirm your account", messageBody);
+
             return Ok();
         }
 
@@ -138,6 +162,7 @@ namespace WebApi.Controllers
                 return NotFound();
 
             orguser.Email = value.Email;
+            orguser.EmailConfirmed = value.EmailConfirmed;
             orguser.FirstName = value.FirstName;
             orguser.Surname = value.Surname;
             orguser.TypeId = value.Type.Id;
@@ -182,6 +207,15 @@ namespace WebApi.Controllers
             }
 
             return Ok();
+        }
+
+        private string GetRootIndexPath()
+        {
+            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
+            if (!string.IsNullOrEmpty(rootIndexPath))
+                return rootIndexPath;
+
+            return "wwwroot/index.html";
         }
     }
 }

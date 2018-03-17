@@ -13,6 +13,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Email { get; set; }
 
+        public bool EmailConfirmed { get; set; }
+
         public DateTime? LastLogin { get; set; }
 
         public GenderType? Gender { get; set; }
