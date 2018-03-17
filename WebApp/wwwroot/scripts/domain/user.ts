@@ -16,13 +16,15 @@ module App.Models {
     export interface IUser extends IUserBase, ng.resource.IResource<IUser> { }
 
     export interface IOrgUser extends IUserBase, ng.resource.IResource<IOrgUser> {
-
         organisationId: string;
         organisation: IOrganisation;
         firstName: string;
         surname: string;
         type: IOrgUserType;
+        accountType: number;
         isRootUser: boolean;
+        currentProjectId?: string;
+        currentProject: IProject;
         isWebUser: boolean;
         isMobileUser: boolean;
         gender: number;

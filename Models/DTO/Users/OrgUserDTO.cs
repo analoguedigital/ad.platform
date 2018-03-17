@@ -28,6 +28,10 @@ namespace LightMethods.Survey.Models.DTO
 
         public bool IsRootUser { set; get; }
 
+        public Guid? CurrentProjectId { get; set; }
+
+        public ProjectDTO CurrentProject { get; set; }
+
         public OrgUserTypeDTO Type { get; set; }
 
         public string Password { get; set; }
@@ -49,6 +53,9 @@ namespace LightMethods.Survey.Models.DTO
         public string PhoneNumber { get; set; }
 
         public bool PhoneNumberConfirmed { get; set; }
+
+        public AccountType AccountType { get; set; }
+
         public OrgUserDTO()
         {
             this.Assignments = new List<ProjectAssignmentDTO>();

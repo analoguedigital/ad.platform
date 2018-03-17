@@ -2,7 +2,7 @@
 module App {
     "use strict";
 
-    interface IUsersControllerScope extends ng.IScope {
+    interface IMobileUsersControllerScope extends ng.IScope {
         title: string;
         searchTerm: string;
         users: Models.IOrgUser[];
@@ -16,23 +16,21 @@ module App {
 
         delete: (id: string) => void;
         resetPassword: (user: Models.IUser) => void;
-        addSuperUser: () => void;
         revoke: (user) => void;
     }
 
-    interface IUsersController {
+    interface IMobileUsersController {
         activate: () => void;
         delete: (id: string) => void;
         resetPassword: (user: Models.IUser) => void;
-        addSuperUser: () => void;
         revokeUser: (user) => void;
     }
 
-    class UsersController implements IUsersController {
+    class MobileUsersController implements IMobileUsersController {
         static $inject: string[] = ["$scope", "$uibModal", "toastr", "userResource", "orgUserResource", "organisationResource", "userContextService"];
 
         constructor(
-            private $scope: IUsersControllerScope,
+            private $scope: IMobileUsersControllerScope,
             private $uibModal: ng.ui.bootstrap.IModalService,
             private toastr: any,
             private userResource: Resources.IOrgUserResource,
@@ -43,7 +41,6 @@ module App {
             $scope.title = "Users";
             $scope.delete = (id) => { this.delete(id); };
             $scope.resetPassword = (user) => { this.resetPassword(user); }
-            $scope.addSuperUser = () => { this.addSuperUser(); }
             $scope.revoke = (user) => { this.revokeUser(user); }
 
             this.activate();
@@ -57,19 +54,12 @@ module App {
             var roles = ["System administrator", "Platform administrator"];
             this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
 
-            if (this.$scope.currentUserIsSuperUser) {
-                this.userResource.query().$promise.then((users) => {
-                    this.$scope.superUsers = users;
-                    this.$scope.displayedSuperUsers = [].concat(this.$scope.superUsers);
-                });
-            }
-
             this.orgUserResource.query().$promise.then((users) => {
-                var webAccounts = _.filter(users, (u) => {
-                    return u.accountType === 1;
+                var mobileAccounts = _.filter(users, (u) => {
+                    return u.accountType === 0;
                 });
 
-                this.$scope.users = webAccounts;
+                this.$scope.users = mobileAccounts;
                 this.$scope.displayedUsers = [].concat(this.$scope.users);
             });
         }
@@ -100,21 +90,6 @@ module App {
                 });
         }
 
-        addSuperUser() {
-            var modalInstance = this.$uibModal.open({
-                animation: true,
-                templateUrl: 'comp/home/users/addSuperUser/addSuperUserView.html',
-                controller: 'addSuperUserController',
-                controllerAs: 'ctrl'
-            });
-
-            modalInstance.result.then((res) => {
-                console.log(res);
-            }, (err) => {
-                console.warn(err);
-            });
-        }
-
         revokeUser(user: Models.IOrgUser) {
             var params = { id: user.organisation.id, userId: user.id };
             this.organisationResource.revoke(params, (res) => {
@@ -131,5 +106,5 @@ module App {
         }
     }
 
-    angular.module("app").controller("usersController", UsersController);
+    angular.module("app").controller("mobileUsersController", MobileUsersController);
 }

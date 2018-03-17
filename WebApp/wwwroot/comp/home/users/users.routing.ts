@@ -21,13 +21,28 @@
                 ncyBreadcrumb: { label: 'Users' },
                 module: "private"
             })
+            .state("home.users.mobile", <App.Models.IAppRoute>{
+                url: "/mobile",
+                templateUrl: "comp/home/users/mobile/mobileUsersView.html",
+                controller: "mobileUsersController",
+                ncyBreadcrumb: { label: 'Mobile Users' },
+                module: 'private'
+            })
             .state("home.users.edit", <App.Models.IAppRoute>{
                 url: "/edit/:id",
                 templateUrl: "comp/home/users/edit/userEditView.html",
                 controller: "userEditController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Edit', parent: 'home.users.list' },
+                ncyBreadcrumb: { label: 'Edit User', parent: 'home.users.list' },
                 module: "private"
+            })
+            .state("home.users.editSuperUser", <App.Models.IAppRoute>{
+                url: "/edit-super/:id",
+                templateUrl: "comp/home/users/editSuperUser/superUserEditView.html",
+                controller: "superUserEditController",
+                controllerAs: "ctrl",
+                ncyBreadcrumb: { label: 'Edit User', parent: 'home.users.list' },
+                module: 'private'
             });
     }
 })();

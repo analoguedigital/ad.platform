@@ -282,8 +282,10 @@
     <Content Include="wwwroot\comp\home\teams\edit\teamEditView.html" />
     <Content Include="wwwroot\comp\home\teams\manage\teamManageView.html" />
     <Content Include="wwwroot\comp\home\teams\teamsView.html" />
+    <Content Include="wwwroot\comp\home\users\editSuperUser\superUserEditView.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
-    <Content Include="wwwroot\comp\home\users\superuser\addSuperUserView.html" />
+    <Content Include="wwwroot\comp\home\users\addSuperUser\addSuperUserView.html" />
+    <Content Include="wwwroot\comp\home\users\mobile\mobileUsersView.html" />
     <Content Include="wwwroot\comp\home\users\usersView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\allSurveysView.html" />
     <Content Include="wwwroot\comp\home\surveys\new\newSurveyView.html" />
@@ -428,6 +430,7 @@
     <Content Include="wwwroot\comp\home\projects\threadAssignments\_threadAssignments.scss" />
     <Content Include="wwwroot\comp\emailConfirmation\sendToken\_sendEmailTokenView.scss" />
     <Content Include="wwwroot\comp\emailConfirmation\verifyToken\_verifyEmailTokenView.scss" />
+    <Content Include="wwwroot\comp\home\users\editSuperUser\_superUserEditView.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -524,8 +527,10 @@
     <TypeScriptCompile Include="wwwroot\comp\home\teams\manage\teamManageController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\teams.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\TeamsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\editSuperUser\superUserEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\edit\userEditController.ts" />
-    <TypeScriptCompile Include="wwwroot\comp\home\users\superuser\addSuperUserController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\addSuperUser\addSuperUserController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\mobile\mobileUsersController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\users.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\UsersController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\all\allSurveysController.ts" />

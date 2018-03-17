@@ -175,6 +175,16 @@ namespace WebApi.Controllers
             if (!orguser.PhoneNumberConfirmed)
                 orguser.PhoneNumber = string.IsNullOrEmpty(value.PhoneNumber) ? null : value.PhoneNumber;
 
+            if (this.CurrentUser is SuperUser)
+            {
+                if (value.CurrentProject != null)
+                {
+                    if (Guid.Parse(value.CurrentProject.Organisation.Id) != orguser.Organisation.Id)
+                        return BadRequest("The selected current project does not belong to this user's organisation");
+
+                    orguser.CurrentProjectId = value.CurrentProject.Id;
+                }
+            }
 
             var result = UnitOfWork.UserManager.UpdateSync(orguser);
             if (result.Succeeded)

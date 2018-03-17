@@ -13,6 +13,7 @@ module App {
         hasError: boolean;
         formDirty: boolean;
         isFormHorizontal: boolean;
+        feedbackValue: boolean;
         errors: any[];
     }
 
@@ -30,16 +31,22 @@ module App {
             link: link,
             scope: {
                 label: "@",
-                formGroupClass: '@'
+                formGroupClass: '@',
+                feedbackValue: '@'
             }
         };
-
 
         function link(scope: IlmFormGroupScope,
             element: ng.IAugmentedJQuery,
             attrs: IlmFormGroupAttributes,
             ctrl: any,
             transclude: ng.ITranscludeFunction) {
+
+            attrs.$observe('feedbackValue', (value?: boolean) => {
+                if (value) {
+                    scope.feedbackValue = value;
+                }
+            });
 
             transclude((inputElement) => {
                 return element.find('span').replaceWith(inputElement);
@@ -126,7 +133,7 @@ module App {
                 }
                 return _results;
             }, true);
-            
+
             //scope.$parent.$watch(input + '.$invalid && ' + input + '.$touched', function (hasError: boolean) {
             //    scope.hasError = hasError;
             //});
