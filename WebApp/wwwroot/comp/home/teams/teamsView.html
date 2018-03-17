@@ -3,13 +3,12 @@
     <div class="box">
         <div class="box-title">
             <h5>Directory of Teams</h5>
+            <div class="box-tools">
+                <a ui-sref="home.teams.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
+            </div>
         </div>
         <div class="box-content">
-            <p lm-access="System administrator,Platform administrator,Organisation administrator">
-                <a ui-sref="home.teams.edit"><i class="fa fa-plus-square"></i> Add new</a>
-            </p>
-
-            <div st-table="displayedUsers" st-safe-src="users">
+            <div st-table="displayedTeams" st-safe-src="teams">
                 <div>
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
@@ -19,13 +18,13 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped">
+                    <table class="table table-hover table-mail">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Description</th>
-                                <th class="text-center" lm-access="System administrator,Platform administrator">Organisation</th>
-                                <th class="text-center">IsActive</th>
+                                <th st-sort="name">Name</th>
+                                <th st-sort="description">Description</th>
+                                <th st-sort="organisation.name" class="text-center" lm-access="System administrator,Platform administrator">Organisation</th>
+                                <th st-sort="isActive" class="text-center">IsActive</th>
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="100"></th>

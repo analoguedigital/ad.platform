@@ -8,6 +8,10 @@ module App {
         submit: (form: ng.IFormController) => void;
         remove: (user: Models.IOrgTeamUser) => void;
         clearErrors: () => void;
+        currentUserIsSuperUser: boolean;
+        organisations: Models.IOrganisation[];
+        teamMembers: Models.IOrgTeamUser[];
+        displayedMembers: Models.IOrgTeamUser[];
     }
 
     interface IOrganisationTeamEditController {
@@ -15,13 +19,15 @@ module App {
     }
 
     class OrganisationTeamEditController implements IOrganisationTeamEditController {
-        static $inject: string[] = ["$scope", "$state", "$stateParams", "orgTeamResource", "toastr"];
+        static $inject: string[] = ["$scope", "$state", "$stateParams", "organisationResource", "orgTeamResource", "userContextService", "toastr"];
 
         constructor(
             private $scope: IOrganisationTeamEditControllerScope,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
+            private organisationResource: Resources.IOrganisationResource,
             private orgTeamResource: Resources.IOrgTeamResource,
+            private userContextService: Services.IUserContextService,
             private toastr: any
         ) {
 
@@ -50,7 +56,19 @@ module App {
 
             this.orgTeamResource.get({ id: teamId }).$promise.then((team) => {
                 this.$scope.team = team;
+
+                this.$scope.teamMembers = team.users;
+                this.$scope.displayedMembers = [].concat(team.users);
             });
+
+            var roles = ["System administrator", "Platform administrator"];
+            this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
+
+            if (this.$scope.currentUserIsSuperUser) {
+                this.organisationResource.query().$promise.then((organisations) => {
+                    this.$scope.organisations = organisations;
+                });
+            }
         }
 
         updateStatus(userId: string, flag: boolean) {
@@ -65,6 +83,7 @@ module App {
 
         submit(form: ng.IFormController) {
             if (form.$invalid) {
+                this.toastr.warning('Form entry is not valid');
                 return;
             }
 

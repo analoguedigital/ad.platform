@@ -134,7 +134,7 @@ namespace WebApi.Controllers
 
             var projects = new List<ProjectDTO>();
 
-            foreach(var user in orgTeam.Users)
+            foreach (var user in orgTeam.Users)
             {
                 var userProjects = user.OrgUser.Assignments
                     .Where(a => a.Project.OrganisationId == orgTeam.OrganisationId)
@@ -161,7 +161,7 @@ namespace WebApi.Controllers
 
             var result = new List<ProjectAssignmentDTO>();
 
-            foreach(var projectId in model.Projects)
+            foreach (var projectId in model.Projects)
             {
                 var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking
                     .Where(a => a.ProjectId == projectId).ToList()
@@ -181,7 +181,16 @@ namespace WebApi.Controllers
             orgTeam.Description = value.Description;
             orgTeam.Colour = value.Colour;
             orgTeam.IsActive = value.IsActive;
-            orgTeam.Organisation = this.CurrentOrganisation;
+
+            if (this.CurrentOrgUser != null)
+                orgTeam.Organisation = this.CurrentOrganisation;
+            else
+            {
+                if (value.Organisation == null)
+                    return BadRequest("Organisation is required");
+
+                orgTeam.OrganisationId = Guid.Parse(value.Organisation.Id);
+            }
 
             UnitOfWork.OrganisationTeamsRepository.InsertOrUpdate(orgTeam);
             UnitOfWork.Save();
@@ -189,12 +198,11 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        public void Put(Guid id, [FromBody]OrganisationTeamDTO value)
+        public IHttpActionResult Put(Guid id, [FromBody]OrganisationTeamDTO value)
         {
-
             var team = Teams.Find(Guid.Parse(value.Id));
             if (team == null)
-                return;
+                return NotFound();
 
             //Mapper.Map(value, team);
 
@@ -203,8 +211,18 @@ namespace WebApi.Controllers
             team.Colour = value.Colour;
             team.IsActive = value.IsActive;
 
+            if (this.CurrentOrgUser == null)
+            {
+                if (value.Organisation == null)
+                    return BadRequest("Organisation is required");
+
+                team.OrganisationId = Guid.Parse(value.Organisation.Id);
+            }
+
             UnitOfWork.OrganisationTeamsRepository.InsertOrUpdate(team);
             UnitOfWork.Save();
+
+            return Ok();
         }
 
         public IHttpActionResult Delete(Guid id)
@@ -260,27 +278,33 @@ namespace WebApi.Controllers
             if (orgTeam == null)
                 return NotFound();
 
-            foreach(var assignment in model.Users)
+            foreach (var assignment in model.Users)
             {
                 var orgUser = this.OrgUsers.Find(assignment.OrgUserId);
-                orgTeam.Users.Add(new OrgTeamUser
+                if (orgUser != null)
                 {
-                    OrgUserId = orgUser.Id,
-                    OrganisationTeamId = orgTeam.Id,
-                    IsManager = assignment.IsManager
-                });
+                    if (orgUser.Organisation.Id == orgTeam.Organisation.Id)
+                    {
+                        orgTeam.Users.Add(new OrgTeamUser
+                        {
+                            OrgUserId = orgUser.Id,
+                            OrganisationTeamId = orgTeam.Id,
+                            IsManager = assignment.IsManager
+                        });
 
-                await UnitOfWork.UserManager.AddToRoleAsync(orgUser.Id, Role.ORG_TEAM_USER);
+                        await UnitOfWork.UserManager.AddToRoleAsync(orgUser.Id, Role.ORG_TEAM_USER);
 
-                if (assignment.IsManager)
-                    await UnitOfWork.UserManager.AddToRoleAsync(orgUser.Id, Role.ORG_TEAM_MANAGER);
+                        if (assignment.IsManager)
+                            await UnitOfWork.UserManager.AddToRoleAsync(orgUser.Id, Role.ORG_TEAM_MANAGER);
+                    }
+                }
             }
 
             UnitOfWork.Save();
 
             return Ok();
         }
-        
+
         [HttpPost]
         [Route("api/orgteams/{id:guid}/updatestatus/{userId:guid}/{flag:bool}")]
         public async Task<IHttpActionResult> UpdateUserStatus(Guid id, Guid userId, bool flag)

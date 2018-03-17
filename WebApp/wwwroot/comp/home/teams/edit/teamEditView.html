@@ -6,6 +6,9 @@
         </div>
         <div class="box-content">
             <form name="teamform" class="form-horizontal" novalidate>
+                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
+                    <select id="organisation" name="organisation" ng-model="team.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
+                </lm-form-group>
                 <lm-form-group label="Name: ">
                     <input type="text" id="name" name="name" ng-model="team.name" required />
                 </lm-form-group>
@@ -28,7 +31,7 @@
                     </div>
                 </lm-form-group>
                 <lm-form-group>
-                    <button type="submit" class="btn btn-primary" ng-click="submit(teamform)">Submit</button>
+                    <button type="submit" class="btn btn-primary" ng-click="submit(teamform)" ng-disabled="teamform.$invalid">Submit</button>
                 </lm-form-group>
 
                 <a ui-sref="home.teams.list"><i class="fa fa-arrow-left"></i> Back to list</a>
@@ -40,48 +43,54 @@
             <h5>Team Users</h5>
         </div>
         <div class="box-content">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th class="text-center">Is Manager</th>
-                        <th class="text-center" width="100">Web User</th>
-                        <th class="text-center" width="100">Mobile User</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="member in team.users">
-                        <td>
-                            <i class="fa fa-user-o" ng-if="!member.isManager"></i>
-                            <i class="fa fa-user-md" ng-if="member.isManager"></i>
+            <div st-table="displayedMembers" st-safe-src="teamMembers">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th st-sort="[firstName,surname]">Name</th>
+                                <th st-sort="email">Email</th>
+                                <th st-sort="isManager" class="text-center">Is Manager</th>
+                                <th st-sort="orgUser.isWebUser" class="text-center" width="110">Web User</th>
+                                <th st-sort="orgUser.isMobileUser" class="text-center" width="110">Mobile User</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="member in displayedMembers">
+                                <td>
+                                    <i class="fa fa-user-o" ng-if="!member.isManager"></i>
+                                    <i class="fa fa-user-md" ng-if="member.isManager"></i>
 
-                            {{member.orgUser.firstName}} {{member.orgUser.surname}}
-                        </td>
-                        <td>{{member.orgUser.email}}</td>
-                        <td class="text-center">
-                            <div class="checkbox checkbox-primary no-margins">
-                                <input type="checkbox" id="chk-{{member.orgUser.id}}" ng-model="member.isManager" ng-change="updateStatus(member.id, member.isManager)" />
-                                <label for="chk-{{member.orgUser.id}}"></label>
-                            </div>
-                        </td>
-                        <td class="text-center">
-                            <i class="fa fa-check" ng-if="member.orgUser.isWebUser"></i>
-                            <i class="fa fa-times" ng-if="!member.orgUser.isWebUser"></i>
-                        </td>
-                        <td class="text-center">
-                            <i class="fa fa-check" ng-if="member.orgUser.isMobileUser"></i>
-                            <i class="fa fa-times" ng-if="!member.orgUser.isMobileUser"></i>
-                        </td>
-                        <td>
-                            <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(member)">
-                                <i class="fa fa-unlink"></i> revoke
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                                    {{member.orgUser.firstName}} {{member.orgUser.surname}}
+                                </td>
+                                <td>{{member.orgUser.email}}</td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-primary no-margins">
+                                        <input type="checkbox" id="chk-{{member.orgUser.id}}" ng-model="member.isManager" ng-change="updateStatus(member.id, member.isManager)" />
+                                        <label for="chk-{{member.orgUser.id}}"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="member.orgUser.isWebUser"></i>
+                                    <i class="fa fa-times" ng-if="!member.orgUser.isWebUser"></i>
+                                </td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="member.orgUser.isMobileUser"></i>
+                                    <i class="fa fa-times" ng-if="!member.orgUser.isMobileUser"></i>
+                                </td>
+                                <td>
+                                    <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(member)">
+                                        <i class="fa fa-unlink"></i> revoke
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
         </div>
     </div>
 </div>

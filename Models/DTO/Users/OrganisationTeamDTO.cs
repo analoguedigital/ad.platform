@@ -21,5 +21,20 @@ namespace LightMethods.Survey.Models.DTO
         public bool IsActive { get; set; }
 
         public ICollection<OrgTeamUserDTO> Users { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var item = obj as OrganisationTeamDTO;
+
+            if (item == null)
+                return false;
+
+            return this.Id.Equals(item.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 }
