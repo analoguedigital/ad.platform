@@ -38,6 +38,7 @@
                 url: "/login",
                 templateUrl: "comp/login/loginView.html",
                 controller: "loginController",
+                controllerAs: "ctrl",
                 params: { authenticationRequired: false },
                 ncyBreadcrumb: { label: 'Login' },
                 data: { bodyCssClass: "login-page" },

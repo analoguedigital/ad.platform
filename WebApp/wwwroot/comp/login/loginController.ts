@@ -6,6 +6,8 @@ module App {
         title: string;
         loginData: Services.ILoginData;
         isWorking: boolean;
+        isDownloadRequest: boolean;
+
         login: (form: ng.IFormController) => void;
     }
 
@@ -30,6 +32,11 @@ module App {
             this.$scope.title = "Login";
             this.$scope.loginData = { email: "", password: "" };
             this.$scope.login = (form: ng.IFormController) => { this.login(form); };
+
+            var redirectUrl = this.RedirectUrlAfterLogin.url;
+            if (redirectUrl && redirectUrl.length && redirectUrl !== '/') {
+                this.$scope.isDownloadRequest = true;
+            }
         }
 
         login(form: ng.IFormController) {
