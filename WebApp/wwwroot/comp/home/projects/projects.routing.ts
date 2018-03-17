@@ -15,6 +15,11 @@
                 url: "/projects",
                 template: "<ui-view />"
             })
+            .state("home.caseManagement", {
+                abstract: true,
+                url: "/case-management",
+                template: "<ui-view />"
+            })
             .state("home.projects.list", <App.Models.IAppRoute>{
                 url: "/:organisationId",
                 templateUrl: "comp/home/projects/projectsView.html",
@@ -22,10 +27,25 @@
                 ncyBreadcrumb: { label: 'Directory' },
                 module: "private"
             })
+            .state("home.caseManagement.caseAssignments", <App.Models.IAppRoute>{
+                url: "/case-assignments/:organisationId",
+                templateUrl: "comp/home/projects/caseAssignments/caseAssignmentsView.html",
+                controller: "caseAssignmentsController",
+                ncyBreadcrumb: { label: 'Directory of cases' },
+                module: 'private'
+            })
+            .state("home.caseManagement.threadAssignments", <App.Models.IAppRoute>{
+                url: "/thread-assignments",
+                templateUrl: "comp/home/projects/threadAssignments/threadAssignmentsView.html",
+                controller: "threadAssignmentsController",
+                ncyBreadcrumb: { label: 'Directory of threads' },
+                module: 'private'
+            })
             .state("home.projects.edit", <App.Models.IAppRoute>{
                 url: "/edit/:id",
                 templateUrl: "comp/home/projects/edit/projectEditView.html",
                 controller: "projectEditController",
+                controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Edit', parent: 'home.projects.list' },
                 module: "private"
             })
@@ -34,7 +54,7 @@
                 templateUrl: "comp/home/projects/assignments/projectAssignmentsView.html",
                 controller: "projectAssignmentsController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Assignments', parent: 'home.projects.list' },
+                ncyBreadcrumb: { label: 'Assignments', parent: 'home.projects.caseassignments' },
                 module: "private"
             })
             .state("home.projects.summary", <App.Models.IAppRoute>{

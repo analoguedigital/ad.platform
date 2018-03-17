@@ -240,6 +240,7 @@
     <Content Include="wwwroot\comp\home\myAccount\settings\settingsView.html" />
     <Content Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
+    <Content Include="wwwroot\comp\home\projects\caseAssignments\caseAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_exportToolbox.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\_metricGroup.html" />
@@ -251,6 +252,7 @@
     <Content Include="wwwroot\comp\home\projects\summary\popovers\_keywordSearch.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
+    <Content Include="wwwroot\comp\home\projects\threadAssignments\threadAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\_dataTable.html" />
     <Content Include="wwwroot\comp\home\surveys\all\_searchForm.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_formDetails.html" />
@@ -422,6 +424,8 @@
     <Content Include="wwwroot\comp\home\teams\manage\_teamManageView.scss" />
     <Content Include="wwwroot\comp\home\formTemplates\assignments\_formTemplateAssignments.scss" />
     <Content Include="wwwroot\comp\home\users\edit\_userEditView.scss" />
+    <Content Include="wwwroot\comp\home\projects\caseAssignments\_caseAssignments.scss" />
+    <Content Include="wwwroot\comp\home\projects\threadAssignments\_threadAssignments.scss" />
     <Content Include="wwwroot\comp\emailConfirmation\sendToken\_sendEmailTokenView.scss" />
     <Content Include="wwwroot\comp\emailConfirmation\verifyToken\_verifyEmailTokenView.scss" />
   </ItemGroup>
@@ -495,6 +499,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\caseAssignments\caseAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\projectSummaryController.ts" />
@@ -502,6 +507,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\redeemCode\redeemCodeController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptions.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptionsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\threadAssignments\threadAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
