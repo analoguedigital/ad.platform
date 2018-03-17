@@ -235,6 +235,9 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDesign.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDetails.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
+    <Content Include="wwwroot\comp\home\myAccount\settings\addPhoneNumber\addPhoneNumber.html" />
+    <Content Include="wwwroot\comp\home\myAccount\settings\changePhoneNumber\changePhoneNumber.html" />
+    <Content Include="wwwroot\comp\home\myAccount\settings\settingsView.html" />
     <Content Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
@@ -419,6 +422,8 @@
     <Content Include="wwwroot\comp\home\teams\manage\_teamManageView.scss" />
     <Content Include="wwwroot\comp\home\formTemplates\assignments\_formTemplateAssignments.scss" />
     <Content Include="wwwroot\comp\home\users\edit\_userEditView.scss" />
+    <Content Include="wwwroot\comp\emailConfirmation\sendToken\_sendEmailTokenView.scss" />
+    <Content Include="wwwroot\comp\emailConfirmation\verifyToken\_verifyEmailTokenView.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -484,6 +489,9 @@
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\rateMetric\rateMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\numericMetric\numericMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\_metricGroup\metricGroupFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\settings\addPhoneNumber\addPhoneNumberController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\settings\changePhoneNumber\changePhoneNumberController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\settings\settingsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />

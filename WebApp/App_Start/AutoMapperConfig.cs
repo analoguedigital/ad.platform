@@ -152,6 +152,9 @@ namespace WebApi
 
             #region Organisations and Users
 
+            Mapper.CreateMap<User, UserDTO>().ReverseMap();
+            Mapper.CreateMap<SuperUser, UserDTO>().ReverseMap();
+
             Mapper.CreateMap<Organisation, OrganisationDTO>().ReverseMap();
             Mapper.CreateMap<OrgUser, OrgUserDTO>();
             Mapper.CreateMap<OrgUserDTO, OrgUser>()

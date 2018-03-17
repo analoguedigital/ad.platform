@@ -12,10 +12,28 @@
                         </span>
                     </a>
                     <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                        <li><a ui-sref="home.subscriptions.list">Subscriptions</a></li>
-                        <li><a ng-click="resetPassword()">Reset password</a></li>
+                        <li>
+                            <a ui-sref="home.subscriptions.list">
+                                <i class="fa fa-cc-visa"></i> Subscriptions
+                            </a>
+                        </li>
+                        <li>
+                            <a ng-click="resetPassword()">
+                                <i class="fa fa-key"></i> Reset password
+                            </a>
+                        </li>
                         <li class="divider"></li>
-                        <li><a ng-click="logout()">Logout</a></li>
+                        <li>
+                            <a ui-sref="home.settings.list">
+                                <i class="fa fa-cogs"></i> Settings
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a ng-click="logout()">
+                                <i class="fa fa-sign-out"></i> Logout
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="logo-element">ON</div>

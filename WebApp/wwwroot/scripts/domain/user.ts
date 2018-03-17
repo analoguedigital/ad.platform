@@ -7,6 +7,8 @@ module App.Models {
         email: string;
         emailConfirmed: boolean;
         password: string;
+        phoneNumber: string;
+        phoneNumberConfirmed: boolean;
         confirmPassword: string;
         roles: string[];
     }

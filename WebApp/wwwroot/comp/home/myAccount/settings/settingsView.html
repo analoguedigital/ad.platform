@@ -1,0 +1,62 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Account Settings</h5>
+        </div>
+        <div class="box-content">
+            <div class="alert alert-warning" role="alert" ng-if="!currentUser.emailConfirmed">
+                <strong>Warning!</strong> You haven't confirmed your email address!
+            </div>
+
+            <div class="alert alert-warning" role="alert" ng-if="currentUser.phoneNumber && !currentUser.phoneNumberConfirmed">
+                <strong>Warning!</strong> You haven't verified your phone number!
+            </div>
+
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td width="120" style="border-top: none">Email Address</td>
+                        <td width="120" style="border-top: none"><strong>{{currentUser.email}}</strong></td>
+                        <td style="border-top: none">
+                            <button class="btn btn-success btn-xs" ng-if="!currentUser.emailConfirmed" ng-click="ctrl.confirmEmailAddress()">
+                                <i class="fa fa-check"></i> Confirm Email
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="120">Phone Number</td>
+                        <td width="120">
+                            <span ng-if="currentUser.phoneNumber.length"><strong>{{currentUser.phoneNumber}}</strong></span>
+                            <span ng-if="!currentUser.phoneNumber">NONE</span>
+                        </td>
+                        <td>
+                            <!-- Add Phone Number -->
+                            <button class="btn btn-info btn-xs" ng-if="!currentUser.phoneNumber" ng-click="ctrl.addPhoneNumber()">
+                                <i class="fa fa-phone-square"></i> Add Phone
+                            </button>
+                            <!-- Verify Phone Number -->
+                            <button class="btn btn-info btn-xs" ng-if="currentUser.phoneNumber.length && !currentUser.phoneNumberConfirmed" ng-click="ctrl.verifyPhoneNumber()">
+                                <i class="fa fa-check"></i> Verify Phone
+                            </button>
+                            <!-- Change Phone Number -->
+                            <button class="btn btn-primary btn-xs" ng-if="currentUser.phoneNumber.length && currentUser.phoneNumberConfirmed" ng-click="ctrl.changePhoneNumber()">
+                                <i class="fa fa-wrench"></i> Change
+                            </button>
+                            <!-- Remove Phone Number -->
+                            <button class="btn btn-danger btn-xs" ng-if="currentUser.phoneNumber.length"
+                                    ng-bootbox-confirm="Are you sure you want to remove this phone number?"
+                                    ng-bootbox-confirm-action="ctrl.removePhoneNumber()">
+                                <i class="fa fa-check"></i> Remove
+                            </button>
+                            <!-- Enable 2FA -->
+                            <button class="btn btn-primary btn-xs" ng-if="currentUser.phoneNumber && currentUser.twoFactorAuthenticationEnabled">
+                                <i class="fa fa-lock"></i> Enable Two-factor Authentication
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -45,9 +45,15 @@ namespace WebApi.Models
 
         public string Calendar { set; get; }
 
+        public string PhoneNumber { get; set; }
+
+        public bool PhoneNumberConfirmed { get; set; }
+
         public IList<string> Roles { set; get; }
 
         public UserProfileDTO Profile { get; set; }
+
+        public bool TwoFactorAuthenticationEnabled { get; set; }
     }
 
     public class UserProfileDTO

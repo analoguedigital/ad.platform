@@ -8,9 +8,11 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -20,7 +22,6 @@ using WebApi.Results;
 
 namespace WebApi.Models
 {
-    [Authorize]
     [RoutePrefix("api/Account")]
     public class AccountController : BaseApiController
     {
@@ -55,25 +56,36 @@ namespace WebApi.Models
         // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfo")]
-        public UserInfoViewModel GetUserInfo()
+        public async Task<IHttpActionResult> GetUserInfo()
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
-            var orgUser = this.CurrentUser as OrgUser;
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var user = UnitOfWork.UsersRepository.Find(userId);
+            var orgUser = user as OrgUser;
+
+            var phoneNumber = await UserManager.GetPhoneNumberAsync(userId);
+            var twoFactorAuth = await UserManager.GetTwoFactorEnabledAsync(userId);
+
             var userInfo = new UserInfoViewModel
             {
-                Email = User.Identity.GetUserName(),
                 UserId = this.CurrentUser.Id,
-                OrganisationId = this.CurrentOrganisationId,
+                Email = User.Identity.GetUserName(),
+                EmailConfirmed = user.EmailConfirmed,
+                PhoneNumber = phoneNumber,
+                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
                 Language = this.CurrentOrganisation?.DefaultLanguage?.Calture,
                 Calendar = this.CurrentOrganisation?.DefaultCalendar?.SystemName,
-                Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id)
+                Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id),
+                TwoFactorAuthenticationEnabled = twoFactorAuth
             };
 
             if (orgUser != null)
             {
+                userInfo.OrganisationId = this.CurrentOrganisationId;
+
                 userInfo.Profile = new UserProfileDTO
                 {
                     FirstName = orgUser.FirstName,
@@ -85,7 +97,7 @@ namespace WebApi.Models
                 };
             }
 
-            return userInfo;
+            return Ok(userInfo);
         }
 
         // POST api/Account/UpdateProfile
@@ -216,18 +228,9 @@ namespace WebApi.Models
                 return BadRequest(ModelState);
 
             var user = await UserManager.FindByNameAsync(model.Email);
-
-            // uncomment if user has to activate his email to confirm his account.
-            //if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-            //{
-            //    return Ok();
-            //}
-
-            if (user == null)
-            {
-                // don't reveal that user does not exist! return Ok();
-                return BadRequest();
-            }
+            // don't reveal that user does not exist! return Ok();
+            if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                return Ok();
 
             // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
 
@@ -553,6 +556,18 @@ namespace WebApi.Models
             UnitOfWork.OrgUsersRepository.InsertOrUpdate(_orgUser);
             UnitOfWork.Save();
 
+            // send account confirmation email
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+            var encodedCode = HttpUtility.UrlEncode(code);
+
+            var rootIndex = GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
+
+            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
+
+            await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
+
             return Ok();
         }
 
@@ -589,6 +604,190 @@ namespace WebApi.Models
             return Ok();
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("SendEmailConfirmation")]
+        public async Task<IHttpActionResult> SendEmailConfirmation(SendEmailConfirmationModel model)
+        {
+            var user = await UserManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return NotFound();
+
+            if (user.EmailConfirmed)
+                return Ok();
+
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+            var encodedCode = HttpUtility.UrlEncode(code);
+
+            var rootIndex = GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
+
+            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
+            
+            await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ConfirmEmail")]
+        public async Task<IHttpActionResult> ConfirmEmail(ConfirmEmailModel model)
+        {
+            if (model.UserId == Guid.Empty || string.IsNullOrEmpty(model.Code))
+                return BadRequest();
+
+            var result = await UserManager.ConfirmEmailAsync(model.UserId, model.Code);
+            if (result.Succeeded)
+                return Ok();
+
+            var errorString = new StringBuilder();
+            foreach (var err in result.Errors)
+                errorString.AppendLine(err);
+
+            return BadRequest(errorString.ToString());
+        }
+
+        [HttpPost]
+        [Route("AddPhoneNumber")]
+        public async Task<IHttpActionResult> AddPhoneNumber(AddPhoneNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var code = await UserManager.GenerateChangePhoneNumberTokenAsync(userId, model.PhoneNumber);
+
+            if (UserManager.SmsService != null)
+            {
+                var message = new IdentityMessage
+                {
+                    Destination = model.PhoneNumber,
+                    Body = "Your security code is: " + code
+                };
+
+                await UserManager.SmsService.SendAsync(message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("VerifyPhoneNumber")]
+        public async Task<IHttpActionResult> VerifyPhoneNumber(VerifyPhoneNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber) || string.IsNullOrEmpty(model.Code))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var result = await UserManager.ChangePhoneNumberAsync(userId, model.PhoneNumber, model.Code);
+
+            if (result.Succeeded)
+            {
+                // sign in automatically after verification
+                //var user = await UserManager.FindByIdAsync(userId);
+                //if (user != null)
+                //{
+                //    await SignInAsync(user, isPersistent: false);
+                //}
+
+                return Ok();
+            }
+
+            var errorString = new StringBuilder();
+            foreach (var err in result.Errors)
+                errorString.AppendLine(err);
+
+            return BadRequest(errorString.ToString());
+        }
+
+        [HttpPost]
+        [Route("RemovePhoneNumber")]
+        public IHttpActionResult RemovePhoneNumber()
+        {
+            var user = UnitOfWork.UsersRepository.Find(this.CurrentUser.Id);
+            user.PhoneNumber = string.Empty;
+            user.PhoneNumberConfirmed = false;
+
+            UnitOfWork.UsersRepository.InsertOrUpdate(user);
+            UnitOfWork.Save();
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("ChangePhoneNumber")]
+        public async Task<IHttpActionResult> ChangePhoneNumber(ChangePhoneNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var user = await UserManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            if (user.PhoneNumber.Equals(model.PhoneNumber))
+                return BadRequest("You need to input a different phone number");
+
+            var changeToken = await UserManager.GenerateChangePhoneNumberTokenAsync(userId, model.PhoneNumber);
+
+            if (UserManager.SmsService != null)
+            {
+                var message = new IdentityMessage
+                {
+                    Destination = model.PhoneNumber,
+                    Body = "Your security code is: " + changeToken
+                };
+
+                await UserManager.SmsService.SendAsync(message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> VerifyChangedNumber(VerifyChangedNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber) || string.IsNullOrEmpty(model.Code))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var user = await UserManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            var result = await UserManager.VerifyChangePhoneNumberTokenAsync(userId, model.Code, model.PhoneNumber);
+            if (result)
+            {
+                var changePhoneResult = await UserManager.ChangePhoneNumberAsync(userId, model.PhoneNumber, model.Code);
+                if (changePhoneResult.Succeeded)
+                    return Ok();
+
+                var errorString = new StringBuilder();
+                foreach (var err in changePhoneResult.Errors)
+                    errorString.AppendLine(err);
+
+                return BadRequest(errorString.ToString());
+            }
+
+            return BadRequest("Invalid security code");
+        }
+
+        //private async Task SignInAsync(ApplicationUser user, bool isPersistent)
+        //{
+        //    // Clear the temporary cookies used for external and two factor sign ins
+        //    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie,
+        //       DefaultAuthenticationTypes.TwoFactorCookie);
+        //    AuthenticationManager.SignIn(new AuthenticationProperties
+        //    {
+        //        IsPersistent = isPersistent
+        //    },
+        //       await user.GenerateUserIdentityAsync(UserManager));
+        //}
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && _userManager != null)
@@ -598,6 +797,15 @@ namespace WebApi.Models
             }
 
             base.Dispose(disposing);
+        }
+
+        private string GetRootIndexPath()
+        {
+            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
+            if (!string.IsNullOrEmpty(rootIndexPath))
+                return rootIndexPath;
+
+            return "wwwroot/index.html";
         }
 
         #region Helpers
@@ -707,4 +915,45 @@ namespace WebApi.Models
 
         #endregion
     }
+
+    #region DTOs
+
+    public class VerifyPhoneNumberModel
+    {
+        public string PhoneNumber { get; set; }
+
+        public string Code { get; set; }
+    }
+
+    public class AddPhoneNumberModel
+    {
+        public string PhoneNumber { get; set; }
+    }
+
+    public class SendEmailConfirmationModel
+    {
+        public string Email { get; set; }
+    }
+
+    public class ConfirmEmailModel
+    {
+        public Guid UserId { get; set; }
+
+        public string Code { get; set; }
+    }
+
+    #endregion
+
+    public class ChangePhoneNumberModel
+    {
+        public string PhoneNumber { get; set; }
+    }
+
+    public class VerifyChangedNumberModel
+    {
+        public string PhoneNumber { get; set; }
+
+        public string Code { get; set; }
+    }
+
 }

@@ -92,6 +92,8 @@ module App.Services {
                         id: userinfo.userId,
                         email: authenticationData.email,
                         emailConfirmed: userinfo.emailConfirmed,
+                        phoneNumber: userinfo.phoneNumber,
+                        phoneNumberConfirmed: userinfo.phoneNumberConfirmed,
                         roles: userinfo.roles
                     };
                     if (userinfo.organisationId !== null) {

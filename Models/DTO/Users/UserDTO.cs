@@ -24,5 +24,9 @@ namespace LightMethods.Survey.Models.DTO
         public string Address { get; set; }
 
         public bool IsActive { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public bool PhoneNumberConfirmed { get; set; }
     }
 }
