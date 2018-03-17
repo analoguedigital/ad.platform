@@ -11,6 +11,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public Guid? ProjectId { set; get; }
 
+        public ProjectDTO Project { get; set; }
+
         public OrganisationDTO Organisation { get; set; }
 
         public Guid CreatedById { set; get; }

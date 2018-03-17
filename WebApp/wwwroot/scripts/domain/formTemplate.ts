@@ -8,6 +8,7 @@ module App.Models {
         organisation: IOrganisation;
         code: string;
         title: string;
+        project: IProject;
         projectName: string;
         description: string;
         colour: string;

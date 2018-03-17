@@ -44,7 +44,7 @@
                 templateUrl: "comp/home/formTemplates/assignments/formTemplateAssignmentsView.html",
                 controller: "formTemplateAssignmentsController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Assign', parent: 'home.formtemplates.list' },
+                ncyBreadcrumb: { label: 'Assign', parent: 'home.caseManagement.threadAssignments' },
                 module: 'private'
             });
     }

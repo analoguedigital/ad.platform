@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace LightMethods.Survey.Models.Services
 {
@@ -17,11 +19,13 @@ namespace LightMethods.Survey.Models.Services
     {
         private UnitOfWork unitOfWork { get; set; }
         public OrgUser OrgUser { get; set; }
+        public User CurrentUser { get; set; }
 
-        public FormTemplatesService(UnitOfWork uow, OrgUser user)
+        public FormTemplatesService(UnitOfWork uow, OrgUser user, User currentUser)
         {
             this.unitOfWork = uow;
-            this.OrgUser = user;
+            this.OrgUser = user as OrgUser;
+            this.CurrentUser = currentUser;
         }
 
         public IEnumerable<FormTemplateDTO> Get(Guid? projectId)
@@ -93,8 +97,28 @@ namespace LightMethods.Survey.Models.Services
             try
             {
                 entity.FormTemplateCategory = null;
-                entity.CreatedById = this.OrgUser.Id;
-                entity.OrganisationId = this.OrgUser.OrganisationId.Value;
+
+                if (this.OrgUser != null)
+                {
+                    entity.CreatedById = this.OrgUser.Id;
+                    entity.OrganisationId = this.OrgUser.Organisation.Id;
+                }
+                else
+                {
+                    entity.CreatedById = this.CurrentUser.Id;
+
+                    if (entity.Organisation == null)
+                    {
+                        result.Success = false;
+                        result.Message = "Organisation is required";
+                        return result;
+                    }
+                    else
+                    {
+                        entity.OrganisationId = entity.Organisation.Id;
+                        entity.Organisation = null;
+                    }
+                }
 
                 this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(entity);
                 this.unitOfWork.Save();
@@ -146,6 +170,9 @@ namespace LightMethods.Survey.Models.Services
             }
 
             Mapper.Map(model, form);
+
+            // validate organisation. Project/Category organisations must match the selected organisation.
+
             this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
 
             var groupOrder = 1;

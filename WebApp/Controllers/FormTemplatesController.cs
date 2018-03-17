@@ -20,7 +20,7 @@ namespace WebApi.Controllers
 
         public FormTemplatesController()
         {
-            this.FormTemplatesService = new FormTemplatesService(this.UnitOfWork, this.CurrentOrgUser);
+            this.FormTemplatesService = new FormTemplatesService(this.UnitOfWork, this.CurrentOrgUser, this.CurrentUser);
         }
 
         // GET api/<controller>

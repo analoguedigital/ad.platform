@@ -24,6 +24,7 @@ namespace WebApi.Controllers
             {
                 result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
                     .Where(c => c.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .ToList()
                     .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
                     .ToList();
             }
