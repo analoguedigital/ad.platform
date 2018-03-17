@@ -22,7 +22,7 @@ namespace LightMethods.Survey.Models.DAL
                 projects = projects.Where(p => p.OrganisationId == ((OrgUser)user).OrganisationId);
 
                 if (!CurrentUOW.UserManager.RolesContainsAny(user.Id, Role.ORG_PROJECT_MANAGMENT, Role.ORG_ADMINSTRATOR))
-                    projects = projects.Where(p => p.Assignments.Any(a => a.OrgUserId == user.Id));
+                    projects = projects.Where(p => p.Assignments.Any(a => a.OrgUserId == user.Id && a.CanView == true));
             }
 
             return projects;
