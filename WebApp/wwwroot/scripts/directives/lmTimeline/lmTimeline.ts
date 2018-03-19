@@ -20,9 +20,7 @@
         timelineChart: any;
     }
 
-    interface IlmTimelineAttributes extends ng.IAttributes {
-
-    }
+    interface IlmTimelineAttributes extends ng.IAttributes { }
 
     lmTimeline.$inject = ['$rootScope', '$timeout'];
     function lmTimeline($rootScope: ng.IRootScopeService, $timeout: ng.ITimeoutService): IlmTimeline {

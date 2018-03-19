@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
     //https://github.com/lawrence0819/angular-bootstrap-form-group/blob/master/src/angular-bootstrap-form-group.coffee
 

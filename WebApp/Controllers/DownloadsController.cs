@@ -8,13 +8,21 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Hosting;
 using System.Web.Http;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class DownloadsController : ApiController
     {
-        public UnitOfWork UnitOfWork { get { return ServiceContext.UnitOfWork; } }
-        public User CurrentUser { get { return ServiceContext.CurrentUser; } }
+        public UnitOfWork UnitOfWork
+        {
+            get { return ServiceContext.UnitOfWork; }
+        }
+
+        public User CurrentUser
+        {
+            get { return ServiceContext.CurrentUser; }
+        }
 
         [AllowAnonymous]
         [Route("api/downloads/{id}")]
@@ -37,7 +45,6 @@ namespace WebApi.Controllers
                 return response;
             }
 
-            // returning a HTTP Forbidden result.
             return new HttpResponseMessage(HttpStatusCode.Unauthorized);
         }
 
@@ -57,14 +64,11 @@ namespace WebApi.Controllers
                 return NotFound();
 
             var oneTimeAccessId = string.Empty;
-
+            var currentUser = ServiceContext.CurrentUser;
             var orgUser = ServiceContext.CurrentUser as OrgUser;
 
-            if (orgUser == null)
-            {
-                // we have a super user
+            if (currentUser is SuperUser)
                 oneTimeAccessId = OneTimeAccessService.AddFileIdForTicket(id);
-            }
             else
             {
                 var project = attachment.FormValue.FilledForm.Project;
@@ -93,12 +97,9 @@ namespace WebApi.Controllers
                 oneTimeAccessId = OneTimeAccessService.AddFileIdForTicket(id);
             }
 
-            return Ok(new DownloadRequestDTO { AccessId = oneTimeAccessId });
-        }
-    }
+            var result = new DownloadRequestDTO { AccessId = oneTimeAccessId };
 
-    public class DownloadRequestDTO
-    {
-        public string AccessId { get; set; }
+            return Ok(result);
+        }
     }
 }

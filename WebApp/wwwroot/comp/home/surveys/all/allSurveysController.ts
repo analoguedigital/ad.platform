@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface IAllSurveysControllerScope extends ng.IScope {
@@ -52,7 +51,6 @@ module App {
         assignment: Models.IProjectAssignment;
         startDateCalendar: any;
         endDateCalendar: any;
-
         isAdvSearchOpen: boolean;
         metricFilters: Models.IMetricFilter[];
 

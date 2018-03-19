@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
-using WebApi.Models;
-using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.Services.Identity;
+using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace WebApi.Providers
 {
@@ -21,9 +17,7 @@ namespace WebApi.Providers
         public ApplicationOAuthProvider(string publicClientId)
         {
             if (publicClientId == null)
-            {
                 throw new ArgumentNullException("publicClientId");
-            }
 
             _publicClientId = publicClientId;
         }
@@ -31,7 +25,6 @@ namespace WebApi.Providers
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
             var userManager = context.OwinContext.GetUserManager<ApplicationUserManager>();
-
             User user = await userManager.FindAsync(context.UserName, context.Password);
 
             if (user == null)
@@ -46,11 +39,11 @@ namespace WebApi.Providers
                 return;
             }
 
-            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager,
-               OAuthDefaults.AuthenticationType);
+            ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType);
             
             AuthenticationProperties properties = CreateProperties(user.UserName);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
+
             context.Validated(ticket);
             context.Request.Context.Authentication.SignIn(oAuthIdentity);
         }
@@ -58,9 +51,7 @@ namespace WebApi.Providers
         public override Task TokenEndpoint(OAuthTokenEndpointContext context)
         {
             foreach (KeyValuePair<string, string> property in context.Properties.Dictionary)
-            {
                 context.AdditionalResponseParameters.Add(property.Key, property.Value);
-            }
 
             return Task.FromResult<object>(null);
         }
@@ -69,9 +60,7 @@ namespace WebApi.Providers
         {
             // Resource owner password credentials does not provide a client ID.
             if (context.ClientId == null)
-            {
                 context.Validated();
-            }
 
             return Task.FromResult<object>(null);
         }
@@ -81,11 +70,8 @@ namespace WebApi.Providers
             if (context.ClientId == _publicClientId)
             {
                 Uri expectedRootUri = new Uri(context.Request.Uri, "/");
-
                 if (expectedRootUri.AbsoluteUri == context.RedirectUri)
-                {
                     context.Validated();
-                }
             }
 
             return Task.FromResult<object>(null);
@@ -97,6 +83,7 @@ namespace WebApi.Providers
             {
                 { "userName", userName }
             };
+
             return new AuthenticationProperties(data);
         }
     }

@@ -1,5 +1,4 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
     export interface IProjectResource extends ng.resource.IResourceClass<Models.IProject> {
@@ -21,7 +20,6 @@ module App.Resources {
             'teams': { method: 'GET', isArray: true, url: '/api/projects/:id/teams', params: { id: '@id' } }
         });
     }
-
 
     angular.module("app").factory("projectResource", ProjectResource);
 }

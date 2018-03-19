@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface IAddSuperUserController {
@@ -30,9 +29,7 @@ module App {
             this.activate();
         }
 
-        activate() {
-
-        }
+        activate() { }
 
         checkMatch() {
             if (this.model.password === undefined || this.model.confirmPassword === undefined)

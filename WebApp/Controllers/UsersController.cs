@@ -5,12 +5,11 @@ using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -81,13 +80,6 @@ namespace WebApi.Controllers
                 return Ok();
 
             return BadRequest(result.Errors.ToString(", "));
-        }
-
-        public class CreateSuperUserDTO
-        {
-            public string Email { get; set; }
-
-            public string Password { get; set; }
         }
 
     }

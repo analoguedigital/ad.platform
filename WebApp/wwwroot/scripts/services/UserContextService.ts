@@ -1,5 +1,4 @@
-﻿
-module App.Services {
+﻿module App.Services {
     "use strict";
 
     export interface IUserContext {
@@ -17,7 +16,6 @@ module App.Services {
     }
 
     export class UserContextService implements IUserContextService {
-
         LOCAL_STORAGE_KEY: string = 'userContext';
 
         public current: IUserContext = null;
@@ -81,6 +79,8 @@ module App.Services {
             this.current.user = null;
             this.current.orgUser = null;
 
+            // this isn't enough as we need to actually call our api 
+            // to log out the current session. refactor this after enabling 2FA.
         }
 
         setCurrentUser(authenticationData: AuthData): ng.IPromise<void> {
@@ -109,7 +109,6 @@ module App.Services {
                 });
 
             return deferred.promise;
-
         }
 
         userIsRestricted() {

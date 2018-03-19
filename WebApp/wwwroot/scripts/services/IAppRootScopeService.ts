@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     export interface IAppRootScopeService extends ng.IRootScopeService {

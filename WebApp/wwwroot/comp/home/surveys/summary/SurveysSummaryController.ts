@@ -1,4 +1,3 @@
-
 module App {
     "use strict";
 
@@ -15,8 +14,7 @@ module App {
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
 
-        static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource',
-            'surveyResource', 'projectSummaryPrintSessionResource', 'project'];
+        static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'project'];
         constructor(
             public $scope: ng.IScope,
             public $stateParams: ng.ui.IStateParamsService,

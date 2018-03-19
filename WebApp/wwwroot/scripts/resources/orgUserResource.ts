@@ -1,5 +1,4 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
     export interface IOrgUserResource extends ng.resource.IResourceClass<Models.IOrgUser> {
@@ -13,7 +12,6 @@ module App.Resources {
 
     OrgUserResource.$inject = ["$resource"];
     export function OrgUserResource($resource: ng.resource.IResourceService): IOrgUserResource {
-
         var OrgUser = <IOrgUserResource>$resource('/api/orgUsers/:id', { id: '@id' }, {
             'update': { method: 'PUT' }
         });
@@ -32,7 +30,6 @@ module App.Resources {
         };
 
         return OrgUser;
-        
     }
 
     UserResource.$inject = ["$resource"];

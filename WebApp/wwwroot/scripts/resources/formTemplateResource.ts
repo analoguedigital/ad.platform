@@ -1,5 +1,4 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
     export interface IFormTemplateResource extends angular.resource.IResourceClass<Models.IFormTemplate> {
@@ -14,7 +13,6 @@ module App.Resources {
 
     FormTemplateResource.$inject = ["$resource"];
     export function FormTemplateResource($resource: angular.resource.IResourceService): IFormTemplateResource {
-
         return <IFormTemplateResource>$resource('/api/formtemplates/:id', { id: '@id' }, {
             'update': { method: 'PUT' },
             'archive': { method: 'DELETE', url: '/api/formtemplates/:id/publish', params: { id: '@id' }, },
@@ -24,9 +22,7 @@ module App.Resources {
             'assign': { method: 'POST', url: '/api/formtemplates/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
             'unassign': { method: 'DELETE', url: '/api/formtemplates/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } }
         });
-
     }
-
 
     angular.module("app").factory("formTemplateResource", FormTemplateResource);
 }

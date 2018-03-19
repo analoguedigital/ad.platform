@@ -1,5 +1,4 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
     export interface IMetricResource extends ng.resource.IResourceClass<Models.IMetric> {
@@ -26,7 +25,6 @@ module App.Resources {
 
     NewMetricResource.$inject = ["$resource"];
     export function NewMetricResource($resource: ng.resource.IResourceService): IMetricResource {
-
         return <IMetricResource>$resource('/api/metrics/:metricType',
             { metricType: 'metrics' },
             {

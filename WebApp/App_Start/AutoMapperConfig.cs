@@ -51,8 +51,6 @@ namespace WebApi
             Mapper.CreateMap<DataListItemAttr, DataListItemAttrDTO>().ReverseMap();
             Mapper.CreateMap<DataListRelationship, DataListRelationshipDTO>();
             Mapper.CreateMap<DataListRelationshipDTO, DataListRelationship>();
-            //.ForMember(dest => dest.Owner, opts => opts.Ignore())
-            //.ForMember(dest => dest.DataList, opts => opts.Ignore());
 
             Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 

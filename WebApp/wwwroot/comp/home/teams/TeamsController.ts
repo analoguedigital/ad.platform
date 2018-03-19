@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface ITeamsControllerScope extends ng.IScope {
@@ -55,8 +54,6 @@ module App {
         }
 
         delete(id: string) {
-            console.warn('delete team', id);
-
             this.orgTeamResource.delete({ id: id },
                 () => { this.load(); },
                 (err) => {

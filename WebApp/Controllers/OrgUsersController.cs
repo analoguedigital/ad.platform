@@ -15,22 +15,34 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
-
     public class OrgUsersController : BaseApiController
     {
+        private OrgUsersRepository Users
+        {
+            get { return UnitOfWork.OrgUsersRepository; }
+        }
 
-        private OrgUsersRepository Users { get { return UnitOfWork.OrgUsersRepository; } }
-        private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
-        private OrgUserTypesRepository Types { get { return UnitOfWork.OrgUserTypesRepository; } }
+        private OrganisationRepository Organisations
+        {
+            get { return UnitOfWork.OrganisationRepository; }
+        }
+
+        private OrgUserTypesRepository Types
+        {
+            get { return UnitOfWork.OrgUserTypesRepository; }
+        }
 
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
         {
-            get { return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
+            get
+            {
+                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+
             private set { _userManager = value; }
         }
 
@@ -222,6 +234,9 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        #region helpers
+
+        // this needs to be refactored to a global static helper.
         private string GetRootIndexPath()
         {
             var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
@@ -230,5 +245,8 @@ namespace WebApi.Controllers
 
             return "wwwroot/index.html";
         }
+
+        #endregion
+
     }
 }

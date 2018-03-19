@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface IDownloadsControllerScope extends angular.IScope {
@@ -31,8 +30,6 @@ module App {
             this.$scope.downloadId = downloadId;
 
             if (downloadId && downloadId.length) {
-
-
                 this.downloadResource.requestFile({ id: downloadId }, (result) => {
                     var accessId = result.accessId;
                     var url = "/api/downloads/" + accessId;

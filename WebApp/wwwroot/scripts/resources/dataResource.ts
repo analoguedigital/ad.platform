@@ -1,9 +1,7 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
-    export interface IDataResource extends ng.resource.IResourceClass<any> {
-    }
+    export interface IDataResource extends ng.resource.IResourceClass<any> { }
 
     DataResource.$inject = ["$resource"];
     export function DataResource($resource: ng.resource.IResourceService): IDataResource {

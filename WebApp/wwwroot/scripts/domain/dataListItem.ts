@@ -1,5 +1,4 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IDataListItem extends ng.resource.IResource<IDataListItem> {
@@ -9,7 +8,6 @@ module App.Models {
         value: number;
         order: number;
         attributes: IDataListItemAttr[];
-
         isDeleted: boolean;
     }
 }

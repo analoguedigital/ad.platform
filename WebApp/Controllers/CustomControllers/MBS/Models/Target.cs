@@ -8,11 +8,17 @@ namespace WebApi.Models.MBS
     public class TargetDTO
     {
         public Guid SurveyId { set; get; }
+
         public DateTime? WeekTargetDate { set; get; }
+
         public string Description { set; get; }
+
         public string HowAchieved { set; get; }
+
         public string SupervisoryTargets { set; get; }
+
         public IList<AchievementDTO>Achievements {set;get;}
+
         public string HowOthersHelp { set; get; }
 
         public static TargetDTO From(FilledForm form)

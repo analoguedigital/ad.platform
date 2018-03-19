@@ -1,5 +1,4 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IProjectSummaryPrintSession extends ng.resource.IResource<IProjectSummaryPrintSession> {
@@ -8,7 +7,5 @@ module App.Models {
         projectId: string;
         surveyIds: string[];
         removedItemIds: string[];
-
     }
-
 }

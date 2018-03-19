@@ -1,5 +1,4 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IUserBase {
@@ -36,6 +35,4 @@ module App.Models {
         isManager: boolean;
         isSelected: boolean;
     }
-       
-
 }

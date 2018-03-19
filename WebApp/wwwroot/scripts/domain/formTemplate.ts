@@ -1,5 +1,4 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IFormTemplate extends angular.resource.IResource<IFormTemplate> {
@@ -18,7 +17,6 @@ module App.Models {
         calendarDateMetricId: string;
         descriptionFormat: string;
         timelineBarMetricId: string;
-
         canView?: boolean;
         canAdd?: boolean;
         canEdit?: boolean;

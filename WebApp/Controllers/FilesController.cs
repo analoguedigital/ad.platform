@@ -9,21 +9,20 @@ using System.Web.Http.Description;
 
 namespace WebApi.Controllers
 {
-
-    public class FilesController :ApiController
+    public class FilesController : ApiController
     {
-        HttpContext Context { get { return HttpContext.Current; } }
+        HttpContext Context
+        {
+            get { return HttpContext.Current; }
+        }
 
         [ResponseType(typeof(Guid))]
         [HttpPost]
         [Route("api/files")]
-     
         public async Task<IHttpActionResult> Post()
         {
             if (!Request.Content.IsMimeMultipartContent("form-data"))
-            {
                 return BadRequest("Unsupported media type");
-            }
 
             var tempId = Guid.NewGuid();
             var workingFolder = HttpContext.Current.Server.MapPath("~/Uploads/" + tempId);

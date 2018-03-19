@@ -1,5 +1,4 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
     export interface IOrgTeamResource extends ng.resource.IResourceClass<Models.IOrgTeam> {

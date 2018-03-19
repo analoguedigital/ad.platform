@@ -17,10 +17,7 @@ namespace WebApi.Controllers
 
         protected UnitOfWork UnitOfWork
         {
-            get
-            {
-                return ServiceContext.UnitOfWork;
-            }
+            get { return ServiceContext.UnitOfWork; }
         }
 
         private User _CurrentUser;
@@ -29,9 +26,8 @@ namespace WebApi.Controllers
             get
             {
                 if (_CurrentUser == null)
-                {
                     _CurrentUser = ServiceContext.CurrentUser;
-                }
+
                 return _CurrentUser;
             }
         }
@@ -43,24 +39,19 @@ namespace WebApi.Controllers
         {
             get
             {
-
                 if (_CurrentOrganisation == null)
                 {
-                    if (CurrentUser == null || !(CurrentUser is OrgUser))
-                        return null;
-
+                    if (CurrentUser == null || !(CurrentUser is OrgUser)) return null;
                     _CurrentOrganisation = (CurrentUser as OrgUser).Organisation;
                 }
+
                 return _CurrentOrganisation;
             }
         }
 
         protected OrgUser CurrentOrgUser
         {
-            get
-            {
-                  return CurrentUser as OrgUser;
-            }
+            get { return CurrentUser as OrgUser; }
         }
     }
 }

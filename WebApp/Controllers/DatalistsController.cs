@@ -9,13 +9,11 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class DataListsController : BaseApiController
     {
-
         [ResponseType(typeof(IEnumerable<GetDataListsResDTO>))]
         public IHttpActionResult Get()
         {
@@ -44,7 +42,7 @@ namespace WebApi.Controllers
                     .Select(d => Mapper.Map<GetDataListsResItemDTO>(d))
                     .ToList();
             }
-            
+
             return Ok(new GetDataListsResDTO() { Items = result.ToList() });
         }
 
@@ -157,6 +155,7 @@ namespace WebApi.Controllers
             }
 
             UnitOfWork.Save();
+
             return Ok();
         }
 
@@ -184,7 +183,14 @@ namespace WebApi.Controllers
 
             var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
-                return Ok(new GetDataListReferencesResDTO { Items = new List<GetDataListReferencesResItemDTO>() });
+            {
+                var result = new GetDataListReferencesResDTO
+                {
+                    Items = new List<GetDataListReferencesResItemDTO>()
+                };
+
+                return Ok(result);
+            }
 
             return Ok(new GetDataListReferencesResDTO
             {
@@ -193,7 +199,8 @@ namespace WebApi.Controllers
                         {
                             Id = r.OwnerId,
                             Name = r.Owner.Name
-                        }).ToList()
+                        })
+                        .ToList()
             });
         }
 
@@ -202,19 +209,15 @@ namespace WebApi.Controllers
         [ResponseType(typeof(DataListRelationshipDTO))]
         public IHttpActionResult AddRelationship(Guid datalistId, [FromBody] AddDataListRelationshipReqDTO req)
         {
-
             var owner = UnitOfWork.DataListsRepository.Find(datalistId);
-
             if (owner == null || owner.OrganisationId != CurrentOrganisationId)
                 return NotFound();
 
             var datalist = UnitOfWork.DataListsRepository.Find(req.DataListId);
-
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
                 return BadRequest();
 
             var newOrder = owner.Relationships.Select(r => r.Order).DefaultIfEmpty().Max() + 1;
-
             var relationship = new DataListRelationship()
             {
                 DataListId = req.DataListId,
@@ -223,10 +226,19 @@ namespace WebApi.Controllers
                 Order = newOrder
             };
 
-            UnitOfWork.DataListRelationshipsRepository.InsertOrUpdate(relationship);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.DataListRelationshipsRepository.InsertOrUpdate(relationship);
+                UnitOfWork.Save();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
 
-            return Ok(Mapper.Map<DataListRelationshipDTO>(relationship));
+            var result = (Mapper.Map<DataListRelationshipDTO>(relationship));
+
+            return Ok(result);
 
         }
 
@@ -234,44 +246,52 @@ namespace WebApi.Controllers
         [Route("api/datalists/{datalistId}/relationships/{id}")]
         public IHttpActionResult EditRelationship(Guid datalistId, Guid id, [FromBody] EditDataListRelationshipReqDTO req)
         {
-
             var owner = UnitOfWork.DataListsRepository.Find(datalistId);
-
             if (owner == null || owner.OrganisationId != CurrentOrganisationId)
                 return NotFound();
 
             var relationship = UnitOfWork.DataListRelationshipsRepository.Find(id);
-
             if (relationship == null || relationship.OwnerId != datalistId)
                 return NotFound();
 
             relationship.Name = req.Name;
 
-            UnitOfWork.DataListRelationshipsRepository.InsertOrUpdate(relationship);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.DataListRelationshipsRepository.InsertOrUpdate(relationship);
+                UnitOfWork.Save();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         [HttpDelete]
         [Route("api/datalists/{datalistId}/relationships/{id}")]
         public IHttpActionResult DeleteRelationship(Guid datalistId, Guid id)
         {
-
             var owner = UnitOfWork.DataListsRepository.Find(datalistId);
-
             if (owner == null || owner.OrganisationId != CurrentOrganisationId)
                 return NotFound();
 
             var relationship = UnitOfWork.DataListRelationshipsRepository.Find(id);
-
             if (relationship == null || relationship.OwnerId != datalistId)
                 return NotFound();
 
-            UnitOfWork.DataListRelationshipsRepository.Delete(relationship);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.DataListRelationshipsRepository.Delete(relationship);
+                UnitOfWork.Save();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
     }

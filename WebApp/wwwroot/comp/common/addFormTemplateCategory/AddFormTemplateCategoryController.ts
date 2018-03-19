@@ -20,9 +20,7 @@ module App {
             this.activate();
         }
 
-        activate() {
-            //
-        }
+        activate() { }
 
         save(form: ng.IFormController) {
 
@@ -34,7 +32,6 @@ module App {
                     this.$uibModalInstance.close(data);
                 },
                 (err) => { });
-
         }
 
         close() {

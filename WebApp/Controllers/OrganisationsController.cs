@@ -9,7 +9,6 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -74,8 +73,7 @@ namespace WebApi.Controllers
         {
 
             var org = Organisations.Find(id);
-            if (org == null)
-                return;
+            if (org == null) return;
 
             Mapper.Map(value, org);
 
@@ -175,6 +173,7 @@ namespace WebApi.Controllers
             if (orgUser == null)
                 return NotFound();
 
+            // we need a better way of getting the default seed organization.
             // OnRecord ID: cfa81eb0-9fc7-4932-a3e8-1c822370d034
             var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
                 .Where(x => x.Name == "OnRecord").FirstOrDefault();

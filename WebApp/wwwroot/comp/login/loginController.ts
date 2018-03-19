@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface ILoginControllerScope extends ng.IScope {
@@ -7,7 +6,6 @@ module App {
         loginData: Services.ILoginData;
         isWorking: boolean;
         isDownloadRequest: boolean;
-
         login: (form: ng.IFormController) => void;
     }
 
@@ -18,7 +16,6 @@ module App {
 
     class LoginController implements ILoginController {
         static $inject: string[] = ["$scope", "$state", "userContextService", "RedirectUrlAfterLogin"];
-
         constructor(
             private $scope: ILoginControllerScope,
             private $state: ng.ui.IStateService,

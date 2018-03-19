@@ -7,13 +7,11 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class FormTemplateCategoriesController : BaseApiController
     {
-
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateCategoryDTO>))]
         public IHttpActionResult Get()
@@ -72,9 +70,17 @@ namespace WebApi.Controllers
             Mapper.Map(category, item);
             item.OrganisationId = CurrentOrgUser.OrganisationId.Value;
 
-            UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
-            UnitOfWork.Save();
-            return Ok(Mapper.Map<FormTemplateCategoryDTO>(item));
+            try
+            {
+                UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         public IHttpActionResult Put(Guid id, FormTemplateCategoryDTO category)
@@ -88,22 +94,39 @@ namespace WebApi.Controllers
             Mapper.Map(category, item);
             item.OrganisationId = CurrentOrgUser.OrganisationId.Value;
 
-            UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
-            UnitOfWork.Save();
-            return Ok();
+            try
+            {
+                UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         public IHttpActionResult Delete(Guid id)
         {
             var item = UnitOfWork.FormTemplateCategoriesRepository.All
-                .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId).SingleOrDefault();
+                .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId)
+                .SingleOrDefault();
 
             if (item == null)
                 return BadRequest("Invalid id");
 
-            UnitOfWork.FormTemplateCategoriesRepository.Delete(item);
-            UnitOfWork.Save();
-            return Ok();
+            try
+            {
+                UnitOfWork.FormTemplateCategoriesRepository.Delete(item);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
     }
 }

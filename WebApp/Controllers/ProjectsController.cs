@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
@@ -9,7 +8,6 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
 namespace WebApi.Controllers
@@ -178,7 +176,9 @@ namespace WebApi.Controllers
             if (project == null)
                 return NotFound();
 
-            return Ok(project.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)));
+            var result = project.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a));
+
+            return Ok(result);
         }
 
         [DeflateCompression]

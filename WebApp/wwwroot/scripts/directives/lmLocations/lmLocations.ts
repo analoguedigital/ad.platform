@@ -122,7 +122,6 @@ module App {
                                 click: function (marker, eventName, args) {
                                     var lat = marker.getPosition().lat();
                                     var lon = marker.getPosition().lng();
-                                    console.log(`lat: ${lat} lon: ${lon}`);
 
                                     let infoWindow = new google.maps.InfoWindow;
                                     if (marker.title.length)
@@ -137,7 +136,7 @@ module App {
 
                         scope.markers.push(marker);
                     } catch (e) {
-                        console.warn(e);
+                        console.error(e);
                     }
                 });
             }

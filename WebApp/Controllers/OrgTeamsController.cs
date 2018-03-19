@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using WebApi.Models;
 
 namespace WebApi.Controllers
 {
@@ -204,8 +205,6 @@ namespace WebApi.Controllers
             if (team == null)
                 return NotFound();
 
-            //Mapper.Map(value, team);
-
             team.Name = value.Name;
             team.Description = value.Description;
             team.Colour = value.Colour;
@@ -328,29 +327,6 @@ namespace WebApi.Controllers
 
             return Ok();
         }
-
-        #region DTOs
-
-        public class OrgTeamAssignmentDTO
-        {
-            public List<OrgTeamUserDTO> Users { get; set; }
-        }
-
-        public class OrgTeamUserDTO
-        {
-            public Guid OrgUserId { get; set; }
-
-            public bool IsManager { get; set; }
-        }
-
-        public class OrgTeamAssignmentsDTO
-        {
-            public List<Guid> Projects { get; set; }
-
-            public List<Guid> OrgUsers { get; set; }
-        }
-
-        #endregion
 
     }
 

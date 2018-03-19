@@ -10,9 +10,13 @@ namespace WebApi.Models.MBS
     public class EvidenceDTO
     {
         public Guid SurveyId { set; get; }
+
         public DateTime? Date { set; get; }
+
         public string Target { set; get; }
+
         public string Comments { set; get; }
+
         public IList<AttachmentDTO> attachments { set; get; }
 
         public static EvidenceDTO From(FilledForm form)

@@ -1,9 +1,7 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IProject extends ng.resource.IResource<IProject> {
-
         id: string;
         number: string;
         name: string;

@@ -10,13 +10,15 @@ namespace WebApi.Controllers
 {
     public class ChangePasswordController : BaseApiController
     {
-        private OrgUsersRepository Users { get { return UnitOfWork.OrgUsersRepository; } }
+        private OrgUsersRepository Users
+        {
+            get { return UnitOfWork.OrgUsersRepository; }
+        }
 
         [HttpPost]
         [Route("api/changePassword")]
         public async Task<IHttpActionResult> Post([FromBody]ChangePasswordDTO value)
         {
-
             var currentUser = ServiceContext.CurrentUser;
             var userManager = ServiceContext.UserManager;
 
@@ -31,10 +33,9 @@ namespace WebApi.Controllers
                 return Unauthorized();
 
             var token = await user.GeneratePasswordResetTokenAsync(userManager);
-
             var result = userManager.ResetPassword(user.Id, token, value.NewPassword);
 
-            if(result.Succeeded)
+            if (result.Succeeded)
                 return Ok();
 
             return BadRequest(string.Join(" ,", result.Errors));

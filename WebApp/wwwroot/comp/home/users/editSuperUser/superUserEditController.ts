@@ -1,4 +1,3 @@
-
 module App {
     "use strict";
 

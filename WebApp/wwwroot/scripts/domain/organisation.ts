@@ -1,9 +1,7 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IOrganisation extends ng.resource.IResource<IOrganisation> {
-
         id: string;
         name: string;
         rootUser: IOrgUser;
