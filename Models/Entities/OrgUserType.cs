@@ -29,6 +29,7 @@ namespace LightMethods.Survey.Models.Entities
             }
             else if (Id == OrgUserTypesRepository.Manager.Id)
             {
+                yield return Role.ORG_TEAM_MANAGER;
                 yield return Role.ORG_PROJECT_MANAGMENT;
                 yield return Role.ORG_TEMPLATES_MANAGMENT;
             }

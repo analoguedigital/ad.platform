@@ -15,6 +15,12 @@ namespace LightMethods.Survey.Models.DTO
         [MaxLength(30)]
         public string RootUserEmail { get; set; }
 
+        [Display(Name = "First Name")]
+        public string RootUserFirstName { get; set; }
+
+        [Display(Name = "Surname")]
+        public string RootUserSurname { get; set; }
+
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Root password")]

@@ -1,16 +1,19 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content animated fadeInRight project-edit-view">
     <div class="box">
         <div class="box-title">
             <h5>Details</h5>
         </div>
         <div class="box-content">
             <form name="projectform" class="form-horizontal" novalidate>
+                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
+                    <select id="organisation" name="organisation" ng-model="project.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
+                </lm-form-group>
                 <lm-form-group label="Number: ">
                     <input type="text" id="number" name="number" ng-model="project.number" />
                 </lm-form-group>
                 <lm-form-group label="Name: ">
-                    <input type="text" id="name" name="name" ng-model="project.name" required/>
+                    <input type="text" id="name" name="name" ng-model="project.name" required />
                 </lm-form-group>
                 <lm-form-group label="Start date: ">
                     <div class="input-group">
@@ -35,6 +38,9 @@
                 <lm-form-group-checkbox label="Archived">
                     <input type="checkbox" id="archived" name="archived" ng-model="project.isArchived" />
                 </lm-form-group-checkbox>
+                <lm-form-group label="Last Entry" ng-if="project.lastEntry">
+                    <input type="text" id="lastEntry" name="lastEntry" ng-model="project.lastEntry" disabled />
+                </lm-form-group>
                 <lm-form-group ng-if="errors !== undefined" class="">
                     <div class="alert alert-danger animated fadeInDown">
                         {{errors}}
@@ -46,6 +52,92 @@
                 </lm-form-group>
                 <a ui-sref="home.projects.list"><i class="fa fa-arrow-left"></i> Back to list</a>
             </form>
+        </div>
+    </div>
+    <div class="box" ng-if="!ctrl.isInsertMode">
+        <div class="box-title">
+            <h5>Assignments</h5>
+        </div>
+        <div class="box-content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>User Name</th>
+                            <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-file-pdf-o"></i></th>
+                            <th class="text-center" width="40"><i class="fa fa-file-zip-o"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="user in assignments">
+                            <td>
+                                <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
+                                <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.orgUserName}}
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canView"></i>
+                                <i class="fa fa-times" ng-if="!user.canView"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canAdd"></i>
+                                <i class="fa fa-times" ng-if="!user.canAdd"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canEdit"></i>
+                                <i class="fa fa-times" ng-if="!user.canEdit"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canDelete"></i>
+                                <i class="fa fa-times" ng-if="!user.canDelete"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canExportPdf"></i>
+                                <i class="fa fa-times" ng-if="!user.canExportPdf"></i>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="user.canExportZip"></i>
+                                <i class="fa fa-times" ng-if="!user.canExportZip"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="box" ng-if="!ctrl.isInsertMode">
+        <div class="box-title">
+            <h5>Teams</h5>
+        </div>
+        <div class="box-content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th class="text-center">IsActive</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="team in teams">
+                            <td>
+                                <a ui-sref="home.teams.edit({id:team.id})">
+                                    <span ng-if="team.colour" class="color-block" ng-style="{'background-color': team.colour}"></span> {{team.name}}
+                                </a>
+                            </td>
+                            <td>{{team.description}}</td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="team.isActive"></i>
+                                <i class="fa fa-times" ng-if="!team.isActive"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

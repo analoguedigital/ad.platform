@@ -1,5 +1,4 @@
-﻿
-module App.Services {
+﻿module App.Services {
     "use strict";
 
     export interface IAuthContext {
@@ -27,7 +26,6 @@ module App.Services {
     }
 
     class AuthService implements IAuthService {
-
         LOCAL_STORAGE_KEY: string = 'authenticationData';
         authContext: IAuthContext;
 
@@ -56,7 +54,6 @@ module App.Services {
         getExistingAuthData(): AuthData {
             return this.localStorageService.get<AuthData>(this.LOCAL_STORAGE_KEY);
         }
-
 
         logOutUser(): void {
             this.localStorageService.remove(this.LOCAL_STORAGE_KEY);

@@ -10,6 +10,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using static LightMethods.Survey.Models.DAL.ThreadAssignmentsRepository;
 
 namespace WebApi.Controllers
 {
@@ -19,7 +20,7 @@ namespace WebApi.Controllers
 
         public FormTemplatesController()
         {
-            this.FormTemplatesService = new FormTemplatesService(this.UnitOfWork, this.CurrentOrgUser);
+            this.FormTemplatesService = new FormTemplatesService(this.UnitOfWork, this.CurrentOrgUser, this.CurrentUser);
         }
 
         // GET api/<controller>
@@ -54,6 +55,19 @@ namespace WebApi.Controllers
 
             var metricFilters = template.GetMetricFilters();
             return Ok(metricFilters);
+        }
+
+        [DeflateCompression]
+        [ResponseType(typeof(IEnumerable<ThreadAssignmentDTO>))]
+        [Route("api/formtemplates/{id:guid}/assignments")]
+        public IHttpActionResult GetAssignments(Guid id)
+        {
+            var template = this.UnitOfWork.FormTemplatesRepository.Find(id);
+            if (template == null)
+                return NotFound();
+
+            var assignments = template.Assignments.Select(a => Mapper.Map<ThreadAssignmentDTO>(a)).ToList();
+            return Ok(assignments);
         }
 
         // POST api/<controller>
@@ -123,7 +137,6 @@ namespace WebApi.Controllers
             return Ok(response.ReturnValue);
         }
 
-
         // DELETE api/<controller>/5
         public IHttpActionResult Delete(Guid id)
         {
@@ -185,6 +198,50 @@ namespace WebApi.Controllers
             }
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("api/formtemplates/{id:guid}/assign/{userId:guid}/{accessLevel}")]
+        [ResponseType(typeof(IEnumerable<ThreadAssignmentDTO>))]
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, ThreadAccessLevels accessLevel)
+        {
+            var thread = UnitOfWork.FormTemplatesRepository.Find(id);
+            if (thread == null)
+                return NotFound();
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(userId);
+            if (orgUser == null)
+                return NotFound();
+
+            if (CurrentOrganisationId != thread.OrganisationId || orgUser.OrganisationId != thread.OrganisationId)
+                return NotFound();
+
+            var result = this.UnitOfWork.ThreadAssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
+
+            return Ok(Mapper.Map<ThreadAssignmentDTO>(result));
+        }
+
+        [HttpDelete]
+        [Route("api/formtemplates/{id:guid}/assign/{userId:guid}/{accessLevel}")]
+        [ResponseType(typeof(IEnumerable<ThreadAssignmentDTO>))]
+        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, ThreadAccessLevels accessLevel)
+        {
+            var thread = UnitOfWork.FormTemplatesRepository.FindIncluding(id, t => t.Assignments);
+            if (thread == null)
+                return NotFound();
+
+            if (CurrentOrganisationId != thread.OrganisationId)
+                return NotFound();
+
+            var assignment = thread.Assignments.SingleOrDefault(a => a.OrgUserId == userId);
+            if (assignment == null)
+                return NotFound();
+
+            var result = this.UnitOfWork.ThreadAssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
+            if (result != null)
+                return Ok(Mapper.Map<ThreadAssignmentDTO>(result));
+
+            return Ok(new ThreadAssignmentDTO());
         }
 
     }

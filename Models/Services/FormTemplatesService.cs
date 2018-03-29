@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,7 @@ using System.Data.Entity.Validation;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace LightMethods.Survey.Models.Services
 {
@@ -17,18 +19,41 @@ namespace LightMethods.Survey.Models.Services
     {
         private UnitOfWork unitOfWork { get; set; }
         public OrgUser OrgUser { get; set; }
+        public User CurrentUser { get; set; }
 
-        public FormTemplatesService(UnitOfWork uow, OrgUser user)
+        public FormTemplatesService(UnitOfWork uow, OrgUser user, User currentUser)
         {
             this.unitOfWork = uow;
-            this.OrgUser = user;
+            this.OrgUser = user as OrgUser;
+            this.CurrentUser = currentUser;
         }
 
         public IEnumerable<FormTemplateDTO> Get(Guid? projectId)
         {
             var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
             var templates = surveyProvider.GetAllProjectTemplates(projectId);
-            var result = templates.Select(t => Mapper.Map<FormTemplateDTO>(t));
+
+            var result = new List<FormTemplateDTO>();
+
+            foreach (var template in templates)
+            {
+                var dto = Mapper.Map<FormTemplateDTO>(template);
+
+                if (this.OrgUser != null)
+                {
+                    var assignment = this.unitOfWork.FormTemplatesRepository.GetUserAssignment(template, this.OrgUser.Id);
+                    Mapper.Map(assignment, dto);
+                }
+                else
+                {
+                    dto.CanView = true;
+                    dto.CanEdit = true;
+                    dto.CanAdd = true;
+                    dto.CanDelete = true;
+                }
+
+                result.Add(dto);
+            }
 
             return result;
         }
@@ -42,7 +67,22 @@ namespace LightMethods.Survey.Models.Services
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null) return null;
 
-            return Mapper.Map<FormTemplateDTO>(form);
+            var result = Mapper.Map<FormTemplateDTO>(form);
+
+            if (this.OrgUser != null)
+            {
+                var assignment = this.unitOfWork.FormTemplatesRepository.GetUserAssignment(form, this.OrgUser.Id);
+                Mapper.Map(assignment, result);
+            }
+            else
+            {
+                result.CanView = true;
+                result.CanAdd = true;
+                result.CanEdit = true;
+                result.CanDelete = true;
+            }
+
+            return result;
         }
 
         public OperationResult Create(FormTemplate entity)
@@ -57,8 +97,28 @@ namespace LightMethods.Survey.Models.Services
             try
             {
                 entity.FormTemplateCategory = null;
-                entity.CreatedById = this.OrgUser.Id;
-                entity.OrganisationId = this.OrgUser.OrganisationId.Value;
+
+                if (this.OrgUser != null)
+                {
+                    entity.CreatedById = this.OrgUser.Id;
+                    entity.OrganisationId = this.OrgUser.Organisation.Id;
+                }
+                else
+                {
+                    entity.CreatedById = this.CurrentUser.Id;
+
+                    if (entity.Organisation == null)
+                    {
+                        result.Success = false;
+                        result.Message = "Organisation is required";
+                        return result;
+                    }
+                    else
+                    {
+                        entity.OrganisationId = entity.Organisation.Id;
+                        entity.Organisation = null;
+                    }
+                }
 
                 this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(entity);
                 this.unitOfWork.Save();
@@ -110,6 +170,9 @@ namespace LightMethods.Survey.Models.Services
             }
 
             Mapper.Map(model, form);
+
+            // validate organisation. Project/Category organisations must match the selected organisation.
+
             this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
 
             var groupOrder = 1;

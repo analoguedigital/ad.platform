@@ -12,7 +12,6 @@ namespace WebApi.Controllers.MBS
 {
     public class MBSDataController : BaseApiController
     {
-
         private Guid TermsDataListId = Guid.Parse("43846f75-8e07-4924-8f41-8d392551625e");
         private Guid AchievementDataListId = Guid.Parse("d8a8a1f3-4764-457b-ad6c-5e4753d2eb20");
         private Guid EvidenceAchievementMetricId = Guid.Parse("319b1695-c408-4d4a-a4fe-9ff1575ad3cc");
@@ -26,12 +25,10 @@ namespace WebApi.Controllers.MBS
         private Guid AchievementLogTermMetricId = Guid.Parse("565554fc-4e40-419b-9183-5ebd5ce247ec");
         private Guid IsAchievedDataListItemId = Guid.Parse("084866CB-FC5E-4ED0-97B0-16737A38EA17");
 
-
-
         [HttpGet]
         [Route("api/mbs/Updates")]
         [ResponseType(typeof(IEnumerable<UpdateDTO>))]
-        public async Task<IHttpActionResult> GetUpdates()
+        public IHttpActionResult GetUpdates()
         {
             var aWeekAgo = DateTime.Today.AddDays(-7);
 
@@ -48,19 +45,19 @@ namespace WebApi.Controllers.MBS
                .Select(f => GetUpdate(f));
 
             return Ok(updates);
-
         }
 
         [HttpGet]
         [Route("api/mbs/students/{projectId}/targets")]
         [ResponseType(typeof(IEnumerable<TargetDTO>))]
-        public async Task<IHttpActionResult> GetTargets(Guid projectId)
+        public IHttpActionResult GetTargets(Guid projectId)
         {
             var today = DateTime.Today;
 
-            var targetsform = UnitOfWork.FilledFormsRepository.AllIncludingNoTracking(f => f.FormValues)
-                   .Where(t => t.ProjectId == projectId && t.FormTemplateId == TargetFormTemplateId)
-                   .ToList();
+            var targetsform = UnitOfWork.FilledFormsRepository
+                .AllIncludingNoTracking(f => f.FormValues)
+                .Where(t => t.ProjectId == projectId && t.FormTemplateId == TargetFormTemplateId)
+                .ToList();
             var targets = targetsform.Where(t => t.FormValues.FirstOrDefault(v => v.MetricId == TargetFormWeekDateMetricId).DateValue.Value.Date <= today.Date)
                     .Where(f => f.FormValues.FirstOrDefault(v => v.MetricId == TargetIsAchievedMetricId).GuidValue != IsAchievedDataListItemId)
                     .Select(filledForm => TargetDTO.From(filledForm));
@@ -71,7 +68,7 @@ namespace WebApi.Controllers.MBS
         [HttpGet]
         [Route("api/mbs/students/{projectId}/targets")]
         [ResponseType(typeof(IEnumerable<TargetDTO>))]
-        public async Task<IHttpActionResult> GetTargets(Guid projectId, Guid achievement)
+        public IHttpActionResult GetTargets(Guid projectId, Guid achievement)
         {
             var achievements = UnitOfWork.DataListsRepository.FindIncluding(AchievementDataListId, d => d.AllItems);
             var targets = UnitOfWork.FormValuesRepository.AllIncludingNoTracking(fv => fv.FilledForm)
@@ -89,7 +86,7 @@ namespace WebApi.Controllers.MBS
         [HttpGet]
         [Route("api/mbs/students/{projectId}/evidences")]
         [ResponseType(typeof(IEnumerable<EvidenceDTO>))]
-        public async Task<IHttpActionResult> GetEvidences(Guid projectId, Guid achievement)
+        public IHttpActionResult GetEvidences(Guid projectId, Guid achievement)
         {
             var targets = UnitOfWork.FormValuesRepository.AllIncludingNoTracking(fv => fv.FilledForm)
                     .Where(fv => fv.FilledForm.ProjectId == projectId && fv.MetricId == TargetAchievementIdMetricId)
@@ -115,7 +112,7 @@ namespace WebApi.Controllers.MBS
         [HttpGet]
         [Route("api/mbs/students/{projectId}/achievementSummary")]
         [ResponseType(typeof(IEnumerable<AchievementSummaryDTO>))]
-        public async Task<IHttpActionResult> GetStudentAchievementSummary(Guid projectId)
+        public IHttpActionResult GetStudentAchievementSummary(Guid projectId)
         {
             var result = new List<AchievementSummaryDTO>();
             var achievements = UnitOfWork.DataListsRepository.FindIncluding(AchievementDataListId, d => d.AllItems);
@@ -144,7 +141,6 @@ namespace WebApi.Controllers.MBS
                      .Select(f => f.FormValues.FirstOrDefault(fv => fv.MetricId == AchievementLogTermMetricId))
                      .Select(f => f.GuidValue)
                      .ToList();
-
 
                 var summary = new AchievementSummaryDTO()
                 {

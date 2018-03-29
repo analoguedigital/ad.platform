@@ -8,9 +8,11 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -20,19 +22,15 @@ using WebApi.Results;
 
 namespace WebApi.Models
 {
-    [Authorize]
     [RoutePrefix("api/Account")]
     public class AccountController : BaseApiController
     {
         private const string LocalLoginProvider = "Local";
         private ApplicationUserManager _userManager;
 
-        public AccountController()
-        {
-        }
+        public AccountController() { }
 
-        public AccountController(ApplicationUserManager userManager,
-            ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
+        public AccountController(ApplicationUserManager userManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
         {
             UserManager = userManager;
             AccessTokenFormat = accessTokenFormat;
@@ -44,10 +42,8 @@ namespace WebApi.Models
             {
                 return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
             }
-            private set
-            {
-                _userManager = value;
-            }
+
+            private set { _userManager = value; }
         }
 
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
@@ -55,23 +51,36 @@ namespace WebApi.Models
         // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfo")]
-        public UserInfoViewModel GetUserInfo()
+        public async Task<IHttpActionResult> GetUserInfo()
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
-            var orgUser = this.CurrentUser as OrgUser;
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var user = UnitOfWork.UsersRepository.Find(userId);
+            var orgUser = user as OrgUser;
 
-            return new UserInfoViewModel
+            var phoneNumber = await UserManager.GetPhoneNumberAsync(userId);
+            var twoFactorAuth = await UserManager.GetTwoFactorEnabledAsync(userId);
+
+            var userInfo = new UserInfoViewModel
             {
-                Email = User.Identity.GetUserName(),
                 UserId = this.CurrentUser.Id,
-                OrganisationId = this.CurrentOrganisationId,
+                Email = User.Identity.GetUserName(),
+                EmailConfirmed = user.EmailConfirmed,
+                PhoneNumber = phoneNumber,
+                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
                 Language = this.CurrentOrganisation?.DefaultLanguage?.Calture,
                 Calendar = this.CurrentOrganisation?.DefaultCalendar?.SystemName,
                 Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id),
-                Profile = new UserProfileDTO
+                TwoFactorAuthenticationEnabled = twoFactorAuth
+            };
+
+            if (orgUser != null)
+            {
+                userInfo.OrganisationId = this.CurrentOrganisationId;
+                userInfo.Profile = new UserProfileDTO
                 {
                     FirstName = orgUser.FirstName,
                     Surname = orgUser.Surname,
@@ -79,8 +88,10 @@ namespace WebApi.Models
                     Birthdate = orgUser.Birthdate,
                     Address = orgUser.Address,
                     PhoneNumber = orgUser.PhoneNumber
-                }
-            };
+                };
+            }
+
+            return Ok(userInfo);
         }
 
         // POST api/Account/UpdateProfile
@@ -100,7 +111,9 @@ namespace WebApi.Models
             orgUser.Gender = model.Gender;
             orgUser.Birthdate = model.Birthdate;
             orgUser.Address = model.Address;
-            orgUser.PhoneNumber = string.IsNullOrEmpty(model.PhoneNumber) ? null : model.PhoneNumber;
+
+            if (!orgUser.PhoneNumberConfirmed)
+                orgUser.PhoneNumber = string.IsNullOrEmpty(model.PhoneNumber) ? null : model.PhoneNumber;
 
             try
             {
@@ -119,6 +132,10 @@ namespace WebApi.Models
         [Route("Logout")]
         public IHttpActionResult Logout()
         {
+            // client apps need to call this to actually log the current user out.
+            // otherwise the identity tokens are still open on our server.
+            // PS. the sign out function is a bit different with 2FA enabled.
+
             //Authentication.SignOut( CookieAuthenticationDefaults.AuthenticationType);
             return Ok();
         }
@@ -128,14 +145,9 @@ namespace WebApi.Models
         public async Task<ManageInfoViewModel> GetManageInfo(string returnUrl, bool generateState = false)
         {
             var user = await UserManager.FindByIdAsync(User.Identity.GetUserId().ToGuid());
-
-            if (user == null)
-            {
-                return null;
-            }
+            if (user == null) return null;
 
             List<UserLoginInfoViewModel> logins = new List<UserLoginInfoViewModel>();
-
             foreach (var linkedAccount in user.Logins)
             {
                 logins.Add(new UserLoginInfoViewModel
@@ -168,17 +180,11 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> ChangePassword(ChangePasswordBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId().ToGuid(), model.OldPassword,
-                model.NewPassword);
-
+            IdentityResult result = await UserManager.ChangePasswordAsync(User.Identity.GetUserId().ToGuid(), model.OldPassword, model.NewPassword);
             if (!result.Succeeded)
-            {
                 return GetErrorResult(result);
-            }
 
             return Ok();
         }
@@ -188,16 +194,11 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> SetPassword(SetPasswordBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             IdentityResult result = await UserManager.AddPasswordAsync(User.Identity.GetUserId().ToGuid(), model.NewPassword);
-
             if (!result.Succeeded)
-            {
                 return GetErrorResult(result);
-            }
 
             return Ok();
         }
@@ -211,53 +212,13 @@ namespace WebApi.Models
                 return BadRequest(ModelState);
 
             var user = await UserManager.FindByNameAsync(model.Email);
+            // if user isn't found or the email isn't confirmed, don't reveal anything just return Ok.
+            if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+                return Ok();
 
-            // uncomment if user has to activate his email to confirm his account.
-            //if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-            //{
-            //    return Ok();
-            //}
-
-            if (user == null)
-            {
-                // don't reveal that user does not exist! return Ok();
-                return BadRequest();
-            }
-
-            // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-
-            string token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-            var encodedToken = HttpUtility.UrlEncode(token);
-
-            var baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-            var redirectLink = baseUrl + "/wwwroot/dist/index.html#!/set-password?email=" + model.Email + "&token=" + encodedToken;
-
-            var messageBody = @"<html>
-                <head>
-                    <style>
-                        .message-container {
-                            border: 1px solid #e8e8e8;
-                            border-radius: 2px;
-                            padding: 10px 15px;
-                        }
-                    </style>
-                </head>
-                <body>
-                <div class='message-container'>
-                    <p>
-                        Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.
-                    </p>
-                    <br>
-                    <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
-                    <p style='color: gray; font-weight: italic'>" + token + @"</p>
-
-                    <br><br>
-                    <small style='color: gray;'>Copyright &copy; 2018. analogueDIGITAL platform</small>
-                </div>
-
-                </body></html>";
-
-            await UserManager.SendEmailAsync(user.Id, "Password reset request", messageBody);
+            // generate the reset token and send the email.
+            var message = await GenerateForgotPasswordEmail(user.Id, model.Email);
+            await UserManager.SendEmailAsync(user.Id, "Password reset request", message);
 
             return Ok();
         }
@@ -271,11 +232,8 @@ namespace WebApi.Models
                 return BadRequest(ModelState);
 
             var user = await UserManager.FindByNameAsync(model.Email);
-            if (user == null)
-            {
-                // Don't reveal that the user does not exist
+            if (user == null)   // Don't reveal the user doesn't exist
                 return Ok();
-            }
 
             var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
@@ -293,12 +251,9 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> AddExternalLogin(AddExternalLoginBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
             AuthenticationTicket ticket = AccessTokenFormat.Unprotect(model.ExternalAccessToken);
 
             if (ticket == null || ticket.Identity == null || (ticket.Properties != null
@@ -309,19 +264,14 @@ namespace WebApi.Models
             }
 
             ExternalLoginData externalData = ExternalLoginData.FromIdentity(ticket.Identity);
-
             if (externalData == null)
-            {
                 return BadRequest("The external login is already associated with an account.");
-            }
 
             IdentityResult result = await UserManager.AddLoginAsync(User.Identity.GetUserId().ToGuid(),
                 new UserLoginInfo(externalData.LoginProvider, externalData.ProviderKey));
 
             if (!result.Succeeded)
-            {
                 return GetErrorResult(result);
-            }
 
             return Ok();
         }
@@ -331,16 +281,12 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> RemoveLogin(RemoveLoginBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             IdentityResult result;
 
             if (model.LoginProvider == LocalLoginProvider)
-            {
                 result = await UserManager.RemovePasswordAsync(User.Identity.GetUserId().ToGuid());
-            }
             else
             {
                 result = await UserManager.RemoveLoginAsync(User.Identity.GetUserId().ToGuid(),
@@ -348,9 +294,7 @@ namespace WebApi.Models
             }
 
             if (!result.Succeeded)
-            {
                 return GetErrorResult(result);
-            }
 
             return Ok();
         }
@@ -363,21 +307,15 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> GetExternalLogin(string provider, string error = null)
         {
             if (error != null)
-            {
                 return Redirect(Url.Content("~/") + "#error=" + Uri.EscapeDataString(error));
-            }
 
             if (!User.Identity.IsAuthenticated)
-            {
                 return new ChallengeResult(provider, this);
-            }
 
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
 
             if (externalLogin == null)
-            {
                 return InternalServerError();
-            }
 
             if (externalLogin.LoginProvider != provider)
             {
@@ -385,19 +323,16 @@ namespace WebApi.Models
                 return new ChallengeResult(provider, this);
             }
 
-            User user = await UserManager.FindAsync(new UserLoginInfo(externalLogin.LoginProvider,
-                externalLogin.ProviderKey));
+            User user = await UserManager.FindAsync(new UserLoginInfo(externalLogin.LoginProvider, externalLogin.ProviderKey));
 
             bool hasRegistered = user != null;
-
             if (hasRegistered)
             {
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 
-                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager,
-                   OAuthDefaults.AuthenticationType);
-
+                ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager, OAuthDefaults.AuthenticationType);
                 AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
+
                 Authentication.SignIn(properties, oAuthIdentity);
             }
             else
@@ -419,16 +354,13 @@ namespace WebApi.Models
             List<ExternalLoginViewModel> logins = new List<ExternalLoginViewModel>();
 
             string state;
-
             if (generateState)
             {
                 const int strengthInBits = 256;
                 state = RandomOAuthStateGenerator.Generate(strengthInBits);
             }
             else
-            {
                 state = null;
-            }
 
             foreach (AuthenticationDescription description in descriptions)
             {
@@ -477,7 +409,8 @@ namespace WebApi.Models
                 IsActive = true,
                 TypeId = OrgUserTypesRepository.TeamUser.Id,
                 IsMobileUser = true,
-                IsWebUser = true
+                IsWebUser = true,   // this should be 'false' in live production.
+                AccountType = AccountType.MobileAccount
             };
 
             if (!string.IsNullOrEmpty(model.Address))
@@ -499,26 +432,66 @@ namespace WebApi.Models
             user.Type = UnitOfWork.OrgUserTypesRepository.Find(user.TypeId);
             UnitOfWork.UserManager.AssignRolesByUserType(user);
 
+            // create a project for this user
             var project = new Project()
             {
                 Name = $"{model.FirstName} {model.Surname}",
                 StartDate = DateTimeService.UtcNow,
-                OrganisationId = organisation.Id
+                OrganisationId = organisation.Id,
+                CreatedById = user.Id
             };
 
             UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
             UnitOfWork.Save();
 
+            // assign this user to their project.
             var assignment = new Assignment()
             {
                 ProjectId = project.Id,
                 OrgUserId = user.Id,
                 CanView = true,
-                CanAdd = true
+                CanAdd = true,
+                CanExportPdf = true,
+                CanExportZip = true
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+
+            // assign organisation admin to this project
+            if (organisation.RootUser != null)
+            {
+                UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
+                {
+                    ProjectId = project.Id,
+                    OrgUserId = organisation.RootUserId.Value,
+                    CanView = true,
+                    CanAdd = true,
+                    CanEdit = true,
+                    CanDelete = true,
+                    CanExportPdf = true,
+                    CanExportZip = true
+                });
+            }
+
             UnitOfWork.Save();
+
+            // set user's current project
+            var _orgUser = UnitOfWork.OrgUsersRepository.Find(user.Id);
+            _orgUser.CurrentProjectId = project.Id;
+
+            UnitOfWork.OrgUsersRepository.InsertOrUpdate(_orgUser);
+            UnitOfWork.Save();
+
+            // send account confirmation email
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+            var encodedCode = HttpUtility.UrlEncode(code);
+
+            var rootIndex = GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
+
+            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
+            await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
 
             return Ok();
         }
@@ -530,30 +503,202 @@ namespace WebApi.Models
         public async Task<IHttpActionResult> RegisterExternal(RegisterExternalBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
             var info = await Authentication.GetExternalLoginInfoAsync();
             if (info == null)
-            {
                 return InternalServerError();
-            }
 
             var user = new OrgUser() { UserName = model.Email, Email = model.Email };
 
             IdentityResult result = await UserManager.CreateAsync(user);
             if (!result.Succeeded)
-            {
                 return GetErrorResult(result);
-            }
 
             result = await UserManager.AddLoginAsync(user.Id, info.Login);
             if (!result.Succeeded)
-            {
                 return GetErrorResult(result);
-            }
+
             return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("SendEmailConfirmation")]
+        public async Task<IHttpActionResult> SendEmailConfirmation(SendEmailConfirmationModel model)
+        {
+            var user = await UserManager.FindByEmailAsync(model.Email);
+            if (user == null)
+                return NotFound();
+
+            if (user.EmailConfirmed)
+                return Ok();
+
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+            var encodedCode = HttpUtility.UrlEncode(code);
+
+            var rootIndex = GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
+            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
+
+            await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ConfirmEmail")]
+        public async Task<IHttpActionResult> ConfirmEmail(ConfirmEmailModel model)
+        {
+            if (model.UserId == Guid.Empty || string.IsNullOrEmpty(model.Code))
+                return BadRequest();
+
+            var result = await UserManager.ConfirmEmailAsync(model.UserId, model.Code);
+            if (result.Succeeded)
+                return Ok();
+
+            var errorString = new StringBuilder();
+            foreach (var err in result.Errors)
+                errorString.AppendLine(err);
+
+            return BadRequest(errorString.ToString());
+        }
+
+        [HttpPost]
+        [Route("AddPhoneNumber")]
+        public async Task<IHttpActionResult> AddPhoneNumber(AddPhoneNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var code = await UserManager.GenerateChangePhoneNumberTokenAsync(userId, model.PhoneNumber);
+
+            if (UserManager.SmsService != null)
+            {
+                var message = new IdentityMessage
+                {
+                    Destination = model.PhoneNumber,
+                    Body = "Your security code is: " + code
+                };
+
+                await UserManager.SmsService.SendAsync(message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("VerifyPhoneNumber")]
+        public async Task<IHttpActionResult> VerifyPhoneNumber(VerifyPhoneNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber) || string.IsNullOrEmpty(model.Code))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var result = await UserManager.ChangePhoneNumberAsync(userId, model.PhoneNumber, model.Code);
+
+            if (result.Succeeded)
+            {
+                // sign in after phone number confirmation.
+                // this could be turned on after enabling 2FA.
+                //var user = await UserManager.FindByIdAsync(userId);
+                //if (user != null)
+                //{
+                //    await SignInAsync(user, isPersistent: false);
+                //}
+
+                return Ok();
+            }
+
+            var errorString = new StringBuilder();
+            foreach (var err in result.Errors)
+                errorString.AppendLine(err);
+
+            return BadRequest(errorString.ToString());
+        }
+
+        [HttpPost]
+        [Route("RemovePhoneNumber")]
+        public IHttpActionResult RemovePhoneNumber()
+        {
+            var user = UnitOfWork.UsersRepository.Find(this.CurrentUser.Id);
+            user.PhoneNumber = string.Empty;
+            user.PhoneNumberConfirmed = false;
+
+            try
+            {
+                UnitOfWork.UsersRepository.InsertOrUpdate(user);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("ChangePhoneNumber")]
+        public async Task<IHttpActionResult> ChangePhoneNumber(ChangePhoneNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var user = await UserManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            if (user.PhoneNumber.Equals(model.PhoneNumber))
+                return BadRequest("You need to input a different phone number");
+
+            var changeToken = await UserManager.GenerateChangePhoneNumberTokenAsync(userId, model.PhoneNumber);
+
+            if (UserManager.SmsService != null)
+            {
+                var message = new IdentityMessage
+                {
+                    Destination = model.PhoneNumber,
+                    Body = "Your security code is: " + changeToken
+                };
+
+                await UserManager.SmsService.SendAsync(message);
+            }
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> VerifyChangedNumber(VerifyChangedNumberModel model)
+        {
+            if (string.IsNullOrEmpty(model.PhoneNumber) || string.IsNullOrEmpty(model.Code))
+                return BadRequest();
+
+            var userId = Guid.Parse(User.Identity.GetUserId());
+            var user = await UserManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            var result = await UserManager.VerifyChangePhoneNumberTokenAsync(userId, model.Code, model.PhoneNumber);
+            if (result)
+            {
+                var changePhoneResult = await UserManager.ChangePhoneNumberAsync(userId, model.PhoneNumber, model.Code);
+                if (changePhoneResult.Succeeded)
+                    return Ok();
+
+                var errorString = new StringBuilder();
+                foreach (var err in changePhoneResult.Errors)
+                    errorString.AppendLine(err);
+
+                return BadRequest(errorString.ToString());
+            }
+
+            return BadRequest("Invalid security code");
         }
 
         protected override void Dispose(bool disposing)
@@ -569,6 +714,67 @@ namespace WebApi.Models
 
         #region Helpers
 
+        private string GetRootIndexPath()
+        {
+            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
+            if (!string.IsNullOrEmpty(rootIndexPath))
+                return rootIndexPath;
+
+            return "wwwroot/index.html";
+        }
+
+        private async Task<string> GenerateForgotPasswordEmail(Guid userId, string email)
+        {
+            string token = await UserManager.GeneratePasswordResetTokenAsync(userId);
+            var encodedToken = HttpUtility.UrlEncode(token);
+
+            var baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
+            var redirectLink = baseUrl + "/wwwroot/dist/index.html#!/set-password?email=" + email + "&token=" + encodedToken;
+
+            var messageBody = @"<html>
+                <head>
+                    <style>
+                        .message-container {
+                            border: 1px solid #e8e8e8;
+                            border-radius: 2px;
+                            padding: 10px 15px;
+                        }
+                    </style>
+                </head>
+                <body>
+                <div class='message-container'>
+                    <p>
+                        Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.
+                    </p>
+                    <br>
+                    <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
+                    <p style='color: gray; font-weight: italic'>" + token + @"</p>
+
+                    <br><br>
+                    <small style='color: gray;'>Copyright &copy; 2018. analogueDIGITAL platform</small>
+                </div>
+
+                </body></html>";
+
+            return messageBody;
+        }
+
+        //private async Task SignInAsync(ApplicationUser user, bool isPersistent)
+        //{
+        //    // Clear the temporary cookies used for external and two factor sign ins
+        //    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie,
+        //       DefaultAuthenticationTypes.TwoFactorCookie);
+        //    AuthenticationManager.SignIn(new AuthenticationProperties
+        //    {
+        //        IsPersistent = isPersistent
+        //    },
+        //       await user.GenerateUserIdentityAsync(UserManager));
+        //}
+
+        #endregion
+
+        #region ExternalLogin helpers
+
         private IAuthenticationManager Authentication
         {
             get { return Request.GetOwinContext().Authentication; }
@@ -577,25 +783,18 @@ namespace WebApi.Models
         private IHttpActionResult GetErrorResult(IdentityResult result)
         {
             if (result == null)
-            {
                 return InternalServerError();
-            }
 
             if (!result.Succeeded)
             {
                 if (result.Errors != null)
                 {
                     foreach (string error in result.Errors)
-                    {
                         ModelState.AddModelError("", error);
-                    }
                 }
 
                 if (ModelState.IsValid)
-                {
-                    // No ModelState errors are available to send, so just return an empty BadRequest.
-                    return BadRequest();
-                }
+                    return BadRequest();    // No ModelState errors are available to send, just return an empty BadRequest.
 
                 return BadRequest(ModelState);
             }
@@ -615,9 +814,7 @@ namespace WebApi.Models
                 claims.Add(new Claim(ClaimTypes.NameIdentifier, ProviderKey, null, LoginProvider));
 
                 if (UserName != null)
-                {
                     claims.Add(new Claim(ClaimTypes.Name, UserName, null, LoginProvider));
-                }
 
                 return claims;
             }
@@ -673,5 +870,7 @@ namespace WebApi.Models
         }
 
         #endregion
+
     }
+
 }

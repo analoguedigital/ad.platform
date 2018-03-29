@@ -50,7 +50,9 @@
             formValue.rowNumber = rowNumber;
             if (rowDataListItem)
                 formValue.rowDataListItemId = rowDataListItem.id;
+
             this.survey.formValues.push(formValue);
+
             return formValue;
         }
 

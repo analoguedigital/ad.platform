@@ -95,46 +95,49 @@ module App {
                     if (loc.color.length)
                         pinColor = loc.color.substr(1, loc.color.length - 1);
 
-                    let pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
-                        new google.maps.Size(21, 34),
-                        new google.maps.Point(0, 0),
-                        new google.maps.Point(10, 34));
-                    let pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
-                        new google.maps.Size(40, 37),
-                        new google.maps.Point(0, 0),
-                        new google.maps.Point(12, 35));
+                    try {
+                        let pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + pinColor,
+                            new google.maps.Size(21, 34),
+                            new google.maps.Point(0, 0),
+                            new google.maps.Point(10, 34));
+                        let pinShadow = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_shadow",
+                            new google.maps.Size(40, 37),
+                            new google.maps.Point(0, 0),
+                            new google.maps.Point(12, 35));
 
-                    let marker = {
-                        id: index,
-                        coords: {
-                            latitude: loc.latitude,
-                            longitude: loc.longitude
-                        },
-                        options: {
-                            draggable: false,
-                            icon: pinImage,
-                            shadow: pinShadow,
-                            title: loc.description,
-                            event: loc.event
-                        },
-                        events: {
-                            click: function (marker, eventName, args) {
-                                var lat = marker.getPosition().lat();
-                                var lon = marker.getPosition().lng();
-                                console.log(`lat: ${lat} lon: ${lon}`);
+                        let marker = {
+                            id: index,
+                            coords: {
+                                latitude: loc.latitude,
+                                longitude: loc.longitude
+                            },
+                            options: {
+                                draggable: false,
+                                icon: pinImage,
+                                shadow: pinShadow,
+                                title: loc.description,
+                                event: loc.event
+                            },
+                            events: {
+                                click: function (marker, eventName, args) {
+                                    var lat = marker.getPosition().lat();
+                                    var lon = marker.getPosition().lng();
 
-                                let infoWindow = new google.maps.InfoWindow;
-                                if (marker.title.length)
-                                    infoWindow.setContent(marker.title);
-                                else
-                                    infoWindow.setContent(marker.event);
+                                    let infoWindow = new google.maps.InfoWindow;
+                                    if (marker.title.length)
+                                        infoWindow.setContent(marker.title);
+                                    else
+                                        infoWindow.setContent(marker.event);
 
-                                infoWindow.open(scope.map, marker);
+                                    infoWindow.open(scope.map, marker);
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    scope.markers.push(marker);
+                        scope.markers.push(marker);
+                    } catch (e) {
+                        console.error(e);
+                    }
                 });
             }
         }

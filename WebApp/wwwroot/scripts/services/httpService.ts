@@ -1,4 +1,3 @@
-
 module App.Services {
     "use strict";
 
@@ -13,7 +12,6 @@ module App.Services {
     }
 
     class HttpService implements IHttpService {
-
         static $inject: string[] = ['$http', '$q'];
         serviceBase: string = '/';
 
@@ -21,9 +19,7 @@ module App.Services {
             private $http: ng.IHttpService,
             private $q: ng.IQService) { }
 
-
         getAuthenticationToken(loginData: ILoginData): ng.IPromise<any> {
-
             var deferred = this.$q.defer();
             var data = "grant_type=password&username=" + loginData.email + "&password=" + loginData.password;
 
@@ -38,7 +34,6 @@ module App.Services {
         }
 
         getUserInfo(): ng.IPromise<any> {
-
             var deferred = this.$q.defer();
 
             this.$http.get(this.serviceBase + 'api/account/userinfo/')
@@ -52,7 +47,6 @@ module App.Services {
         }
 
         onError(err: any) {
-
             if (err.data) {
                 if (err.data.error_description) {
                     return err.data.error_description;

@@ -1,18 +1,26 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content animated fadeInRight user-edit-view">
     <div class="box">
         <div class="box-title">
             <h5>Details</h5>
         </div>
         <div class="box-content">
             <form name="userForm" class="form-horizontal" novalidate>
-                <lm-form-group label="Email:">
+                <lm-form-group label="Email:" form-group-class="has-feedback" feedback-value="{{emailConfirmed}}">
                     <input type="email" name="email" id="email" ng-model="ctrl.user.email" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.emailConfirmed"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.emailConfirmed"></span>
                 </lm-form-group>
-                <lm-form-group label="First Name:">
+                <lm-form-group label="Email Confirmed:" lm-access="System administrator,Platform administrator">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" id="chk-email-confirmed" name="chk-email-confirmed" ng-model="ctrl.user.emailConfirmed" />
+                        <label for="chk-email-confirmed">Confirmed</label>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="First name:" ng-if="ctrl.userType == 'orguser'">
                     <input type="text" name="firstName" id="firstName" ng-model="ctrl.user.firstName" required />
                 </lm-form-group>
-                <lm-form-group label="Surname:">
+                <lm-form-group label="Surname:" ng-if="ctrl.userType == 'orguser'">
                     <input type="text" name="lastName" id="lastName" ng-model="ctrl.user.surname" required />
                 </lm-form-group>
                 <lm-form-group label="Gender:">
@@ -20,7 +28,9 @@
                         <select id="gender" name="gender" ng-model="ctrl.user.gender">
                             <option ng-selected="ctrl.user.gender === item.id"
                                     ng-repeat="item in ctrl.genderTypes"
-                                    ng-value="item.id">{{item.label}}</option>
+                                    ng-value="item.id">
+                                {{item.label}}
+                            </option>
                         </select>
                     </div>
                 </lm-form-group>
@@ -35,10 +45,12 @@
                 <lm-form-group label="Address:">
                     <input type="text" name="address" id="address" ng-model="ctrl.user.address" />
                 </lm-form-group>
-                <lm-form-group label="Phone Number:">
-                    <input type="text" name="phoneNumber" id="phoneNumber" ng-model="ctrl.user.phoneNumber" />
+                <lm-form-group label="Phone number:" form-group-class="has-feedback" feedback-value="{{ctrl.user.phoneNumber.length && phoneNumberConfirmed}}">
+                    <input type="text" name="phoneNumber" id="phoneNumber" ng-model="ctrl.user.phoneNumber" ng-disabled="ctrl.user.phoneNumberConfirmed" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumberConfirmed"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumber.length && !ctrl.user.phoneNumberConfirmed"></span>
                 </lm-form-group>
-                <lm-form-group label="Type:">
+                <lm-form-group label="Type:" ng-if="ctrl.userType == 'orguser'">
                     <div class="input-group">
                         <select id="type" name="type" ng-model="ctrl.user.type" ng-options="type as type.name for type in ctrl.types track by type.id" required></select>
                     </div>
@@ -49,7 +61,7 @@
                 <lm-form-group label="Confirm password:" ng-if="ctrl.isInsertMode">
                     <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.user.confirmPassword" required />
                 </lm-form-group>
-                <lm-form-group label="Access Type:">
+                <lm-form-group label="Access type:" ng-if="ctrl.userType == 'orguser'">
                     <div class="checkbox checkbox-default">
                         <input type="checkbox" id="chk-web-user" name="chk-web-user" ng-model="ctrl.user.isWebUser" />
                         <label for="chk-web-user">Web User</label>
@@ -58,6 +70,16 @@
                         <input type="checkbox" id="chk-mobile-user" name="chk-mobile-user" ng-model="ctrl.user.isMobileUser" />
                         <label for="chk-mobile-user">Mobile User</label>
                     </div>
+                </lm-form-group>
+                <lm-form-group label="Current project: " ng-if="ctrl.currentUserIsSuperUser && ctrl.userType == 'orguser'">
+                    <ui-select append-to-body="true" ng-model="ctrl.user.currentProject">
+                        <ui-select-match placeholder="Select a project">
+                            <span ng-bind="$select.selected.name"></span>
+                        </ui-select-match>
+                        <ui-select-choices repeat="project in (ctrl.projects | filter: $select.search) track by project.id">
+                            <span ng-bind="project.name"></span>
+                        </ui-select-choices>
+                    </ui-select>
                 </lm-form-group>
                 <lm-form-group ng-if="ctrl.errors !== undefined" class="">
                     <div class="alert alert-danger animated fadeInDown">
@@ -71,6 +93,39 @@
                 <a ui-sref="home.users.list"><i class="fa fa-arrow-left"></i> Back to list</a>
             </form>
 
+        </div>
+    </div>
+    <div class="box">
+        <div class="box-title">
+            <h5>Organisation Teams</h5>
+        </div>
+        <div class="box-content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="text-center">Is Active</th>
+                            <th>Description</th>
+                            <th>Organisation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="team in ctrl.teams track by team.id">
+                            <td>
+                                <span ng-if="team.colour.length" class="color-block" ng-style="{'background-color': team.colour}"></span> 
+                                <a ui-sref="home.teams.edit({ id: team.id })">{{team.name}}</a>
+                            </td>
+                            <td class="text-center">
+                                <i class="fa fa-check" ng-if="team.isActive"></i>
+                                <i class="fa fa-times" ng-if="!team.isActive"></i>
+                            </td>
+                            <td>{{team.description}}</td>
+                            <td>{{team.organisation.name}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

@@ -1,0 +1,22 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title" ng-if="!ctrl.codeSent">Add Phone Number</h3>
+    <h3 class="modal-title" ng-if="ctrl.codeSent">Verify Phone Number</h3>
+</div>
+<div class="modal-body">
+    <form name="addPhoneForm" ng-show="!ctrl.codeSent">
+        <lm-form-group label="Phone Number:">
+            <input type="text" name="phoneNumber" id="phoneNumber" ng-model="ctrl.model.phoneNumber" required />
+        </lm-form-group>
+    </form>
+
+    <form name="verifyPhoneForm" ng-show="ctrl.codeSent">
+        <lm-form-group label="Security Code:">
+            <input type="text" name="code" id="code" ng-model="ctrl.model.code" required />
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.sendCode(addPhoneForm)" ng-if="!ctrl.codeSent">Send Code</button>
+    <button class="btn btn-success" type="button" ng-click="ctrl.verifyCode(verifyPhoneForm)" ng-if="ctrl.codeSent">Verify Code</button>
+</div>

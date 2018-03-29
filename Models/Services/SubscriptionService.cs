@@ -94,6 +94,7 @@ namespace LightMethods.Survey.Models.Services
             this.UOW.PromotionCodesRepository.InsertOrUpdate(promotionCode);
 
             this.AddSusbcriptions(payment);
+            this.User.IsSubscribed = true;
             this.UOW.Save();
 
             return RedeemCodeStatus.OK;

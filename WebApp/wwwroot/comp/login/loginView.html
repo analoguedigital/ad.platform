@@ -1,23 +1,15 @@
 ﻿<lm-particles></lm-particles>
 
-<!--<ul class="cb-slideshow">
-    <li>
-        <span>Image 01</span>
-    </li>
-    <li>
-        <span>Image 02</span>
-    </li>
-    <li>
-        <span>Image 03</span>
-    </li>
-</ul>-->
-
 <div class="login col-md-6 col-md-offset-3" ng-controller="loginController">
     <div class="row">
         <div class="col-sm-6 col-sm-offset-3">
             <div class="text-center">
                 <h2>analogue.<strong>DIGITAL</strong> platform</h2>
             </div><br />
+
+            <p class="lead text-center" ng-if="isDownloadRequest">
+                You have requested a file download.<br />Log in with your credentials to continue.
+            </p>
 
             <div ng-include="'comp/login/_loginForm.html'"></div>
         </div>

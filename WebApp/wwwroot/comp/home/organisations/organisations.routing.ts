@@ -28,6 +28,13 @@
                 controller: "organisationEditController",
                 ncyBreadcrumb: { label: 'Edit', parent: 'home.organisations.list' },
                 module: "private"
-            }) ;
+            })
+            .state("home.organisations.assignments", <App.Models.IAppRoute>{
+                url: "/assignments/:id",
+                templateUrl: "comp/home/organisations/assignments/organisationAssignmentsView.html",
+                controller: "organisationAssignmentsController",
+                ncyBreadcrumb: { label: 'Assignments', parent: 'home.organisations.list' },
+                module: 'private'
+            });
     }
 })();

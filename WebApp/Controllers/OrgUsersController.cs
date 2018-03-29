@@ -2,38 +2,90 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
-
     public class OrgUsersController : BaseApiController
     {
+        private OrgUsersRepository Users
+        {
+            get { return UnitOfWork.OrgUsersRepository; }
+        }
 
-        private OrgUsersRepository Users { get { return UnitOfWork.OrgUsersRepository; } }
-        private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
+        private OrganisationRepository Organisations
+        {
+            get { return UnitOfWork.OrganisationRepository; }
+        }
 
-        private OrgUserTypesRepository Types { get { return UnitOfWork.OrgUserTypesRepository; } }
+        private OrgUserTypesRepository Types
+        {
+            get { return UnitOfWork.OrgUserTypesRepository; }
+        }
+
+        private ApplicationUserManager _userManager;
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+
+            private set { _userManager = value; }
+        }
 
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(Guid? organisationId = null)
         {
-            var users = Users.AllIncluding(u => u.Type)
-                .Where(u => u.OrganisationId == CurrentOrganisationId)
-                .OrderBy(u => u.Surname)
-                .ThenBy(u => u.FirstName)
-                .ToList()
-                .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+            var result = new List<OrgUserDTO>();
 
-            return Ok(users);
+            if (this.CurrentOrgUser != null)
+            {
+                var users = Users.AllIncluding(u => u.Type)
+                    .Where(u => u.OrganisationId == CurrentOrganisationId)
+                    .OrderBy(u => u.Surname)
+                    .ThenBy(u => u.FirstName)
+                    .ToList()
+                    .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+                result = users;
+            }
+            else
+            {
+                if (organisationId.HasValue)
+                {
+                    var users = Users.AllIncluding(u => u.Type)
+                        .Where(u => u.OrganisationId == organisationId)
+                        .OrderBy(u => u.Surname)
+                        .ThenBy(u => u.FirstName)
+                        .ToList()
+                        .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+                    result = users;
+                }
+                else
+                {
+                    var users = Users.AllIncluding(u => u.Type)
+                      .OrderBy(u => u.Surname)
+                      .ThenBy(u => u.FirstName)
+                      .ToList()
+                      .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
+                    result = users;
+                }
+            }
+
+            return Ok(result);
         }
 
         [DeflateCompression]
@@ -54,7 +106,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        public IHttpActionResult Post([FromBody]OrgUserDTO value)
+        public async Task<IHttpActionResult> Post([FromBody]OrgUserDTO value)
         {
             if (value.Password.IsEmpty())
                 ModelState.AddModelError("Password", "Please provide password.");
@@ -65,6 +117,7 @@ namespace WebApi.Controllers
             var orguser = Mapper.Map<OrgUser>(value);
             orguser.UserName = orguser.Email;
             orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
+            orguser.AccountType = AccountType.WebAccount;
 
             var identityResult = ServiceContext.UserManager.CreateSync(orguser, value.Password);
 
@@ -88,7 +141,9 @@ namespace WebApi.Controllers
                         CanView = true,
                         CanAdd = true,
                         CanEdit = true,
-                        CanDelete = true
+                        CanDelete = true,
+                        CanExportPdf = true,
+                        CanExportZip = true
                     };
 
                     UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
@@ -96,6 +151,18 @@ namespace WebApi.Controllers
 
                 UnitOfWork.Save();
             }
+
+            // send account confirmation email
+            var code = await this.UserManager.GenerateEmailConfirmationTokenAsync(orguser.Id);
+            var encodedCode = HttpUtility.UrlEncode(code);
+
+            var rootIndex = GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var callbackUrl = $"{baseUrl}#!/verify-email?userId={orguser.Id}&code={encodedCode}";
+
+            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
+
+            await UserManager.SendEmailAsync(orguser.Id, "Confirm your account", messageBody);
 
             return Ok();
         }
@@ -107,6 +174,7 @@ namespace WebApi.Controllers
                 return NotFound();
 
             orguser.Email = value.Email;
+            orguser.EmailConfirmed = value.EmailConfirmed;
             orguser.FirstName = value.FirstName;
             orguser.Surname = value.Surname;
             orguser.TypeId = value.Type.Id;
@@ -115,7 +183,20 @@ namespace WebApi.Controllers
             orguser.Gender = value.Gender;
             orguser.Birthdate = value.Birthdate;
             orguser.Address = value.Address;
-            orguser.PhoneNumber = string.IsNullOrEmpty(value.PhoneNumber) ? null : value.PhoneNumber;
+
+            if (!orguser.PhoneNumberConfirmed)
+                orguser.PhoneNumber = string.IsNullOrEmpty(value.PhoneNumber) ? null : value.PhoneNumber;
+
+            if (this.CurrentUser is SuperUser)
+            {
+                if (value.CurrentProject != null)
+                {
+                    if (Guid.Parse(value.CurrentProject.Organisation.Id) != orguser.Organisation.Id)
+                        return BadRequest("The selected current project does not belong to this user's organisation");
+
+                    orguser.CurrentProjectId = value.CurrentProject.Id;
+                }
+            }
 
             var result = UnitOfWork.UserManager.UpdateSync(orguser);
             if (result.Succeeded)
@@ -152,5 +233,20 @@ namespace WebApi.Controllers
 
             return Ok();
         }
+
+        #region helpers
+
+        // this needs to be refactored to a global static helper.
+        private string GetRootIndexPath()
+        {
+            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
+            if (!string.IsNullOrEmpty(rootIndexPath))
+                return rootIndexPath;
+
+            return "wwwroot/index.html";
+        }
+
+        #endregion
+
     }
 }

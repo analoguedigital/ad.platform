@@ -1,0 +1,81 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight thread-assignments-view">
+    <div class="box">
+        <div class="box-title">
+            <h5>Form Template Assignments</h5>
+        </div>
+        <div class="box-content">
+            <div st-table="ctrl.displayedAssignments" st-safe-src="ctrl.userAssignments">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="ctrl.searchTerm" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th>Email address</th>
+                                <th class="text-center" width="100">Web User</th>
+                                <th class="text-center" width="100">Mobile User</th>
+                                <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
+                                <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
+                                <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
+                                <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in ctrl.displayedAssignments track by user.userId">
+                                <td>
+                                    <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
+                                    <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.name}}
+                                </td>
+                                <td>{{user.email}}</td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="user.isWebUser"></i>
+                                    <i class="fa fa-times" ng-if="!user.isWebUser"></i>
+                                </td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="user.isMobileUser"></i>
+                                    <i class="fa fa-times" ng-if="!user.isMobileUser"></i>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="can-view-{{user.userId}}" ng-model="user.canView" ng-change="ctrl.updateAssignment(user, 'allowView')" />
+                                        <label for="can-view-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="can-add-{{user.userId}}" ng-model="user.canAdd" ng-change="ctrl.updateAssignment(user, 'allowAdd')" />
+                                        <label for="can-add-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="can-edit-{{user.userId}}" ng-model="user.canEdit" ng-change="ctrl.updateAssignment(user, 'allowEdit')" />
+                                        <label for="can-edit-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="can-del-{{user.userId}}" ng-model="user.canDelete" ng-change="ctrl.updateAssignment(user, 'allowDelete')" />
+                                        <label for="can-del-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+            
+            <a ui-sref="home.caseManagement.threadAssignments"><i class="fa fa-arrow-left"></i> Back to list</a>
+        </div>
+    </div>
+</div>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.Entity;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.DTO;
 
 namespace LightMethods.Survey.Models.DAL
 {
@@ -67,5 +68,40 @@ namespace LightMethods.Survey.Models.DAL
 
             return clone;
         }
+
+        public ThreadAssignmentDTO GetUserAssignment(FormTemplate template, Guid userId)
+        {
+            var result = new ThreadAssignmentDTO();
+
+            if (this.CurrentUOW.UserManager.RolesContainsAny(userId, Role.ORG_ADMINSTRATOR))
+            {
+                result.CanView = true;
+                result.CanAdd = true;
+                result.CanEdit = true;
+                result.CanDelete = true;
+            }
+            else
+            {
+                var assignment = template.Assignments.Where(a => a.OrgUserId == userId).SingleOrDefault();
+                if (assignment != null)
+                {
+                    result.CanView = assignment.CanView;
+                    result.CanAdd = assignment.CanAdd;
+                    result.CanEdit = assignment.CanEdit;
+                    result.CanDelete = assignment.CanDelete;
+                }
+                else
+                {
+                    // user doesn't have a thread assignment on this Form Template
+                    result.CanView = null;
+                    result.CanAdd = null;
+                    result.CanEdit = null;
+                    result.CanDelete = null;
+                }
+            }
+
+            return result;
+        }
+
     }
 }

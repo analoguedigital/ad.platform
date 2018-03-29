@@ -13,6 +13,8 @@ module App {
         errFiles: any;
         errorMsg: string;
 
+        baseUrl: string;
+
         uploadFiles: any;
         abort: any;
         abortForOneFile: any;
@@ -41,6 +43,9 @@ module App {
             $scope.validateFile = ($file) => { this.validateFile($file); };
             $scope.deleteAttachment = ($event, attachment) => { this.deleteAttachment($event, attachment); };
             $scope.deleteFile = (index) => { this.deleteFile(index); };
+
+            $scope.baseUrl = 'http://192.168.1.10:8081/wwwroot/index.html';
+            //$scope.baseUrl = 'http://staging.analogue.digital/app/index.html';
 
             this.activate();
         }

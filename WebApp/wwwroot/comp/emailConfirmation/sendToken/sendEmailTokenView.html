@@ -1,0 +1,49 @@
+﻿<lm-particles></lm-particles>
+
+<div class="confirm-email col-md-8 col-md-offset-2" ng-controller="confirmEmailController">
+    <div class="row">
+        <div class="col-sm-6 col-sm-offset-3">
+            <div class="text-center">
+                <h2>analogue.<strong>DIGITAL</strong> platform</h2>
+            </div>
+
+            <div class="panel m-t">
+                <div class="panel-heading">
+                    Confirm Email Address
+                </div>
+                <div class="panel-body">
+                    <form name="confirmEmailForm" novalidate ng-if="!requestSent">
+                        <lm-form-group label="Email">
+                            <input name="email" id="email" type="email" ng-model="model.email" placeholder="Email" required autofocus>
+                        </lm-form-group>
+
+                        <div ng-show="confirmEmailForm.$submitted" ng-animate="'animate'">
+                            <span ng-show="confirmEmailForm.email.$error.required">Email is required</span>
+                            <span ng-show="confirmEmailForm.email.$error.email">Email is not valid</span>
+                        </div>
+
+                        <button class="pull-right" type="submit" ng-click="sendEmailToken(confirmEmailForm)">Send Confirmation Token <i class="fa fa-unlock-alt"></i></button>
+                    </form>
+
+                    <div ng-if="requestSent">
+                        <p class="lead">
+                            Check your inbox! We have sent you a confirmation email.
+                        </p>
+                        <p>
+                            <a ui-sref="login">
+                                <i class="fa fa-arrow-left"></i> back to login page
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="copyright text-center">
+            Copyright <a href="http://analogue.digital">analogue.digital</a> ©2016
+        </div>
+    </div>
+</div>
+

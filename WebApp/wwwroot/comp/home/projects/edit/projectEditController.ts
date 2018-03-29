@@ -9,9 +9,13 @@ module App {
         startDateCalendar: any;
         endDateCalendar: any;
         project: Models.IProject;
+        assignments: Models.IProjectAssignment[];
+        teams: Models.IOrgTeam[];
         errors: string;
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
+        currentUserIsSuperUser: boolean;
+        organisations: Models.IOrganisation[];
     }
 
     interface IProjectEditController {
@@ -19,16 +23,19 @@ module App {
     }
 
     class ProjectEditController implements IProjectEditController {
-        static $inject: string[] = ["$scope", "projectResource", "$state", "$stateParams"];
+        private isInsertMode: boolean = false;
 
+        static $inject: string[] = ["$scope", "projectResource", "$state", "$stateParams", "organisationResource", "userContextService"];
         constructor(
             private $scope: IProjectEditControllerScope,
             private projectResource: Resources.IProjectResource,
             private $state: ng.ui.IStateService,
-            private $stateParams: ng.ui.IStateParamsService
+            private $stateParams: ng.ui.IStateParamsService,
+            private organisationResource: Resources.IOrganisationResource,
+            private userContextService: Services.IUserContextService
         ) {
 
-            $scope.title = "Projects";
+            $scope.title = "Cases";
             $scope.startDateCalendar = {
                 isOpen: false
             };
@@ -47,10 +54,34 @@ module App {
         activate() {
             var projectId = this.$stateParams['id'];
             if (projectId === '')
+            {
                 projectId = '00000000-0000-0000-0000-000000000000';
-            this.projectResource.get({ id: projectId }).$promise.then((project) => {
-                this.$scope.project = project;
-            });
+                this.isInsertMode = true;
+                this.projectResource.get({ id: projectId }).$promise.then((project) => {
+                    this.$scope.project = project;
+                });
+            } else {
+                this.projectResource.get({ id: projectId }).$promise.then((project) => {
+                    this.$scope.project = project;
+
+                    this.projectResource.assignments({ id: projectId }, (assignments) => {
+                        this.$scope.assignments = assignments;
+                    });
+
+                    this.projectResource.teams({ id: projectId }, (teams) => {
+                        this.$scope.teams = teams;
+                    });
+                });
+            }
+
+            var roles = ["System administrator", "Platform administrator"];
+            this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
+
+            if (this.$scope.currentUserIsSuperUser) {
+                this.organisationResource.query().$promise.then((organisations) => {
+                    this.$scope.organisations = organisations;
+                });
+            }
         }
 
         openStartDateCalendar() {

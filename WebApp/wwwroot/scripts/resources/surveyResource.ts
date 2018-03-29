@@ -1,5 +1,4 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
     export interface ISurveyResource extends ng.resource.IResourceClass<Models.ISurvey> {
@@ -15,7 +14,6 @@ module App.Resources {
             'update': { method: 'PUT' },
             'search': { method: 'POST', url: '/api/surveys/search', isArray: true }
         });
-
     }
 
     angular.module("app").factory("surveyResource", SurveyResource);

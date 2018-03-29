@@ -1,9 +1,7 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IMetricGroup extends ng.resource.IResource<IMetricGroup> {
-
         id: string;
         title: string;
         page: number;

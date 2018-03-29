@@ -9,7 +9,6 @@
         .run(configAuthenticationCheck)
         .run(getAuthDataFromUrl);
 
-
     getAuthDataFromUrl.$inject = ["authService"]
     function getAuthDataFromUrl(
         authService: App.Services.IAuthService) {
@@ -44,12 +43,14 @@
         $rootScope.$stateParams = $stateParams;
     }
 
-    configAuthenticationCheck.$inject = ["$rootScope", "$state", "authService", "userContextService"];
+    configAuthenticationCheck.$inject = ["$rootScope", "$state", "$location", "authService", "userContextService", "RedirectUrlAfterLogin"];
     function configAuthenticationCheck(
         $rootScope: ng.IRootScopeService,
         $state: ng.ui.IStateService,
+        $location: ng.ILocationService,
         authService: App.Services.IAuthService,
-        userContextService: App.Services.UserContextService) {
+        userContextService: App.Services.UserContextService,
+        redirectUrl: any) {
 
         $rootScope.$on("$stateChangeStart",
             function (
@@ -60,6 +61,7 @@
                 fromParams: ng.ui.IStateParamsService) {
 
                 if (toParams["authenticationRequired"] && !authService.authContext.isAuth) {
+                    redirectUrl.url = $location.path();
                     $state.transitionTo("login");
                     event.preventDefault();
                 }

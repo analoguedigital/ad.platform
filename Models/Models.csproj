@@ -71,6 +71,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.2\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.2\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
@@ -87,16 +93,21 @@
       <HintPath>..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.1.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.1.2\lib\net451\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
@@ -106,6 +117,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Twilio, Version=5.9.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Twilio.5.9.7\lib\net451\Twilio.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\EmailsRepository.cs" />
@@ -114,10 +128,13 @@
     <Compile Include="DAL\FormTemplates\AttachmentsRepository.cs" />
     <Compile Include="DAL\FormTemplates\AttachmentMetricsRepository.cs" />
     <Compile Include="DAL\FormTemplates\TimeMetricsRepository.cs" />
+    <Compile Include="DAL\OrganisationTeamsRepository.cs" />
+    <Compile Include="DAL\OrgTeamUsersRepository.cs" />
     <Compile Include="DAL\PaymentsRepository.cs" />
     <Compile Include="DAL\PromotionCodesRepository.cs" />
     <Compile Include="DAL\RolesRepository.cs" />
     <Compile Include="DAL\SubscriptionsRepository.cs" />
+    <Compile Include="DAL\ThreadAssignmentsRepository.cs" />
     <Compile Include="DTO\AttachmentDTO.cs" />
     <Compile Include="DTO\DataLists\AddDataListRelationshipReqDTO.cs" />
     <Compile Include="DTO\DataLists\EditDataListRelationshipReqDTO.cs" />
@@ -129,6 +146,7 @@
     <Compile Include="DTO\FilledForms\FormValueDTO.cs" />
     <Compile Include="DTO\FormTemplates\CloneReqDTO.cs" />
     <Compile Include="DTO\FormTemplates\EditBasicDetailsReqDTO.cs" />
+    <Compile Include="DTO\FormTemplates\ThreadAssignmentDTO.cs" />
     <Compile Include="DTO\Metrics\AttachmentMetricDTO.cs" />
     <Compile Include="DTO\DataLists\DataListDTO.cs" />
     <Compile Include="DTO\DataLists\DataListItemAttrDTO.cs" />
@@ -149,6 +167,8 @@
     <Compile Include="DTO\Metrics\TimeMetricDTO.cs" />
     <Compile Include="DTO\OperationResult.cs" />
     <Compile Include="DTO\Users\OrganisationDTO.cs" />
+    <Compile Include="DTO\Users\OrganisationTeamDTO.cs" />
+    <Compile Include="DTO\Users\OrgTeamUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserTypeDTO.cs" />
     <Compile Include="DTO\Users\PaymentRecordDTO.cs" />
@@ -156,11 +176,15 @@
     <Compile Include="DTO\Projects\ProjectDTO.cs" />
     <Compile Include="DTO\Users\PromotionCodeDTO.cs" />
     <Compile Include="DTO\Users\SubscriptionDTO.cs" />
+    <Compile Include="DTO\Users\UserDTO.cs" />
     <Compile Include="Entities\Email.cs" />
     <Compile Include="Entities\Feedback.cs" />
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
+    <Compile Include="Entities\OrganisationTeam.cs" />
+    <Compile Include="Entities\OrgTeamUser.cs" />
+    <Compile Include="Entities\ThreadAssignment.cs" />
     <Compile Include="EntityConfig\AdultAddressConfig.cs" />
     <Compile Include="EntityConfig\AdultConfig.cs" />
     <Compile Include="EntityConfig\AdultContactNumberConfig.cs" />
@@ -183,6 +207,7 @@
     <Compile Include="EntityConfig\MultipleChoiceMetricConfig.cs" />
     <Compile Include="EntityConfig\OrganisationConfig.cs" />
     <Compile Include="EntityConfig\OrganisationWorkerConfig.cs" />
+    <Compile Include="EntityConfig\OrgTeamUserConfig.cs" />
     <Compile Include="EntityConfig\OrgUserConfig.cs" />
     <Compile Include="EntityConfig\PaymentRecordConfig.cs" />
     <Compile Include="EntityConfig\ProjectConfig.cs" />
@@ -191,6 +216,7 @@
     <Compile Include="EntityConfig\ReportTemplateCategoryConfig.cs" />
     <Compile Include="EntityConfig\ReportTemplateConfig.cs" />
     <Compile Include="EntityConfig\SubscriptionConfig.cs" />
+    <Compile Include="EntityConfig\ThreadAssignmentConfig.cs" />
     <Compile Include="Extenstions\JsonCreationConverter.cs" />
     <Compile Include="FilterValues\FilterValue.cs" />
     <Compile Include="FilterValues\MultipleFilterValue.cs" />
@@ -485,6 +511,30 @@
     <Compile Include="Migrations\201711221816077_Make_gender_optional.Designer.cs">
       <DependentUpon>201711221816077_Make_gender_optional.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802100726288_Add_account_type_to_OrgUser.cs" />
+    <Compile Include="Migrations\201802100726288_Add_account_type_to_OrgUser.Designer.cs">
+      <DependentUpon>201802100726288_Add_account_type_to_OrgUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100728027_Add_created_by_to_project.cs" />
+    <Compile Include="Migrations\201802100728027_Add_created_by_to_project.Designer.cs">
+      <DependentUpon>201802100728027_Add_created_by_to_project.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100729548_Add_thread_assignments.cs" />
+    <Compile Include="Migrations\201802100729548_Add_thread_assignments.Designer.cs">
+      <DependentUpon>201802100729548_Add_thread_assignments.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100739044_Add_export_flags_to_assignment.cs" />
+    <Compile Include="Migrations\201802100739044_Add_export_flags_to_assignment.Designer.cs">
+      <DependentUpon>201802100739044_Add_export_flags_to_assignment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.cs" />
+    <Compile Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.Designer.cs">
+      <DependentUpon>201802100740272_Add_is_subscribed_to_OrgUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201802180150191_Add_organisation_teams.cs" />
+    <Compile Include="Migrations\201802180150191_Add_organisation_teams.Designer.cs">
+      <DependentUpon>201802180150191_Add_organisation_teams.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -500,12 +550,14 @@
     <Compile Include="Services\Identity\EmailService.cs" />
     <Compile Include="Services\Identity\SmsService.cs" />
     <Compile Include="Services\Identity\ApplicationUserStore.cs" />
+    <Compile Include="Services\OneTimeAccessService.cs" />
     <Compile Include="Services\SubscriptionService.cs" />
     <Compile Include="Services\SurveyProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Entities\%40Entities.cd" />
+    <Compile Include="EntityConfig\OrganisationTeamConfig.cs" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -618,6 +670,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711221816077_Make_gender_optional.resx">
       <DependentUpon>201711221816077_Make_gender_optional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100726288_Add_account_type_to_OrgUser.resx">
+      <DependentUpon>201802100726288_Add_account_type_to_OrgUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100728027_Add_created_by_to_project.resx">
+      <DependentUpon>201802100728027_Add_created_by_to_project.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100729548_Add_thread_assignments.resx">
+      <DependentUpon>201802100729548_Add_thread_assignments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100739044_Add_export_flags_to_assignment.resx">
+      <DependentUpon>201802100739044_Add_export_flags_to_assignment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802100740272_Add_is_subscribed_to_OrgUser.resx">
+      <DependentUpon>201802100740272_Add_is_subscribed_to_OrgUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802180150191_Add_organisation_teams.resx">
+      <DependentUpon>201802180150191_Add_organisation_teams.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

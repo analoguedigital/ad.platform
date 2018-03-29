@@ -2,13 +2,12 @@
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="box">
         <div class="box-title">
-            <h5>Directory of Users</h5>
+            <h5>Directory of Cases</h5>
+            <div class="box-tools">
+                <a ui-sref="home.projects.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
+            </div>
         </div>
         <div class="box-content">
-            <p>
-                <a ui-sref="home.projects.edit"><i class="fa fa-plus-square"></i> Add new</a>
-            </p>
-
             <div st-table="displayedProjects" st-safe-src="projects">
                 <div>
                     <form name="search-form" class="form-inline">
@@ -19,29 +18,43 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped">
+                    <table class="table table-hover table-mail">
                         <thead>
                             <tr>
-                                <!--<th class="sorting" st-sort="number">No</th>-->
                                 <th st-sort="name">Name</th>
-                                <th class="hidden-xs" st-sort="startDate" width="120">Start date</th>
-                                <th width="100"></th>
+                                <th st-sort="createdBy" width="200">Created by</th>
+                                <th width="100" class="text-center">Teams</th>
+                                <th width="100" class="text-center">Assignments</th>
+                                <th st-sort="lastEntry" class="text-center" width="100">Last entry</th>
                                 <th width="100"></th>
                                 <th width="100"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="project in displayedProjects">
-                                <!--<td>{{project.number}}</td>-->
                                 <td><a ui-sref="home.projects.edit({id:project.id})">{{project.name}}</a></td>
-                                <td class="hidden-xs"><i class="fa fa-calendar-o"></i> {{project.startDate | date : "dd/MM/yyyy": d}}</td>
-                                <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
-                                <td><a ui-sref="home.projects.assignments({id:project.id})"><i class="fa fa-chain"></i><span class="hidden-xs"> assign</span></a></td>
                                 <td>
-                                    <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(project.id)">
-                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                    <span ng-if="project.createdBy">{{project.createdBy.email}}</span>
+                                    <span ng-if="!project.createdBy">NA</span>
+                                </td>
+                                <td class="text-center">
+                                    <span ng-if="project.teamsCount > 0">{{project.teamsCount}}</span>
+                                    <span ng-if="project.teamsCount < 1">NA</span>
+                                </td>
+                                <td class="text-center">
+                                    <span ng-if="project.assignmentsCount > 0">{{project.assignmentsCount}}</span>
+                                    <span ng-if="project.assignmentsCount < 1">NA</span>
+                                </td>
+                                <td class="text-center">
+                                    <span ng-if="project.lastEntry">{{project.lastEntry | amDateFormat: 'L'}}</span>
+                                    <span ng-if="!project.lastEntry">NA</span>
+                                </td>
+                                <td>
+                                    <a ui-sref="home.surveys.list.summary({ projectId: project.id })">
+                                        <i class="fa fa-folder-o"></i> <span class="hidden-xs"> threads</span>
                                     </a>
                                 </td>
+                                <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
                             </tr>
                         </tbody>
                     </table>

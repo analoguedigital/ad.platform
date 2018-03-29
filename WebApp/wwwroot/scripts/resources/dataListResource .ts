@@ -1,5 +1,4 @@
-﻿
-module App.Resources {
+﻿module App.Resources {
     "use strict";
 
     export interface IDataListResource extends angular.resource.IResourceClass<Models.IDataList> {
@@ -11,7 +10,6 @@ module App.Resources {
 
     DataListResource.$inject = ["$resource"];
     export function DataListResource($resource: angular.resource.IResourceService): IDataListResource {
-
         return <IDataListResource>$resource('/api/datalists/:id', { id: '@id' }, {
             'update': { method: 'PUT' },
             'getReferences': {
@@ -49,7 +47,6 @@ module App.Resources {
                 }
             }
         });
-
     }
     
     angular.module("app").factory("dataListResource", DataListResource);

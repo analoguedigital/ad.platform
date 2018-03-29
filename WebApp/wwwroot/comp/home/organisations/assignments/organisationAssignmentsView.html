@@ -1,0 +1,54 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>User Assignments</h5>
+            <div class="box-tools">
+                <a ng-bootbox-confirm="Are you sure you want to do this?" ng-bootbox-confirm-action="submit()" style="color: inherit">
+                    <i class="fa fa-check"></i><span class="hidden-xs"> Assign users</span>
+                </a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div class="well">
+                <h3>{{organisation.name}}</h3>
+            </div>
+
+            <div st-table="displayedUsers" st-safe-src="users">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in displayedUsers">
+                                <td>
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="chk-{{user.id}}" ng-model="user.isSelected" />
+                                        <label for="chk-{{user.id}}">{{user.firstName}} {{user.surname}}</label>
+                                    </div>
+                                </td>
+                                <td>{{user.email}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+
+            <a ui-sref="home.organisations.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+        </div>
+    </div>
+</div>

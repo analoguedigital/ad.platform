@@ -1,9 +1,7 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export class Survey {
-
         public id: string;
         public error: string;
         public dateCreated: number;
@@ -18,7 +16,6 @@ module App.Models {
         public date: Date;
 
         constructor(filledById: string, projectId: string, formTemplateId: string) {
-
             this.id = _.now().toString();
             this.dateCreated = _.now();
             this.dateUpdated = _.now();

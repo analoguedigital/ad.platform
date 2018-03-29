@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface IForgotPasswordModel {

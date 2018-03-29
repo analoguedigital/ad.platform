@@ -38,6 +38,14 @@
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Edit', parent: 'home.formtemplates.list' },
                 module: "private"
+            })
+            .state("home.formtemplates.assignments", <App.Models.IAppRoute>{
+                url: "/assignments/:id",
+                templateUrl: "comp/home/formTemplates/assignments/formTemplateAssignmentsView.html",
+                controller: "formTemplateAssignmentsController",
+                controllerAs: "ctrl",
+                ncyBreadcrumb: { label: 'Assign', parent: 'home.caseManagement.threadAssignments' },
+                module: 'private'
             });
     }
 })();

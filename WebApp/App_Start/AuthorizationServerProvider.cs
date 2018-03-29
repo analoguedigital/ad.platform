@@ -1,28 +1,20 @@
-﻿using LightMethods.Survey.Models.DAL;
+﻿using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.Owin.Security.OAuth;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
-using Microsoft.AspNet.Identity.Owin;
-using LightMethods.Survey.Models.Entities;
 
 namespace WebApi
 {
-
     public class AuthorizationServerProvider : OAuthAuthorizationServerProvider
     {
         HttpContext HttpContext { get { return HttpContext.Current; } }
 
         public ApplicationUserManager UserManager
         {
-            get
-            {
-                return ServiceContext.UserManager;
-            }
+            get { return ServiceContext.UserManager; }
         }
 
         public override Task MatchEndpoint(OAuthMatchEndpointContext context)
@@ -39,26 +31,37 @@ namespace WebApi
             return base.MatchEndpoint(context);
         }
 
-        public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
+        public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
-            context.Validated();
+            return Task.FromResult(context.Validated());
         }
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
+            // enable CORS and allow all requests. this should be constrained in live production.
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-            var result = await UserManager.FindAsync(context.UserName, context.Password);
-            if (result == null)
+            var user = await UserManager.FindAsync(context.UserName, context.Password);
+            if (user == null)
             {
                 context.SetError("invalid_grant", "The user name or password is incorrect.");
                 return;
             }
 
-            if (result is OrgUser)
+            if (user is OrgUser)
             {
-                if (OrgUserHasAccess(result as OrgUser))
-                    await GenerateUserIdentity(context, result as OrgUser);
+                var orgUser = user as OrgUser;
+                if (OrgUserHasAccess(orgUser))
+                {
+                    if (!orgUser.EmailConfirmed)
+                    {
+                        context.SetError("email_not_verified", "The email address has not been verified yet.");
+                        return;
+                    }
+
+                    // if we get here, current org user has access. sign in.
+                    await GenerateUserIdentity(context, orgUser);
+                }
                 else
                 {
                     context.SetError("invalid_grant", "You do not have access to this software.");
@@ -66,7 +69,8 @@ namespace WebApi
                 }
             }
 
-            await GenerateUserIdentity(context, result);
+            // and if we get here, current user is a superuser. sign in.
+            await GenerateUserIdentity(context, user);
         }
 
         private async Task GenerateUserIdentity(OAuthGrantResourceOwnerCredentialsContext context, User user)

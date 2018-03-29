@@ -12,8 +12,15 @@ namespace WebApi.Controllers
 {
     public class FeedbackController : BaseApiController
     {
-        FeedbacksRepository Feedbacks { get { return this.UnitOfWork.FeedbacksRepository; } }
-        EmailsRepository Emails { get { return this.UnitOfWork.EmailsRepository; } }
+        FeedbacksRepository Feedbacks
+        {
+            get { return this.UnitOfWork.FeedbacksRepository; }
+        }
+
+        EmailsRepository Emails
+        {
+            get { return this.UnitOfWork.EmailsRepository; }
+        }
 
         [HttpPost]
         [Route("api/feedbacks")]

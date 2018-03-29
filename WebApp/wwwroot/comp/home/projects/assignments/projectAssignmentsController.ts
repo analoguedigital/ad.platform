@@ -2,32 +2,45 @@
 module App {
     "use strict";
 
-    interface IProjectAssignmentsController {
+    interface IProjectAssignmentsControllerScope extends ng.IScope {
         title: string;
+    }
+
+    interface IProjectAssignmentsController {
         project: Models.IProject;
         errors: string;
         userAssignments: IAssignmentUser[];
+        displayedAssignments: IAssignmentUser[];
+        searchTerm: string;
         clearErrors: () => void;
     }
     interface IAssignmentUser {
         userId: string;
         name: string;
+        email: string;
+        isRootUser: boolean;
+        isWebUser: boolean;
+        isMobileUser: boolean;
         canAdd: boolean;
         canEdit: boolean;
         canView: boolean;
         canDelete: boolean;
+        canExportPdf: boolean;
+        canExportZip: boolean;
     }
 
     class ProjectAssignmentsController implements IProjectAssignmentsController {
-        title: string;
         project: Models.IProject;
         users: Models.IOrgUser[];
         assignments: Models.IProjectAssignment[];
         userAssignments: IAssignmentUser[];
+        displayedAssignments: IAssignmentUser[];
+        searchTerm: string;
         errors: string;
 
-        static $inject: string[] = ["projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
+        static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
         constructor(
+            private $scope: IProjectAssignmentsControllerScope,
             private projectResource: Resources.IProjectResource,
             private orgUserResource: Resources.IOrgUserResource,
             private $q: angular.IQService,
@@ -35,40 +48,49 @@ module App {
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService) {
 
-            this.title = "Projects";
             this.activate();
         }
 
         activate() {
+            this.$scope.title = "Case Assignments"
+
             var projectId = this.$stateParams['id'];
-            var projectPromise = this.projectResource.get({ id: projectId }).$promise;
-            projectPromise.then((project) => { this.project = project; });
+            var projectPromise = this.projectResource.get({ id: projectId }, (project) => {
+                this.project = project;
 
-            var usersPromise = this.orgUserResource.query().$promise;
-            usersPromise.then((users) => { this.users = users; });
+                this.orgUserResource.query({ organisationId: this.project.organisation.id }, (users) => {
+                    this.users = users;
 
-            this.$q.all([projectPromise, usersPromise]).then(() => {
-                this.projectResource.assignments({ id: projectId }, (assignments) => {
-                    this.userAssignments = [];
+                    this.projectResource.assignments({ id: projectId }, (assignments) => {
+                        this.userAssignments = [];
 
-                    _.forEach(this.users, (user) => {
-                        var userName = user.email;
-                        if (user.firstName || user.surname)
-                            userName = `${user.firstName} ${user.surname}`;
+                        _.forEach(this.users, (user) => {
+                            var userName = user.email;
+                            if (user.firstName || user.surname)
+                                userName = `${user.firstName} ${user.surname}`;
 
-                        var assgn = _.find(assignments, { 'orgUserId': user.id });
-                        var userAssignment = <Models.IProjectAssignment>assgn;
+                            var assgn = _.find(assignments, { 'orgUserId': user.id });
+                            var userAssignment = <Models.IProjectAssignment>assgn;
 
-                        var record: IAssignmentUser = {
-                            userId: user.id,
-                            name: userName,
-                            canAdd: userAssignment ? userAssignment.canAdd : false,
-                            canEdit: userAssignment ? userAssignment.canEdit : false,
-                            canView: userAssignment ? userAssignment.canView : false,
-                            canDelete: userAssignment ? userAssignment.canDelete : false
-                        };
+                            var record: IAssignmentUser = {
+                                userId: user.id,
+                                name: userName,
+                                email: user.email,
+                                isRootUser: user.isRootUser,
+                                isWebUser: user.isWebUser,
+                                isMobileUser: user.isMobileUser,
+                                canAdd: userAssignment ? userAssignment.canAdd : false,
+                                canEdit: userAssignment ? userAssignment.canEdit : false,
+                                canView: userAssignment ? userAssignment.canView : false,
+                                canDelete: userAssignment ? userAssignment.canDelete : false,
+                                canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
+                                canExportZip: userAssignment ? userAssignment.canExportZip : false
+                            };
 
-                        this.userAssignments.push(record);
+                            this.userAssignments.push(record);
+                        });
+
+                        this.displayedAssignments = [].concat(this.userAssignments);
                     });
                 });
             });
@@ -99,6 +121,14 @@ module App {
                     toggled = assignment.canView;
                     break;
                 }
+                case 'allowExportPdf': {
+                    toggled = assignment.canExportPdf;
+                    break;
+                }
+                case 'allowExportZip': {
+                    toggled = assignment.canExportZip;
+                    break;
+                }
             }
 
             if (toggled) {
@@ -117,6 +147,8 @@ module App {
             assignment.canAdd = newValue.canAdd;
             assignment.canEdit = newValue.canEdit;
             assignment.canDelete = newValue.canDelete;
+            assignment.canExportPdf = newValue.canExportPdf;
+            assignment.canExportZip = newValue.canExportZip;
         }
 
         clearErrors() {

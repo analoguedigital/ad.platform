@@ -1,9 +1,7 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export class FormValue {
-
         id: string;
         metricId: string;
         rowNumber: number;

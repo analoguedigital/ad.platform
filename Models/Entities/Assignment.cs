@@ -23,5 +23,9 @@ namespace LightMethods.Survey.Models.Entities
         public bool CanDelete { get; set; }
 
         public bool CanView { get; set; }
+
+        public bool CanExportPdf { get; set; }
+
+        public bool CanExportZip { get; set; }
     }
 }

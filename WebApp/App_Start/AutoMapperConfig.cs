@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.DTO.DataLists;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Data.Entity.Core.Objects;
 using System.Linq;
@@ -18,7 +19,8 @@ namespace WebApi
             Mapper.CreateMap<Project, ProjectDTO>().ReverseMap();
             Mapper.CreateMap<AssignmentDTO, ProjectDTO>();
             Mapper.CreateMap<Assignment, ProjectAssignmentDTO>()
-                .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); });
+                .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); })
+                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
 
             #endregion Projects and Assignments
@@ -26,11 +28,16 @@ namespace WebApi
             #region Form Templates and Categories
 
             Mapper.CreateMap<FormTemplateCategory, FormTemplateCategoryDTO>().ReverseMap();
-            Mapper.CreateMap<FormTemplate, FormTemplateDTO>();
-
+            Mapper.CreateMap<FormTemplate, FormTemplateDTO>().ReverseMap();
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
                 .ForMember(f => f.MetricGroups, opt => opt.Ignore());
             Mapper.CreateMap<EditBasicDetailsReqDTO, FormTemplate>();
+
+            Mapper.CreateMap<ThreadAssignmentDTO, FormTemplateDTO>();
+            Mapper.CreateMap<ThreadAssignment, ThreadAssignmentDTO>()
+                .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); })
+                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; });
+            Mapper.CreateMap<ThreadAssignmentDTO, ThreadAssignment>();
 
             #endregion Form Templates and Categories
 
@@ -44,8 +51,6 @@ namespace WebApi
             Mapper.CreateMap<DataListItemAttr, DataListItemAttrDTO>().ReverseMap();
             Mapper.CreateMap<DataListRelationship, DataListRelationshipDTO>();
             Mapper.CreateMap<DataListRelationshipDTO, DataListRelationship>();
-            //.ForMember(dest => dest.Owner, opts => opts.Ignore())
-            //.ForMember(dest => dest.DataList, opts => opts.Ignore());
 
             Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 
@@ -110,7 +115,8 @@ namespace WebApi
                 });
             Mapper.CreateMap<AttachmentDTO, Attachment>();
             Mapper.CreateMap<Attachment, AttachmentDTO>()
-                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name; });
+                .AfterMap((src, dest) => { dest.TypeString = src.Type.Name; })
+                .AfterMap((src, dest) => { dest.OneTimeAccessId = OneTimeAccessService.AddFileIdForTicket(src.Id); });
 
             Mapper.CreateMap<AttachmentMetric, AttachmentMetricDTO>();
             Mapper.CreateMap<AttachmentMetricDTO, AttachmentMetric>()
@@ -144,6 +150,9 @@ namespace WebApi
 
             #region Organisations and Users
 
+            Mapper.CreateMap<User, UserDTO>().ReverseMap();
+            Mapper.CreateMap<SuperUser, UserDTO>().ReverseMap();
+
             Mapper.CreateMap<Organisation, OrganisationDTO>().ReverseMap();
             Mapper.CreateMap<OrgUser, OrgUserDTO>();
             Mapper.CreateMap<OrgUserDTO, OrgUser>()
@@ -151,6 +160,8 @@ namespace WebApi
                 .AfterMap((src, dest) => { dest.TypeId = src.Type.Id; });
             Mapper.CreateMap<OrgUserType, OrgUserTypeDTO>().ReverseMap();
 
+            Mapper.CreateMap<OrganisationTeam, OrganisationTeamDTO>().ReverseMap();
+            Mapper.CreateMap<OrgTeamUser, OrgTeamUserDTO>().ReverseMap();
 
             Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 

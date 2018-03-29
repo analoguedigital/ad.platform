@@ -1,5 +1,4 @@
-﻿
-module App.Models {
+﻿module App.Models {
     "use strict";
 
     export interface IDataListItemAttr extends ng.resource.IResource<IDataListItemAttr> {

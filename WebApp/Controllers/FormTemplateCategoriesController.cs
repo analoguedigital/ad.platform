@@ -7,38 +7,59 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class FormTemplateCategoriesController : BaseApiController
     {
-
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateCategoryDTO>))]
         public IHttpActionResult Get()
         {
-            if (CurrentOrgUser == null)
-                return Unauthorized();
+            var result = new List<FormTemplateCategoryDTO>();
 
-            return Ok(UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
-                .Where(c => c.OrganisationId == CurrentOrgUser.OrganisationId)
-                .ToList()
-                .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c)));
-                
+            if (CurrentOrgUser != null)
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .Where(c => c.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .ToList()
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .ToList();
+            }
+            else
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .ToList()
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .ToList();
+            }
+
+            return Ok(result);
+
         }
 
         [DeflateCompression]
         [ResponseType(typeof(FormTemplateCategoryDTO))]
         public IHttpActionResult Get(Guid id)
         {
-            if (CurrentOrgUser == null)
-                return Unauthorized();
+            var result = new FormTemplateCategoryDTO();
 
-            return Ok(UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
-                .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId)
-                .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
-                .SingleOrDefault());
+            if (CurrentOrgUser != null)
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .SingleOrDefault();
+            }
+            else
+            {
+                result = UnitOfWork.FormTemplateCategoriesRepository.AllAsNoTracking
+                    .Where(c => c.Id == id)
+                    .Select(c => Mapper.Map<FormTemplateCategoryDTO>(c))
+                    .SingleOrDefault();
+            }
+
+            return Ok(result);
         }
 
         [ResponseType(typeof(FormTemplateCategoryDTO))]
@@ -49,9 +70,17 @@ namespace WebApi.Controllers
             Mapper.Map(category, item);
             item.OrganisationId = CurrentOrgUser.OrganisationId.Value;
 
-            UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
-            UnitOfWork.Save();
-            return Ok(Mapper.Map<FormTemplateCategoryDTO>(item));
+            try
+            {
+                UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         public IHttpActionResult Put(Guid id, FormTemplateCategoryDTO category)
@@ -65,22 +94,39 @@ namespace WebApi.Controllers
             Mapper.Map(category, item);
             item.OrganisationId = CurrentOrgUser.OrganisationId.Value;
 
-            UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
-            UnitOfWork.Save();
-            return Ok();
+            try
+            {
+                UnitOfWork.FormTemplateCategoriesRepository.InsertOrUpdate(item);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         public IHttpActionResult Delete(Guid id)
         {
             var item = UnitOfWork.FormTemplateCategoriesRepository.All
-                .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId).SingleOrDefault();
+                .Where(c => c.Id == id && c.OrganisationId == CurrentOrgUser.OrganisationId)
+                .SingleOrDefault();
 
             if (item == null)
                 return BadRequest("Invalid id");
 
-            UnitOfWork.FormTemplateCategoriesRepository.Delete(item);
-            UnitOfWork.Save();
-            return Ok();
+            try
+            {
+                UnitOfWork.FormTemplateCategoriesRepository.Delete(item);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
     }
 }

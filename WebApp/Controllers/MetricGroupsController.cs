@@ -25,7 +25,6 @@ namespace WebApi.Controllers
             return Ok(surveyProvider.GetFormTemplate(formTemplateId)
                 .MetricGroups
                 .Select(m => Mapper.Map<MetricGroupDTO>(m)));
-
         }
 
         // GET: api/MetricGroups/5
@@ -55,7 +54,6 @@ namespace WebApi.Controllers
         [Route("api/formtemplates/{formTemplateId}/metricGroups")]
         public IHttpActionResult Post(Guid formTemplateId, MetricGroupDTO metricGroupDto)
         {
-
             var formTemplate = GetFormTemplate(formTemplateId);
 
             if (formTemplate == null)

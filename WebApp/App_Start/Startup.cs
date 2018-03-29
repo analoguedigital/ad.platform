@@ -8,7 +8,6 @@ using System.Data.Entity;
 using System.Web;
 using System.Web.Http;
 using WebApi.Providers;
-using Hangfire;
 
 [assembly: OwinStartupAttribute(typeof(WebApi.Startup))]
 namespace WebApi
@@ -22,18 +21,20 @@ namespace WebApi
         public void Configuration(IAppBuilder app)
         {
             ConfigureOAuth(app);
-            AttachmentsRepository.RootFolderPath = HttpContext.Current.Server.MapPath("~/Attachments/");
-            
-            HttpConfiguration config = new HttpConfiguration();
-            WebApiConfig.Register(config);
-
-            //app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
-            app.UseWebApi(config);
-
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<SurveyContext, LightMethods.Survey.Models.Migrations.Configuration>());
+            HangFireConfig.Config(app);
             AutoMapperConfig.Config();
 
-            HangFireConfig.Config(app);
+            HttpConfiguration httpConfig = new HttpConfiguration();
+            WebApiConfig.Register(httpConfig);
+
+            // CORS header is added in AuthorizationServerProvider to allow all requests.
+            // This needs to be constrained and properly managed in live production.
+            //app.UseCors(Microsoft.Owin.Cors.CorsOptions.AllowAll);
+
+            app.UseWebApi(httpConfig);
+
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<SurveyContext, LightMethods.Survey.Models.Migrations.Configuration>());
+            AttachmentsRepository.RootFolderPath = HttpContext.Current.Server.MapPath("~/Attachments/");
         }
 
         public void ConfigureOAuth(IAppBuilder app)
@@ -66,8 +67,6 @@ namespace WebApi
             // Token Generation
             app.UseOAuthAuthorizationServer(OAuthServerOptions);
             app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
-
         }
-
     }
 }

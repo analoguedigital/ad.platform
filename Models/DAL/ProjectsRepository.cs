@@ -22,7 +22,7 @@ namespace LightMethods.Survey.Models.DAL
                 projects = projects.Where(p => p.OrganisationId == ((OrgUser)user).OrganisationId);
 
                 if (!CurrentUOW.UserManager.RolesContainsAny(user.Id, Role.ORG_PROJECT_MANAGMENT, Role.ORG_ADMINSTRATOR))
-                    projects = projects.Where(p => p.Assignments.Any(a => a.OrgUserId == user.Id));
+                    projects = projects.Where(p => p.Assignments.Any(a => a.OrgUserId == user.Id && a.CanView == true));
             }
 
             return projects;
@@ -43,6 +43,8 @@ namespace LightMethods.Survey.Models.DAL
                 result.AllowAdd = true;
                 result.AllowEdit = true;
                 result.AllowDelete = true;
+                result.AllowExportPdf = true;
+                result.AllowExportZip = true;
             }
             else
             {
@@ -53,6 +55,8 @@ namespace LightMethods.Survey.Models.DAL
                     result.AllowAdd = assignment.CanAdd;
                     result.AllowEdit = assignment.CanEdit;
                     result.AllowDelete = assignment.CanDelete;
+                    result.AllowExportPdf = assignment.CanExportPdf;
+                    result.AllowExportZip = assignment.CanExportZip;
                 }
             }
 

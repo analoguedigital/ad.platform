@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
 namespace WebApi.Controllers
@@ -17,21 +16,111 @@ namespace WebApi.Controllers
     {
         // GET api/<controller>
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(Guid? organisationId = null)
         {
-            var projects = UnitOfWork.ProjectsRepository
-                .GetProjects(CurrentUser)
-                .OrderByDescending(p => p.DateCreated)
-                .ToList();
-
+            var projects = new List<Project>();
             var result = new List<ProjectDTO>();
-            foreach (var project in projects)
-            {
-                var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
-                var dto = Mapper.Map<ProjectDTO>(project);
-                Mapper.Map(assignment, dto);
 
-                result.Add(dto);
+            if (this.CurrentOrgUser != null)
+            {
+                projects = UnitOfWork.ProjectsRepository
+                    .GetProjects(CurrentUser)
+                    .OrderByDescending(p => p.DateCreated)
+                    .ToList();
+
+                foreach (var project in projects)
+                {
+                    var dto = Mapper.Map<ProjectDTO>(project);
+                    dto.AssignmentsCount = project.Assignments.Count();
+
+                    var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+                    Mapper.Map(assignment, dto);
+
+                    // get last entry
+                    var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                        .Where(x => x.ProjectId == project.Id)
+                        .OrderByDescending(x => x.SurveyDate)
+                        .Take(1)
+                        .FirstOrDefault();
+
+                    if (lastEntry != null)
+                        dto.LastEntry = lastEntry.SurveyDate;
+
+                    // get teams count
+                    var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
+                        .Where(x => x.OrganisationId == project.OrganisationId);
+
+                    var relatedTeams = new List<OrganisationTeamDTO>();
+                    foreach (var team in teams)
+                    {
+                        foreach (var user in team.Users)
+                        {
+                            if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
+                                relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
+                        }
+                    }
+
+                    dto.TeamsCount = relatedTeams.Distinct().Count();
+
+                    result.Add(dto);
+                }
+            }
+            else
+            {
+                if (organisationId.HasValue)
+                {
+                    projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
+                        .Where(x => x.OrganisationId == organisationId.Value)
+                        .OrderByDescending(x => x.DateCreated)
+                        .ToList();
+                }
+                else
+                {
+                    projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
+                        .OrderByDescending(x => x.DateCreated)
+                        .ToList();
+                }
+
+                foreach (var project in projects)
+                {
+                    var dto = Mapper.Map<ProjectDTO>(project);
+                    dto.AssignmentsCount = project.Assignments.Count();
+
+                    dto.AllowView = true;
+                    dto.AllowAdd = true;
+                    dto.AllowEdit = true;
+                    dto.AllowDelete = true;
+                    dto.AllowExportPdf = true;
+                    dto.AllowExportZip = true;
+
+                    // get last entry
+                    var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                        .Where(x => x.ProjectId == project.Id)
+                        .OrderByDescending(x => x.SurveyDate)
+                        .Take(1)
+                        .FirstOrDefault();
+
+                    if (lastEntry != null)
+                        dto.LastEntry = lastEntry.SurveyDate;
+
+                    // get teams count
+                    var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
+                        .Where(x => x.OrganisationId == project.OrganisationId);
+
+                    var relatedTeams = new List<OrganisationTeamDTO>();
+                    foreach (var team in teams)
+                    {
+                        foreach (var user in team.Users)
+                        {
+                            if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
+                                relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
+                        }
+                    }
+
+                    dto.TeamsCount = relatedTeams.Distinct().Count();
+
+                    result.Add(dto);
+                }
             }
 
             return Ok(result);
@@ -50,8 +139,30 @@ namespace WebApi.Controllers
                 return NotFound();
 
             var result = Mapper.Map<ProjectDTO>(project);
-            var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
-            Mapper.Map(assignment, result);
+            if (this.CurrentOrgUser != null)
+            {
+                var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+                Mapper.Map(assignment, result);
+            }
+            else
+            {
+                result.AllowView = true;
+                result.AllowAdd = true;
+                result.AllowEdit = true;
+                result.AllowDelete = true;
+                result.AllowExportPdf = true;
+                result.AllowExportZip = true;
+            }
+
+            // get last entry
+            var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                .Where(x => x.ProjectId == project.Id)
+                .OrderByDescending(x => x.SurveyDate)
+                .Take(1)
+                .FirstOrDefault();
+
+            if (lastEntry != null)
+                result.LastEntry = lastEntry.SurveyDate;
 
             return Ok(result);
         }
@@ -65,7 +176,37 @@ namespace WebApi.Controllers
             if (project == null)
                 return NotFound();
 
-            return Ok(project.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)));
+            var result = project.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a));
+
+            return Ok(result);
+        }
+
+        [DeflateCompression]
+        [Route("api/projects/{id:guid}/teams")]
+        [ResponseType(typeof(IEnumerable<OrganisationTeamDTO>))]
+        public IHttpActionResult GetTeams(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound();
+
+            var project = UnitOfWork.ProjectsRepository.Find(id);
+            if (project == null)
+                return NotFound();
+
+            var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
+                .Where(x => x.OrganisationId == project.OrganisationId);
+
+            var result = new List<OrganisationTeamDTO>();
+            foreach (var team in teams)
+            {
+                foreach (var user in team.Users)
+                {
+                    if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
+                        result.Add(Mapper.Map<OrganisationTeamDTO>(team));
+                }
+            }
+
+            return Ok(result.Distinct());
         }
 
         [HttpPost]
@@ -81,8 +222,16 @@ namespace WebApi.Controllers
             if (orgUser == null)
                 return NotFound();
 
-            if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
-                return NotFound();
+            if (CurrentUser is OrgUser)
+            {
+                if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
+                    return BadRequest("The project and user must belong to the same organisation");
+            }
+            else if (CurrentUser is SuperUser)
+            {
+                if (orgUser.Organisation.Id != project.Organisation.Id)
+                    return BadRequest("The project and user must belong to the same organisation");
+            }
 
             var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
@@ -116,7 +265,18 @@ namespace WebApi.Controllers
         public IHttpActionResult Post([FromBody]ProjectDTO value)
         {
             var project = Mapper.Map<Project>(value);
-            project.OrganisationId = CurrentOrgUser.OrganisationId.Value;
+            project.Organisation = null;
+
+            if (this.CurrentOrgUser != null)
+                project.OrganisationId = CurrentOrgUser.OrganisationId.Value;
+            else
+            {
+                if (value.Organisation == null)
+                    return BadRequest("Organisation is required");
+
+                project.OrganisationId = Guid.Parse(value.Organisation.Id);
+            }
+
             UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
             UnitOfWork.Save();
 
@@ -124,25 +284,47 @@ namespace WebApi.Controllers
         }
 
         // PUT api/<controller>/5
-        public void Put(Guid id, [FromBody]ProjectDTO value)
+        public IHttpActionResult Put(Guid id, [FromBody]ProjectDTO value)
         {
-
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
-                return;
+                return NotFound();
 
-            Mapper.Map(value, project);
+            //Mapper.Map(value, project);
+            project.Number = value.Number;
+            project.Name = value.Name;
+            project.StartDate = value.StartDate;
+            project.EndDate = value.EndDate;
+            project.Notes = value.Notes;
 
-            project.OrganisationId = CurrentOrgUser.OrganisationId.Value;
+            if (this.CurrentOrgUser == null)
+            {
+                if (value.Organisation == null)
+                    return BadRequest("Organisation is required");
+
+                project.OrganisationId = Guid.Parse(value.Organisation.Id);
+            }
+
             UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
             UnitOfWork.Save();
+
+            return Ok();
         }
 
         // DELETE api/<controller>/5
-        public void Delete(Guid id)
+        public IHttpActionResult Delete(Guid id)
         {
-            UnitOfWork.ProjectsRepository.Delete(id);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.ProjectsRepository.Delete(id);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("This case cannot be deleted!");
+            }
         }
     }
 }

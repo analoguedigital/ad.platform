@@ -10,6 +10,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public string OrgUserName { set; get; }
 
+        public bool IsRootUser { get; set; }
+
         public bool CanAdd { get; set; }
 
         public bool CanEdit { get; set; }
@@ -17,5 +19,9 @@ namespace LightMethods.Survey.Models.DTO
         public bool CanDelete { get; set; }
 
         public bool CanView { get; set; }
+
+        public bool CanExportPdf { get; set; }
+
+        public bool CanExportZip { get; set; }
     }
 }

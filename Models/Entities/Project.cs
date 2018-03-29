@@ -46,6 +46,10 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual IEnumerable<KeyLocation> KeyLocations { get; set; }
 
+        [Display(Name = "Created by")]
+        public virtual User CreatedBy { set; get; }
+        public Guid? CreatedById { set; get; }
+
         public Project()
         {
             StartDate = DateTime.Today;

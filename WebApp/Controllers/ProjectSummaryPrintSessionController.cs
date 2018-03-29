@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
 using WebApi.Models;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
@@ -44,15 +45,6 @@ namespace WebApi.Controllers
             return ExportZipFile(session, id, timeline, locations, piechart);
         }
 
-        private string GetRootIndexPath()
-        {
-            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
-            if (!string.IsNullOrEmpty(rootIndexPath))
-                return rootIndexPath;
-
-            return "wwwroot/index.html";
-        }
-
         [HttpGet]
         [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
         public HttpResponseMessage DownloadPdf(Guid id, bool timeline, bool locations, bool piechart)
@@ -60,6 +52,14 @@ namespace WebApi.Controllers
             var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
                 return null;
+
+            if (this.CurrentOrgUser != null)
+            {
+                var project = UnitOfWork.ProjectsRepository.Find(session.ProjectId);
+                var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == this.CurrentOrgUser.Id);
+                if (assignment == null || !assignment.CanExportPdf)
+                    return new HttpResponseMessage(HttpStatusCode.Forbidden);
+            }
 
             var rootIndex = GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
@@ -69,11 +69,44 @@ namespace WebApi.Controllers
             var pdfFileName = $"{projectName}.pdf";
 
             var pdfData = ConvertHtmlToPdf(url);
+
             return CreatePdfResponseMessage(pdfData, projectName);
         }
 
+        #region helpers
+
+
+        // refactor this to a static helper.
+        private string GetRootIndexPath()
+        {
+            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
+            if (!string.IsNullOrEmpty(rootIndexPath))
+                return rootIndexPath;
+
+            return "wwwroot/index.html";
+        }
+
+        private string SanitizeFileName(string filename)
+        {
+            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
+            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+            return System.Text.RegularExpressions.Regex.Replace(filename, invalidRegStr, "_");
+        }
+        #endregion
+
+        #region zip file generation
+
         private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
         {
+            if (this.CurrentOrgUser != null)
+            {
+                var project = UnitOfWork.ProjectsRepository.Find(session.ProjectId);
+                var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == this.CurrentOrgUser.Id);
+                if (assignment == null || !assignment.CanExportZip)
+                    return new HttpResponseMessage(HttpStatusCode.Forbidden);
+            }
+
             var rootIndex = GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
@@ -147,6 +180,22 @@ namespace WebApi.Controllers
             return response;
         }
 
+        private HttpResponseMessage CreateZipResponseMessage(byte[] data, string fileName)
+        {
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            result.Content = new ByteArrayContent(data);
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+            result.Content.Headers.ContentDisposition.FileName = fileName;
+            result.Content.Headers.Add("x-filename", fileName);
+
+            return result;
+        }
+
+        #endregion
+
+        #region pdf file generation
+
         private byte[] ConvertHtmlToPdf(string url)
         {
             var htmlToPdfConverter = new Winnovative.HtmlToPdfConverter();
@@ -173,53 +222,8 @@ namespace WebApi.Controllers
             return result;
         }
 
-        private HttpResponseMessage CreateZipResponseMessage(byte[] data, string fileName)
-        {
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-            result.Content = new ByteArrayContent(data);
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-            result.Content.Headers.ContentDisposition.FileName = fileName;
-            result.Content.Headers.Add("x-filename", fileName);
-
-            return result;
-        }
-
-        private string SanitizeFileName(string filename)
-        {
-            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
-            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
-
-            return System.Text.RegularExpressions.Regex.Replace(filename, invalidRegStr, "_");
-        }
+        #endregion
 
     }
 
-    public class ProjectSummaryPrintSessionService
-    {
-        private static Dictionary<Guid, ProjectSummaryPrintSessionDTO> Storage = new Dictionary<Guid, ProjectSummaryPrintSessionDTO>();
-
-        public static ProjectSummaryPrintSessionDTO AddOrUpdateSession(ProjectSummaryPrintSessionDTO session)
-        {
-            if (session.Id == Guid.Empty)
-                session.Id = Guid.NewGuid();
-
-            Storage[session.Id] = session;
-            return session;
-        }
-
-        public static ProjectSummaryPrintSessionDTO UpdateSession(Guid id, ProjectSummaryPrintSessionDTO session)
-        {
-            Storage[id] = session;
-            return session;
-        }
-
-        public static ProjectSummaryPrintSessionDTO GetSession(Guid id)
-        {
-            if (Storage.ContainsKey(id))
-                return Storage[id];
-
-            return null;
-        }
-    }
 }

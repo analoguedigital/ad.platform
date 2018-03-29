@@ -1,0 +1,66 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Directory of Mobile Users</h5>
+            <div class="box-tools">
+                <a ui-sref="home.users.edit" style="color: inherit"><i class="fa fa-plus-square-o"></i> Add user</a>
+            </div>
+        </div>
+        <div class="box-content">
+            <div st-table="displayedUsers" st-safe-src="users">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th st-sort="email">Email address</th>
+                                <th width="150" st-sort="firstName">First name</th>
+                                <th width="150" st-sort="surname">Surname</th>
+                                <th class="text-center" width="150" st-sort="organisation.name">Organisation</th>
+                                <th class="text-center" width="150" st-sort="type.name">Type</th>
+                                <th class="text-center" width="150" lm-access="System administrator,Platform administrator"></th>
+                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator"></th>
+                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in displayedUsers">
+                                <td>
+                                    <i class="fa fa-user-secret" ng-if="user.type.name == 'Administrator'"></i>
+                                    <i class="fa fa-user-o" ng-if="user.type.name !== 'Administrator'"></i>
+                                    &nbsp;
+                                    <a ui-sref="home.users.edit({ id: user.id })">{{user.email}}</a>
+                                </td>
+                                <td>{{user.firstName}}</td>
+                                <td>{{user.surname}}</td>
+                                <td class="text-center">{{user.organisation.name}}</td>
+                                <td class="text-center">{{user.type.name}}</td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator"><a ng-click="resetPassword(user)"><i class="fa fa-key"></i><span class="hidden-xs"> Reset Password</span></a></td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator">
+                                    <a ng-if="!user.isRootUser" ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(user.id)">
+                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                    </a>
+                                </td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator">
+                                    <a ng-bootbox-confirm="Are you sure you want to revoke this user?" ng-bootbox-confirm-action="revoke(user)" ng-if="user.organisation.name !== 'OnRecord' && !user.isRootUser">
+                                        <i class="fa fa-unlink"></i><span class="hidden-xs"> revoke</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
+            </div>
+        </div>
+    </div>
+</div>

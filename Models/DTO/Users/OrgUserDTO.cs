@@ -14,6 +14,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Email { get; set; }
 
+        public bool EmailConfirmed { get; set; }
+
         public string FirstName { get; set; }
 
         public string Surname { get; set; }
@@ -22,7 +24,13 @@ namespace LightMethods.Survey.Models.DTO
 
         public Guid OrganisationId { get; set; }
 
+        public OrganisationDTO Organisation { get; set; }
+
         public bool IsRootUser { set; get; }
+
+        public Guid? CurrentProjectId { get; set; }
+
+        public ProjectDTO CurrentProject { get; set; }
 
         public OrgUserTypeDTO Type { get; set; }
 
@@ -43,6 +51,10 @@ namespace LightMethods.Survey.Models.DTO
         public string Address { set; get; }
 
         public string PhoneNumber { get; set; }
+
+        public bool PhoneNumberConfirmed { get; set; }
+
+        public AccountType AccountType { get; set; }
 
         public OrgUserDTO()
         {

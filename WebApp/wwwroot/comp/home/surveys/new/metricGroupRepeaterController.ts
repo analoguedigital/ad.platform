@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface IMetricGroupRepeaterController {
@@ -113,6 +112,7 @@ module App {
                     //if (_.find(item.attributes, 'title', prop).value != search[prop])
                     //    matched = false;
                 });
+
                 return matched;
             }
         }

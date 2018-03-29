@@ -1,5 +1,4 @@
-﻿
-module App.Services {
+﻿module App.Services {
     "use strict";
 
     export interface IAuthInterceptorService {
@@ -8,7 +7,6 @@ module App.Services {
     }
 
     class AuthInterceptorService implements IAuthInterceptorService {
-
         static $inject: string[] = ['$q', '$location', 'authService'];
 
         constructor(
@@ -16,9 +14,7 @@ module App.Services {
             private $location: ng.ILocationService,
             private authService: IAuthService) { }
 
-
         request: (config: ng.IRequestConfig) => ng.IRequestConfig = (config) => {
-
             config.headers = config.headers || {};
 
             var authData = this.authService.getExistingAuthData();
@@ -30,10 +26,10 @@ module App.Services {
         }
 
         responseError: (rejection: ng.IHttpPromiseCallbackArg<any>) => ng.IHttpPromiseCallbackArg<any> = (rejection) => {
-
             if (rejection.status === 401) {
                 this.$location.path('/login');
             }
+
             return this.$q.reject(rejection);
         }
     }

@@ -35,6 +35,8 @@ namespace WebApi.Models
 
         public string Email { get; set; }
 
+        public bool EmailConfirmed { get; set; }
+
         public bool HasRegistered { get; set; }
 
         public string LoginProvider { get; set; }
@@ -43,9 +45,15 @@ namespace WebApi.Models
 
         public string Calendar { set; get; }
 
+        public string PhoneNumber { get; set; }
+
+        public bool PhoneNumberConfirmed { get; set; }
+
         public IList<string> Roles { set; get; }
 
         public UserProfileDTO Profile { get; set; }
+
+        public bool TwoFactorAuthenticationEnabled { get; set; }
     }
 
     public class UserProfileDTO

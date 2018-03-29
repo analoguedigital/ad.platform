@@ -1,11 +1,9 @@
 ﻿module App {
     "use strict";
 
-    interface IlmZoomGallery extends ng.IDirective {
-    }
+    interface IlmZoomGallery extends ng.IDirective { }
 
-    interface IlmZoomGalleryScope extends ng.IScope {
-    }
+    interface IlmZoomGalleryScope extends ng.IScope { }
 
     lmZoomGallery.$inject = [];
     function lmZoomGallery(): IlmZoomGallery {
@@ -19,8 +17,6 @@
             attrs: ng.IAttributes,
             ctrl: any,
             transclude: ng.ITranscludeFunction) {
-
-            console.log('link zoom gallery');
 
             $(element).magnificPopup({
                 delegate: 'a.mp-link',

@@ -12,6 +12,5 @@ namespace WebApi.Models
         public List<Guid> SurveyIds { set; get; } = new List<Guid>();
 
         public List<string> RemovedItemIds { set; get; } = new List<string>();
-
     }
 }

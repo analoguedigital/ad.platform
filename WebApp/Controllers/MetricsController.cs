@@ -19,7 +19,6 @@ namespace WebApi.Controllers
         [Route("api/metrics/{metricType}")]
         public IHttpActionResult Get(string metricType)
         {
-
             metricType = metricType.ToLower();
             Metric metric = null;
 
@@ -58,7 +57,6 @@ namespace WebApi.Controllers
         [Route("api/formtemplates/{formTemplateId:Guid}/metrics")]
         public IHttpActionResult Post(Guid formTemplateId, MetricDTO metricDto)
         {
-
             var formTemplate = GetFormTemplate(formTemplateId);
 
             if (formTemplate == null)
@@ -104,6 +102,8 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        #region helpers
+
         private FormTemplate GetFormTemplate(Guid id)
         {
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
@@ -122,5 +122,8 @@ namespace WebApi.Controllers
 
             return UnitOfWork.MetricsRepository.Find(id);
         }
+
+        #endregion
+
     }
 }
