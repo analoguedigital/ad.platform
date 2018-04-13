@@ -104,7 +104,16 @@ namespace LightMethods.Survey.Models.Services
             if (this.User != null)
             {
                 if (UserTypesWithFullAccess.Contains(User.Type))
-                    return datasource.Where(t => t.OrganisationId == User.OrganisationId);
+                {
+                    var threads = datasource.Where(t => t.OrganisationId == User.OrganisationId);
+                    var assignedThreads = datasource.Where(t => t.Project.Assignments.Select(a => a.OrgUserId).Contains(User.Id));
+
+                    var res = new List<FormTemplate>();
+                    res.AddRange(threads.ToList());
+                    res.AddRange(assignedThreads.ToList());
+
+                    return res.Distinct().AsQueryable();
+                }
 
                 if (UserTypesWithLimitedAccess.Contains(User.Type))
                     return datasource.Where(t => t.ProjectId == null || !t.Project.Archived && t.Project.Assignments.Select(a => a.OrgUserId).Contains(User.Id));

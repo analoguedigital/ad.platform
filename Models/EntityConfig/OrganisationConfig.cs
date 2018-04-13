@@ -12,7 +12,7 @@ namespace LightMethods.Survey.Models.EntityConfig
     {
         public OrganisationConfig()
         {
-            this.HasMany(x => x.PromotionCodes)
+            this.HasMany(x => x.Vouchers)
                 .WithRequired(x => x.Organisation)
                 .HasForeignKey(x => x.OrganisationId)
                 .WillCascadeOnDelete();

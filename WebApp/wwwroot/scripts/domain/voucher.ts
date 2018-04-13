@@ -1,7 +1,7 @@
 ﻿module App.Models {
     "use strict";
 
-    export class PromotionCode {
+    export class Voucher {
         public id: string;
         public title: string;
         public code: string;
@@ -25,7 +25,7 @@
         }
     }
 
-    export interface IPromotionCode extends ng.resource.IResource<IPromotionCode> {
+    export interface IVoucher extends ng.resource.IResource<IVoucher> {
         id: string;
         title: string;
         code: string;

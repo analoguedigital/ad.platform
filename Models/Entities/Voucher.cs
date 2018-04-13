@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
-    public class PromotionCode : Entity
+    public class Voucher : Entity
     {
         public string Title { get; set; }
 
-        [Index("IX_PromotionCode_Code", 1, IsUnique = true)]
+        [Index("IX_Voucher_Code", 1, IsUnique = true)]
         public string Code { get; set; }
 
         public decimal Amount { get; set; }

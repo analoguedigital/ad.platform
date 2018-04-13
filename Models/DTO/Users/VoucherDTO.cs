@@ -2,7 +2,7 @@
 
 namespace LightMethods.Survey.Models.DTO
 {
-    public class PromotionCodeDTO
+    public class VoucherDTO
     {
         public Guid Id { get; set; }
 

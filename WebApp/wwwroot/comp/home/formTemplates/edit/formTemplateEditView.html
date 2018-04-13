@@ -19,7 +19,7 @@
                     </div>
                 </lm-form-group>
                 <lm-form-group label="Project :">
-                    <select id="project" name="project" ng-model="ctrl.formTemplate.project" ng-options="project.id as project.name for project in ctrl.projects track by project.id" required></select>
+                    <select id="project" name="project" ng-model="ctrl.formTemplate.project" ng-options="project as project.name for project in ctrl.projects track by project.id" required></select>
                 </lm-form-group>
                 <lm-form-group label="Code: ">
                     <input type="text" id="code" name="code" ng-model="ctrl.formTemplate.code" required />
@@ -62,7 +62,7 @@
                             <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody ng-if="ctrl.assignments.length">
                         <tr ng-repeat="user in ctrl.assignments">
                             <td>
                                 <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
@@ -83,6 +83,13 @@
                             <td class="text-center">
                                 <i class="fa fa-check" ng-if="user.canDelete"></i>
                                 <i class="fa fa-times" ng-if="!user.canDelete"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-if="!ctrl.assignments.length">
+                        <tr>
+                            <td colspan="5">
+                                <i class="fa fa-info-circle"></i> No thread assignments yet
                             </td>
                         </tr>
                     </tbody>

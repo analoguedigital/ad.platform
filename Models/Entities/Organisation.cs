@@ -67,9 +67,11 @@ namespace LightMethods.Survey.Models.Entities
 
         public decimal? SubscriptionMonthlyRate { get; set; }
 
-        public virtual ICollection<PromotionCode> PromotionCodes { get; set; }
+        public virtual ICollection<Voucher> Vouchers { get; set; }
 
         public virtual ICollection<OrganisationTeam> Teams { get; set; }
+
+        public virtual ICollection<OrganisationInvitation> Invitations { get; set; }
 
         public Organisation()
         {

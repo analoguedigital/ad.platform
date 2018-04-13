@@ -1,0 +1,61 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="invitationForm" class="form-horizontal" novalidate>
+                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
+                    <select id="organisation" name="organisation" ng-model="invitation.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
+                </lm-form-group>
+                <lm-form-group label="Name: ">
+                    <input type="text" id="name" name="name" ng-model="invitation.name" required placeholder="choose a name for this token" />
+                </lm-form-group>
+                <lm-form-group label="Token: ">
+                    <div class="input-group">
+                        <div class="input-group-addon" data-toggle="tooltip" title="Generate New Token" style="cursor: pointer" ng-click="ctrl.generateToken()">
+                            <i class="fa fa-magic"></i>
+                        </div>
+                        <input type="text" id="token" name="token" ng-model="invitation.token" required placeholder="unique 8 digit code" />
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Limit: ">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-lock"></i>
+                        </div>
+                        <input type="number" id="limit" name="limit" ng-model="invitation.limit" required placeholder="maximum number of uses" />
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Used: ">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <input type="number" id="used" name="used" ng-model="invitation.used" required placeholder="number of uses" disabled />
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Is Active: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="isActive" ng-model="invitation.isActive" />
+                        <label for="isActive"></label>
+                    </div>
+                </lm-form-group>
+
+                <lm-form-group ng-if="errors !== undefined" class="">
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{errors}}
+                        <a class="alert-link pull-right" ng-click="clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="ctrl.submit(invitationForm)">Submit</button>
+                </lm-form-group>
+
+                <a ui-sref="home.organisations.invitations"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+        </div>
+    </div>
+</div>

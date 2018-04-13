@@ -5,6 +5,7 @@ module App {
     interface ISubscriptionsControllerScope extends ng.IScope {
         payments: Models.IPaymentRecord[];
         displayedPayments: Models.IPaymentRecord[];
+        subscriptionPlans: Models.ISubscriptionPlan[];
 
         searchTerm: string;
         currentPage: number;
@@ -26,13 +27,14 @@ module App {
         latestSubscription?: Date;
         isRestricted: boolean;
 
-        static $inject: string[] = ["$scope", "$uibModal", "paymentResource", "userContextService", "subscriptionResource"];
+        static $inject: string[] = ["$scope", "$uibModal", "paymentResource", "userContextService", "subscriptionResource", "subscriptionPlanResource"];
         constructor(
             private $scope: ISubscriptionsControllerScope,
             private $uibModal: ng.ui.bootstrap.IModalService,
             private paymentResource: Resources.IPaymentResource,
             private userContext: Services.IUserContextService,
-            private subscriptionResource: Resources.ISubscriptionResource) {
+            private subscriptionResource: Resources.ISubscriptionResource,
+            private subscriptionPlanResource: Resources.ISubscriptionPlanResource) {
 
             $scope.title = "Subscriptions";
             this.activate();
@@ -56,6 +58,10 @@ module App {
                 (res) => {
                     this.latestSubscription = res.date;
                 });
+
+            this.subscriptionPlanResource.query().$promise.then((plans) => {
+                this.$scope.subscriptionPlans = plans;
+            });
         }
 
         redeemCode() {
@@ -68,6 +74,27 @@ module App {
                 (res) => { location.reload(true); },
                 (err) => { });
         }
+
+        addSubscription() {
+            var modalInstance = this.$uibModal.open({
+                animation: true,
+                templateUrl: 'comp/home/myAccount/subscribe/subscribe.html',
+                controller: 'subscribeController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    subscriptionPlans: () => {
+                        return this.$scope.subscriptionPlans;
+                    }
+                }
+            }).result.then(
+                (res) => {
+                    location.reload(true);
+                },
+                (err) => {
+                    console.error(err);
+                });
+        }
+
     }
 
     angular.module("app").controller("subscriptionsController", SubscriptionsController);

@@ -14,7 +14,7 @@
                     <th class="text-center">Date</th>
                     <th class="text-center">Amount</th>
                     <th class="text-center">Reference</th>
-                    <th class="text-center">Promotion Code</th>
+                    <th class="text-center">Voucher</th>
                     <th>Note</th>
                 </tr>
             </thead>
@@ -22,8 +22,10 @@
                 <tr ng-repeat="payment in displayedPayments track by $index">
                     <td class="text-center">{{payment.date | amDateFormat: 'DD/MM/YYYY'}}</td>
                     <td class="text-center">{{payment.amount | currency : '&pound;'}}</td>
-                    <td class="text-center">{{payment.reference}}</td>
-                    <td class="text-center">{{payment.promotionCode.code}}</td>
+                    <td class="text-center">
+                        <span ng-if="payment.reference.length">{{payment.reference}}</span>
+                    </td>
+                    <td class="text-center">{{payment.voucher.code}}</td>
                     <td>{{payment.note}}</td>
                 </tr>
             </tbody>

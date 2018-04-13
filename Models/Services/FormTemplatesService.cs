@@ -107,17 +107,10 @@ namespace LightMethods.Survey.Models.Services
                 {
                     entity.CreatedById = this.CurrentUser.Id;
 
-                    if (entity.Organisation == null)
-                    {
-                        result.Success = false;
-                        result.Message = "Organisation is required";
-                        return result;
-                    }
-                    else
-                    {
-                        entity.OrganisationId = entity.Organisation.Id;
-                        entity.Organisation = null;
-                    }
+                    // organisation and project are bound to dropdowns,
+                    // and we have the IDs. so remove the DTO mappings to avoid EF validation errors.
+                    entity.Organisation = null;
+                    entity.Project = null;
                 }
 
                 this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(entity);
@@ -170,6 +163,12 @@ namespace LightMethods.Survey.Models.Services
             }
 
             Mapper.Map(model, form);
+
+            if (model.Organisation != null)
+                form.OrganisationId = Guid.Parse(model.Organisation.Id);
+
+            if (model.Project != null)
+                form.ProjectId = model.Project.Id;
 
             // validate organisation. Project/Category organisations must match the selected organisation.
 
@@ -275,7 +274,7 @@ namespace LightMethods.Survey.Models.Services
                 result.Success = false;
                 result.Message = ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 result.Success = false;
                 result.Message = "Error occured updating form template";

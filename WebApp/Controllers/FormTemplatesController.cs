@@ -80,6 +80,9 @@ namespace WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            formTemplate.OrganisationId = Guid.Parse(value.Organisation.Id);
+            formTemplate.ProjectId = value.Project.Id;
+
             var response = this.FormTemplatesService.Create(formTemplate);
             if (!response.Success)
             {
@@ -213,9 +216,6 @@ namespace WebApi.Controllers
             if (orgUser == null)
                 return NotFound();
 
-            if (CurrentOrganisationId != thread.OrganisationId || orgUser.OrganisationId != thread.OrganisationId)
-                return NotFound();
-
             var result = this.UnitOfWork.ThreadAssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
             return Ok(Mapper.Map<ThreadAssignmentDTO>(result));
@@ -228,9 +228,6 @@ namespace WebApi.Controllers
         {
             var thread = UnitOfWork.FormTemplatesRepository.FindIncluding(id, t => t.Assignments);
             if (thread == null)
-                return NotFound();
-
-            if (CurrentOrganisationId != thread.OrganisationId)
                 return NotFound();
 
             var assignment = thread.Assignments.SingleOrDefault(a => a.OrgUserId == userId);

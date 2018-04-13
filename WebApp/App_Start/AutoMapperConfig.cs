@@ -163,11 +163,14 @@ namespace WebApi
             Mapper.CreateMap<OrganisationTeam, OrganisationTeamDTO>().ReverseMap();
             Mapper.CreateMap<OrgTeamUser, OrgTeamUserDTO>().ReverseMap();
 
+            Mapper.CreateMap<OrganisationInvitation, OrgInvitationDTO>().ReverseMap();
+
             Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 
             Mapper.CreateMap<PaymentRecord, PaymentRecordDTO>().ReverseMap();
-            Mapper.CreateMap<PromotionCode, PromotionCodeDTO>().ReverseMap();
+            Mapper.CreateMap<Voucher, VoucherDTO>().ReverseMap();
             Mapper.CreateMap<Subscription, SubscriptionDTO>().ReverseMap();
+            Mapper.CreateMap<SubscriptionPlan, SubscriptionPlanDTO>().ReverseMap();
 
             #endregion Organisations and Users
 

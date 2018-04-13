@@ -17,7 +17,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public string Note { get; set; }
 
-        public virtual PromotionCode PromotionCode { get; set; }
+        public virtual Voucher Voucher { get; set; }
 
         public virtual ICollection<Subscription> Subscriptions { get; set; }
 

@@ -235,10 +235,17 @@
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDesign.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_formDetails.html" />
     <Content Include="wwwroot\comp\home\formTemplates\design\_metric.html" />
+    <Content Include="wwwroot\comp\home\myAccount\addSubscription\addSubscriptionView.html" />
+    <Content Include="wwwroot\comp\home\myAccount\joinOrganisation\joinOrganisationView.html" />
     <Content Include="wwwroot\comp\home\myAccount\settings\addPhoneNumber\addPhoneNumber.html" />
     <Content Include="wwwroot\comp\home\myAccount\settings\changePhoneNumber\changePhoneNumber.html" />
     <Content Include="wwwroot\comp\home\myAccount\settings\settingsView.html" />
+    <Content Include="wwwroot\comp\home\myAccount\subscribe\subscribe.html" />
     <Content Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsView.html" />
+    <Content Include="wwwroot\comp\home\organisations\invitations\edit\invitationsEditView.html" />
+    <Content Include="wwwroot\comp\home\organisations\invitations\invitationsView.html" />
+    <Content Include="wwwroot\comp\home\organisations\vouchers\edit\vouchersEditView.html" />
+    <Content Include="wwwroot\comp\home\organisations\vouchers\vouchersView.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\caseAssignments\caseAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
@@ -253,6 +260,8 @@
     <Content Include="wwwroot\comp\home\projects\summary\_timeline.html" />
     <Content Include="wwwroot\comp\home\projects\summary\_toolbox.html" />
     <Content Include="wwwroot\comp\home\projects\threadAssignments\threadAssignmentsView.html" />
+    <Content Include="wwwroot\comp\home\subscriptionPlans\edit\subscriptionPlanEditView.html" />
+    <Content Include="wwwroot\comp\home\subscriptionPlans\subscriptionPlansView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\_dataTable.html" />
     <Content Include="wwwroot\comp\home\surveys\all\_searchForm.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_formDetails.html" />
@@ -320,6 +329,7 @@
     <Compile Include="Controllers\CustomControllers\MBS\Models\Update.cs" />
     <Compile Include="Controllers\DownloadsController.cs" />
     <Compile Include="Controllers\FeedbacksController.cs" />
+    <Compile Include="Controllers\OrgInvitationsController.cs" />
     <Compile Include="Controllers\OrgTeamsController.cs" />
     <Compile Include="Controllers\ProjectSummaryPrintSessionController.cs" />
     <Compile Include="Controllers\DataListsController.cs" />
@@ -332,7 +342,8 @@
     <Compile Include="Controllers\OrgUserTypesController.cs" />
     <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
-    <Compile Include="Controllers\PromotionCodesController.cs" />
+    <Compile Include="Controllers\SubscriptionPlansController.cs" />
+    <Compile Include="Controllers\VouchersController.cs" />
     <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\OrgUsersController.cs" />
@@ -436,6 +447,7 @@
     <Content Include="wwwroot\comp\emailConfirmation\verifyToken\_verifyEmailTokenView.scss" />
     <Content Include="wwwroot\comp\home\users\editSuperUser\_superUserEditView.scss" />
     <Content Include="wwwroot\comp\home\projects\edit\_projectEditView.scss" />
+    <Content Include="wwwroot\comp\home\myAccount\subscribe\_subscribe.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -501,11 +513,18 @@
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\rateMetric\rateMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\numericMetric\numericMetricFormController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\formTemplates\design\forms\_metricGroup\metricGroupFormController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\addSubscription\addSubscriptionController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\joinOrganisation\joinOrganisationController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\settings\addPhoneNumber\addPhoneNumberController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\settings\changePhoneNumber\changePhoneNumberController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\settings\settingsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscribe\subscribeController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\assignments\organisationAssignmentsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\invitations\edit\organisationInvitationsEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\invitations\organisationInvitationsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\organisations.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\vouchers\edit\organisationVouchersEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\organisations\vouchers\organisationVouchersController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\caseAssignments\caseAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />
@@ -516,6 +535,9 @@
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptions.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\myAccount\subscriptionsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\threadAssignments\threadAssignmentsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\subscriptionPlans\edit\subscriptionPlanEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\subscriptionPlans\subscriptionPlans.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\subscriptionPlans\subscriptionPlansController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveyController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\print\printSurveysController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\surveys\surveys.routing.ts" />
@@ -595,12 +617,14 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\formTemplateCategory.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\metric\survey.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\organisation.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\orgInvitation.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\orgTeam.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\orgUserType.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\paymentRecord.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\project.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\projectSummarySession.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\domain\promotionCode.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\subscriptionPlan.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\voucher.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\searchDTO.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\subscription.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\user.ts" />
@@ -619,12 +643,14 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\metricResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\organisationResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\orgInvitationResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgTeamResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectSummaryPrintSessionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\paymentResource.ts" />
-    <TypeScriptCompile Include="wwwroot\scripts\resources\promotionCodeResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionPlanResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\voucherResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\surveyResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectResource.ts" />

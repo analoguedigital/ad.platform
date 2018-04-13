@@ -1,0 +1,32 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Add Subscription - {{ctrl.subscriptionPlan.name}}</h3>
+</div>
+<div class="modal-body">
+    <p>
+        <strong>Description</strong> {{ctrl.subscriptionPlan.description}}
+    </p>
+
+    <p>
+        <strong>Length</strong> {{ctrl.subscriptionPlan.interval}} month(s)
+    </p>
+
+    <p ng-if="ctrl.subscriptionPlan.isLimited">
+        <strong>Limited</strong> to <strong>{{ctrl.subscriptionPlan.monthlyQuota}}</strong> records per month
+    </p>
+
+    <p>
+        <strong>PDF Export</strong>
+        <i class="fa fa-check" ng-if="ctrl.subscriptionPlan.pdfExport"></i>
+        <i class="fa fa-times" ng-if="!ctrl.subscriptionPlan.pdfExport"></i>
+    </p>
+
+    <p>
+        <strong>Zip Export</strong>
+        <i class="fa fa-check" ng-if="ctrl.subscriptionPlan.zipExport"></i>
+        <i class="fa fa-times" ng-if="!ctrl.subscriptionPlan.zipExport"></i>
+    </p>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.checkout()">Checkout</button>
+</div>

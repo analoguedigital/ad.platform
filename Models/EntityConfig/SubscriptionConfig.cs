@@ -12,16 +12,19 @@ namespace LightMethods.Survey.Models.EntityConfig
     {
         public SubscriptionConfig()
         {
-            this.Property(x => x.Note);
+            this.HasRequired(x => x.OrgUser)
+                .WithMany(x => x.Subscriptions)
+                .HasForeignKey(x => x.OrgUserId)
+                .WillCascadeOnDelete(false);
 
-            this.HasRequired(x => x.PaymentRecord)
+            this.HasOptional(x => x.PaymentRecord)
                 .WithMany(x => x.Subscriptions)
                 .HasForeignKey(x => x.PaymentRecordId)
                 .WillCascadeOnDelete();
 
-            this.HasRequired(x => x.OrgUser)
+            this.HasOptional(x => x.SubscriptionPlan)
                 .WithMany(x => x.Subscriptions)
-                .HasForeignKey(x => x.OrgUserId)
+                .HasForeignKey(x => x.SubscriptionPlanId)
                 .WillCascadeOnDelete(false);
         }
     }

@@ -6,17 +6,17 @@
         </div>
         <div class="box-content">
             <div class="alert alert-warning" role="alert" ng-if="ctrl.isRestricted">
-                <strong>Warning!</strong> You do not have an active subscription! Setup your payment method, or redeem a promotion code.
+                <strong>Warning</strong> You do not have an active subscription. Buy subscription, join an organisation or redeem a voucher to continue using the platform.
             </div>
 
             <p ng-if="ctrl.latestSubscription">Your next renewal is on <strong>{{ctrl.latestSubscription | amDateFormat: 'DD/MM/YYYY'}}</strong></p>
 
-            <button class="btn btn-info">
-                <i class="fa fa-credit-card"></i> Add Payment Method
+            <button class="btn btn-info" ng-click="ctrl.addSubscription()">
+                <i class="fa fa-credit-card"></i> Add Subscription
             </button>
 
             <button class="btn btn-primary" ng-click="ctrl.redeemCode()">
-                <i class="fa fa-gift"></i> Redeem Code
+                <i class="fa fa-gift"></i> Redeem Voucher
             </button>
         </div>
     </div>

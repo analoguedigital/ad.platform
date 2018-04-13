@@ -14,7 +14,7 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Note { get; set; }
 
-        public PromotionCodeDTO PromotionCode { get; set; }
+        public VoucherDTO Voucher { get; set; }
 
         public Guid OrgUserId { get; set; }
     }

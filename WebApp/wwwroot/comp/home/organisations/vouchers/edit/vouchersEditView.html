@@ -1,0 +1,48 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="voucherForm" class="form-horizontal" novalidate>
+                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
+                    <select id="organisation" name="organisation" ng-model="voucher.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
+                </lm-form-group>
+                <lm-form-group label="Title: ">
+                    <input type="text" id="title" name="title" ng-model="voucher.title" required placeholder="Choose a title for this voucher" />
+                </lm-form-group>
+                <lm-form-group label="Code: ">
+                    <input type="text" id="code" name="code" ng-model="voucher.code" required placeholder="The voucher code" />
+                </lm-form-group>
+                <lm-form-group label="Amount: ">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-gbp"></i>
+                        </div>
+                        <input type="text" id="amount" name="amount" ng-model="voucher.amount" required placeholder="The credit amount. Used with your organization's monthly rate" />
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Is Redeemed: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="isRedeemed" ng-model="voucher.isRedeemed" />
+                        <label for="isRedeemed"></label>
+                    </div>
+                </lm-form-group>
+
+                <lm-form-group ng-if="errors !== undefined" class="">
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{errors}}
+                        <a class="alert-link pull-right" ng-click="clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="ctrl.submit(voucherForm)">Submit</button>
+                </lm-form-group>
+
+                <a ui-sref="home.organisations.vouchers"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+        </div>
+    </div>
+</div>
