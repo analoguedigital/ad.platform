@@ -142,6 +142,18 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
+        private OrgInvitationsRepository _OrgInvitationsRepository;
+        public OrgInvitationsRepository OrgInvitationsRepository
+        {
+            get
+            {
+                if (this._OrgInvitationsRepository == null)
+                    this._OrgInvitationsRepository = new OrgInvitationsRepository(this);
+
+                return this._OrgInvitationsRepository;
+            }
+        }
+
         private AssignmentsRepository _AssignmentsRepository;
         public AssignmentsRepository AssignmentsRepository
         {
@@ -469,15 +481,27 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
-        private PromotionCodesRepository _PromotionCodesRepository;
-        public PromotionCodesRepository PromotionCodesRepository
+        private VouchersRepository _VouchersRepository;
+        public VouchersRepository VouchersRepository
         {
             get
             {
-                if (this._PromotionCodesRepository == null)
-                    this._PromotionCodesRepository = new PromotionCodesRepository(this);
+                if (this._VouchersRepository == null)
+                    this._VouchersRepository = new VouchersRepository(this);
 
-                return this._PromotionCodesRepository;
+                return this._VouchersRepository;
+            }
+        }
+
+        private SubscriptionPlansRepository _SubscriptionPlansRepository;
+        public SubscriptionPlansRepository SubscriptionPlansRepository
+        {
+            get
+            {
+                if (this._SubscriptionPlansRepository == null)
+                    this._SubscriptionPlansRepository = new SubscriptionPlansRepository(this);
+
+                return this._SubscriptionPlansRepository;
             }
         }
 

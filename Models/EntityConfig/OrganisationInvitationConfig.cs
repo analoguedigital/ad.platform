@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.EntityConfig
 {
-    public class OrganisationConfig : EntityTypeConfiguration<Organisation>
+    public class OrganisationInvitationConfig : EntityTypeConfiguration<OrganisationInvitation>
     {
-        public OrganisationConfig()
+        public OrganisationInvitationConfig()
         {
-            this.HasMany(x => x.Vouchers)
-                .WithRequired(x => x.Organisation)
+            this.Property(x => x.Token)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .IsRequired();
+
+            this.HasRequired(x => x.Organisation)
+                .WithMany(x => x.Invitations)
                 .HasForeignKey(x => x.OrganisationId)
                 .WillCascadeOnDelete();
         }

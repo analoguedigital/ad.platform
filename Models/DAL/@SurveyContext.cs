@@ -46,15 +46,17 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<Organisation> Organisations { get; set; }
         public DbSet<OrganisationTeam> OrganisationTeams { get; set; }
         public DbSet<OrgTeamUser> OrgTeamUsers { get; set; }
+        public DbSet<OrganisationInvitation> OrgInvitations { get; set; }
         public DbSet<AdultTitle> AdultTitles { get; set; }
         public DbSet<File> Files { set; get; }
         public DbSet<Guidance> Guidance { set; get; }
         public DbSet<Settings> Settings { set; get; }
         public DbSet<Language> Languages { set; get; }
         public DbSet<Calendar> Calendars { set; get; }
-        public DbSet<PromotionCode> PromotionCodes { get; set; }
+        public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<PaymentRecord> PaymentRecords { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Email> Emails { get; set; }
 
@@ -181,6 +183,7 @@ namespace LightMethods.Survey.Models.DAL
             modelBuilder.Configurations.Add(new OrganisationWorkerConfig());
             modelBuilder.Configurations.Add(new OrganisationTeamConfig());
             modelBuilder.Configurations.Add(new OrgTeamUserConfig());
+            modelBuilder.Configurations.Add(new OrganisationInvitationConfig());
 
             // users config
             modelBuilder.Configurations.Add(new OrgUserConfig());
@@ -213,9 +216,10 @@ namespace LightMethods.Survey.Models.DAL
             modelBuilder.Configurations.Add(new AttachmentMetricConfig());
 
             // subscriptions config
-            modelBuilder.Configurations.Add(new PromotionCodeConfig());
+            modelBuilder.Configurations.Add(new VoucherConfig());
             modelBuilder.Configurations.Add(new PaymentRecordConfig());
             modelBuilder.Configurations.Add(new SubscriptionConfig());
+            modelBuilder.Configurations.Add(new SubscriptionPlanConfig());
         }
     }
 }

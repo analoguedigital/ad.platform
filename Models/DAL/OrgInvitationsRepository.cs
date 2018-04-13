@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.DAL
 {
-    public class PromotionCodesRepository : Repository<PromotionCode>
+    public class OrgInvitationsRepository : Repository<OrganisationInvitation>
     {
-        public PromotionCodesRepository(UnitOfWork uow) : base(uow) { }
+        public OrgInvitationsRepository(UnitOfWork uow) : base(uow) { }
     }
 }

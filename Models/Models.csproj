@@ -129,9 +129,11 @@
     <Compile Include="DAL\FormTemplates\AttachmentMetricsRepository.cs" />
     <Compile Include="DAL\FormTemplates\TimeMetricsRepository.cs" />
     <Compile Include="DAL\OrganisationTeamsRepository.cs" />
+    <Compile Include="DAL\OrgInvitationsRepository.cs" />
     <Compile Include="DAL\OrgTeamUsersRepository.cs" />
     <Compile Include="DAL\PaymentsRepository.cs" />
-    <Compile Include="DAL\PromotionCodesRepository.cs" />
+    <Compile Include="DAL\SubscriptionPlansRepository.cs" />
+    <Compile Include="DAL\VouchersRepository.cs" />
     <Compile Include="DAL\RolesRepository.cs" />
     <Compile Include="DAL\SubscriptionsRepository.cs" />
     <Compile Include="DAL\ThreadAssignmentsRepository.cs" />
@@ -168,13 +170,15 @@
     <Compile Include="DTO\OperationResult.cs" />
     <Compile Include="DTO\Users\OrganisationDTO.cs" />
     <Compile Include="DTO\Users\OrganisationTeamDTO.cs" />
+    <Compile Include="DTO\Users\OrgInvitationDTO.cs" />
     <Compile Include="DTO\Users\OrgTeamUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserTypeDTO.cs" />
     <Compile Include="DTO\Users\PaymentRecordDTO.cs" />
     <Compile Include="DTO\Projects\ProjectAssignmentDTO.cs" />
     <Compile Include="DTO\Projects\ProjectDTO.cs" />
-    <Compile Include="DTO\Users\PromotionCodeDTO.cs" />
+    <Compile Include="DTO\Users\SubscriptionPlanDTO.cs" />
+    <Compile Include="DTO\Users\VoucherDTO.cs" />
     <Compile Include="DTO\Users\SubscriptionDTO.cs" />
     <Compile Include="DTO\Users\UserDTO.cs" />
     <Compile Include="Entities\Email.cs" />
@@ -182,8 +186,10 @@
     <Compile Include="Entities\FormTemplates\Attachment.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentMetric.cs" />
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
+    <Compile Include="Entities\OrganisationInvitation.cs" />
     <Compile Include="Entities\OrganisationTeam.cs" />
     <Compile Include="Entities\OrgTeamUser.cs" />
+    <Compile Include="Entities\SubscriptionPlan.cs" />
     <Compile Include="Entities\ThreadAssignment.cs" />
     <Compile Include="EntityConfig\AdultAddressConfig.cs" />
     <Compile Include="EntityConfig\AdultConfig.cs" />
@@ -206,12 +212,14 @@
     <Compile Include="EntityConfig\MetricGroupConfig.cs" />
     <Compile Include="EntityConfig\MultipleChoiceMetricConfig.cs" />
     <Compile Include="EntityConfig\OrganisationConfig.cs" />
+    <Compile Include="EntityConfig\OrganisationInvitationConfig.cs" />
     <Compile Include="EntityConfig\OrganisationWorkerConfig.cs" />
     <Compile Include="EntityConfig\OrgTeamUserConfig.cs" />
     <Compile Include="EntityConfig\OrgUserConfig.cs" />
     <Compile Include="EntityConfig\PaymentRecordConfig.cs" />
     <Compile Include="EntityConfig\ProjectConfig.cs" />
-    <Compile Include="EntityConfig\PromotionCodeConfig.cs" />
+    <Compile Include="EntityConfig\SubscriptionPlanConfig.cs" />
+    <Compile Include="EntityConfig\VoucherConfig.cs" />
     <Compile Include="EntityConfig\RateMetricConfig.cs" />
     <Compile Include="EntityConfig\ReportTemplateCategoryConfig.cs" />
     <Compile Include="EntityConfig\ReportTemplateConfig.cs" />
@@ -231,7 +239,7 @@
     <Compile Include="Entities\FormTemplates\FilledFormLocation.cs" />
     <Compile Include="Entities\FormTemplates\IHasAdHocDataList.cs" />
     <Compile Include="Entities\PaymentRecord.cs" />
-    <Compile Include="Entities\PromotionCode.cs" />
+    <Compile Include="Entities\Voucher.cs" />
     <Compile Include="Entities\Subscription.cs" />
     <Compile Include="Enums\MultipleChoiceViewType.cs" />
     <Compile Include="Extenstions\%40EntityExtensions.cs" />
@@ -535,6 +543,30 @@
     <Compile Include="Migrations\201802180150191_Add_organisation_teams.Designer.cs">
       <DependentUpon>201802180150191_Add_organisation_teams.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804080848434_Rename_promotion_codes_to_vouchers.cs" />
+    <Compile Include="Migrations\201804080848434_Rename_promotion_codes_to_vouchers.Designer.cs">
+      <DependentUpon>201804080848434_Rename_promotion_codes_to_vouchers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804081236547_Add_subscription_plans.cs" />
+    <Compile Include="Migrations\201804081236547_Add_subscription_plans.Designer.cs">
+      <DependentUpon>201804081236547_Add_subscription_plans.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804081629377_Add_organisation_invitations.cs" />
+    <Compile Include="Migrations\201804081629377_Add_organisation_invitations.Designer.cs">
+      <DependentUpon>201804081629377_Add_organisation_invitations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804111430485_Update_subscriptions_config.cs" />
+    <Compile Include="Migrations\201804111430485_Update_subscriptions_config.Designer.cs">
+      <DependentUpon>201804111430485_Update_subscriptions_config.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804111434141_Rename_subscription_interval_to_length.cs" />
+    <Compile Include="Migrations\201804111434141_Rename_subscription_interval_to_length.Designer.cs">
+      <DependentUpon>201804111434141_Rename_subscription_interval_to_length.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804111444194_Rename_voucher_index_name.cs" />
+    <Compile Include="Migrations\201804111444194_Rename_voucher_index_name.Designer.cs">
+      <DependentUpon>201804111444194_Rename_voucher_index_name.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -688,6 +720,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802180150191_Add_organisation_teams.resx">
       <DependentUpon>201802180150191_Add_organisation_teams.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804080848434_Rename_promotion_codes_to_vouchers.resx">
+      <DependentUpon>201804080848434_Rename_promotion_codes_to_vouchers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804081236547_Add_subscription_plans.resx">
+      <DependentUpon>201804081236547_Add_subscription_plans.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804081629377_Add_organisation_invitations.resx">
+      <DependentUpon>201804081629377_Add_organisation_invitations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804111430485_Update_subscriptions_config.resx">
+      <DependentUpon>201804111430485_Update_subscriptions_config.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804111434141_Rename_subscription_interval_to_length.resx">
+      <DependentUpon>201804111434141_Rename_subscription_interval_to_length.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804111444194_Rename_voucher_index_name.resx">
+      <DependentUpon>201804111444194_Rename_voucher_index_name.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

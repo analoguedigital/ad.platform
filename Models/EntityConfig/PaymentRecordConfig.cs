@@ -12,10 +12,7 @@ namespace LightMethods.Survey.Models.EntityConfig
     {
         public PaymentRecordConfig()
         {
-            this.Property(x => x.Reference)
-                .HasMaxLength(50);
-
-            this.Property(x => x.Note);
+            this.Property(x => x.Reference).HasMaxLength(50);
 
             this.HasRequired(x => x.OrgUser)
                 .WithMany(x => x.Payments)
@@ -23,11 +20,11 @@ namespace LightMethods.Survey.Models.EntityConfig
                 .WillCascadeOnDelete();
 
             this.HasMany(x => x.Subscriptions)
-                .WithRequired(x => x.PaymentRecord)
+                .WithOptional(x => x.PaymentRecord)
                 .HasForeignKey(x => x.PaymentRecordId)
                 .WillCascadeOnDelete();
 
-            this.HasOptional(x => x.PromotionCode)
+            this.HasOptional(x => x.Voucher)
                 .WithOptionalDependent(x => x.PaymentRecord)
                 .WillCascadeOnDelete(false);
         }

@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.EntityConfig
 {
-    public class PromotionCodeConfig : EntityTypeConfiguration<PromotionCode>
+    public class VoucherConfig : EntityTypeConfiguration<Voucher>
     {
-        public PromotionCodeConfig()
+        public VoucherConfig()
         {
             this.Property(x => x.Title)
                 .HasMaxLength(50)
@@ -22,12 +22,12 @@ namespace LightMethods.Survey.Models.EntityConfig
                 .IsRequired();
 
             this.HasRequired(x => x.Organisation)
-                .WithMany(x => x.PromotionCodes)
+                .WithMany(x => x.Vouchers)
                 .HasForeignKey(x => x.OrganisationId)
                 .WillCascadeOnDelete();
 
             this.HasOptional(x => x.PaymentRecord)
-                .WithOptionalPrincipal(x => x.PromotionCode)
+                .WithOptionalPrincipal(x => x.Voucher)
                 .WillCascadeOnDelete(false);
         }
     }
