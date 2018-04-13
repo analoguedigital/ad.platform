@@ -23,6 +23,16 @@ namespace LightMethods.Survey.Models.DAL
 
                 if (!CurrentUOW.UserManager.RolesContainsAny(user.Id, Role.ORG_PROJECT_MANAGMENT, Role.ORG_ADMINSTRATOR))
                     projects = projects.Where(p => p.Assignments.Any(a => a.OrgUserId == user.Id && a.CanView == true));
+
+                var result = new List<Project>();
+
+                var assignedProjects = this.AllIncluding(x => x.Assignments)
+                        .Where(a => a.Assignments.Any(x => x.OrgUserId == user.Id));
+
+                result.AddRange(projects.ToList());
+                result.AddRange(assignedProjects.ToList());
+
+                return result.Distinct().AsQueryable();
             }
 
             return projects;
