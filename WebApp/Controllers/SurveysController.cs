@@ -104,9 +104,6 @@ namespace WebApi.Controllers
                 var project = this.UnitOfWork.ProjectsRepository.Find(model.ProjectId);
                 if (project == null)
                     return NotFound();
-
-                if (this.CurrentOrgUser.Organisation.Id != project.Organisation.Id)
-                    return NotFound();
             }
 
             var result = this.UnitOfWork.FilledFormsRepository.Search(model).OrderByDescending(r => r.Date);

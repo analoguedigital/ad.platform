@@ -12,7 +12,6 @@ using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
-    [Authorize(Roles = "System administrator,Platform administrator")]
     public class OrganisationsController : BaseApiController
     {
         private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
@@ -20,6 +19,7 @@ namespace WebApi.Controllers
 
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult Get()
         {
             var orgs = Organisations.AllIncluding(u => u.RootUser)
@@ -32,6 +32,7 @@ namespace WebApi.Controllers
 
         [DeflateCompression]
         [ResponseType(typeof(OrganisationDTO))]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
@@ -45,6 +46,7 @@ namespace WebApi.Controllers
             return Ok(org);
         }
 
+        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Post([FromBody]OrganisationDTO value)
         {
             var createOrganisation = new CreateOrganisation();
@@ -69,6 +71,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "System administrator,Platform administrator")]
         public void Put(Guid id, [FromBody]OrganisationDTO value)
         {
 
@@ -81,6 +84,7 @@ namespace WebApi.Controllers
             UnitOfWork.Save();
         }
 
+        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Delete(Guid id)
         {
             try
@@ -98,6 +102,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("api/organisations/{id:guid}/assign")]
+        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult AssignUsers(Guid id, OrganisationAssignmentDTO model)
         {
             if (id == Guid.Empty)
@@ -163,8 +168,14 @@ namespace WebApi.Controllers
 
         [HttpDelete]
         [Route("api/organisations/{id:guid}/revoke/{userId:guid}")]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult RevokeUser(Guid id, Guid userId)
         {
+            // IMPORTANT NOTE:
+            // when removing a user from an organisation,
+            // we need to deactivate the subscription record and,
+            // create a case assignment for the OnRecord root admin again.
+
             var org = this.Organisations.Find(id);
             if (org == null)
                 return NotFound();

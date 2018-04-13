@@ -1,0 +1,119 @@
+﻿using AutoMapper;
+using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.Entities;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+
+namespace WebApi.Controllers
+{
+    [RoutePrefix("api/orginvitations")]
+    public class OrgInvitationsController : BaseApiController
+    {
+        public IHttpActionResult Get()
+        {
+            var invitations = UnitOfWork.OrgInvitationsRepository.AllAsNoTracking;
+            var result = invitations.ToList().Select(i => Mapper.Map<OrgInvitationDTO>(i));
+
+            return Ok(result);
+        }
+
+        [Route("{id:guid}")]
+        public IHttpActionResult Get(Guid id)
+        {
+            if (id == Guid.Empty)
+                return NotFound();
+
+            var invitation = UnitOfWork.OrgInvitationsRepository.Find(id);
+            if (invitation == null)
+                return NotFound();
+
+            return Ok(Mapper.Map<OrgInvitationDTO>(invitation));
+        }
+
+        [HttpPost]
+        public IHttpActionResult Post([FromBody]OrgInvitationDTO value)
+        {
+            var invitation = Mapper.Map<OrganisationInvitation>(value);
+
+            if (this.CurrentUser is SuperUser)
+            {
+                invitation.OrganisationId = Guid.Parse(value.Organisation.Id);
+                invitation.Organisation = null;
+            }
+            else if (this.CurrentUser is OrgUser)
+            {
+                invitation.Organisation = this.CurrentOrgUser.Organisation;
+            }
+
+            try
+            {
+                UnitOfWork.OrgInvitationsRepository.InsertOrUpdate(invitation);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (DbUpdateException)
+            {
+                return BadRequest("Cannot create duplicate tokens.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("{id:guid}")]
+        public IHttpActionResult Put(Guid id, [FromBody]OrgInvitationDTO value)
+        {
+            if (id == Guid.Empty)
+                return BadRequest();
+
+            var invitation = UnitOfWork.OrgInvitationsRepository.Find(id);
+            if (invitation == null)
+                return BadRequest();
+
+            invitation.Name = value.Name;
+            invitation.Token = value.Token;
+            invitation.Limit = value.Limit;
+            invitation.IsActive = value.IsActive;
+            invitation.OrganisationId = Guid.Parse(value.Organisation.Id);
+
+            try
+            {
+                UnitOfWork.OrgInvitationsRepository.InsertOrUpdate(invitation);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public IHttpActionResult Delete(Guid id)
+        {
+            try
+            {
+                UnitOfWork.OrgInvitationsRepository.Delete(id);
+                UnitOfWork.OrgInvitationsRepository.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+    }
+}

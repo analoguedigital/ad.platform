@@ -11,7 +11,9 @@ namespace LightMethods.Survey.Models.Services
     public class SubscriptionService
     {
         public OrgUser User { set; get; }
+
         private UnitOfWork UOW { set; get; }
+
         public enum RedeemCodeStatus
         {
             NotFound,
@@ -29,8 +31,7 @@ namespace LightMethods.Survey.Models.Services
 
         public IEnumerable<Subscription> GetUserSubscriptions()
         {
-            var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking
-                .Where(s => s.OrgUserId == this.User.Id);
+            var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking.Where(s => s.OrgUserId == this.User.Id);
             return subscriptions.ToList();
         }
 
@@ -41,11 +42,15 @@ namespace LightMethods.Survey.Models.Services
 
         public DateTime? GetLatest(Guid userId)
         {
-            var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking
-                .Where(s => s.OrgUserId == userId);
-
+            var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking.Where(s => s.OrgUserId == userId);
             if (subscriptions.Any())
-                return subscriptions.Max(s => s.EndDate);
+            {
+                var lastSubscription = subscriptions.OrderByDescending(x => x.DateCreated).Take(1).SingleOrDefault();
+                if (lastSubscription.Type == SubscriptionType.Paid)
+                    return subscriptions.Max(s => s.EndDate);
+                else if (lastSubscription.Type == SubscriptionType.Organisation)
+                    return DateTimeService.UtcNow.AddMonths(1);
+            }
 
             return null;
         }
@@ -61,13 +66,13 @@ namespace LightMethods.Survey.Models.Services
 
         public RedeemCodeStatus RedeemCode(string code)
         {
-            var promotionCode = this.UOW.PromotionCodesRepository.AllAsNoTracking
+            var voucher = this.UOW.VouchersRepository.AllAsNoTracking
                 .Where(pc => pc.OrganisationId == this.User.OrganisationId && pc.Code == code)
                 .SingleOrDefault();
 
-            if (promotionCode == null)
+            if (voucher == null)
                 return RedeemCodeStatus.NotFound;
-            if (promotionCode.IsRedeemed)
+            if (voucher.IsRedeemed)
                 return RedeemCodeStatus.AlreadyRedeemed;
 
             if (!this.User.Organisation.SubscriptionEnabled)
@@ -80,18 +85,18 @@ namespace LightMethods.Survey.Models.Services
             var payment = new PaymentRecord
             {
                 Date = DateTimeService.UtcNow,
-                Amount = promotionCode.Amount,
-                Note = "Promotion Code Redeemed",
-                PromotionCode = promotionCode,
+                Amount = voucher.Amount,
+                Note = $"Redeemed Voucher - {voucher.Code}",
                 Reference = string.Empty,
+                Voucher = voucher,
                 OrgUserId = this.User.Id
             };
             this.UOW.PaymentsRepository.InsertOrUpdate(payment);
 
             // update promotion code
-            promotionCode.IsRedeemed = true;
-            promotionCode.PaymentRecordId = payment.Id;
-            this.UOW.PromotionCodesRepository.InsertOrUpdate(promotionCode);
+            voucher.IsRedeemed = true;
+            voucher.PaymentRecordId = payment.Id;
+            this.UOW.VouchersRepository.InsertOrUpdate(voucher);
 
             this.AddSusbcriptions(payment);
             this.User.IsSubscribed = true;

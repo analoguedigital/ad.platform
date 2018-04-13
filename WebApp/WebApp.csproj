@@ -320,6 +320,7 @@
     <Compile Include="Controllers\CustomControllers\MBS\Models\Update.cs" />
     <Compile Include="Controllers\DownloadsController.cs" />
     <Compile Include="Controllers\FeedbacksController.cs" />
+    <Compile Include="Controllers\OrgInvitationsController.cs" />
     <Compile Include="Controllers\OrgTeamsController.cs" />
     <Compile Include="Controllers\ProjectSummaryPrintSessionController.cs" />
     <Compile Include="Controllers\DataListsController.cs" />
@@ -332,7 +333,8 @@
     <Compile Include="Controllers\OrgUserTypesController.cs" />
     <Compile Include="Controllers\PaymentsController.cs" />
     <Compile Include="Controllers\ProjectsController.cs" />
-    <Compile Include="Controllers\PromotionCodesController.cs" />
+    <Compile Include="Controllers\SubscriptionPlansController.cs" />
+    <Compile Include="Controllers\VouchersController.cs" />
     <Compile Include="Controllers\SubscriptionsController.cs" />
     <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\OrgUsersController.cs" />

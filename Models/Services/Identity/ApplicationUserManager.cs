@@ -109,8 +109,8 @@ namespace LightMethods.Survey.Models.Services.Identity
             else if (user is OrgUser)
             {
                 var roles = (user as OrgUser).Type.GetRoles();
-                foreach(var role in this.GetRoles(user.Id).Where(r=>!roles.Contains(r)))
-                    this.RemoveFromRole(user.Id,role);
+                foreach (var role in this.GetRoles(user.Id).Where(r => !roles.Contains(r)))
+                    this.RemoveFromRole(user.Id, role);
 
                 foreach (var role in roles)
                     this.AddToRole(user.Id, role);
@@ -121,7 +121,6 @@ namespace LightMethods.Survey.Models.Services.Identity
         {
             return this.FindByEmail(email);
         }
-
 
         public IdentityResult CreateSync(User user, string password)
         {
@@ -141,7 +140,7 @@ namespace LightMethods.Survey.Models.Services.Identity
         public override Task<IList<string>> GetRolesAsync(Guid userId)
         {
             var orgUser = this.FindById(userId) as OrgUser;
-            if (orgUser != null && orgUser.Organisation.SubscriptionEnabled)
+            if (orgUser != null && orgUser.AccountType == AccountType.MobileAccount)
             {
                 var subscriptionService = new SubscriptionService(orgUser, new UnitOfWork(new SurveyContext()));
                 if (!subscriptionService.HasValidSubscription(userId))

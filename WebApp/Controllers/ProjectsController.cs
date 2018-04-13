@@ -222,17 +222,6 @@ namespace WebApi.Controllers
             if (orgUser == null)
                 return NotFound();
 
-            if (CurrentUser is OrgUser)
-            {
-                if (CurrentOrganisationId != project.OrganisationId || orgUser.OrganisationId != project.OrganisationId)
-                    return BadRequest("The project and user must belong to the same organisation");
-            }
-            else if (CurrentUser is SuperUser)
-            {
-                if (orgUser.Organisation.Id != project.Organisation.Id)
-                    return BadRequest("The project and user must belong to the same organisation");
-            }
-
             var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
 
             return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
@@ -245,9 +234,6 @@ namespace WebApi.Controllers
         {
             var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
             if (project == null)
-                return NotFound();
-
-            if (CurrentOrganisationId != project.OrganisationId)
                 return NotFound();
 
             var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == userId);

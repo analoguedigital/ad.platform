@@ -30,21 +30,25 @@ namespace WebApi.Controllers.MBS
         [ResponseType(typeof(IEnumerable<UpdateDTO>))]
         public IHttpActionResult GetUpdates()
         {
-            var aWeekAgo = DateTime.Today.AddDays(-7);
+            if (CurrentOrgUser != null)
+            {
+                var aWeekAgo = DateTime.Today.AddDays(-7);
+                var assignedProjects = CurrentOrgUser.Assignments.Select(a => a.ProjectId);
 
-            var assignedProjects = CurrentOrgUser.Assignments.Select(a => a.ProjectId);
+                var updates = UnitOfWork.FilledFormsRepository
+                   .AllIncludingNoTracking(f => f.Project, f => f.FormTemplate)
+                   .Where(s => s.Project.OrganisationId == CurrentOrganisationId)
+                   .Where(s => CurrentOrgUser.TypeId == OrgUserTypesRepository.Administrator.Id || assignedProjects.Contains(s.ProjectId))
+                   .Where(s => s.DateCreated > aWeekAgo || s.DateUpdated > aWeekAgo)
+                   .OrderByDescending(s => s.DateUpdated)
+                   .Take(7)
+                   .ToList()
+                   .Select(f => GetUpdate(f));
 
-            var updates = UnitOfWork.FilledFormsRepository
-               .AllIncludingNoTracking(f => f.Project, f => f.FormTemplate)
-               .Where(s => s.Project.OrganisationId == CurrentOrganisationId)
-               .Where(s => CurrentOrgUser.TypeId == OrgUserTypesRepository.Administrator.Id || assignedProjects.Contains(s.ProjectId))
-               .Where(s => s.DateCreated > aWeekAgo || s.DateUpdated > aWeekAgo)
-               .OrderByDescending(s => s.DateUpdated)
-               .Take(7)
-               .ToList()
-               .Select(f => GetUpdate(f));
+                return Ok(updates);
+            }
 
-            return Ok(updates);
+            return Ok();
         }
 
         [HttpGet]
