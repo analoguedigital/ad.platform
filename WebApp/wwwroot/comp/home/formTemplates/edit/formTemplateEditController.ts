@@ -90,7 +90,7 @@ module App {
                 return;
             }
 
-            if (this.formTemplateId === '') {
+            if (this.formTemplateId === '' || this.formTemplateId === '00000000-0000-0000-0000-000000000000') {
                 this.formTemplateResource.save(
                     this.formTemplate,
                     () => { this.$state.go('home.formtemplates.list'); },

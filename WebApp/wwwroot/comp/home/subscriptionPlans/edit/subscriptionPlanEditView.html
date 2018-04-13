@@ -1,0 +1,69 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="subscriptionForm" class="form-horizontal" novalidate>
+                <lm-form-group label="Name: ">
+                    <input type="text" id="name" name="name" ng-model="model.name" required placeholder="choose a name i.e. Gold Membership" />
+                </lm-form-group>
+                <lm-form-group label="Description: ">
+                    <input type="text" id="description" name="description" ng-model="model.description" required placeholder="a short description about this plan" />
+                </lm-form-group>
+                <lm-form-group label="Price: ">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-gbp"></i>
+                        </div>
+                        <input type="number" id="price" name="price" ng-model="model.price" required placeholder="cost in pounds" />
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Subscription Length: ">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-bell"></i>
+                        </div>
+                        <select id="subscriptionLength" name="subscriptionLength" ng-model="model.length" class="form-control"
+                                ng-options="item.value as item.text for item in subscriptionLengths" required></select>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Is Limited: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="isLimited" ng-model="model.isLimited" />
+                        <label for="isLimited"></label>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Monthly Quota: " ng-if="model.isLimited">
+                    <input type="number" id="quota" name="quota" ng-model="model.monthlyQuota" required placeholder="Max number of records per month" />
+                </lm-form-group>
+                <lm-form-group label="Pdf Export: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="pdfExport" ng-model="model.pdfExport" />
+                        <label for="pdfExport"></label>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Zip Export: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="zipExport" ng-model="model.zipExport" />
+                        <label for="zipExport"></label>
+                    </div>
+                </lm-form-group>
+
+                <lm-form-group ng-if="errors !== undefined" class="">
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{errors}}
+                        <a class="alert-link pull-right" ng-click="clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="submit(subscriptionForm)" ng-disabled="subscriptionForm.$invalid">Submit</button>
+                </lm-form-group>
+
+                <a ui-sref="home.subscriptionplans.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+        </div>
+    </div>
+</div>

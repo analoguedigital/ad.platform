@@ -119,6 +119,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Description</th>
+                            <th>Organisation</th>
                             <th class="text-center">IsActive</th>
                         </tr>
                     </thead>
@@ -130,6 +131,7 @@
                                 </a>
                             </td>
                             <td>{{team.description}}</td>
+                            <td>{{team.organisation.name}}</td>
                             <td class="text-center">
                                 <i class="fa fa-check" ng-if="team.isActive"></i>
                                 <i class="fa fa-times" ng-if="!team.isActive"></i>

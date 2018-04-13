@@ -1,12 +1,12 @@
 ﻿module App {
     "use strict";
 
-    interface IRedeemCodeModel {
+    interface IVoucherModel {
         code: string;
     }
 
     interface IRedeemCodeController {
-        model: IRedeemCodeModel;
+        model: IVoucherModel;
 
         activate: () => void;
         processCode: (form: ng.IFormController) => void;
@@ -14,12 +14,12 @@
     }
 
     class RedeemCodeController implements IRedeemCodeController {
-        model: IRedeemCodeModel;
+        model: IVoucherModel;
 
-        static $inject: string[] = ["$uibModalInstance", "promotionCodeResource", "toastr"];
+        static $inject: string[] = ["$uibModalInstance", "voucherResource", "toastr"];
         constructor(
             private $uibModalInstance: ng.ui.bootstrap.IModalServiceInstance,
-            private promotionCodeResource: Resources.IPromotionCodeResource,
+            private voucherResource: Resources.IVoucherResource,
             public toastr: any) {
             this.activate();
         }
@@ -31,14 +31,14 @@
                 return;
             }
 
-            this.promotionCodeResource.redeem({ code: this.model.code },
+            this.voucherResource.redeem({ code: this.model.code },
                 (res) => {
-                        this.toastr.success('Promotion Code redeemed!');
+                        this.toastr.success('Voucher redeemed!');
                         this.$uibModalInstance.close(res);
                 },
                 (err) => {
                     if (err.status == 404) {
-                        this.toastr.error('Promotion Code is not valid!');
+                        this.toastr.error('Voucher code is not valid!');
                     }
 
                     if (err.status == 403) {
