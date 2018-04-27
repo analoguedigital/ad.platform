@@ -225,6 +225,7 @@
     <Compile Include="EntityConfig\ReportTemplateConfig.cs" />
     <Compile Include="EntityConfig\SubscriptionConfig.cs" />
     <Compile Include="EntityConfig\ThreadAssignmentConfig.cs" />
+    <Compile Include="Enums\UserSubscriptionType.cs" />
     <Compile Include="Extenstions\JsonCreationConverter.cs" />
     <Compile Include="FilterValues\FilterValue.cs" />
     <Compile Include="FilterValues\MultipleFilterValue.cs" />

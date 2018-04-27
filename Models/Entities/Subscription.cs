@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
-    public enum SubscriptionType
-    {
-        Paid = 0,
-        Organisation = 1
-    }
-
     public class Subscription : Entity
     {
-        public SubscriptionType Type { get; set; }
+        public UserSubscriptionType Type { get; set; }
 
         public DateTime StartDate { get; set; }
 

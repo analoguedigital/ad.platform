@@ -42,6 +42,15 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [DeflateCompression]
+        [Route("api/subscriptions/last")]
+        [ResponseType(typeof(SubscriptionDTO))]
+        public IHttpActionResult GetLastSubscription()
+        {
+            var lastSubscription = this.SubscriptionService.GetLastSubscription(this.CurrentOrgUser.Id);
+            return Ok(lastSubscription);
+        }
+
         [HttpPost]
         [Route("api/subscriptions/buy/{id:guid}")]
         public IHttpActionResult Buy(Guid id)
@@ -75,7 +84,7 @@ namespace WebApi.Controllers
                 var subscription = new Subscription
                 {
                     IsActive = true,
-                    Type = SubscriptionType.Paid,
+                    Type = UserSubscriptionType.Paid,
                     StartDate = lastSubscription.AddMonths(index),
                     EndDate = lastSubscription.AddMonths(index).AddMonths(1),
                     Note = $"Paid subscription - {plan.Name}",
@@ -90,6 +99,41 @@ namespace WebApi.Controllers
             try
             {
                 this.CurrentOrgUser.IsSubscribed = true;
+
+                var messageBody = @"<html>
+                        <head>
+                            <style>
+                                .message-container {
+                                    border: 1px solid #e8e8e8;
+                                    border-radius: 2px;
+                                    padding: 10px 15px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                        <div class='message-container'>
+                            <p>Subscription Purchased: <strong>" + plan.Name + @"</strong></p>
+                            <br>
+
+                            <p>Description: " + plan.Description + @"</p>
+                            <p>Price: " + plan.Price + @" GBP</p>
+                            <p>PDF Export: " + plan.PdfExport + @"</p>
+                            <p>Zip Export: " + plan.ZipExport + @"</p>
+
+                            <br><br>
+                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                        </div>
+
+                        </body></html>";
+
+                var email = new Email
+                {
+                    To = this.CurrentOrgUser.Email,
+                    Subject = $"Subscription purchase - {plan.Name}",
+                    Content = messageBody
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(email);
                 UnitOfWork.Save();
 
                 return Ok();
@@ -120,7 +164,7 @@ namespace WebApi.Controllers
             var subscription = new Subscription
             {
                 IsActive = true,
-                Type = SubscriptionType.Organisation,
+                Type = UserSubscriptionType.Organisation,
                 StartDate = DateTimeService.UtcNow,
                 EndDate = null,
                 Note = $"Joined organisation - {invitation.Organisation.Name}",
@@ -193,6 +237,37 @@ namespace WebApi.Controllers
             try
             {
                 this.CurrentOrgUser.IsSubscribed = true;
+
+                var messageBody = @"<html>
+                        <head>
+                            <style>
+                                .message-container {
+                                    border: 1px solid #e8e8e8;
+                                    border-radius: 2px;
+                                    padding: 10px 15px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                        <div class='message-container'>
+                            <p>You have joined the <strong>" + invitation.Organisation.Name + @"</strong> organization.</p>
+                            <p>Your personal case has been moved and is now filed under this organization.</p>
+                            <p>If you need help or more information please contact your Organization Administrator.</p>
+
+                            <br><br>
+                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                        </div>
+
+                        </body></html>";
+
+                var email = new Email
+                {
+                    To = this.CurrentOrgUser.Email,
+                    Subject = $"Joined organization - {invitation.Organisation.Name}",
+                    Content = messageBody
+                };
+                
+                UnitOfWork.EmailsRepository.InsertOrUpdate(email);
                 UnitOfWork.Save();
 
                 return Ok();
