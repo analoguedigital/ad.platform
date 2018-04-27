@@ -2,6 +2,9 @@
     <div class="box-title">
         <h5>{{ctrl.surveys.length}} records across {{ctrl.getThreadsCount()}} thread(s)</h5>
         <div class="box-tools">
+            <a uib-tooltip="Select records with attachments" ng-click="ctrl.selectAllWithAttachments()">
+                <i class="fa fa-paperclip"></i> Select Attachments
+            </a>
             <a uib-tooltip="Select all records" ng-click="ctrl.selectAllRecords()"><i class="fa fa-check-square-o"></i> Select All</a>
             <a uib-tooltip="Check records in view" ng-click="ctrl.selectAll()"><i class="fa fa-check-circle-o"></i> Select Page</a>
             <a ng-click="ctrl.selectNone()"><i class="fa fa-refresh"></i> Clear Page</a>

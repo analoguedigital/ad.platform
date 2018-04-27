@@ -204,6 +204,29 @@ module App {
             });
         }
 
+        selectAllWithAttachments() {
+            var surveys = _.filter(this.surveys, (survey) => {
+                var formValues = _.filter(survey.formValues, (fv) => {
+                    if (fv.attachments.length > 0) return fv;
+                });
+
+                if (formValues.length) return survey;
+            });
+
+            if (surveys.length) {
+                _.forEach(this.surveys, (survey) => {
+                    survey.isChecked = false;
+                });
+
+                _.forEach(surveys, (s) => {
+                    s.isChecked = true;
+                });
+
+                this.surveys = surveys;
+                this.displayedSurveys = surveys;
+            }
+        }
+
         selectNone() {
             _.forEach(this.displayedSurveys, (survey) => {
                 survey.isChecked = false;
