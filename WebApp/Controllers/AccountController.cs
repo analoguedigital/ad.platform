@@ -74,12 +74,17 @@ namespace WebApi.Models
                 Language = this.CurrentOrganisation?.DefaultLanguage?.Calture,
                 Calendar = this.CurrentOrganisation?.DefaultCalendar?.SystemName,
                 Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id),
-                TwoFactorAuthenticationEnabled = twoFactorAuth
+                TwoFactorAuthenticationEnabled = twoFactorAuth,
             };
 
             if (orgUser != null)
             {
                 userInfo.OrganisationId = this.CurrentOrganisationId;
+
+                var subscriptionService = new SubscriptionService(orgUser, this.UnitOfWork);
+                var expiryDate = subscriptionService.GetLatest(orgUser.Id);
+                var lastSubscription = subscriptionService.GetLastSubscription(orgUser.Id);
+
                 userInfo.Profile = new UserProfileDTO
                 {
                     FirstName = orgUser.FirstName,
@@ -87,7 +92,10 @@ namespace WebApi.Models
                     Gender = orgUser.Gender,
                     Birthdate = orgUser.Birthdate,
                     Address = orgUser.Address,
-                    PhoneNumber = orgUser.PhoneNumber
+                    PhoneNumber = orgUser.PhoneNumber,
+                    IsSubscribed = orgUser.IsSubscribed,
+                    ExpiryDate = expiryDate,
+                    LastSubscription = lastSubscription
                 };
             }
 
@@ -410,6 +418,7 @@ namespace WebApi.Models
                 TypeId = OrgUserTypesRepository.TeamUser.Id,
                 IsMobileUser = true,
                 IsWebUser = true,   // this should be 'false' in live production.
+                IsSubscribed = false,
                 AccountType = AccountType.MobileAccount
             };
 
@@ -451,8 +460,10 @@ namespace WebApi.Models
                 OrgUserId = user.Id,
                 CanView = true,
                 CanAdd = true,
-                CanExportPdf = true,
-                CanExportZip = true
+                CanEdit = false,
+                CanDelete = false,
+                CanExportPdf = false,
+                CanExportZip = false
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
@@ -583,9 +594,11 @@ namespace WebApi.Models
                     Destination = model.PhoneNumber,
                     Body = "Your security code is: " + code
                 };
-
+                
                 await UserManager.SmsService.SendAsync(message);
             }
+
+            // if the Sms service is null, return an error or something.
 
             return Ok();
         }
