@@ -71,6 +71,7 @@ namespace WebApi.Controllers
         }
 
         // POST api/<controller>
+        [HttpPost]
         public IHttpActionResult Post(FormTemplateDTO value)
         {
             var formTemplate = Mapper.Map<FormTemplate>(value);
