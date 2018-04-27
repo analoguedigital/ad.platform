@@ -7,9 +7,9 @@ namespace LightMethods.Survey.Models.Services
     public static class OneTimeAccessService
     {
         /// <summary>
-        /// One time tokens live for a max of 30 seconds
+        /// One time tokens live for a max of 60 seconds
         /// </summary>
-        private static double _timeToLive = 10.0;
+        private static double _timeToLive = 60.0;
         private static object lockObject = new object();
 
         private static List<OneTimeAccessTicket> _tickets = new List<OneTimeAccessTicket>();
@@ -20,14 +20,14 @@ namespace LightMethods.Survey.Models.Services
 
             lock (lockObject)
             {
-                // Max 30 seconds to start download after requesting one time token.
+                // Max 60 seconds to start download after requesting one time token.
                 _tickets.RemoveAll(t => t.CreatedAt < DateTime.UtcNow.AddSeconds(-_timeToLive));
 
                 var item = _tickets.FirstOrDefault(t => t.AccessId == accessId);
                 if (item != null)
                 {
                     attachmentId = item.AttachmentId;
-                    _tickets.Remove(item);    // not necessary to remove the ticket. it will time out automatically.
+                    //_tickets.Remove(item);    // not necessary to remove the ticket. it will time out automatically.
                 }
             }
 
