@@ -20,6 +20,61 @@
             </button>
         </div>
     </div>
+
+    <div class="box" ng-if="lastSubscription">
+        <div class="box-title">
+            <h5>Active Subscription</h5>
+        </div>
+        <div class="box-content">
+            <div ng-if="lastSubscription.type === 0">
+                <p>
+                    Starting from <strong>{{lastSubscription.startDate | amDateFormat: 'L'}}</strong>
+                </p>
+                <p>{{lastSubscription.note}}</p>
+
+                <p ng-if="lastSubscription.subscriptionPlan.isLimited">
+                    Limited to {{lastSubscription.subscriptionPlan.monthlyQuota}} records per month.
+                </p>
+
+                <p ng-if="!lastSubscription.subscriptionPlan.isLimited">No upload limits.</p>
+
+                <p>
+                    PDF Export: 
+                    <span ng-if="lastSubscription.subscriptionPlan.pdfExport">
+                        <i class="fa fa-check-circle-o"></i> Yes
+                    </span>
+                    <span ng-if="!lastSubscription.subscriptionPlan.pdfExport">
+                        <i class="fa fa-times"></i> No
+                    </span>
+                </p>
+
+                <p>
+                    Zip Export: 
+                    <span ng-if="lastSubscription.subscriptionPlan.zipExport">
+                        <i class="fa fa-check-circle-o"></i> Yes
+                    </span>
+                    <span ng-if="!lastSubscription.subscriptionPlan.zipExport">
+                        <i class="fa fa-times"></i> No
+                    </span>
+                </p>
+            </div>
+
+            <div ng-if="lastSubscription.type === 1">
+                <p>
+                    Starting from <strong>{{lastSubscription.startDate | amDateFormat: 'L'}}</strong>
+                </p>
+                <p>{{lastSubscription.note}}</p>
+            </div>
+
+            <div ng-if="lastSubscription.type === 2">
+                <p>
+                    Starting from <strong>{{lastSubscription.startDate | amDateFormat: 'L'}}</strong>
+                </p>
+                <p>{{lastSubscription.note}}</p>
+            </div>
+        </div>
+    </div>
+
     <div class="box">
         <div class="box-title">
             <h5>Payments</h5>
