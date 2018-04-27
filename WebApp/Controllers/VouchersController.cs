@@ -10,8 +10,6 @@ using LightMethods.Survey.Models.Entities;
 
 namespace WebApi.Controllers
 {
-    [RoutePrefix("api/vouchers")]
-    [Authorize(Roles = "System administrator,Platform administrator")]
     public class VouchersController : BaseApiController
     {
         private SubscriptionService SubscriptionService { get; set; }
@@ -29,7 +27,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        [Route("{id:guid}")]
+        [Route("api/vouchers/{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
@@ -70,7 +68,7 @@ namespace WebApi.Controllers
 
         // PUT api/vouchers/5
         [HttpPut]
-        [Route("{id:guid}")]
+        [Route("api/vouchers/{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]VoucherDTO value)
         {
             var voucher = UnitOfWork.VouchersRepository.Find(id);
@@ -98,7 +96,7 @@ namespace WebApi.Controllers
 
         // DELETE api/vouchers/5
         [HttpDelete]
-        [Route("{id:guid}")]
+        [Route("api/vouchers/{id:guid}")]
         public IHttpActionResult Delete(Guid id)
         {
             if (id == Guid.Empty)
@@ -122,8 +120,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
-        [Route("redeem/{code}")]
+        [Route("api/vouchers/redeem/{code}")]
         public IHttpActionResult Redeem(string code)
         {
             var result = this.SubscriptionService.RedeemCode(code);

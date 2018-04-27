@@ -1,12 +1,12 @@
 ﻿<div ng-hide="ctrl.isDataView" st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys">
-    <table class="table table-hover table-striped">
+    <table class="table table-hover table-mail">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Serial no</th>
-                <th>Completed by</th>
+                <th class="text-center" width="80">Date</th>
+                <th width="80" class="text-center">Serial No.</th>
+                <th width="150">Completed by</th>
                 <th>{{ctrl.getDescriptionHeading()}}</th>
-                <th></th>
+                <th class="text-center" width="50"></th>
                 <th class="text-center" width="80" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'view')"></th>
                 <th class="text-center" width="80" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'edit')"></th>
                 <th class="text-center" width="80" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'delete')"></th>
@@ -14,11 +14,11 @@
         </thead>
         <tbody>
             <tr ng-repeat="survey in ctrl.displayedSurveys | orderBy:'-surveyDate'">
-                <td>{{survey.date | amDateFormat: 'L'}}</td>
-                <td>{{survey.serial}}</td>
+                <td class="text-center">{{survey.date | amDateFormat: 'L'}}</td>
+                <td class="text-center">{{survey.serial}}</td>
                 <td>{{survey.filledBy}}</td>
                 <td>{{survey.description}}</td>
-                <td>
+                <td class="text-center">
                     <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
                 </td>
                 <td class="text-center" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'view')">

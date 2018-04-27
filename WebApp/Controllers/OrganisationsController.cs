@@ -200,6 +200,7 @@ namespace WebApi.Controllers
             orgUser.OrganisationId = onrecord.Id;   // update user's organisation
 
             if (orgUser.CurrentProject != null)
+            {
                 if (orgUser.CurrentProject.CreatedById == orgUser.Id)
                 {
                     var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
@@ -218,12 +219,73 @@ namespace WebApi.Controllers
                     // remove the assignment for current organisation's root user
                     var rootUserAssignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
                         .Where(x => x.OrgUserId == org.RootUserId && x.ProjectId == project.Id).FirstOrDefault();
+
                     UnitOfWork.AssignmentsRepository.Delete(rootUserAssignment);
+
+                    // assign OnRecord root admin to this project again.
+                    if (onrecord.RootUser != null)
+                    {
+                        var onrecordRootAssignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
+                            .Where(x => x.OrgUserId == onrecord.RootUserId && x.ProjectId == project.Id).FirstOrDefault();
+                        if (onrecordRootAssignment == null)
+                        {
+                            var onRecordAdminAssignment = new Assignment
+                            {
+                                ProjectId = project.Id,
+                                OrgUserId = onrecord.RootUser.Id,
+                                CanView = true,
+                                CanAdd = true,
+                                CanEdit = true,
+                                CanDelete = true,
+                                CanExportPdf = true,
+                                CanExportZip = true
+                            };
+
+                            UnitOfWork.AssignmentsRepository.InsertOrUpdate(onRecordAdminAssignment);
+                        }
+                    }
                 }
+            }
 
-            UnitOfWork.Save();
+            try
+            {
+                var messageBody = @"<html>
+                        <head>
+                            <style>
+                                .message-container {
+                                    border: 1px solid #e8e8e8;
+                                    border-radius: 2px;
+                                    padding: 10px 15px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                        <div class='message-container'>
+                            <p>You have left the <strong>" + org.Name + @"</strong> organization.</p>
+                            <p>Your personal case has been moved and is now filed under OnRecord.</p>
 
-            return Ok();
+                            <br><br>
+                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                        </div>
+
+                        </body></html>";
+
+                var email = new Email
+                {
+                    To = orgUser.Email,
+                    Subject = $"Left organization - {org.Name}",
+                    Content = messageBody
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         public class OrganisationAssignmentDTO

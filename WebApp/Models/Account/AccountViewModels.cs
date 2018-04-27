@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DTO;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using static LightMethods.Survey.Models.Entities.User;
@@ -71,6 +72,12 @@ namespace WebApi.Models
         public string Address { get; set; }
 
         public string PhoneNumber { get; set; }
+
+        public bool IsSubscribed { get; set; }
+
+        public DateTime? ExpiryDate { get; set; }
+
+        public SubscriptionDTO LastSubscription { get; set; }
     }
 
     public class UserLoginInfoViewModel

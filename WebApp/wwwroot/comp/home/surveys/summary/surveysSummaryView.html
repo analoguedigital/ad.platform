@@ -11,14 +11,14 @@
     <div class="box-content">
         <div st-table="displayedProjects" st-safe-src="projects">
             <div class="table-responsive">
-                <table class="table table-hover table-striped">
+                <table class="table table-hover table-mail">
                     <thead>
                         <tr>
-                            <th>Date</th>
-                            <th>Serial no</th>
-                            <th>Completed by</th>
+                            <th class="text-center" width="80">Date</th>
+                            <th class="text-center" width="80">Serial No.</th>
+                            <th width="150">Completed by</th>
                             <th>{{ctrl.getDescriptionHeading(formTemplate.id)}}</th>
-                            <th></th>
+                            <th class="text-center" width="50"></th>
                             <th class="text-center" width="80" ng-if="ctrl.hasAccess(formTemplate, 'view')"></th>
                             <th class="text-center" width="80" ng-if="ctrl.hasAccess(formTemplate, 'edit')"></th>
                             <th class="text-center" width="80" ng-if="ctrl.hasAccess(formTemplate, 'delete')"></th>
@@ -26,11 +26,11 @@
                     </thead>
                     <tbody>
                         <tr ng-repeat="survey in ctrl.surveys | filter: {formTemplateId: formTemplate.id} | orderBy:'-surveyDate' | limitTo : 5">
-                            <td>{{survey.date | amDateFormat: 'L'}}</td>
-                            <td>{{survey.serial}}</td>
+                            <td class="text-center">{{survey.date | amDateFormat: 'L'}}</td>
+                            <td class="text-center">{{survey.serial}}</td>
                             <td>{{survey.filledBy}}</td>
                             <td>{{survey.description}}</td>
-                            <td>
+                            <td class="text-center">
                                 <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
                             </td>
                             <td class="text-center" ng-if="ctrl.hasAccess(formTemplate, 'view')">

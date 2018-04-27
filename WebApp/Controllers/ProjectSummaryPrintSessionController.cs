@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -11,11 +13,13 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Http;
+using WebApi.Filters;
 using WebApi.Models;
 using WebApi.Services;
 
 namespace WebApi.Controllers
 {
+    [NeedsActiveSubscription]
     public class ProjectSummaryPrintSessionController : BaseApiController
     {
         public IHttpActionResult Get(Guid id)
@@ -42,6 +46,13 @@ namespace WebApi.Controllers
             if (session == null)
                 return null;
 
+            if (this.CurrentOrgUser != null)
+            {
+                var subscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
+                if (!subscriptionService.HasAccessToExportZip(this.CurrentOrgUser, session.ProjectId))
+                    return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+            }
+
             return ExportZipFile(session, id, timeline, locations, piechart);
         }
 
@@ -55,10 +66,9 @@ namespace WebApi.Controllers
 
             if (this.CurrentOrgUser != null)
             {
-                var project = UnitOfWork.ProjectsRepository.Find(session.ProjectId);
-                var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == this.CurrentOrgUser.Id);
-                if (assignment == null || !assignment.CanExportPdf)
-                    return new HttpResponseMessage(HttpStatusCode.Forbidden);
+                var subscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
+                if (!subscriptionService.HasAccessToExportPdf(this.CurrentOrgUser, session.ProjectId))
+                    return new HttpResponseMessage(HttpStatusCode.Unauthorized);
             }
 
             var rootIndex = GetRootIndexPath();
@@ -67,14 +77,12 @@ namespace WebApi.Controllers
 
             var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
             var pdfFileName = $"{projectName}.pdf";
-
             var pdfData = ConvertHtmlToPdf(url);
 
             return CreatePdfResponseMessage(pdfData, projectName);
         }
 
         #region helpers
-
 
         // refactor this to a static helper.
         private string GetRootIndexPath()
@@ -93,9 +101,6 @@ namespace WebApi.Controllers
 
             return System.Text.RegularExpressions.Regex.Replace(filename, invalidRegStr, "_");
         }
-        #endregion
-
-        #region zip file generation
 
         private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
         {
@@ -171,7 +176,7 @@ namespace WebApi.Controllers
             var zipFilePath = Path.Combine(zipRootPath, zipFilename);
             ZipFile.CreateFromDirectory(rootFolder, zipFilePath);
 
-            var zipData = File.ReadAllBytes(zipFilePath);
+            var zipData = System.IO.File.ReadAllBytes(zipFilePath);
             var response = CreateZipResponseMessage(zipData, zipFilename);
 
             Directory.Delete(rootFolder, true);
@@ -191,10 +196,6 @@ namespace WebApi.Controllers
 
             return result;
         }
-
-        #endregion
-
-        #region pdf file generation
 
         private byte[] ConvertHtmlToPdf(string url)
         {

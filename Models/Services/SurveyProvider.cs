@@ -54,7 +54,7 @@ namespace LightMethods.Survey.Models.Services
             var templates = Enumerable.Empty<FormTemplate>().AsQueryable();
 
             // uncomment the following lines and replace it with the code-block below it,
-            // if you'd like to include Shared Forms in the result.
+            // if you'd like to include SHARED FORMS in the result.
 
             //if (this.User != null)
             //{
@@ -107,16 +107,27 @@ namespace LightMethods.Survey.Models.Services
                 {
                     var threads = datasource.Where(t => t.OrganisationId == User.OrganisationId);
                     var assignedThreads = datasource.Where(t => t.Project.Assignments.Select(a => a.OrgUserId).Contains(User.Id));
+                    var looseThreads = datasource.Where(t => t.Assignments.Any(a => a.OrgUserId == User.Id));
 
                     var res = new List<FormTemplate>();
                     res.AddRange(threads.ToList());
                     res.AddRange(assignedThreads.ToList());
+                    res.AddRange(looseThreads.ToList());
 
                     return res.Distinct().AsQueryable();
                 }
 
                 if (UserTypesWithLimitedAccess.Contains(User.Type))
-                    return datasource.Where(t => t.ProjectId == null || !t.Project.Archived && t.Project.Assignments.Select(a => a.OrgUserId).Contains(User.Id));
+                {
+                    var threads = datasource.Where(t => t.ProjectId == null || !t.Project.Archived && t.Project.Assignments.Select(a => a.OrgUserId).Contains(User.Id));
+                    var looseThreads = datasource.Where(t => t.Assignments.Any(a => a.OrgUserId == User.Id));
+
+                    var res = new List<FormTemplate>();
+                    res.AddRange(threads.ToList());
+                    res.AddRange(looseThreads.ToList());
+
+                    return res.Distinct().AsQueryable();
+                }
             }
 
             return datasource;

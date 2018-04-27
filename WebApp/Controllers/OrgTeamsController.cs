@@ -258,15 +258,55 @@ namespace WebApi.Controllers
             if (teamUser == null)
                 return NotFound();
 
-            if (teamUser.IsManager)
-                await UnitOfWork.UserManager.RemoveFromRoleAsync(teamUser.OrgUserId, Role.ORG_TEAM_MANAGER);
+            var orgUser = this.OrgUsers.Find(teamUser.OrgUserId);
 
-            await UnitOfWork.UserManager.RemoveFromRoleAsync(teamUser.OrgUserId, Role.ORG_TEAM_USER);
+            try
+            {
+                if (teamUser.IsManager)
+                    await UnitOfWork.UserManager.RemoveFromRoleAsync(teamUser.OrgUserId, Role.ORG_TEAM_MANAGER);
 
-            UnitOfWork.OrgTeamUsersRepository.Delete(userId);
-            UnitOfWork.Save();
+                await UnitOfWork.UserManager.RemoveFromRoleAsync(teamUser.OrgUserId, Role.ORG_TEAM_USER);
 
-            return Ok();
+                UnitOfWork.OrgTeamUsersRepository.Delete(userId);
+
+                // notify the orgUser by email.
+                var messageBody = @"<html>
+                        <head>
+                            <style>
+                                .message-container {
+                                    border: 1px solid #e8e8e8;
+                                    border-radius: 2px;
+                                    padding: 10px 15px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                        <div class='message-container'>
+                            <p>You have left the <strong>" + orgTeam.Name + @"</strong> team from <strong>" + orgTeam.Organisation.Name + @"</strong>.</p>
+                            <p>If you need help or want more information, please contact your Organization Administrator.</p>
+
+                            <br><br>
+                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                        </div>
+
+                        </body></html>";
+
+                var email = new Email
+                {
+                    To = orgUser.Email,
+                    Subject = $"Left organization team - {orgTeam.Name}",
+                    Content = messageBody
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+                UnitOfWork.Save();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]
@@ -295,13 +335,50 @@ namespace WebApi.Controllers
 
                         if (assignment.IsManager)
                             await UnitOfWork.UserManager.AddToRoleAsync(orgUser.Id, Role.ORG_TEAM_MANAGER);
+
+                        // notify the orgUser by email.
+                        var messageBody = @"<html>
+                        <head>
+                            <style>
+                                .message-container {
+                                    border: 1px solid #e8e8e8;
+                                    border-radius: 2px;
+                                    padding: 10px 15px;
+                                }
+                            </style>
+                        </head>
+                        <body>
+                        <div class='message-container'>
+                            <p>You have joined the <strong>" + orgTeam.Name + @"</strong> team from <strong>" + orgTeam.Organisation.Name + @"</strong>.</p>
+                            <p>If you need help or want more information, please contact your Organization Administrator.</p>
+
+                            <br><br>
+                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
+                        </div>
+
+                        </body></html>";
+
+                        var email = new Email
+                        {
+                            To = orgUser.Email,
+                            Subject = $"Joined organization team - {orgTeam.Name}",
+                            Content = messageBody
+                        };
+
+                        UnitOfWork.EmailsRepository.InsertOrUpdate(email);
                     }
                 }
             }
 
-            UnitOfWork.Save();
-
-            return Ok();
+            try
+            {
+                UnitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost]

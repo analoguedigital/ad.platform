@@ -35,7 +35,7 @@ namespace WebApi.Providers
 
             if (user is OrgUser && !user.EmailConfirmed)
             {
-                context.SetError("email_not_verified", "The email address has not been verified yet.");
+                context.SetError("email_not_verified", "You haven't confirmed your email address yet.");
                 return;
             }
 

@@ -348,6 +348,8 @@
     <Compile Include="Controllers\SurveysController.cs" />
     <Compile Include="Controllers\OrgUsersController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Filters\NeedsActiveMonthlyQuotaAttribute.cs" />
+    <Compile Include="Filters\NeedsActiveSubscriptionAttribute.cs" />
     <Compile Include="Filters\DeflateCompressionAttribute.cs" />
     <Compile Include="Models\Account\AccountBindingModels.cs" />
     <Compile Include="Models\Account\AccountDTOs.cs" />

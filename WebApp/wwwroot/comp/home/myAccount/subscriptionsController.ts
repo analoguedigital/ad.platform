@@ -7,6 +7,11 @@ module App {
         displayedPayments: Models.IPaymentRecord[];
         subscriptionPlans: Models.ISubscriptionPlan[];
 
+        subscriptions: Models.ISubscription[];
+        displayedSubscriptions: Models.ISubscription[];
+
+        lastSubscription: Models.ISubscription[];
+
         searchTerm: string;
         currentPage: number;
         numberOfPages: number;
@@ -61,6 +66,18 @@ module App {
 
             this.subscriptionPlanResource.query().$promise.then((plans) => {
                 this.$scope.subscriptionPlans = plans;
+            });
+
+            //this.subscriptionResource.query().$promise.then((subscriptions) => {
+            //    this.$scope.subscriptions = subscriptions;
+            //    this.$scope.displayedSubscriptions = [].concat(this.$scope.subscriptions);
+            //});
+
+            this.subscriptionResource.getLastSubscription((res) => {
+                //console.info(res);
+                this.$scope.lastSubscription = res;
+            }, (err) => {
+                console.error(err);
             });
         }
 
