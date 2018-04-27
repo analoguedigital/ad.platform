@@ -49,6 +49,19 @@
         }
 
         activate() {
+            var roles = ["System administrator", "Platform administrator"];
+            this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
+
+            if (this.$scope.currentUserIsSuperUser) {
+                this.organisationResource.query().$promise.then((organisations) => {
+                    this.$scope.organisations = organisations;
+                });
+            }
+
+            this.load();
+        }
+
+        load() {
             var teamId = this.$stateParams['id'];
             if (teamId === '')
                 teamId = '00000000-0000-0000-0000-000000000000';
@@ -59,15 +72,6 @@
                 this.$scope.teamMembers = team.users;
                 this.$scope.displayedMembers = [].concat(team.users);
             });
-
-            var roles = ["System administrator", "Platform administrator"];
-            this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
-
-            if (this.$scope.currentUserIsSuperUser) {
-                this.organisationResource.query().$promise.then((organisations) => {
-                    this.$scope.organisations = organisations;
-                });
-            }
         }
 
         updateStatus(userId: string, flag: boolean) {
@@ -114,6 +118,7 @@
                 this.$scope.team.users.splice(index, 1);
 
                 this.toastr.success('User removed from team');
+                this.load();
             });
         }
 

@@ -82,6 +82,7 @@
 
             this.orgTeamResource.assign(payload, (result) => {
                 this.toastr.success('Selected users assigned to team');
+                this.$state.go('home.teams.edit', { id: this.$scope.team.id });
             });
         }
 
