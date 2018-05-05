@@ -23,6 +23,22 @@
                     <i class="delete-icon fa fa-trash fa-3x" ng-if="isPrintMode"></i>
                 </div>
             </div>
+
+            <hr />
+
+            <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'audio', isDeleted: false} track by $index">
+                <div class="col-md-12">
+                    <div lm-audio code="attachment.oneTimeAccessId"></div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div ng-repeat="attachment in formValue.attachments | filter: {typeString:'video', isDeleted: false} track by $index">
+                <div class="col-md-12">
+                    <div lm-video code="attachment.oneTimeAccessId"></div>
+                </div>
+            </div>
         </div>
 
         <div ng-if="isExportMode" class="row attachment-metric" ng-controller="attachmentMetricController">

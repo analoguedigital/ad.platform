@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LightMethods.Survey.Models.DTO
 {
@@ -17,5 +18,15 @@ namespace LightMethods.Survey.Models.DTO
         public VoucherDTO Voucher { get; set; }
 
         public Guid OrgUserId { get; set; }
+
+        // not necessary to include the payment record, i think.
+        // since SubscriptionDTO includes a reference to a PaymentRecordDTO,
+        // defining this list property causes a JSON formatter exception.
+        //public List<SubscriptionDTO> Subscriptions { get; set; }
+
+        //public PaymentRecordDTO()
+        //{
+        //    this.Subscriptions = new List<SubscriptionDTO>();
+        //}
     }
 }

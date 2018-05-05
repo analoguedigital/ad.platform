@@ -4,12 +4,33 @@ using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Services
 {
+
+    public class SubscriptionEntryDTO
+    {
+        public DateTime StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+
+        public decimal? Price { get; set; }
+
+        public string Note { get; set; }
+
+        public string Reference { get; set; }
+
+        public UserSubscriptionType Type { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public SubscriptionPlanDTO SubscriptionPlan { get; set; }
+    }
+
     public class SubscriptionService
     {
         public OrgUser User { set; get; }
@@ -22,7 +43,9 @@ namespace LightMethods.Survey.Models.Services
             AlreadyRedeemed,
             SubscriptionDisabled,
             SubscriptionRateNotSet,
-            OK
+            SubscriptionCountLessThanOne,
+            OK,
+            Error
         }
 
         public SubscriptionService(OrgUser user, UnitOfWork uow)
@@ -31,23 +54,56 @@ namespace LightMethods.Survey.Models.Services
             this.UOW = uow;
         }
 
-        public IEnumerable<Subscription> GetUserSubscriptions()
+        public List<SubscriptionEntryDTO> GetUserSubscriptions(Guid? orgUserId)
         {
-            var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking.Where(s => s.OrgUserId == this.User.Id);
+            var result = new List<SubscriptionEntryDTO>();
+            var userId = orgUserId.HasValue ? orgUserId.Value : this.User.Id;
 
-            //var data = this.UOW.SubscriptionsRepository.AllAsNoTracking
-            //    .Where(x => x.OrgUserId == this.User.Id)
-            //    .OrderByDescending(x => x.DateCreated)
-            //    .GroupBy(x => x.Type)
-            //    .ToList();
+            var orgSubscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking
+                .Where(x => x.OrgUserId == userId && x.Type == UserSubscriptionType.Organisation)
+                .OrderByDescending(x => x.DateCreated)
+                .ToList();
 
-            //foreach (var item in data)
-            //{
-            //    var subs = item.GroupBy(x => x.PaymentRecord).ToList();
-            //    var typeName = item.Key.ToString();
-            //}
+            var payments = this.UOW.PaymentsRepository.AllAsNoTracking
+                .Where(x => x.OrgUserId == userId)
+                .OrderByDescending(x => x.DateCreated)
+                .ToList();
 
-            return subscriptions.ToList();
+            foreach (var item in orgSubscriptions)
+            {
+                result.Add(new SubscriptionEntryDTO
+                {
+                    Type = item.Type,
+                    StartDate = item.StartDate,
+                    EndDate = item.EndDate,
+                    Note = item.Note,
+                    IsActive = item.IsActive
+                });
+            }
+
+            foreach (var item in payments)
+            {
+                var entry = new SubscriptionEntryDTO();
+
+                var startDate = item.Subscriptions.Min(x => x.StartDate);
+                var endDate = item.Subscriptions.Max(x => x.EndDate);
+                var lastSubscription = item.Subscriptions.OrderByDescending(x => x.DateCreated).Take(1).ToList().SingleOrDefault();
+
+                entry.Type = lastSubscription.Type;
+                entry.StartDate = startDate;
+                entry.EndDate = endDate;
+                entry.Note = item.Note;
+                entry.Price = item.Amount;
+                entry.Reference = item.Reference;
+                entry.IsActive = lastSubscription.IsActive;
+                entry.SubscriptionPlan = Mapper.Map<SubscriptionPlanDTO>(lastSubscription.SubscriptionPlan);
+
+                result.Add(entry);
+            }
+
+            result = result.OrderByDescending(x => x.StartDate).ToList();
+
+            return result;
         }
 
         public DateTime? GetLatest()
@@ -57,7 +113,7 @@ namespace LightMethods.Survey.Models.Services
 
         public DateTime? GetLatest(Guid userId)
         {
-            var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking.Where(s => s.OrgUserId == userId);
+            var subscriptions = this.UOW.SubscriptionsRepository.AllAsNoTracking.Where(s => s.OrgUserId == userId && s.IsActive);
             if (subscriptions.Any())
             {
                 var lastSubscription = subscriptions.OrderByDescending(x => x.DateCreated).Take(1).SingleOrDefault();
@@ -76,13 +132,53 @@ namespace LightMethods.Survey.Models.Services
         public SubscriptionDTO GetLastSubscription(Guid userId)
         {
             var subscription = this.UOW.SubscriptionsRepository.AllAsNoTracking
-                .Where(x => x.OrgUserId == userId)
+                .Where(x => x.OrgUserId == userId && x.IsActive)
                 .OrderByDescending(x => x.DateCreated)
                 .Take(1)
                 .ToList()
                 .SingleOrDefault();
 
             return Mapper.Map<SubscriptionDTO>(subscription);
+        }
+
+        public MonthlyQuotaDTO GetMonthlyQuota(Guid userId)
+        {
+            var result = new MonthlyQuotaDTO();
+
+            var expiryDate = this.GetLatest(userId);
+            var fixedQuota = Convert.ToInt32(ConfigurationManager.AppSettings["FixedMonthlyQuota"]);
+
+            if (expiryDate == null)
+            {
+                // unsubscribed users have a fixed quota.
+                result.Quota = fixedQuota;
+            }
+            else
+            {
+                var lastSubscription = this.GetLastSubscription(userId);
+                switch (lastSubscription.Type)
+                {
+                    case UserSubscriptionType.Paid:
+                        result.Quota = lastSubscription.SubscriptionPlan.IsLimited ? lastSubscription.SubscriptionPlan.MonthlyQuota : null;
+                        break;
+                    case UserSubscriptionType.Organisation:
+                        result.Quota = null;
+                        break;
+                    case UserSubscriptionType.Voucher:
+                        result.Quota = fixedQuota;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            var lastMonth = DateTimeService.UtcNow.AddMonths(-1);
+            var lastMonthRecords = this.UOW.FilledFormsRepository.AllAsNoTracking
+                        .Count(x => x.FilledById == userId && x.DateCreated >= lastMonth);
+
+            result.Used = lastMonthRecords;
+
+            return result;
         }
 
         public bool HasValidSubscription(Guid userId)
@@ -167,6 +263,11 @@ namespace LightMethods.Survey.Models.Services
             if (!this.User.Organisation.SubscriptionMonthlyRate.HasValue)
                 return RedeemCodeStatus.SubscriptionRateNotSet;
 
+            // validate subscription count. it should result to at least 1.
+            var subscriptionCount = Math.Floor(voucher.Amount / this.User.Organisation.SubscriptionMonthlyRate.Value);
+            if (subscriptionCount < 1)
+                return RedeemCodeStatus.SubscriptionCountLessThanOne;
+
             // register payment record
             var payment = new PaymentRecord
             {
@@ -186,16 +287,50 @@ namespace LightMethods.Survey.Models.Services
 
             this.AddVoucherSusbcriptions(payment);
             this.User.IsSubscribed = true;
-            this.UOW.Save();
 
-            return RedeemCodeStatus.OK;
+            // cancel last subscription, if any.
+            var lastSubscription = this.UOW.SubscriptionsRepository.AllAsNoTracking
+               .Where(x => x.OrgUserId == this.User.Id && x.IsActive)
+               .OrderByDescending(x => x.DateCreated)
+               .FirstOrDefault();
+
+            if (lastSubscription != null)
+            {
+                if (lastSubscription.Type == UserSubscriptionType.Organisation)
+                {
+                    lastSubscription.EndDate = DateTimeService.UtcNow;
+                    lastSubscription.IsActive = false;
+
+                    this.UOW.SubscriptionsRepository.InsertOrUpdate(lastSubscription);
+                }
+                else
+                {
+                    var paymentRecord = this.UOW.PaymentsRepository.Find(lastSubscription.PaymentRecord.Id);
+                    foreach (var record in paymentRecord.Subscriptions)
+                    {
+                        record.IsActive = false;
+                    }
+
+                    this.UOW.PaymentsRepository.InsertOrUpdate(paymentRecord);
+                }
+            }
+
+            try
+            {
+                this.UOW.Save();
+                return RedeemCodeStatus.OK;
+            }
+            catch (Exception)
+            {
+                return RedeemCodeStatus.Error;
+            }
         }
 
         private void AddVoucherSusbcriptions(PaymentRecord payment)
         {
             var monthlyRate = this.User.Organisation.SubscriptionMonthlyRate;
             var subscriptionCount = Math.Floor(payment.Amount / monthlyRate.Value);
-            var latestSubscription = this.GetLatest() ?? DateTimeService.UtcNow;
+            //var latestSubscription = this.GetLatest() ?? DateTimeService.UtcNow;
 
             for (var index = 0; index < subscriptionCount; index++)
             {
@@ -203,8 +338,8 @@ namespace LightMethods.Survey.Models.Services
                 {
                     IsActive = true,
                     Type = UserSubscriptionType.Voucher,
-                    StartDate = latestSubscription.AddMonths(index),
-                    EndDate = latestSubscription.AddMonths(index).AddMonths(1),
+                    StartDate = DateTimeService.UtcNow.AddMonths(index),
+                    EndDate = DateTimeService.UtcNow.AddMonths(index).AddMonths(1),
                     Note = "Subscribed with a voucher",
                     PaymentRecord = payment,
                     OrgUserId = this.User.Id
@@ -213,4 +348,5 @@ namespace LightMethods.Survey.Models.Services
             }
         }
     }
+
 }

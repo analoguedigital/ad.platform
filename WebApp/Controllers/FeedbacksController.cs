@@ -6,6 +6,8 @@ using LightMethods.Survey.Models.Services;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Web.Hosting;
 using System.Web.Http;
 
 namespace WebApi.Controllers
@@ -20,6 +22,21 @@ namespace WebApi.Controllers
         EmailsRepository Emails
         {
             get { return this.UnitOfWork.EmailsRepository; }
+        }
+
+        private string GenerateFeedbackEmail(Feedback feedback, string messageHeader)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/feedback.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+            var content = @"<p>" + feedback.Comment + @"</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, messageHeader);
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
         }
 
         [HttpPost]
@@ -40,38 +57,30 @@ namespace WebApi.Controllers
             {
                 this.UnitOfWork.FeedbacksRepository.InsertOrUpdate(feedback);
 
-                var rootAdmin = this.UnitOfWork.OrgUsersRepository.AllAsNoTracking.Where(x => x.IsRootUser).FirstOrDefault();
-                var messageBody = @"<html>
-                <head>
-                    <style>
-                        .message-container {
-                            border: 1px solid #e8e8e8;
-                            border-radius: 2px;
-                            padding: 10px 15px;
-                        }
-                    </style>
-                </head>
-                <body>
-                <div class='message-container'>
-                    <p>New feedback from: <strong>" + this.CurrentOrgUser.UserName + @"</strong></p>
-                    <br>
+                var onrecord = this.UnitOfWork.OrganisationRepository.AllAsNoTracking
+                    .Where(x => x.Name == "OnRecord")
+                    .SingleOrDefault();
 
-                    <p>" + feedback.Comment + @"</p>
-
-                    <br><br>
-                    <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
-                </div>
-
-                </body></html>";
-
-                var email = new Email
+                if (onrecord.RootUserId.HasValue)
                 {
-                    To = rootAdmin.Email,
-                    Subject = $"New feedback posted - {this.CurrentOrgUser.UserName}",
-                    Content = messageBody
+                    var onRecordAdmin = this.UnitOfWork.OrgUsersRepository.Find(onrecord.RootUserId.Value);
+                    var adminEmail = new Email
+                    {
+                        To = onrecord.RootUser.Email,
+                        Subject = $"New feedback arrived - {this.CurrentOrgUser.UserName}",
+                        Content = GenerateFeedbackEmail(feedback, string.Format("Feedback from {0}", this.CurrentOrgUser.UserName))
+                    };
+                    this.UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
+                }
+
+                var userEmail = new Email
+                {
+                    To = this.CurrentOrgUser.Email,
+                    Subject = $"Thank you for your feedback!",
+                    Content = GenerateFeedbackEmail(feedback, "Your Feedback")
                 };
 
-                this.UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+                this.UnitOfWork.EmailsRepository.InsertOrUpdate(userEmail);
                 this.UnitOfWork.Save();
 
                 return Ok();

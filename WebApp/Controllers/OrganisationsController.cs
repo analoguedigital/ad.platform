@@ -2,10 +2,13 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Text;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
@@ -247,37 +250,43 @@ namespace WebApi.Controllers
                 }
             }
 
+            // update the subscription record.
+            var subscription = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking
+                .Where(x => x.OrgUserId == orgUser.Id && x.Type == UserSubscriptionType.Organisation && x.IsActive)
+                .OrderByDescending(x => x.DateCreated)
+                .FirstOrDefault();
+
+            if (subscription != null)
+            {
+                subscription.EndDate = DateTimeService.UtcNow;
+                subscription.IsActive = false;
+
+                this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+            }
+
             try
             {
-                var messageBody = @"<html>
-                        <head>
-                            <style>
-                                .message-container {
-                                    border: 1px solid #e8e8e8;
-                                    border-radius: 2px;
-                                    padding: 10px 15px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                        <div class='message-container'>
-                            <p>You have left the <strong>" + org.Name + @"</strong> organization.</p>
-                            <p>Your personal case has been moved and is now filed under OnRecord.</p>
-
-                            <br><br>
-                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
-                        </div>
-
-                        </body></html>";
-
                 var email = new Email
                 {
                     To = orgUser.Email,
                     Subject = $"Left organization - {org.Name}",
-                    Content = messageBody
+                    Content = GenerateRevokeUserEmail(org)
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+
+                if (org.RootUser != null)
+                {
+                    var adminEmail = new Email
+                    {
+                        To = org.RootUser.Email,
+                        Subject = $"User left organization - {orgUser.UserName}",
+                        Content = GenerateRevokeUserAdminEmail(orgUser)
+                    };
+
+                    UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
+                }
+
                 UnitOfWork.Save();
 
                 return Ok();
@@ -292,5 +301,40 @@ namespace WebApi.Controllers
         {
             public List<Guid> OrgUsers { get; set; }
         }
+
+        private string GenerateRevokeUserEmail(Organisation organisation)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/left-organization.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>You have left the <strong>" + organisation.Name + @"</strong> organization.</p>
+                            <p>Your personal case has been moved back to OnRecord. And they don't have access to your files anymore, except for any assignments you might have created.</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You have left an organization");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
+
+        private string GenerateRevokeUserAdminEmail(OrgUser orgUser)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/left-organization.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>A user has left your organization: <strong>" + orgUser.UserName + @"</strong>.</p>
+                            <p>And their personal case has been moved back to OnRecord.</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Left Your Organization");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
+
     }
 }

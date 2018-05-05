@@ -92,15 +92,10 @@ module App {
         revokeUser(user: Models.IOrgUser) {
             var params = { id: user.organisation.id, userId: user.id };
             this.organisationResource.revoke(params, (res) => {
-                var item = _.filter(this.$scope.users, (u) => { return u.id == user.id })[0];
-                var onRecordId = 'cfa81eb0-9fc7-4932-a3e8-1c822370d034';
-
-                this.organisationResource.get({ id: onRecordId }).$promise.then((org) => {
-                    item.organisation = org;
-                });
-
                 this.toastr.success("User removed from organisation");
                 this.toastr.info("Cases and threads moved to OnRecord");
+
+                this.load();
             });
         }
     }

@@ -74,19 +74,19 @@
                 <div class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group">
                         <button class="btn btn-primary" ng-click="ctrl.search()">
-                            <i class="fa fa-search-plus"></i> Search
+                            <i class="fa fa-search-plus"></i> <span class="hidden-xs">Search</span>
                         </button>
                     </div>
 
                     <div class="btn-group" role="group">
                         <button class="btn btn-default" ng-click="ctrl.clearAll()">
-                            <i class="fa fa-refresh"></i> Reset
+                            <i class="fa fa-refresh"></i> <span class="hidden-xs">Reset</span>
                         </button>
                     </div>
 
                     <div class="btn-group" role="group" ng-if="ctrl.project.allowExportPdf || ctrl.project.allowExportZip">
                         <button class="btn btn-default" ng-click="ctrl.print()">
-                            <i class="fa fa-print"></i> Export
+                            <i class="fa fa-print"></i> <span class="hidden-xs">Export</span>
                         </button>
                     </div>
                 </div>

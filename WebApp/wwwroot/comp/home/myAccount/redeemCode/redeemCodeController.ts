@@ -37,6 +37,9 @@
                         this.$uibModalInstance.close(res);
                 },
                 (err) => {
+                    if (err.data.message)
+                        this.toastr.error(err.data.message);
+
                     if (err.status == 404) {
                         this.toastr.error('Voucher code is not valid!');
                     }

@@ -5,6 +5,8 @@ using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
@@ -22,13 +24,23 @@ namespace WebApi.Controllers
 
         [DeflateCompression]
         [Route("api/subscriptions")]
-        [ResponseType(typeof(IEnumerable<SubscriptionDTO>))]
+        [ResponseType(typeof(IEnumerable<SubscriptionEntryDTO>))]
         public IHttpActionResult Get()
         {
-            var subscriptions = this.SubscriptionService.GetUserSubscriptions();
-            var result = subscriptions.Select(s => Mapper.Map<SubscriptionDTO>(s));
+            if (this.CurrentUser is SuperUser)
+                return Ok();
 
-            return Ok(result);
+            var subscriptions = this.SubscriptionService.GetUserSubscriptions(this.CurrentOrgUser.Id);
+            return Ok(subscriptions);
+        }
+
+        [DeflateCompression]
+        [Route("api/subscriptions/user/{id:guid}")]
+        [ResponseType(typeof(IEnumerable<SubscriptionEntryDTO>))]
+        public IHttpActionResult Get(Guid id)
+        {
+            var subscriptions = this.SubscriptionService.GetUserSubscriptions(id);
+            return Ok(subscriptions);
         }
 
         [DeflateCompression]
@@ -36,6 +48,9 @@ namespace WebApi.Controllers
         [ResponseType(typeof(LatestSubscriptionDTO))]
         public IHttpActionResult GetLatest()
         {
+            if (this.CurrentUser is SuperUser)
+                return Ok();
+
             var latestSubscription = this.SubscriptionService.GetLatest();
             var result = new LatestSubscriptionDTO { Date = latestSubscription };
 
@@ -47,7 +62,11 @@ namespace WebApi.Controllers
         [ResponseType(typeof(SubscriptionDTO))]
         public IHttpActionResult GetLastSubscription()
         {
+            if (this.CurrentUser is SuperUser)
+                return Ok();
+
             var lastSubscription = this.SubscriptionService.GetLastSubscription(this.CurrentOrgUser.Id);
+
             return Ok(lastSubscription);
         }
 
@@ -63,7 +82,7 @@ namespace WebApi.Controllers
                 return NotFound();
 
             if (this.CurrentOrgUser == null || this.CurrentOrgUser.AccountType != AccountType.MobileAccount)
-                return BadRequest("Purchasing subscriptions is only available to Mobile Users");
+                return BadRequest("Paid plans are only available to mobile users");
 
             var payment = new PaymentRecord
             {
@@ -77,7 +96,7 @@ namespace WebApi.Controllers
             UnitOfWork.PaymentsRepository.InsertOrUpdate(payment);
 
             var subscriptions = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking.Where(s => s.OrgUserId == this.CurrentOrgUser.Id);
-            var lastSubscription = subscriptions.Max(s => s.EndDate) ?? DateTimeService.UtcNow;
+            var startDate = DateTimeService.UtcNow;
 
             for (var index = 0; index < plan.Length; index++)
             {
@@ -85,8 +104,8 @@ namespace WebApi.Controllers
                 {
                     IsActive = true,
                     Type = UserSubscriptionType.Paid,
-                    StartDate = lastSubscription.AddMonths(index),
-                    EndDate = lastSubscription.AddMonths(index).AddMonths(1),
+                    StartDate = startDate.AddMonths(index),
+                    EndDate = startDate.AddMonths(index).AddMonths(1),
                     Note = $"Paid subscription - {plan.Name}",
                     PaymentRecord = payment,
                     OrgUserId = this.CurrentOrgUser.Id,
@@ -96,41 +115,42 @@ namespace WebApi.Controllers
                 UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
             }
 
+            // cancel last subscription, if any.
+            var lastSubscription = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking
+                .Where(x => x.OrgUserId == this.CurrentOrgUser.Id && x.IsActive)
+                .OrderByDescending(x => x.DateCreated)
+                .FirstOrDefault();
+
+            if (lastSubscription != null)
+            {
+                if (lastSubscription.Type == UserSubscriptionType.Organisation)
+                {
+                    lastSubscription.EndDate = DateTimeService.UtcNow;
+                    lastSubscription.IsActive = false;
+
+                    this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(lastSubscription);
+                }
+                else
+                {
+                    var paymentRecord = this.UnitOfWork.PaymentsRepository.Find(lastSubscription.PaymentRecord.Id);
+                    foreach (var record in paymentRecord.Subscriptions)
+                    {
+                        record.IsActive = false;
+                    }
+
+                    this.UnitOfWork.PaymentsRepository.InsertOrUpdate(paymentRecord);
+                }
+            }
+
             try
             {
                 this.CurrentOrgUser.IsSubscribed = true;
-
-                var messageBody = @"<html>
-                        <head>
-                            <style>
-                                .message-container {
-                                    border: 1px solid #e8e8e8;
-                                    border-radius: 2px;
-                                    padding: 10px 15px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                        <div class='message-container'>
-                            <p>Subscription Purchased: <strong>" + plan.Name + @"</strong></p>
-                            <br>
-
-                            <p>Description: " + plan.Description + @"</p>
-                            <p>Price: " + plan.Price + @" GBP</p>
-                            <p>PDF Export: " + plan.PdfExport + @"</p>
-                            <p>Zip Export: " + plan.ZipExport + @"</p>
-
-                            <br><br>
-                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
-                        </div>
-
-                        </body></html>";
 
                 var email = new Email
                 {
                     To = this.CurrentOrgUser.Email,
                     Subject = $"Subscription purchase - {plan.Name}",
-                    Content = messageBody
+                    Content = GeneratePaidPlanEmail(plan)
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -148,6 +168,9 @@ namespace WebApi.Controllers
         [Route("api/subscriptions/joinorganisation/{token}")]
         public IHttpActionResult JoinOrganisation(string token)
         {
+            if (CurrentUser is SuperUser)
+                return BadRequest("Organisation invitations are only available to mobile users");
+
             if (string.IsNullOrEmpty(token))
                 return BadRequest();
 
@@ -160,6 +183,12 @@ namespace WebApi.Controllers
 
             if (invitation.Used + 1 > invitation.Limit || !invitation.IsActive)
                 return BadRequest("This invitation has been closed");
+
+            // move this OrgUser and their personal case to the new organisation.
+            var orgUser = this.UnitOfWork.OrgUsersRepository.Find(this.CurrentOrgUser.Id);
+
+            if (orgUser.Organisation.Id == invitation.Organisation.Id)
+                return BadRequest("You're already connected to this organization");
 
             var subscription = new Subscription
             {
@@ -175,9 +204,6 @@ namespace WebApi.Controllers
 
             invitation.Used += 1;
             UnitOfWork.OrgInvitationsRepository.InsertOrUpdate(invitation);
-
-            // move this OrgUser and their personal case to the new organisation.
-            var orgUser = this.UnitOfWork.OrgUsersRepository.Find(this.CurrentOrgUser.Id);
 
             // remove this user from any teams in current organisation.
             var records = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
@@ -234,40 +260,62 @@ namespace WebApi.Controllers
                 }
             }
 
+            // cancel last subscription, if any.
+            var lastSubscription = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking
+               .Where(x => x.OrgUserId == this.CurrentOrgUser.Id && x.IsActive)
+               .OrderByDescending(x => x.DateCreated)
+               .FirstOrDefault();
+
+            if (lastSubscription != null)
+            {
+                if (lastSubscription.Type == UserSubscriptionType.Organisation)
+                {
+                    lastSubscription.EndDate = DateTimeService.UtcNow;
+                    lastSubscription.IsActive = false;
+
+                    this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(lastSubscription);
+                }
+                else
+                {
+                    var paymentRecord = this.UnitOfWork.PaymentsRepository.Find(lastSubscription.PaymentRecord.Id);
+                    foreach (var record in paymentRecord.Subscriptions)
+                    {
+                        record.IsActive = false;
+                    }
+
+                    this.UnitOfWork.PaymentsRepository.InsertOrUpdate(paymentRecord);
+                }
+            }
+
             try
             {
                 this.CurrentOrgUser.IsSubscribed = true;
-
-                var messageBody = @"<html>
-                        <head>
-                            <style>
-                                .message-container {
-                                    border: 1px solid #e8e8e8;
-                                    border-radius: 2px;
-                                    padding: 10px 15px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                        <div class='message-container'>
-                            <p>You have joined the <strong>" + invitation.Organisation.Name + @"</strong> organization.</p>
-                            <p>Your personal case has been moved and is now filed under this organization.</p>
-                            <p>If you need help or more information please contact your Organization Administrator.</p>
-
-                            <br><br>
-                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
-                        </div>
-
-                        </body></html>";
 
                 var email = new Email
                 {
                     To = this.CurrentOrgUser.Email,
                     Subject = $"Joined organization - {invitation.Organisation.Name}",
-                    Content = messageBody
+                    Content = GenerateOrgSubscriptionEmail(invitation)
                 };
-                
+
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+
+                if (invitation.Organisation.RootUser != null)
+                {
+                    var orgAdmin = this.UnitOfWork.OrgUsersRepository.AllAsNoTracking
+                        .Where(x => x.Id == invitation.Organisation.RootUser.Id)
+                        .SingleOrDefault();
+
+                    var orgAdminEmail = new Email
+                    {
+                        To = orgAdmin.Email,
+                        Subject = $"User joined organization - {this.CurrentOrgUser.UserName}",
+                        Content = GenerateOrgSubscriptionAdminEmail(invitation, this.CurrentOrgUser)
+                    };
+
+                    UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
+                }
+
                 UnitOfWork.Save();
 
                 return Ok();
@@ -277,5 +325,74 @@ namespace WebApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Route("api/subscriptions/quota")]
+        public IHttpActionResult GetQuota()
+        {
+            if (this.CurrentUser is SuperUser)
+                return Ok();
+
+            var quota = this.SubscriptionService.GetMonthlyQuota(this.CurrentOrgUser.Id);
+            return Ok(quota);
+        }
+
+        private string GeneratePaidPlanEmail(SubscriptionPlan plan)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+            var content = @"<p>Subscription purchased: <strong>" + plan.Name + @"</strong></p>
+                            <p>Description: " + plan.Description + @"</p>
+                            <p>Price: " + plan.Price + @" GBP</p>
+                            <p>Length: " + plan.Length + @" month(s)</p>
+                            <p>Is Limited: " + plan.IsLimited + @"</p>
+                            <p>Monthly Quota: " + plan.MonthlyQuota.ToString() + @"</p>
+                            <p>PDF Export: " + plan.PdfExport + @"</p>
+                            <p>Zip Export: " + plan.ZipExport + @"</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, plan.Name);
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
+
+        private string GenerateOrgSubscriptionEmail(OrganisationInvitation invitation)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>You have joined the <strong>" + invitation.Organisation.Name + @"</strong> organization.</p>
+                            <p>Your personal case and its threads are now filed under this organization.</p>
+                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You've joined an organisation");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
+
+        private string GenerateOrgSubscriptionAdminEmail(OrganisationInvitation invitation, OrgUser orgUser)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
+                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
+                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Has Joined Your Organisation");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
+
     }
 }

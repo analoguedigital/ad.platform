@@ -21,6 +21,7 @@ module App {
         teams: Models.IOrgTeam[];
         currentUserIsSuperUser: boolean;
         projects: Models.IProject[];
+        subscriptions: Models.ISubscriptionEntry[];
 
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
@@ -40,9 +41,10 @@ module App {
         teams: Models.IOrgTeam[];
         currentUserIsSuperUser: boolean;
         projects: Models.IProject[];
+        subscriptions: Models.ISubscriptionEntry[];
 
         static $inject: string[] = ["$scope", "orgUserResource", "orgUserTypeResource", "$state", "$stateParams",
-            "orgTeamResource", "userContextService", "projectResource", "toastr", "userResource"];
+            "orgTeamResource", "userContextService", "projectResource", "toastr", "userResource", "subscriptionResource"];
         constructor(
             private $scope: IUserEditControllerScope,
             private orgUserResource: Resources.IOrgUserResource,
@@ -53,7 +55,8 @@ module App {
             private userContextService: Services.IUserContextService,
             private projectResource: Resources.IProjectResource,
             private toastr: any,
-            private userResource: Resources.IUserResource
+            private userResource: Resources.IUserResource,
+            private subscriptionResource: Resources.ISubscriptionResource
         ) {
             this.title = "Users";
 
@@ -115,6 +118,12 @@ module App {
             if (this.currentUserIsSuperUser && this.userType == 'orguser') {
                 this.projectResource.query().$promise.then((projects) => {
                     this.projects = projects;
+                });
+
+                this.subscriptionResource.getUserSubscriptions({ id: userId }, (data) => {
+                    this.subscriptions = data;
+                }, (err) => {
+                    console.error(err);
                 });
             }
         }

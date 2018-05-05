@@ -16,6 +16,7 @@ var App;
         "ui.bootstrap.modal",
         "ui.bootstrap.popover",
         "ui.bootstrap.datetimepicker",
+        "ui.bootstrap.progressbar",
         "ngAnimate",
         "ngSanitize",
         "ui.router",

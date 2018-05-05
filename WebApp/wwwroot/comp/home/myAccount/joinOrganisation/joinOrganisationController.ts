@@ -37,12 +37,11 @@
                     location.reload(true);
                 },
                 (err) => {
-                    if (err.status == 404 || err.status == 400) {
-                        this.toastr.error('Invitation token is not valid!');
-                    }
+                    if (err.data.message)
+                        this.toastr.error(err.data.message);
 
-                    if (err.status == 403) {
-                        this.toastr.error(err.data);
+                    if (err.status == 404) {
+                        this.toastr.error('Invitation token is not valid!');
                     }
                 });
         }

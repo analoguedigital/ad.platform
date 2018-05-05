@@ -20,7 +20,9 @@ namespace WebApi.Controllers
         {
             var payments = this.Payments.AllAsNoTracking
                 .Where(p => p.OrgUserId == this.CurrentOrgUser.Id)
+                .OrderByDescending(p => p.DateCreated)
                 .ToList();
+
             var result = payments.Select(p => Mapper.Map<PaymentRecordDTO>(p));
 
             return Ok(result);
