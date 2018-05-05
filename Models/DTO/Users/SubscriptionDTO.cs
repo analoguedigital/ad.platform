@@ -16,6 +16,7 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Note { get; set; }
 
+        // not necessary to include the payment record, i think.
         public Guid? PaymentRecordId { get; set; }
 
         public PaymentRecordDTO PaymentRecord { get; set; }

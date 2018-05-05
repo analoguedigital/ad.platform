@@ -168,6 +168,7 @@
     <Compile Include="DTO\Metrics\RateMetricDTO.cs" />
     <Compile Include="DTO\Metrics\TimeMetricDTO.cs" />
     <Compile Include="DTO\OperationResult.cs" />
+    <Compile Include="DTO\Users\MonthlyQuotaDTO.cs" />
     <Compile Include="DTO\Users\OrganisationDTO.cs" />
     <Compile Include="DTO\Users\OrganisationTeamDTO.cs" />
     <Compile Include="DTO\Users\OrgInvitationDTO.cs" />

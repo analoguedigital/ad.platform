@@ -78,6 +78,8 @@ namespace WebApi.Models
         public DateTime? ExpiryDate { get; set; }
 
         public SubscriptionDTO LastSubscription { get; set; }
+
+        public MonthlyQuotaDTO MonthlyQuota { get; set; }
     }
 
     public class UserLoginInfoViewModel
