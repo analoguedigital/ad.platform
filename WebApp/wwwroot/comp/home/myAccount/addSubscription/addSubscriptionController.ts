@@ -30,6 +30,8 @@
                 this.$uibModalInstance.close(res);
             }, (err) => {
                 console.error(err);
+                if (err.data.message)
+                    this.toastr.error(err.data.message);
             });
         }
 

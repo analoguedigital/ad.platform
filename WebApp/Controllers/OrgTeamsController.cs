@@ -8,7 +8,9 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
@@ -270,32 +272,11 @@ namespace WebApi.Controllers
                 UnitOfWork.OrgTeamUsersRepository.Delete(userId);
 
                 // notify the orgUser by email.
-                var messageBody = @"<html>
-                        <head>
-                            <style>
-                                .message-container {
-                                    border: 1px solid #e8e8e8;
-                                    border-radius: 2px;
-                                    padding: 10px 15px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                        <div class='message-container'>
-                            <p>You have left the <strong>" + orgTeam.Name + @"</strong> team from <strong>" + orgTeam.Organisation.Name + @"</strong>.</p>
-                            <p>If you need help or want more information, please contact your Organization Administrator.</p>
-
-                            <br><br>
-                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
-                        </div>
-
-                        </body></html>";
-
                 var email = new Email
                 {
                     To = orgUser.Email,
                     Subject = $"Left organization team - {orgTeam.Name}",
-                    Content = messageBody
+                    Content = GenerateLeftTeamEmail(orgTeam)
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -337,32 +318,11 @@ namespace WebApi.Controllers
                             await UnitOfWork.UserManager.AddToRoleAsync(orgUser.Id, Role.ORG_TEAM_MANAGER);
 
                         // notify the orgUser by email.
-                        var messageBody = @"<html>
-                        <head>
-                            <style>
-                                .message-container {
-                                    border: 1px solid #e8e8e8;
-                                    border-radius: 2px;
-                                    padding: 10px 15px;
-                                }
-                            </style>
-                        </head>
-                        <body>
-                        <div class='message-container'>
-                            <p>You have joined the <strong>" + orgTeam.Name + @"</strong> team from <strong>" + orgTeam.Organisation.Name + @"</strong>.</p>
-                            <p>If you need help or want more information, please contact your Organization Administrator.</p>
-
-                            <br><br>
-                            <p style='color: gray; font-size: small;'>Copyright &copy; 2018. analogueDIGITAL platform</p>
-                        </div>
-
-                        </body></html>";
-
                         var email = new Email
                         {
                             To = orgUser.Email,
                             Subject = $"Joined organization team - {orgTeam.Name}",
-                            Content = messageBody
+                            Content = GenerateJoinedTeamEmail(orgTeam)
                         };
 
                         UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -403,6 +363,38 @@ namespace WebApi.Controllers
             UnitOfWork.Save();
 
             return Ok();
+        }
+
+        private string GenerateLeftTeamEmail(OrganisationTeam team)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/left-team.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>You have left <strong>" + team.Name + @"</strong> from <strong>" + team.Organisation.Name + @"</strong>.</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You Have Left A Team");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
+
+        private string GenerateJoinedTeamEmail(OrganisationTeam team)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/joined-team.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>You have joined <strong>" + team.Name + @"</strong> from <strong>" + team.Organisation.Name + @"</strong>.</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You Have Joined A Team");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
         }
 
     }

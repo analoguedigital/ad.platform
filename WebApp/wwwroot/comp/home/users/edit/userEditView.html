@@ -123,6 +123,56 @@
                             <td>{{team.description}}</td>
                             <td>{{team.organisation.name}}</td>
                         </tr>
+                        <tr ng-if="ctrl.teams.length < 1">
+                            <td>This user doesn't belong to any teams.</td>
+                            <td class="text-center">NA</td>
+                            <td>NA</td>
+                            <td>NA</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="box" ng-if="ctrl.subscriptions.length">
+        <div class="box-title">
+            <h5>Subscriptions</h5>
+        </div>
+        <div class="box-content">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center" width="100">Start Date</th>
+                            <th class="text-center" width="100">End Date</th>
+                            <th class="text-center" width="100">Price</th>
+                            <th class="text-center" width="100">Length</th>
+                            <th>Note</th>
+                            <th class="text-center" width="120">Type</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="entry in ctrl.subscriptions track by $index" ng-class="{ 'success': entry.isActive }">
+                            <td class="text-center">{{entry.startDate | amDateFormat: 'DD/MM/YYYY'}}</td>
+                            <td class="text-center">{{entry.endDate | amDateFormat: 'DD/MM/YYYY'}}</td>
+                            <td class="text-center">
+                                <span ng-if="entry.price">{{entry.price | currency : '&pound;'}}</span>
+                                <span ng-if="!entry.price">NA</span>
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="entry.subscriptionPlan">
+                                    <span ng-if="entry.subscriptionPlan.length == 1">a month</span>
+                                    <span ng-if="entry.subscriptionPlan.length > 1">{{entry.subscriptionPlan.length}} months</span>
+                                </span>
+                                <span ng-if="!entry.subscriptionPlan">NA</span>
+                            </td>
+                            <td>{{entry.note}}</td>
+                            <td class="text-center">
+                                <span ng-if="entry.type == 1">Organisation</span>
+                                <span ng-if="entry.type == 0">Paid plan</span>
+                                <span ng-if="entry.type == 2">Voucher</span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

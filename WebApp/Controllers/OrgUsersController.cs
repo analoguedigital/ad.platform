@@ -10,8 +10,10 @@ using System.Configuration;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
@@ -160,8 +162,7 @@ namespace WebApi.Controllers
             var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
             var callbackUrl = $"{baseUrl}#!/verify-email?userId={orguser.Id}&code={encodedCode}";
 
-            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
-
+            var messageBody = GenerateAccountConfirmationEmail(callbackUrl);
             await UserManager.SendEmailAsync(orguser.Id, "Confirm your account", messageBody);
 
             return Ok();
@@ -247,6 +248,23 @@ namespace WebApi.Controllers
         }
 
         #endregion
+
+        private string GenerateAccountConfirmationEmail(string callbackUrl)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/email-confirmation.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>Your new account has been created. To complete your registration please confirm your email address by clicking the link below.</p>
+                            <p><a href='" + callbackUrl + @"'>Verify Email</a></p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Complete your registration");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
 
     }
 }

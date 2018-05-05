@@ -15,6 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Hosting;
 using System.Web.Http;
 using WebApi.Controllers;
 using WebApi.Providers;
@@ -84,6 +85,7 @@ namespace WebApi.Models
                 var subscriptionService = new SubscriptionService(orgUser, this.UnitOfWork);
                 var expiryDate = subscriptionService.GetLatest(orgUser.Id);
                 var lastSubscription = subscriptionService.GetLastSubscription(orgUser.Id);
+                var quota = subscriptionService.GetMonthlyQuota(orgUser.Id);
 
                 userInfo.Profile = new UserProfileDTO
                 {
@@ -92,10 +94,11 @@ namespace WebApi.Models
                     Gender = orgUser.Gender,
                     Birthdate = orgUser.Birthdate,
                     Address = orgUser.Address,
-                    PhoneNumber = orgUser.PhoneNumber,
+                    PhoneNumber = orgUser.PhoneNumber,  // REMOVE THIS PROPERTY
                     IsSubscribed = orgUser.IsSubscribed,
                     ExpiryDate = expiryDate,
-                    LastSubscription = lastSubscription
+                    LastSubscription = lastSubscription,
+                    MonthlyQuota = quota
                 };
             }
 
@@ -501,7 +504,7 @@ namespace WebApi.Models
             var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
             var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
 
-            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
+            var messageBody = GenerateAccountConfirmationEmail(callbackUrl);
             await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
 
             return Ok();
@@ -551,8 +554,8 @@ namespace WebApi.Models
             var rootIndex = GetRootIndexPath();
             var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
             var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
-            var messageBody = $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>";
 
+            var messageBody = GenerateAccountConfirmationEmail(callbackUrl);
             await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
 
             return Ok();
@@ -883,6 +886,23 @@ namespace WebApi.Models
         }
 
         #endregion
+
+        private string GenerateAccountConfirmationEmail(string callbackUrl)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/email-confirmation.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+
+            var content = @"<p>Your new account has been created. To complete your registration please confirm your email address by clicking the link below.</p>
+                            <p><a href='" + callbackUrl + @"'>Verify Email</a></p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Complete your registration");
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
 
     }
 

@@ -33,4 +33,20 @@
         dateCreated: number;
         dateUpdated: number;
     }
+
+    export interface IMonthlyQuota extends ng.resource.IResource<IMonthlyQuota> {
+        quota?: number;
+        used: number;
+    }
+
+    export interface ISubscriptionEntry extends ng.resource.IResource<ISubscriptionEntry> {
+        startDate: Date;
+        endDate?: Date;
+        price?: number;
+        note: string;
+        reference: string;
+        type: number;
+        isActive: boolean;
+        subscriptionPlan: ISubscriptionPlan;
+    }
 }

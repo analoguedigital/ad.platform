@@ -166,6 +166,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="EmailTemplates\joined-team.html" />
+    <Content Include="EmailTemplates\left-team.html" />
+    <Content Include="EmailTemplates\email-confirmation.html" />
+    <Content Include="EmailTemplates\voucher-redeemed.html" />
+    <Content Include="EmailTemplates\left-organization.html" />
+    <Content Include="EmailTemplates\subscribed-organization.html" />
+    <Content Include="EmailTemplates\subscribed-paid-plan.html" />
+    <Content Include="EmailTemplates\feedback.html" />
     <Content Include="gulpfile.config.js" />
     <Content Include="gulpfile.js" />
     <Content Include="index.html" />
@@ -575,6 +583,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\app.route.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmAccess\lmAccess.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmAtWho\lmAtWho.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmAudio\lmAudio.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmDateTime\lmDateTime.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroupCheckbox\lmFormGroupCheckbox.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmFormGroup\lmFormGroup.ts" />
@@ -584,6 +593,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmTimeline\lmTimeline.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmVideo\lmVideo.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmZoomGallery\lmZoomGallery.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\achievementSummary.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\custom\MBS\evidence.ts" />
