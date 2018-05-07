@@ -29,12 +29,14 @@ module App {
     }
 
     class UsersController implements IUsersController {
-        static $inject: string[] = ["$scope", "$uibModal", "toastr", "userResource", "orgUserResource", "organisationResource", "userContextService"];
+        static $inject: string[] = ["$scope", "$uibModal", "toastr", "$stateParams", 
+            "userResource", "orgUserResource", "organisationResource", "userContextService"];
 
         constructor(
             private $scope: IUsersControllerScope,
             private $uibModal: ng.ui.bootstrap.IModalService,
             private toastr: any,
+            private $stateParams: ng.ui.IStateParamsService,
             private userResource: Resources.IOrgUserResource,
             private orgUserResource: Resources.IOrgUserResource,
             private organisationResource: Resources.IOrganisationResource,
@@ -64,14 +66,26 @@ module App {
                 });
             }
 
-            this.orgUserResource.query().$promise.then((users) => {
-                var webAccounts = _.filter(users, (u) => {
-                    return u.accountType === 1;
-                });
+            var orgId = this.$stateParams["organisationId"];
+            if (orgId !== undefined && orgId.length) {
+                this.orgUserResource.query({ organisationId: orgId }).$promise.then((users) => {
+                    var webAccounts = _.filter(users, (u) => {
+                        return u.accountType === 1;
+                    });
 
-                this.$scope.users = webAccounts;
-                this.$scope.displayedUsers = [].concat(this.$scope.users);
-            });
+                    this.$scope.users = webAccounts;
+                    this.$scope.displayedUsers = [].concat(this.$scope.users);
+                });
+            } else {
+                this.orgUserResource.query().$promise.then((users) => {
+                    var webAccounts = _.filter(users, (u) => {
+                        return u.accountType === 1;
+                    });
+
+                    this.$scope.users = webAccounts;
+                    this.$scope.displayedUsers = [].concat(this.$scope.users);
+                });
+            }
         }
 
         resetPassword(user: Models.IUser) {

@@ -21,6 +21,7 @@
                     <thead>
                         <tr>
                             <th st-sort="name">Name</th>
+                            <th st-sort="organisation.name">Organisation</th>
                             <th st-sort="token" class="text-center" width="100">Token</th>
                             <th class="text-center" width="100">Limit</th>
                             <th class="text-center" width="100">Used</th>
@@ -31,6 +32,7 @@
                     <tbody>
                         <tr ng-repeat="invitation in displayedInvitations" ng-class="{ 'success': invitation.limit == invitation.used }">
                             <td><a ui-sref="home.organisations.invitationsEdit({id:invitation.id})">{{invitation.name}}</a></td>
+                            <td>{{invitation.organisation.name}}</td>
                             <td class="text-center">{{invitation.token}}</td>
                             <td class="text-center">{{invitation.limit}}</td>
                             <td class="text-center">{{invitation.used}}</td>

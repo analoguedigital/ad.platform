@@ -13,6 +13,7 @@
     interface ITeamUserAssignment {
         userId: string;
         userName: string;
+        email: string;
         isRootUser: boolean;
         isWebUser: boolean;
         isMobileUser: boolean;
@@ -52,6 +53,7 @@
                         this.$scope.assignments.push({
                             userId: user.id,
                             userName: `${user.firstName} ${user.surname}`,
+                            email: user.email,
                             isRootUser: user.isRootUser,
                             isWebUser: user.isWebUser,
                             isMobileUser: user.isMobileUser,

@@ -15,10 +15,28 @@ namespace WebApi.Controllers
     [RoutePrefix("api/orginvitations")]
     public class OrgInvitationsController : BaseApiController
     {
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(Guid? organisationId = null)
         {
-            var invitations = UnitOfWork.OrgInvitationsRepository.AllAsNoTracking;
-            var result = invitations.ToList().Select(i => Mapper.Map<OrgInvitationDTO>(i));
+            var result = new List<OrgInvitationDTO>();
+
+            if (CurrentUser is SuperUser)
+            {
+                var invitations = UnitOfWork.OrgInvitationsRepository.AllAsNoTracking;
+
+                if (organisationId.HasValue)
+                    invitations = invitations.Where(x => x.OrganisationId == organisationId.Value);
+
+                result = invitations.ToList()
+                    .Select(i => Mapper.Map<OrgInvitationDTO>(i)).ToList();
+            }
+            else if (CurrentUser is OrgUser)
+            {
+                var orgInvitations = UnitOfWork.OrgInvitationsRepository.AllAsNoTracking
+                    .Where(x => x.OrganisationId == this.CurrentOrgUser.Organisation.Id);
+
+                result = orgInvitations.ToList()
+                    .Select(i => Mapper.Map<OrgInvitationDTO>(i)).ToList();
+            }
 
             return Ok(result);
         }

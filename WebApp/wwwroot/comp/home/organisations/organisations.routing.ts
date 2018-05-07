@@ -53,7 +53,7 @@
                 module: 'private'
             })
             .state("home.organisations.invitations", <App.Models.IAppRoute>{
-                url: "/invitations",
+                url: "/invitations/:organisationId",
                 templateUrl: "comp/home/organisations/invitations/invitationsView.html",
                 controller: "organisationInvitationsController",
                 controllerAs: "ctrl",
