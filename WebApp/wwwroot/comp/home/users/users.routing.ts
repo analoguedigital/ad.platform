@@ -15,14 +15,14 @@
                 template: "<ui-view />"
             })
             .state("home.users.list", <App.Models.IAppRoute>{
-                url: "",
+                url: "/:organisationId",
                 templateUrl: "comp/home/users/usersView.html",
                 controller: "usersController",
                 ncyBreadcrumb: { label: 'Users' },
                 module: "private"
             })
             .state("home.users.mobile", <App.Models.IAppRoute>{
-                url: "/mobile",
+                url: "/mobile/:organisationId",
                 templateUrl: "comp/home/users/mobile/mobileUsersView.html",
                 controller: "mobileUsersController",
                 ncyBreadcrumb: { label: 'Mobile Users' },

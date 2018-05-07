@@ -26,7 +26,8 @@ module App {
     }
 
     class MobileUsersController implements IMobileUsersController {
-        static $inject: string[] = ["$scope", "$uibModal", "toastr", "userResource", "orgUserResource", "organisationResource", "userContextService"];
+        static $inject: string[] = ["$scope", "$uibModal", "toastr", "userResource", "orgUserResource",
+            "organisationResource", "userContextService", "$stateParams"];
 
         constructor(
             private $scope: IMobileUsersControllerScope,
@@ -35,7 +36,8 @@ module App {
             private userResource: Resources.IOrgUserResource,
             private orgUserResource: Resources.IOrgUserResource,
             private organisationResource: Resources.IOrganisationResource,
-            private userContextService: Services.IUserContextService) {
+            private userContextService: Services.IUserContextService,
+            private $stateParams: ng.ui.IStateParamsService) {
 
             $scope.title = "Users";
             $scope.delete = (id) => { this.delete(id); };
@@ -53,14 +55,26 @@ module App {
             var roles = ["System administrator", "Platform administrator"];
             this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
 
-            this.orgUserResource.query().$promise.then((users) => {
-                var mobileAccounts = _.filter(users, (u) => {
-                    return u.accountType === 0;
-                });
+            var orgId = this.$stateParams["organisationId"];
+            if (orgId !== undefined && orgId.length) {
+                this.orgUserResource.query({ organisationId: orgId }).$promise.then((users) => {
+                    var mobileAccounts = _.filter(users, (u) => {
+                        return u.accountType === 0;
+                    });
 
-                this.$scope.users = mobileAccounts;
-                this.$scope.displayedUsers = [].concat(this.$scope.users);
-            });
+                    this.$scope.users = mobileAccounts;
+                    this.$scope.displayedUsers = [].concat(this.$scope.users);
+                });
+            } else {
+                this.orgUserResource.query().$promise.then((users) => {
+                    var mobileAccounts = _.filter(users, (u) => {
+                        return u.accountType === 0;
+                    });
+
+                    this.$scope.users = mobileAccounts;
+                    this.$scope.displayedUsers = [].concat(this.$scope.users);
+                });
+            }
         }
 
         resetPassword(user: Models.IUser) {

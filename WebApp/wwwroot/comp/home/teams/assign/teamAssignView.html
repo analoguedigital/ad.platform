@@ -31,6 +31,7 @@
                         <thead>
                             <tr>
                                 <th>User name</th>
+                                <th>Email</th>
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="100"></th>
                             </tr>
@@ -41,6 +42,7 @@
                                     <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
                                     <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.userName}}
                                 </td>
+                                <td>{{user.email}}</td>
                                 <td class="text-center">
                                     <div class="checkbox checkbox-circle checkbox-primary no-margins">
                                         <input type="checkbox" id="manager-{{user.userId}}" ng-model="user.isManager" ng-change="user.isMember = user.isManager" />

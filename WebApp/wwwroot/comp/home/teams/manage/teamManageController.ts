@@ -28,6 +28,8 @@
     interface ITeamProject {
         projectId: string;
         name: string;
+        number: string;
+        notes: string;
         assignments: ITeamProjectAssignment[];
         canView: boolean;
         canAdd: boolean;
@@ -72,6 +74,8 @@
                     this.$scope.teamProjects.push(<ITeamProject>{
                         projectId: p.id,
                         name: p.name,
+                        number: p.number,
+                        notes: p.notes,
                         assignments: []
                     });
                 });

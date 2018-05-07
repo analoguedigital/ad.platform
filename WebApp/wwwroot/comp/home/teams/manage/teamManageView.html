@@ -2,9 +2,9 @@
 <div class="wrapper wrapper-content animated fadeInRight team-manage-view">
     <div class="box">
         <div class="box-title">
-            <h5>Project Assignments</h5>
+            <h5>Case Assignments</h5>
             <div class="box-tools">
-                
+
             </div>
         </div>
         <div class="box-content">
@@ -18,12 +18,17 @@
             <table class="table table-hover">
                 <tbody>
                     <tr ng-repeat="project in teamProjects track by $index">
-                        <td valign="middle"><strong>{{project.name}}</strong></td>
+                        <td>
+                            <h2><i class="fa fa-folder-o"></i> {{project.name}}</h2>
+                            <h4 class="text-muted" ng-if="project.number">Number: {{project.number}}</h4>
+                            <h4 class="text-muted" ng-if="project.notes">{{project.notes}}</h4>
+                        </td>
                         <td>
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <td>User name</td>
+                                        <td>Email</td>
                                         <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
                                         <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
                                         <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
@@ -38,6 +43,7 @@
                                             <i class="fa fa-user-md" ng-if="assignment.isManager"></i>
                                             <i class="fa fa-user-o" ng-if="!assignment.isManager"></i> {{assignment.name}}
                                         </td>
+                                        <td>{{assignment.email}}</td>
                                         <td class="text-center">
                                             <div class="checkbox checkbox-circle checkbox-primary no-margins">
                                                 <input type="checkbox" id="{{project.projectId}}-can-view-{{assignment.userId}}" ng-model="assignment.canView" ng-change="ctrl.updateAssignment(assignment, 'allowView')" />

@@ -18,13 +18,14 @@ module App {
     }
 
     class OrganisationInvitationsController implements IOrganisationInvitationsController {
-        static $inject: string[] = ["$scope", "organisationResource", "orgInvitationResource", "toastr"];
+        static $inject: string[] = ["$scope", "organisationResource", "orgInvitationResource", "toastr", "$stateParams"];
 
         constructor(
             private $scope: IOrganisationInvitationsControllerScope,
             private organisationResource: Resources.IOrganisationResource,
             private orgInvitationResource: Resources.IOrgInvitationResource,
-            private toastr: any) {
+            private toastr: any,
+            private $stateParams: ng.ui.IStateParamsService) {
 
             $scope.title = "Organisations";
             this.activate();
@@ -35,10 +36,18 @@ module App {
         }
 
         load() {
-            this.orgInvitationResource.query().$promise.then((invitations) => {
-                this.$scope.invitations = invitations;
-                this.$scope.displayedInvitations = [].concat(this.$scope.invitations);
-            });
+            var orgId = this.$stateParams["organisationId"];
+            if (orgId !== undefined && orgId.length) {
+                this.orgInvitationResource.query({ organisationId: orgId }).$promise.then((invitations) => {
+                    this.$scope.invitations = invitations;
+                    this.$scope.displayedInvitations = [].concat(this.$scope.invitations);
+                });
+            } else {
+                this.orgInvitationResource.query().$promise.then((invitations) => {
+                    this.$scope.invitations = invitations;
+                    this.$scope.displayedInvitations = [].concat(this.$scope.invitations);
+                });
+            }
         }
 
         delete(id: string) {

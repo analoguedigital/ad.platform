@@ -27,6 +27,9 @@
                             <th class="text-center" width="80"></th>
                             <th class="text-center" width="80"></th>
                             <th class="text-center" width="80"></th>
+                            <th class="text-center" width="90"></th>
+                            <th class="text-center" width="80"></th>
+                            <th class="text-center" width="80"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,9 +50,26 @@
                                     <i class="fa fa-comments-o"></i> <span class="hidden-xs"> teams</span>
                                 </a>
                             </td>
+
+                            <td>
+                                <a ui-sref="home.users.list({organisationId:organisation.id})">
+                                    <i class="fa fa-user-circle-o"></i> <span class="hidden-xs"> staff</span>
+                                </a>
+                            </td>
+                            <td>
+                                <a ui-sref="home.users.mobile({organisationId:organisation.id})">
+                                    <i class="fa fa-phone-square"></i> <span class="hidden-xs"> users</span>
+                                </a>
+                            </td>
+                            <td>
+                                <a ui-sref="home.organisations.invitations({organisationId:organisation.id})">
+                                    <i class="fa fa-hashtag"></i> <span class="hidden-xs"> tokens</span>
+                                </a>
+                            </td>
+
                             <td>
                                 <a ui-sref="home.organisations.assignments({id:organisation.id})">
-                                    <i class="fa fa-link"></i> assign
+                                    <i class="fa fa-link"></i> <span class="hidden-xs"> assign</span>
                                 </a>
                             </td>
                             <td>
