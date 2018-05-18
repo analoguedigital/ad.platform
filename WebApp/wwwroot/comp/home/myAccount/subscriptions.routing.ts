@@ -19,7 +19,7 @@
                 controller: "settingsController",
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: "Settings" },
-                module: "private"
+                module: "public"
             })
             .state("home.subscriptions", {
                 abstract: true,

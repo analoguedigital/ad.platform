@@ -10,7 +10,7 @@ namespace LightMethods.Survey.Models.Entities
         [Index("IX_Voucher_Code", 1, IsUnique = true)]
         public string Code { get; set; }
 
-        public decimal Amount { get; set; }
+        public int Period { get; set; }
 
         public bool IsRedeemed { get; set; }
 

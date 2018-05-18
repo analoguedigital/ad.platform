@@ -16,6 +16,7 @@ module App {
         userId: string;
         name: string;
         email: string;
+        accountType: number;
         isRootUser: boolean;
         isWebUser: boolean;
         isMobileUser: boolean;
@@ -59,7 +60,7 @@ module App {
                 this.formTemplateResource.get({ id: this.formTemplateId }).$promise.then((form) => {
                     this.formTemplate = form;
 
-                    this.orgUserResource.query({ organisationId: this.formTemplate.organisation.id }).$promise.then((users) => {
+                    this.orgUserResource.query({ listType: 1, organisationId: this.formTemplate.organisation.id }).$promise.then((users) => {
                         this.orgUsers = users;
                         this.userAssignments = [];
 
@@ -76,6 +77,7 @@ module App {
                                     userId: user.id,
                                     name: userName,
                                     email: user.email,
+                                    accountType: user.accountType,
                                     isRootUser: user.isRootUser,
                                     isWebUser: user.isWebUser,
                                     isMobileUser: user.isMobileUser,

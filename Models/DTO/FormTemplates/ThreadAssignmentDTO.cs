@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,10 @@ namespace LightMethods.Survey.Models.DTO
         public Guid OrgUserId { set; get; }
 
         public string OrgUserName { set; get; }
+
+        public string Email { get; set; }
+
+        public AccountType AccountType { get; set; }
 
         public bool IsRootUser { get; set; }
 

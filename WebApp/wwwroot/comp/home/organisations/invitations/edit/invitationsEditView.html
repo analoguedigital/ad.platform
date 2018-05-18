@@ -6,29 +6,36 @@
         </div>
         <div class="box-content">
             <form name="invitationForm" class="form-horizontal" novalidate>
-                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
-                    <select id="organisation" name="organisation" ng-model="invitation.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
+                <lm-form-group label="Organisation: *" ng-if="currentUserIsSuperUser">
+                    <select id="organisation" name="organisation" ng-model="invitation.organisation" 
+                            ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
                 </lm-form-group>
-                <lm-form-group label="Name: ">
+                <lm-form-group label="Name: *" form-group-class="has-feedback" feedback-value="{{invitation.name.length}}">
                     <input type="text" id="name" name="name" ng-model="invitation.name" required placeholder="choose a name for this token" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="invitation.name.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!invitation.name.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Token: ">
+                <lm-form-group label="Token: *" form-group-class="has-feedback" feedback-value="{{invitation.token.length}}">
                     <div class="input-group">
                         <div class="input-group-addon" data-toggle="tooltip" title="Generate New Token" style="cursor: pointer" ng-click="ctrl.generateToken()">
                             <i class="fa fa-magic"></i>
                         </div>
                         <input type="text" id="token" name="token" ng-model="invitation.token" required placeholder="unique 8 digit code" />
                     </div>
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="invitation.token.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!invitation.token.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Limit: ">
+                <lm-form-group label="Limit: *" form-group-class="has-feedback" feedback-value="{{invitation.limit}}">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-lock"></i>
                         </div>
                         <input type="number" id="limit" name="limit" ng-model="invitation.limit" required placeholder="maximum number of uses" />
                     </div>
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="invitation.limit"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!invitation.limit"></span>
                 </lm-form-group>
-                <lm-form-group label="Used: ">
+                <lm-form-group label="Used: " ng-if="!ctrl.isInsertMode">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-info-circle"></i>

@@ -20,6 +20,8 @@ module App {
     }
 
     class OrganisationInvitationsEditController implements IOrganisationInvitationsEditController {
+        isInsertMode: boolean = false;
+
         static $inject: string[] = ["$scope", "$state", "$stateParams", "orgInvitationResource", "organisationResource", "toastr", "userContextService"];
         constructor(
             private $scope: IOrganisationInvitationsEditControllerScope,
@@ -44,6 +46,7 @@ module App {
         load() {
             var invitationId = this.$stateParams["id"];
             if (invitationId == '') {
+                this.isInsertMode = true;
                 this.$scope.invitation = <Models.IOrgInvitation>{
                     id: '',
                     name: '',

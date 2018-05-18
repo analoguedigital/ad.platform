@@ -10,7 +10,7 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Code { get; set; }
 
-        public decimal Amount { get; set; }
+        public int Period { get; set; }
 
         public bool IsRedeemed { get; set; }
 

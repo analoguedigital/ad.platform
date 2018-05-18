@@ -14,7 +14,7 @@
                 <div class="panel-body">
                     <form name="confirmEmailForm" novalidate ng-if="!requestSent">
                         <lm-form-group label="Email">
-                            <input name="email" id="email" type="email" ng-model="model.email" placeholder="Email" required autofocus>
+                            <input name="email" id="email" type="email" ng-model="model.email" placeholder="Your email address" required autofocus>
                         </lm-form-group>
 
                         <div ng-show="confirmEmailForm.$submitted" ng-animate="'animate'">
@@ -22,12 +22,12 @@
                             <span ng-show="confirmEmailForm.email.$error.email">Email is not valid</span>
                         </div>
 
-                        <button class="pull-right" type="submit" ng-click="sendEmailToken(confirmEmailForm)">Send Confirmation Token <i class="fa fa-unlock-alt"></i></button>
+                        <button class="pull-right" type="submit" ng-click="sendEmailToken(confirmEmailForm)">Send Confirmation Email <i class="fa fa-unlock-alt"></i></button>
                     </form>
 
                     <div ng-if="requestSent">
                         <p class="lead">
-                            Check your inbox! We have sent you a confirmation email.
+                            Check your inbox! We have sent you a confirmation email. Make sure to checkout your spam folder too, just in case.
                         </p>
                         <p>
                             <a ui-sref="login">
@@ -42,7 +42,7 @@
     </div>
     <div class="row">
         <div class="copyright text-center">
-            Copyright <a href="http://analogue.digital">analogue.digital</a> ©2016
+            Copyright <a href="http://analogue.digital">analogue.digital</a> ©2018
         </div>
     </div>
 </div>

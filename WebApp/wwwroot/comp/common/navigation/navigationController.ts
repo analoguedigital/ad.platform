@@ -25,21 +25,20 @@ module App {
         ) {
 
             $scope.title = "navigation";
+
             $scope.user = userContextService.current.orgUser == null ?
                 userContextService.current.user.email :
                 userContextService.current.orgUser.toString();
+
             $scope.logout = () => { this.logout(); };
             $scope.resetPassword = () => { this.resetPassword(); };
 
             this.activate();
         }
 
-        activate() {
-            //
-        }
+        activate() { }
 
         resetPassword() {
-
             var modalInstance = this.$uibModal.open({
                 animation: true,
                 templateUrl: 'comp/common/resetPassword/resetPasswordView.html',

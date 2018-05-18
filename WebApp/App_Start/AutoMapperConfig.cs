@@ -20,7 +20,9 @@ namespace WebApi
             Mapper.CreateMap<AssignmentDTO, ProjectDTO>();
             Mapper.CreateMap<Assignment, ProjectAssignmentDTO>()
                 .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); })
-                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; });
+                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; })
+                .AfterMap((src, dest) => { dest.AccountType = src.OrgUser.AccountType; })
+                .AfterMap((src, dest) => { dest.Email = src.OrgUser.Email; });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
 
             #endregion Projects and Assignments
@@ -36,7 +38,9 @@ namespace WebApi
             Mapper.CreateMap<ThreadAssignmentDTO, FormTemplateDTO>();
             Mapper.CreateMap<ThreadAssignment, ThreadAssignmentDTO>()
                 .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); })
-                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; });
+                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; })
+                .AfterMap((src, dest) => { dest.AccountType = src.OrgUser.AccountType; })
+                .AfterMap((src, dest) => { dest.Email = src.OrgUser.Email; });
             Mapper.CreateMap<ThreadAssignmentDTO, ThreadAssignment>();
 
             #endregion Form Templates and Categories

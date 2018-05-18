@@ -5,10 +5,10 @@
 <div class="modal-body">
     <form name="dataListItemForm">
         <lm-form-group label="Text">
-            <input type="text" name="text" id="text" ng-model="dataListItem.text" />
+            <input type="text" name="text" id="text" ng-model="dataListItem.text" placeholder="text to display" />
         </lm-form-group>
         <lm-form-group label="Value">
-            <input type="number" name="value" id="value" ng-model="dataListItem.value" />
+            <input type="number" name="value" id="value" ng-model="dataListItem.value" placeholder="the actual value" />
         </lm-form-group>
         <div class="hr-line-dashed"></div>
         <lm-form-group ng-repeat="relationship in dataList.relationships" ng-cloak label="{{relationship.name}}">

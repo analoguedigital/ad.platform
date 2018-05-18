@@ -38,7 +38,8 @@ module App {
             var organisationPromise = this.organisationResource.get({ id: organisationId }).$promise;
             organisationPromise.then((organisation) => { this.$scope.organisation = organisation; });
 
-            var usersPromise = this.orgUserResource.query({ organisationId: 'CFA81EB0-9FC7-4932-A3E8-1C822370D034' }).$promise;
+            // refactor this code! we need a better way of getting OnRecord users.
+            var usersPromise = this.orgUserResource.query({ listType: 0, organisationId: 'CFA81EB0-9FC7-4932-A3E8-1C822370D034' }).$promise;
             usersPromise.then((users) => {
                 this.$scope.users = _.filter(users, (user) => { return !user.isRootUser; });
                 this.$scope.displayedUsers = [].concat(this.$scope.users);

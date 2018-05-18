@@ -90,7 +90,7 @@ namespace WebApi.Controllers
                 Amount = plan.Price,
                 Note = $"Purchased subscription - {plan.Name}",
                 Reference = string.Empty,
-                OrgUserId = this.CurrentUser.Id
+                OrgUserId = this.CurrentOrgUser.Id
             };
 
             UnitOfWork.PaymentsRepository.InsertOrUpdate(payment);
@@ -113,6 +113,20 @@ namespace WebApi.Controllers
                 };
 
                 UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+            }
+
+            // update export permissions based on purchased plan
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(this.CurrentOrgUser.Id);
+            if (orgUser.CurrentProjectId.HasValue)
+            {
+                var orgUserAssignment = orgUser.Assignments.Where(x => x.ProjectId == orgUser.CurrentProject.Id).SingleOrDefault();
+                if (orgUserAssignment != null)
+                {
+                    orgUserAssignment.CanExportPdf = plan.PdfExport;
+                    orgUserAssignment.CanExportZip = plan.ZipExport;
+
+                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
+                }
             }
 
             // cancel last subscription, if any.
@@ -253,10 +267,6 @@ namespace WebApi.Controllers
                             CanExportZip = true
                         });
                     }
-                    else
-                    {
-                        // the root user has already been assigned to this project.
-                    }
                 }
             }
 
@@ -284,6 +294,19 @@ namespace WebApi.Controllers
                     }
 
                     this.UnitOfWork.PaymentsRepository.InsertOrUpdate(paymentRecord);
+                }
+            }
+
+            // grant export access to the user
+            if (orgUser.CurrentProjectId.HasValue)
+            {
+                var orgUserAssignment = orgUser.Assignments.Where(x => x.ProjectId == orgUser.CurrentProject.Id).SingleOrDefault();
+                if (orgUserAssignment != null)
+                {
+                    orgUserAssignment.CanExportPdf = true;
+                    orgUserAssignment.CanExportZip = true;
+
+                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
                 }
             }
 

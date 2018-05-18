@@ -18,6 +18,7 @@ module App {
         userId: string;
         name: string;
         email: string;
+        accountType: number;
         isRootUser: boolean;
         isWebUser: boolean;
         isMobileUser: boolean;
@@ -58,7 +59,7 @@ module App {
             var projectPromise = this.projectResource.get({ id: projectId }, (project) => {
                 this.project = project;
 
-                this.orgUserResource.query({ organisationId: this.project.organisation.id }, (users) => {
+                this.orgUserResource.query({ listType: 1, organisationId: this.project.organisation.id }, (users) => {
                     this.users = users;
 
                     this.projectResource.assignments({ id: projectId }, (assignments) => {
@@ -76,6 +77,7 @@ module App {
                                 userId: user.id,
                                 name: userName,
                                 email: user.email,
+                                accountType: user.accountType,
                                 isRootUser: user.isRootUser,
                                 isWebUser: user.isWebUser,
                                 isMobileUser: user.isMobileUser,

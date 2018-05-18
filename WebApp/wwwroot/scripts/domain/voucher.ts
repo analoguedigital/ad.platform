@@ -5,7 +5,7 @@
         public id: string;
         public title: string;
         public code: string;
-        public amount: number;
+        public period: number;
         public isRedeemed: boolean;
         public paymentRecordId: string;
         public organisationId: string;
@@ -16,7 +16,7 @@
             this.id = '';
             this.title = '';
             this.code = '';
-            this.amount = 0;
+            this.period = 1;
             this.isRedeemed = false;
             this.paymentRecordId = '';
             this.organisationId = '';
@@ -29,7 +29,7 @@
         id: string;
         title: string;
         code: string;
-        amount: number;
+        period: number;
         isRedeemed: boolean;
         paymentRecordId: string;
         organisationId: string;

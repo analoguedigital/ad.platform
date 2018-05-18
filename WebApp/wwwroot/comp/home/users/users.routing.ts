@@ -18,7 +18,7 @@
                 url: "/:organisationId",
                 templateUrl: "comp/home/users/usersView.html",
                 controller: "usersController",
-                ncyBreadcrumb: { label: 'Users' },
+                ncyBreadcrumb: { label: 'Staff Members' },
                 module: "private"
             })
             .state("home.users.mobile", <App.Models.IAppRoute>{
@@ -29,11 +29,11 @@
                 module: 'private'
             })
             .state("home.users.edit", <App.Models.IAppRoute>{
-                url: "/edit/:id",
+                url: "/edit/:accountType/:id",
                 templateUrl: "comp/home/users/edit/userEditView.html",
                 controller: "userEditController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Edit User', parent: 'home.users.list' },
+                ncyBreadcrumb: { label: 'Edit User', parent: '{{parentBreadcrumb}}' },
                 module: "private"
             })
             .state("home.users.editSuperUser", <App.Models.IAppRoute>{

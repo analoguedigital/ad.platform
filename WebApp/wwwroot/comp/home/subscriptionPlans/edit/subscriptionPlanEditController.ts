@@ -67,8 +67,6 @@ module App {
                 return;
             }
 
-            console.info(this.$scope.model);
-
             var planId = this.$stateParams['id'];
             if (planId === '') {
                 this.subscriptionPlanResource.save(

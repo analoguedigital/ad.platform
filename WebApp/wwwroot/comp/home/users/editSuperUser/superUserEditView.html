@@ -6,8 +6,8 @@
         </div>
         <div class="box-content">
             <form name="userForm" class="form-horizontal" novalidate>
-                <lm-form-group label="Email:" form-group-class="has-feedback" feedback-value="{{emailConfirmed}}">
-                    <input type="email" name="email" id="email" ng-model="ctrl.user.email" required />
+                <lm-form-group label="Email: *" form-group-class="has-feedback" feedback-value="{{emailConfirmed}}">
+                    <input type="email" name="email" id="email" ng-model="ctrl.user.email" required placeholder="Email address" />
                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.emailConfirmed"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.emailConfirmed"></span>
                 </lm-form-group>
@@ -31,18 +31,18 @@
                     </div>
                 </lm-form-group>
                 <lm-form-group label="Address:">
-                    <input type="text" name="address" id="address" ng-model="ctrl.user.address" />
+                    <input type="text" name="address" id="address" ng-model="ctrl.user.address" placeholder="Address" />
                 </lm-form-group>
                 <lm-form-group label="Phone number:" form-group-class="has-feedback" feedback-value="{{ctrl.user.phoneNumber.length && phoneNumberConfirmed}}">
-                    <input type="text" name="phoneNumber" id="phoneNumber" ng-model="ctrl.user.phoneNumber" ng-disabled="ctrl.user.phoneNumberConfirmed" />
+                    <input type="text" name="phoneNumber" id="phoneNumber" ng-model="ctrl.user.phoneNumber" ng-disabled="ctrl.user.phoneNumberConfirmed" placeholder="Phone number" />
                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumberConfirmed"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumber.length && !ctrl.user.phoneNumberConfirmed"></span>
                 </lm-form-group>
-                <lm-form-group label="Password:" ng-if="ctrl.isInsertMode">
-                    <input type="password" name="password" id="password" ng-model="ctrl.user.password" required />
+                <lm-form-group label="Password: *" ng-if="ctrl.isInsertMode">
+                    <input type="password" name="password" id="password" ng-model="ctrl.user.password" required placeholder="Password" />
                 </lm-form-group>
-                <lm-form-group label="Confirm password:" ng-if="ctrl.isInsertMode">
-                    <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.user.confirmPassword" required />
+                <lm-form-group label="Confirm password: *" ng-if="ctrl.isInsertMode">
+                    <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.user.confirmPassword" required placeholder="Confirm password" />
                 </lm-form-group>
                 <lm-form-group ng-if="ctrl.errors !== undefined" class="">
                     <div class="alert alert-danger animated fadeInDown">

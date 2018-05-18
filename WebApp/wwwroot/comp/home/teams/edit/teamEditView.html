@@ -6,14 +6,18 @@
         </div>
         <div class="box-content">
             <form name="teamform" class="form-horizontal" novalidate>
-                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
+                <lm-form-group label="Organisation: *" ng-if="currentUserIsSuperUser">
                     <select id="organisation" name="organisation" ng-model="team.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
                 </lm-form-group>
-                <lm-form-group label="Name: ">
+                <lm-form-group label="Name: *" form-group-class="has-feedback" feedback-value="{{team.name.length}}">
                     <input type="text" id="name" name="name" ng-model="team.name" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="team.name.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!team.name.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Description: ">
+                <lm-form-group label="Description: *" form-group-class="has-feedback" feedback-value="{{team.description.length}}">
                     <input type="text" id="description" name="description" ng-model="team.description" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="team.description.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!team.description.length"></span>
                 </lm-form-group>
                 <lm-form-group label="Colour: ">
                     <input id="colour" name="colour" type="text" class="form-control" minicolors="minicolorSettings" ng-model="team.colour" />
@@ -48,16 +52,26 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th st-sort="orgUser.accountType" class="text-center" width="40">Type</th>
                                 <th st-sort="[firstName,surname]">Name</th>
                                 <th st-sort="email">Email</th>
                                 <th st-sort="isManager" class="text-center">Is Manager</th>
                                 <th st-sort="orgUser.isWebUser" class="text-center" width="110">Web User</th>
                                 <th st-sort="orgUser.isMobileUser" class="text-center" width="110">Mobile User</th>
-                                <th></th>
+                                <th class="text-center" width="80"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="member in displayedMembers">
+                                <td class="text-center">
+                                    <span ng-if="member.orgUser.accountType === 0">
+                                        <i class="fa fa-phone-square"></i>
+                                    </span>
+
+                                    <span ng-if="member.orgUser.accountType === 1">
+                                        <i class="fa fa-laptop"></i>
+                                    </span>
+                                </td>
                                 <td>
                                     <i class="fa fa-user-o" ng-if="!member.isManager"></i>
                                     <i class="fa fa-user-md" ng-if="member.isManager"></i>
@@ -81,7 +95,7 @@
                                 </td>
                                 <td>
                                     <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(member)">
-                                        <i class="fa fa-unlink"></i> revoke
+                                        <i class="fa fa-unlink"></i> <span class="hidden-xs"> remove</span>
                                     </a>
                                 </td>
                             </tr>

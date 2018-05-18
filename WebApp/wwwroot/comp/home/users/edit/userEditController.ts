@@ -7,20 +7,22 @@ module App {
     }
 
     interface IUserEditControllerScope extends ng.IScope {
+        title: string;
         emailConfirmed: boolean;
         phoneNumberConfirmed: boolean;
+        accountType: string;
+        parentBreadcrumb: string;
     }
 
     interface IUserEditController {
-        title: string;
-        user: any;
-        userType: string;
+        user: Models.IOrgUser;
         types: Models.IOrgUserType[];
         errors: string;
         birthDateCalendar: any;
         teams: Models.IOrgTeam[];
         currentUserIsSuperUser: boolean;
         projects: Models.IProject[];
+        organisations: Models.IOrganisation[];
         subscriptions: Models.ISubscriptionEntry[];
 
         submit: (form: ng.IFormController) => void;
@@ -30,9 +32,7 @@ module App {
     }
 
     class UserEditController implements IUserEditController {
-        title: string;
-        user: any;
-        userType: string;
+        user: Models.IOrgUser;
         types: Models.IOrgUserType[];
         isInsertMode: boolean;
         errors: string;
@@ -41,9 +41,10 @@ module App {
         teams: Models.IOrgTeam[];
         currentUserIsSuperUser: boolean;
         projects: Models.IProject[];
+        organisations: Models.IOrganisation[];
         subscriptions: Models.ISubscriptionEntry[];
 
-        static $inject: string[] = ["$scope", "orgUserResource", "orgUserTypeResource", "$state", "$stateParams",
+        static $inject: string[] = ["$scope", "orgUserResource", "orgUserTypeResource", "$state", "$stateParams", "organisationResource",
             "orgTeamResource", "userContextService", "projectResource", "toastr", "userResource", "subscriptionResource"];
         constructor(
             private $scope: IUserEditControllerScope,
@@ -51,6 +52,7 @@ module App {
             private orgUserTypeResource: Resources.IOrgUserTypeResource,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
+            private organisationResource: Resources.IOrganisationResource,
             private orgTeamResource: Resources.IOrgTeamResource,
             private userContextService: Services.IUserContextService,
             private projectResource: Resources.IProjectResource,
@@ -58,7 +60,7 @@ module App {
             private userResource: Resources.IUserResource,
             private subscriptionResource: Resources.ISubscriptionResource
         ) {
-            this.title = "Users";
+            this.$scope.title = "Users";
 
             this.genderTypes = [
                 { id: 0, label: 'Male' },
@@ -66,15 +68,23 @@ module App {
                 { id: 2, label: 'Other' }
             ];
 
-            var userType = this.$state.params["userType"];
-            if (!userType || userType.length < 1) userType = 'orguser';
-            this.userType = userType;
-
             this.activate();
         }
 
         activate() {
-            if (this.userType == 'orguser') {
+            var accountType = this.$stateParams["accountType"];
+            if (accountType === undefined || !accountType.length) {
+                console.warn('accountType param is undefined!');
+                accountType = 'web-account';
+            }
+
+            this.$scope.accountType = accountType;
+            if (accountType === 'web-account')
+                this.$state.current.ncyBreadcrumb.parent = 'home.users.list';
+            else if (accountType === 'mobile-account')
+                this.$state.current.ncyBreadcrumb.parent = 'home.users.mobile';
+
+            if (accountType === 'web-account') {
                 this.orgUserTypeResource.query().$promise.then((types) => {
                     this.types = types;
                 });
@@ -85,41 +95,35 @@ module App {
                 this.isInsertMode = true;
                 userId = '00000000-0000-0000-0000-000000000000';
             } else {
-                if (this.userType == 'orguser') {
-                    this.orgUserResource.get({ id: userId }).$promise.then((user) => {
-                        this.user = user;
+                this.orgUserResource.get({ id: userId }).$promise.then((user) => {
+                    this.user = user;
 
-                        // put these on $scope for lm-form-group bindings
-                        this.$scope.emailConfirmed = user.emailConfirmed;
-                        this.$scope.phoneNumberConfirmed = user.phoneNumberConfirmed;
+                    // put these on $scope for lm-form-group bindings
+                    this.$scope.emailConfirmed = user.emailConfirmed;
+                    this.$scope.phoneNumberConfirmed = user.phoneNumberConfirmed;
 
-                        this.orgTeamResource.getUserTeams({ userId: user.id }, (teams) => {
-                            this.teams = teams;
-                        });
+                    this.orgTeamResource.getUserTeams({ userId: user.id }, (teams) => {
+                        this.teams = teams;
                     });
-                } else {
-                    this.userResource.get({ id: userId }).$promise.then((user) => {
-                        this.user = user;
-
-                        // put these on $scope for lm-form-group bindings
-                        this.$scope.emailConfirmed = user.emailConfirmed;
-                        this.$scope.phoneNumberConfirmed = user.phoneNumberConfirmed;
-
-                        this.orgTeamResource.getUserTeams({ userId: user.id }, (teams) => {
-                            this.teams = teams;
-                        });
-                    });
-                }
+                });
             }
 
             var roles = ["System administrator", "Platform administrator"];
             this.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
 
-            if (this.currentUserIsSuperUser && this.userType == 'orguser') {
+            if (this.currentUserIsSuperUser) {
+                this.organisationResource.query().$promise.then((organisations) => {
+                    this.organisations = organisations;
+                });
+            }
+
+            if (this.currentUserIsSuperUser && (accountType === 'web-account' || accountType === 'mobile-account' && !this.isInsertMode)) {
                 this.projectResource.query().$promise.then((projects) => {
                     this.projects = projects;
                 });
+            }
 
+            if (this.currentUserIsSuperUser && !this.isInsertMode) {
                 this.subscriptionResource.getUserSubscriptions({ id: userId }, (data) => {
                     this.subscriptions = data;
                 }, (err) => {
@@ -135,9 +139,19 @@ module App {
 
             var userId = this.$stateParams['id'];
             if (userId === '') {
+                if (this.$scope.accountType === 'mobile-account')
+                    this.user.accountType = 0;
+                else if (this.$scope.accountType === 'web-account')
+                    this.user.accountType = 1;
+
                 this.orgUserResource.save(
                     this.user,
-                    () => { this.$state.go('home.users.list'); },
+                    () => {
+                        if (this.$scope.accountType === 'web-account')
+                            this.$state.go('home.users.list');
+                        else if (this.$scope.accountType === 'mobile-account')
+                            this.$state.go('home.users.mobile');
+                    },
                     (err) => {
                         if (err.status === 400)
                             this.toastr.error(err.data.message);
@@ -145,25 +159,19 @@ module App {
                     });
             }
             else {
-                if (this.userType === 'orguser') {
-                    this.orgUserResource.update(
-                        this.user,
-                        () => { this.$state.go('home.users.list'); },
-                        (err) => {
-                            if (err.status === 400)
-                                this.toastr.error(err.data.message);
-                            this.errors = err.data.exceptionMessage;
-                        });
-                } else {
-                    this.userResource.update(
-                        this.user,
-                        () => { this.$state.go('home.users.list'); },
-                        (err) => {
-                            if (err.status === 400)
-                                this.toastr.error(err.data.message);
-                            this.errors = err.data.exceptionMessage;
-                        });
-                }
+                this.orgUserResource.update(
+                    this.user,
+                    () => {
+                        if (this.$scope.accountType === 'web-account')
+                            this.$state.go('home.users.list');
+                        else if (this.$scope.accountType === 'mobile-account')
+                            this.$state.go('home.users.mobile');
+                    },
+                    (err) => {
+                        if (err.status === 400)
+                            this.toastr.error(err.data.message);
+                        this.errors = err.data.exceptionMessage;
+                    });
             }
         }
 

@@ -20,7 +20,7 @@
                 templateUrl: "comp/home/surveys/surveysView.html",
                 controller: "surveysController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Forms' },
+                ncyBreadcrumb: { label: 'Directory of Threads' },
                 module: "private"
             })
             .state("home.surveys.list.summary", <App.Models.IAppRoute>{
@@ -90,7 +90,7 @@
                         }]
 
                 },
-                ncyBreadcrumb: { label: 'All' },
+                ncyBreadcrumb: { label: 'All records' },
                 module: "private"
             })
             .state("home.surveys.edit", <App.Models.IAppRoute> {

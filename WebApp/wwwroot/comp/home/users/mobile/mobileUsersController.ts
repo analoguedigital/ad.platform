@@ -57,21 +57,13 @@ module App {
 
             var orgId = this.$stateParams["organisationId"];
             if (orgId !== undefined && orgId.length) {
-                this.orgUserResource.query({ organisationId: orgId }).$promise.then((users) => {
-                    var mobileAccounts = _.filter(users, (u) => {
-                        return u.accountType === 0;
-                    });
-
-                    this.$scope.users = mobileAccounts;
+                this.orgUserResource.query({ listType: 0, organisationId: orgId }).$promise.then((users) => {
+                    this.$scope.users = users;
                     this.$scope.displayedUsers = [].concat(this.$scope.users);
                 });
             } else {
-                this.orgUserResource.query().$promise.then((users) => {
-                    var mobileAccounts = _.filter(users, (u) => {
-                        return u.accountType === 0;
-                    });
-
-                    this.$scope.users = mobileAccounts;
+                this.orgUserResource.query({ listType: 0, organisationId: null}).$promise.then((users) => {
+                    this.$scope.users = users;
                     this.$scope.displayedUsers = [].concat(this.$scope.users);
                 });
             }

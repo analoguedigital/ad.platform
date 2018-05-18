@@ -22,7 +22,7 @@
                         <tr>
                             <th st-sort="title">Title</th>
                             <th class="text-center" st-sort="code">Code</th>
-                            <th class="text-center">Amount</th>
+                            <th class="text-center">Period</th>
                             <th class="text-center" width="80">Redeemed</th>
                             <th>Organisation</th>
                             <th class="text-center" width="80"></th>
@@ -32,7 +32,11 @@
                         <tr ng-repeat="voucher in displayedVouchers" ng-class="{ 'success': voucher.isRedeemed }">
                             <td><a ui-sref="home.organisations.vouchersEdit({id:voucher.id})">{{voucher.title}}</a></td>
                             <td class="text-center">{{voucher.code}}</td>
-                            <td class="text-center">{{voucher.amount}}</td>
+                            <td class="text-center">
+                                {{voucher.period}} 
+                                <span ng-if="voucher.period === 1"> month</span>
+                                <span ng-if="voucher.period > 1"> months</span>
+                            </td>
                             <td class="text-center">
                                 <i class="fa fa-check" ng-if="voucher.isRedeemed"></i>
                                 <i class="fa fa-times" ng-if="!voucher.isRedeemed"></i>

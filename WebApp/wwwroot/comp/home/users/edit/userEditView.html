@@ -2,11 +2,16 @@
 <div class="wrapper wrapper-content animated fadeInRight user-edit-view">
     <div class="box">
         <div class="box-title">
-            <h5>Details</h5>
+            <h5>Registration Details</h5>
         </div>
         <div class="box-content">
             <form name="userForm" class="form-horizontal" novalidate>
-                <lm-form-group label="Email:" form-group-class="has-feedback" feedback-value="{{emailConfirmed}}">
+                <lm-form-group label="Organisation: *" ng-if="ctrl.currentUserIsSuperUser">
+                    <select id="organisation" name="organisation" ng-disabled="!ctrl.isInsertMode"
+                            ng-model="ctrl.user.organisation"
+                            ng-options="organisation as organisation.name for organisation in ctrl.organisations track by organisation.id" required></select>
+                </lm-form-group>
+                <lm-form-group label="Email: *" form-group-class="has-feedback" feedback-value="{{emailConfirmed}}">
                     <input type="email" name="email" id="email" ng-model="ctrl.user.email" required />
                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.emailConfirmed"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.emailConfirmed"></span>
@@ -17,11 +22,15 @@
                         <label for="chk-email-confirmed">Confirmed</label>
                     </div>
                 </lm-form-group>
-                <lm-form-group label="First name:" ng-if="ctrl.userType == 'orguser'">
+                <lm-form-group label="First name: *" form-group-class="has-feedback" feedback-value="{{ctrl.user.firstName.length}}">
                     <input type="text" name="firstName" id="firstName" ng-model="ctrl.user.firstName" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.firstName.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.firstName.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Surname:" ng-if="ctrl.userType == 'orguser'">
+                <lm-form-group label="Surname: *" form-group-class="has-feedback" feedback-value="{{ctrl.user.surname.length}}">
                     <input type="text" name="lastName" id="lastName" ng-model="ctrl.user.surname" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.surname.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.surname.length"></span>
                 </lm-form-group>
                 <lm-form-group label="Gender:">
                     <div class="input-group">
@@ -50,28 +59,34 @@
                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumberConfirmed"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumber.length && !ctrl.user.phoneNumberConfirmed"></span>
                 </lm-form-group>
-                <lm-form-group label="Type:" ng-if="ctrl.userType == 'orguser'">
+                <lm-form-group label="Type: *" ng-if="accountType === 'web-account'">
                     <div class="input-group">
                         <select id="type" name="type" ng-model="ctrl.user.type" ng-options="type as type.name for type in ctrl.types track by type.id" required></select>
                     </div>
                 </lm-form-group>
-                <lm-form-group label="Password:" ng-if="ctrl.isInsertMode">
+                
+                <!-- random passwords are generated and sent as part of the confirmation email -->
+                <!--<lm-form-group label="Password: *" ng-if="ctrl.isInsertMode" form-group-class="has-feedback" feedback-value="{{ctrl.user.password.length}}">
                     <input type="password" name="password" id="password" ng-model="ctrl.user.password" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.password.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.password.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Confirm password:" ng-if="ctrl.isInsertMode">
+                <lm-form-group label="Confirm password: *" ng-if="ctrl.isInsertMode" form-group-class="has-feedback" feedback-value="{{ctrl.user.confirmPassword}}">
                     <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.user.confirmPassword" required />
-                </lm-form-group>
-                <lm-form-group label="Access type:" ng-if="ctrl.userType == 'orguser'">
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.confirmPassword.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.confirmPassword.length"></span>
+                </lm-form-group>-->
+                <lm-form-group label="Access type:">
                     <div class="checkbox checkbox-default">
                         <input type="checkbox" id="chk-web-user" name="chk-web-user" ng-model="ctrl.user.isWebUser" />
-                        <label for="chk-web-user">Web User</label>
+                        <label for="chk-web-user">Has Web Access</label>
                     </div>
                     <div class="checkbox checkbox-default">
                         <input type="checkbox" id="chk-mobile-user" name="chk-mobile-user" ng-model="ctrl.user.isMobileUser" />
-                        <label for="chk-mobile-user">Mobile User</label>
+                        <label for="chk-mobile-user">Has Mobile Access</label>
                     </div>
                 </lm-form-group>
-                <lm-form-group label="Current project: " ng-if="ctrl.currentUserIsSuperUser && ctrl.userType == 'orguser'">
+                <lm-form-group label="Current project: " ng-if="ctrl.currentUserIsSuperUser && (accountType === 'web-account' || accountType === 'mobile-account' && !ctrl.isInsertMode)">
                     <ui-select append-to-body="true" ng-model="ctrl.user.currentProject">
                         <ui-select-match placeholder="Select a project">
                             <span ng-bind="$select.selected.name"></span>
@@ -90,12 +105,14 @@
                 <lm-form-group>
                     <button type="submit" class="btn btn-primary" ng-click="ctrl.submit(userForm)">Submit</button>
                 </lm-form-group>
-                <a ui-sref="home.users.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+
+                <a ui-sref="home.users.list" ng-if="accountType === 'web-account'"><i class="fa fa-arrow-left"></i> Back to list</a>
+                <a ui-sref="home.users.mobile" ng-if="accountType === 'mobile-account'"><i class="fa fa-arrow-left"></i> Back to list</a>
             </form>
 
         </div>
     </div>
-    <div class="box">
+    <div class="box" ng-if="ctrl.teams.length">
         <div class="box-title">
             <h5>Organisation Teams</h5>
         </div>

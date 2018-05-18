@@ -569,6 +569,10 @@
     <Compile Include="Migrations\201804111444194_Rename_voucher_index_name.Designer.cs">
       <DependentUpon>201804111444194_Rename_voucher_index_name.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201805151323597_Replace_voucher_amount_with_period.cs" />
+    <Compile Include="Migrations\201805151323597_Replace_voucher_amount_with_period.Designer.cs">
+      <DependentUpon>201805151323597_Replace_voucher_amount_with_period.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -740,6 +744,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804111444194_Rename_voucher_index_name.resx">
       <DependentUpon>201804111444194_Rename_voucher_index_name.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805151323597_Replace_voucher_amount_with_period.resx">
+      <DependentUpon>201805151323597_Replace_voucher_amount_with_period.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

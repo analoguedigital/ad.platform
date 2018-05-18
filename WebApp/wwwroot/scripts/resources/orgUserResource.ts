@@ -12,7 +12,7 @@
 
     OrgUserResource.$inject = ["$resource"];
     export function OrgUserResource($resource: ng.resource.IResourceService): IOrgUserResource {
-        var OrgUser = <IOrgUserResource>$resource('/api/orgUsers/:id', { id: '@id' }, {
+        var OrgUser = <IOrgUserResource>$resource('/api/orgUsers/:listType/:id/', { listType: '@listType', id: '@id' }, {
             'update': { method: 'PUT' }
         });
 

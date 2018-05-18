@@ -27,12 +27,22 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Email</th>
+                                <th st-sort="accountType" class="text-center" width="40">Type</th>
+                                <th st-sort="[firstName,surname]">Name</th>
+                                <th st-sort="email">Email</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="user in displayedUsers">
+                                <td class="text-center">
+                                    <span ng-if="user.accountType === 0">
+                                        <i class="fa fa-phone-square"></i>
+                                    </span>
+
+                                    <span ng-if="user.accountType === 1">
+                                        <i class="fa fa-laptop"></i>
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="checkbox checkbox-circle checkbox-primary no-margins">
                                         <input type="checkbox" id="chk-{{user.id}}" ng-model="user.isSelected" />

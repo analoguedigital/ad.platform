@@ -40,6 +40,7 @@
 
         createSuperUser(form: ng.IFormController) {
             if (form.$invalid) {
+                this.toastr.warning("Fix your validation errors first");
                 return;
             }
 
