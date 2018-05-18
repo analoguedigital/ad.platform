@@ -6,21 +6,27 @@
         </div>
         <div class="box-content">
             <form name="subscriptionForm" class="form-horizontal" novalidate>
-                <lm-form-group label="Name: ">
+                <lm-form-group label="Name: *" form-group-class="has-feedback" feedback-value="{{model.name.length}}">
                     <input type="text" id="name" name="name" ng-model="model.name" required placeholder="choose a name i.e. Gold Membership" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="model.name.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!model.name.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Description: ">
+                <lm-form-group label="Description: *" form-group-class="has-feedback" feedback-value="{{model.description.length}}">
                     <input type="text" id="description" name="description" ng-model="model.description" required placeholder="a short description about this plan" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="model.description.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!model.description.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Price: ">
+                <lm-form-group label="Price: *" form-group-class="has-feedback" feedback-value="{{model.price.length}}">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-gbp"></i>
                         </div>
                         <input type="number" id="price" name="price" ng-model="model.price" required placeholder="cost in pounds" />
                     </div>
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="model.price"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!model.price"></span>
                 </lm-form-group>
-                <lm-form-group label="Subscription Length: ">
+                <lm-form-group label="Period: *">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-bell"></i>

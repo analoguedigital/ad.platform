@@ -264,15 +264,16 @@ namespace LightMethods.Survey.Models.Services
                 return RedeemCodeStatus.SubscriptionRateNotSet;
 
             // validate subscription count. it should result to at least 1.
-            var subscriptionCount = Math.Floor(voucher.Amount / this.User.Organisation.SubscriptionMonthlyRate.Value);
-            if (subscriptionCount < 1)
+            if (voucher.Period < 1)
                 return RedeemCodeStatus.SubscriptionCountLessThanOne;
+
+            var totalAmount = voucher.Period * this.User.Organisation.SubscriptionMonthlyRate.Value;
 
             // register payment record
             var payment = new PaymentRecord
             {
                 Date = DateTimeService.UtcNow,
-                Amount = voucher.Amount,
+                Amount = totalAmount,
                 Note = $"Redeemed Voucher - {voucher.Code}",
                 Reference = string.Empty,
                 Voucher = voucher,
@@ -285,7 +286,21 @@ namespace LightMethods.Survey.Models.Services
             voucher.PaymentRecordId = payment.Id;
             this.UOW.VouchersRepository.InsertOrUpdate(voucher);
 
-            this.AddVoucherSusbcriptions(payment);
+            for (var index = 0; index < voucher.Period; index++)
+            {
+                var subscription = new Subscription
+                {
+                    IsActive = true,
+                    Type = UserSubscriptionType.Voucher,
+                    StartDate = DateTimeService.UtcNow.AddMonths(index),
+                    EndDate = DateTimeService.UtcNow.AddMonths(index).AddMonths(1),
+                    Note = "Subscribed with a voucher",
+                    PaymentRecord = payment,
+                    OrgUserId = this.User.Id
+                };
+                this.UOW.SubscriptionsRepository.InsertOrUpdate(subscription);
+            }
+
             this.User.IsSubscribed = true;
 
             // cancel last subscription, if any.
@@ -323,28 +338,6 @@ namespace LightMethods.Survey.Models.Services
             catch (Exception)
             {
                 return RedeemCodeStatus.Error;
-            }
-        }
-
-        private void AddVoucherSusbcriptions(PaymentRecord payment)
-        {
-            var monthlyRate = this.User.Organisation.SubscriptionMonthlyRate;
-            var subscriptionCount = Math.Floor(payment.Amount / monthlyRate.Value);
-            //var latestSubscription = this.GetLatest() ?? DateTimeService.UtcNow;
-
-            for (var index = 0; index < subscriptionCount; index++)
-            {
-                var subscription = new Subscription
-                {
-                    IsActive = true,
-                    Type = UserSubscriptionType.Voucher,
-                    StartDate = DateTimeService.UtcNow.AddMonths(index),
-                    EndDate = DateTimeService.UtcNow.AddMonths(index).AddMonths(1),
-                    Note = "Subscribed with a voucher",
-                    PaymentRecord = payment,
-                    OrgUserId = this.User.Id
-                };
-                this.UOW.SubscriptionsRepository.InsertOrUpdate(subscription);
             }
         }
     }

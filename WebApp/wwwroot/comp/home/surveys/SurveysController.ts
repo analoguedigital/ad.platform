@@ -1,8 +1,11 @@
 module App {
     "use strict";
 
-    interface ISurveysController {
+    interface ISurveysControllerScope extends ng.IScope {
         title: string;
+    }
+
+    interface ISurveysController {
         projects: Models.IProject[];
         selectedProject: Models.IProject;
         formTemplates: Models.IFormTemplate[];
@@ -16,7 +19,6 @@ module App {
 
     class SurveysController implements ISurveysController {
         public selectedProject: Models.IProject;
-        title: string = "Forms";
         formTemplates: Models.IFormTemplate[];
         projects: Models.IProject[];
         surveys: Models.ISurvey[];
@@ -24,7 +26,7 @@ module App {
         static $inject: string[] = ['$scope', '$stateParams', '$state', 'toastr', 'projectResource', 'formTemplateResource', 'surveyResource'];
 
         constructor(
-            private $scope: ng.IScope,
+            private $scope: ISurveysControllerScope,
             private $stateParams: IProjectStateParamsService,
             private $state: ng.ui.IStateService,
             private toastr: any,
@@ -36,6 +38,7 @@ module App {
         }
 
         activate() {
+            this.$scope.title = 'Threads';
             this.load();
         }
 

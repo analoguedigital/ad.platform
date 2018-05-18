@@ -6,8 +6,11 @@
         </div>
         <div class="box-content">
             <form name="organisationform" class="form-horizontal" novalidate>
-                <lm-form-group label="Name: ">
-                    <input type="text" id="name" name="name" ng-model="organisation.name" required/>
+                <lm-form-group label="Name: *" form-group-class="has-feedback" feedback-value="{{organisation.name.length}}">
+                    <input type="text" id="name" name="name" ng-model="organisation.name" required
+                           placeholder="Choose a name for this organisation" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="organisation.name.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!organisation.name.length"></span>
                 </lm-form-group>
                 <lm-form-group label="Subscription Enabled: ">
                     <div class="checkbox checkbox-default">
@@ -22,27 +25,37 @@
                     </div>
                 </lm-form-group>
 
-
                 <div ng-if="isInsertMode">
                     <br />
                     <br />
                     <h5>Root user's details</h5>
                     <div class="hr-line-dashed"></div>
 
-                    <lm-form-group label="Email: ">
-                        <input type="email" id="email" name="email" ng-model="organisation.rootUser.email" required />
+                    <lm-form-group label="Email: *" form-group-class="has-feedback" feedback-value="{{organisation.rootUser.email.length}}">
+                        <input type="email" id="email" name="email" ng-model="organisation.rootUser.email" required
+                               placeholder="the Org Admin email" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="organisation.rootUser.email.length"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!organisation.rootUser.email.length"></span>
                     </lm-form-group>
-                    <lm-form-group label="Password: ">
-                        <input type="password" id="password" name="password" ng-model="organisation.rootUser.password" required />
+                    <lm-form-group label="Password: *" form-group-class="has-feedback" feedback-value="{{organisation.rootUser.password.length}}">
+                        <input type="password" id="password" name="password" ng-model="organisation.rootUser.password" required
+                               placeholder="Choose a strong password" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="organisation.rootUser.password.length"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!organisation.rootUser.password.length"></span>
                     </lm-form-group>
-                    <lm-form-group label="Confirm Password: ">
-                        <input type="password" id="confirmPassword" name="confirmPassword" ng-model="organisation.rootUser.confirmPassword" required />
+                    <lm-form-group label="Confirm Password: *" form-group-class="has-feedback" feedback-value="{{organisation.rootUser.confirmPassword.length}}">
+                        <input type="password" id="confirmPassword" name="confirmPassword" ng-model="organisation.rootUser.confirmPassword" required
+                               placeholder="Confirm your password" />
+                        <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="organisation.rootUser.confirmPassword.length"></span>
+                        <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!organisation.rootUser.confirmPassword.length"></span>
                     </lm-form-group>
                     <lm-form-group label="First Name: ">
-                        <input type="text" id="firstName" name="firstName" ng-model="organisation.rootUser.firstName" />
+                        <input type="text" id="firstName" name="firstName" ng-model="organisation.rootUser.firstName"
+                               placeholder="First name"/>
                     </lm-form-group>
                     <lm-form-group label="Surname: ">
-                        <input type="text" id="surname" name="surname" ng-model="organisation.rootUser.surname" />
+                        <input type="text" id="surname" name="surname" ng-model="organisation.rootUser.surname"
+                               placeholder="Surname"/>
                     </lm-form-group>
                 </div>
 
@@ -51,23 +64,29 @@
                 <h5>Contacts details</h5>
                 <div class="hr-line-dashed"></div>
                 <lm-form-group label="Address Line 1: ">
-                    <input type="text" id="addressLine1" name="addressLine1" ng-model="organisation.addressLine1" />
+                    <input type="text" id="addressLine1" name="addressLine1" ng-model="organisation.addressLine1"
+                           placeholder="Address line 1"/>
                 </lm-form-group>
                 <lm-form-group label="Address Line 2: ">
-                    <input type="text" id="addressLine2" name="addressLine2" ng-model="organisation.addressLine2" />
+                    <input type="text" id="addressLine2" name="addressLine2" ng-model="organisation.addressLine2"
+                           placeholder="Address line 2"/>
                 </lm-form-group>
                 <lm-form-group label="Town ">
-                    <input type="text" id="town" name="town" ng-model="organisation.town" />
+                    <input type="text" id="town" name="town" ng-model="organisation.town"
+                           placeholder="Town/City"/>
                 </lm-form-group>
                 <lm-form-group label="County ">
-                    <input type="text" id="county" name="county" ng-model="organisation.county" />
+                    <input type="text" id="county" name="county" ng-model="organisation.county"
+                           placeholder="County/Province"/>
                 </lm-form-group>
                 <lm-form-group label="Postcode: ">
-                    <input type="text" id="postcode" name="postcode" ng-model="organisation.postcode" />
+                    <input type="text" id="postcode" name="postcode" ng-model="organisation.postcode"
+                           placeholder="Postcode/Zip"/>
                 </lm-form-group>
 
                 <lm-form-group label="Telephone number ">
-                    <input type="text" id="telNumber" name="telNumber" ng-model="organisation.telNumber" />
+                    <input type="text" id="telNumber" name="telNumber" ng-model="organisation.telNumber"
+                           placeholder="telephone number"/>
                 </lm-form-group>
 
                 <lm-form-group ng-if="errors !== undefined" class="">
@@ -101,6 +120,7 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
+                                <th st-sort="accountType" class="text-center" width="40">Type</th>
                                 <th st-sort="[firstName,surname]">Name</th>
                                 <th st-sort="email">Email</th>
                                 <th class="text-center" st-sort="isWebUser" width="120">Web User</th>
@@ -110,6 +130,15 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="user in displayedUsers">
+                                <td class="text-center">
+                                    <span ng-if="user.accountType === 0">
+                                        <i class="fa fa-phone-square"></i>
+                                    </span>
+                                    
+                                    <span ng-if="user.accountType === 1">
+                                        <i class="fa fa-laptop"></i>
+                                    </span>
+                                </td>
                                 <td>
                                     <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
                                     <i class="fa fa-user-o" ng-if="!user.isRootUser"></i>
@@ -126,7 +155,7 @@
                                 </td>
                                 <td class="text-center">
                                     <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(user)">
-                                        <i class="fa fa-unlink"></i> revoke
+                                        <i class="fa fa-unlink"></i> <span class="hidden-xs"> remove</span>
                                     </a>
                                 </td>
                             </tr>

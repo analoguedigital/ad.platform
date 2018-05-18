@@ -79,7 +79,7 @@ namespace WebApi.Controllers
 
             voucher.Title = value.Title;
             voucher.Code = value.Code;
-            voucher.Amount = value.Amount;
+            voucher.Period = value.Period;
             voucher.OrganisationId = Guid.Parse(value.Organisation.Id);
             voucher.IsRedeemed = value.IsRedeemed;
 

@@ -24,10 +24,12 @@
     }
 
     export interface IThreadAssignment {
+        formTemplateId: string;
         orgUserId: string;
         orgUserName: string;
+        accountType: number;
+        email: string;
         isRootUser: boolean;
-        formTemplateId: string;
         canAdd: boolean;
         canEdit: boolean;
         canView: boolean;

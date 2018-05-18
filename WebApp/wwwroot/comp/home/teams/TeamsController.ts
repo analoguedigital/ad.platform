@@ -27,7 +27,7 @@
             private orgTeamResource: Resources.IOrgTeamResource,
             private userResource: Resources.IOrgUserResource) {
 
-            $scope.title = "Organisation Teams";
+            $scope.title = "Teams";
             $scope.delete = (id: string) => { this.delete(id); };
 
             this.activate();

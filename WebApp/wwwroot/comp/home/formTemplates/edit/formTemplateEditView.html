@@ -6,11 +6,11 @@
         </div>
         <div class="box-content">
             <form name="formTemplateForm" class="form-horizontal" novalidate>
-                <lm-form-group label="Organisation: " ng-if="ctrl.currentUserIsSuperUser">
+                <lm-form-group label="Organisation: *" ng-if="ctrl.currentUserIsSuperUser">
                     <select id="organisation" name="organisation" ng-model="ctrl.formTemplate.organisation" ng-change="ctrl.organisationChanged()"
                             ng-options="organisation as organisation.name for organisation in ctrl.organisations track by organisation.id" required></select>
                 </lm-form-group>
-                <lm-form-group label="Category :">
+                <lm-form-group label="Category: *">
                     <div class="input-group">
                         <select id="category" name="category" ng-model="ctrl.formTemplate.formTemplateCategory" ng-options="category as category.title for category in ctrl.categories track by category.id" required></select>
                         <span class="input-group-btn">
@@ -18,17 +18,23 @@
                         </span>
                     </div>
                 </lm-form-group>
-                <lm-form-group label="Project :">
+                <lm-form-group label="Project: *">
                     <select id="project" name="project" ng-model="ctrl.formTemplate.project" ng-options="project as project.name for project in ctrl.projects track by project.id" required></select>
                 </lm-form-group>
-                <lm-form-group label="Code: ">
+                <lm-form-group label="Code: *" form-group-class="has-feedback" feedback-value="{{ctrl.formTemplate.code.length}}">
                     <input type="text" id="code" name="code" ng-model="ctrl.formTemplate.code" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.formTemplate.code.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.formTemplate.code.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Title: ">
+                <lm-form-group label="Title: *" form-group-class="has-feedback" feedback-value="{{ctrl.formTemplate.title}}">
                     <input type="text" id="title" name="title" ng-model="ctrl.formTemplate.title" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.formTemplate.title.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.formTemplate.title.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Description: ">
+                <lm-form-group label="Description: *" form-group-class="has-feedback" feedback-value="{{ctrl.formTemplate.description}}">
                     <textarea rows="3" id="description" name="description" ng-model="ctrl.formTemplate.description" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.formTemplate.description.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.formTemplate.description.length"></span>
                 </lm-form-group>
                 <lm-form-group label="Colour: ">
                     <input id="colour" name="colour" type="text" class="form-control" minicolors="minicolorSettings" ng-model="ctrl.formTemplate.colour" />
@@ -55,7 +61,9 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
+                            <th class="text-center" width="40">Type</th>
                             <th>User Name</th>
+                            <th>Email</th>
                             <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
                             <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
                             <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
@@ -64,10 +72,20 @@
                     </thead>
                     <tbody ng-if="ctrl.assignments.length">
                         <tr ng-repeat="user in ctrl.assignments">
+                            <td class="text-center">
+                                <span ng-if="user.accountType === 0">
+                                    <i class="fa fa-phone-square"></i>
+                                </span>
+
+                                <span ng-if="user.accountType === 1">
+                                    <i class="fa fa-laptop"></i>
+                                </span>
+                            </td>
                             <td>
                                 <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
                                 <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.orgUserName}}
                             </td>
+                            <td>{{user.email}}</td>
                             <td class="text-center">
                                 <i class="fa fa-check" ng-if="user.canView"></i>
                                 <i class="fa fa-times" ng-if="!user.canView"></i>

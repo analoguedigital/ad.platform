@@ -28,7 +28,7 @@ module App {
         organisations: Models.IOrganisation[];
 
         static $inject: string[] = ["$scope", "formTemplateResource", "formTemplateCategoryResource",
-            "projectResource", "$state", "$stateParams", "$uibModal", "organisationResource", "userContextService"];
+            "projectResource", "$state", "$stateParams", "$uibModal", "organisationResource", "userContextService", "toastr"];
 
         constructor(
             private $scope: ng.IScope,
@@ -39,7 +39,8 @@ module App {
             private $stateParams: ng.ui.IStateParamsService,
             private $uibModal: ng.ui.bootstrap.IModalService,
             private organisationResource: Resources.IOrganisationResource,
-            private userContextService: Services.IUserContextService
+            private userContextService: Services.IUserContextService,
+            private toastr: any
         ) {
             this.formTemplateId = $stateParams['id'];
 
@@ -87,6 +88,7 @@ module App {
 
         submit(form: ng.IFormController) {
             if (form.$invalid) {
+                this.toastr.warning("Fix your validation errors first");
                 return;
             }
 

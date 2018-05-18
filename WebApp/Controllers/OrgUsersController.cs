@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
 using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
@@ -48,9 +49,17 @@ namespace WebApi.Controllers
             private set { _userManager = value; }
         }
 
+        public enum OrgUserListType
+        {
+            MobileAccounts = 0,
+            WebAccounts = 1,
+            AllAccounts = 2
+        }
+
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
-        public IHttpActionResult Get(Guid? organisationId = null)
+        [Route("api/orgusers/{listType:int}/{organisationId?}")]
+        public IHttpActionResult Get(OrgUserListType listType, Guid? organisationId = null)
         {
             var result = new List<OrgUserDTO>();
 
@@ -60,9 +69,18 @@ namespace WebApi.Controllers
                     .Where(u => u.OrganisationId == CurrentOrganisationId)
                     .OrderBy(u => u.Surname)
                     .ThenBy(u => u.FirstName)
+                    .AsQueryable();
+
+                if (listType != OrgUserListType.AllAccounts)
+                {
+                    var accType = (AccountType)(int)listType;
+                    users = users.Where(x => x.AccountType == accType);
+                }
+
+                result = users
                     .ToList()
-                    .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
-                result = users;
+                    .Select(u => Mapper.Map<OrgUserDTO>(u))
+                    .ToList();
             }
             else
             {
@@ -72,18 +90,36 @@ namespace WebApi.Controllers
                         .Where(u => u.OrganisationId == organisationId)
                         .OrderBy(u => u.Surname)
                         .ThenBy(u => u.FirstName)
+                        .AsQueryable();
+
+                    if (listType != OrgUserListType.AllAccounts)
+                    {
+                        var accType = (AccountType)(int)listType;
+                        users = users.Where(x => x.AccountType == accType);
+                    }
+
+                    result = users
                         .ToList()
-                        .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
-                    result = users;
+                        .Select(u => Mapper.Map<OrgUserDTO>(u))
+                        .ToList();
                 }
                 else
                 {
                     var users = Users.AllIncluding(u => u.Type)
                       .OrderBy(u => u.Surname)
                       .ThenBy(u => u.FirstName)
-                      .ToList()
-                      .Select(u => Mapper.Map<OrgUserDTO>(u)).ToList();
-                    result = users;
+                      .AsQueryable();
+
+                    if (listType != OrgUserListType.AllAccounts)
+                    {
+                        var accType = (AccountType)(int)listType;
+                        users = users.Where(x => x.AccountType == accType);
+                    }
+
+                    result = users
+                        .ToList()
+                        .Select(u => Mapper.Map<OrgUserDTO>(u))
+                        .ToList();
                 }
             }
 
@@ -92,6 +128,7 @@ namespace WebApi.Controllers
 
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
+        [Route("api/orgusers/{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
             var user = Users.Find(id);
@@ -108,6 +145,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]OrgUserDTO value)
         {
             if (value.Password.IsEmpty())
@@ -116,29 +154,53 @@ namespace WebApi.Controllers
             if (value.Password != value.ConfirmPassword)
                 ModelState.AddModelError("ConfirmPassword", "'Password' and 'Confirm password' must be the same.");
 
+            if (value.AccountType == AccountType.MobileAccount)
+            {
+                // the OrgUserType property is hidden in mobile-users' edit form.
+                // so the Type is null at this point. fetch and populate.
+                // TeamUser Type ID: 379c989a-9919-4338-a468-a7c20eb76e28
+
+                var teamUserType = this.UnitOfWork.OrgUserTypesRepository.AllAsNoTracking
+                    .Where(x => x.SystemName == "TeamUser")
+                    .SingleOrDefault();
+
+                value.Type = Mapper.Map<OrgUserTypeDTO>(teamUserType);
+            }
+
             var orguser = Mapper.Map<OrgUser>(value);
             orguser.UserName = orguser.Email;
-            orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
-            orguser.AccountType = AccountType.WebAccount;
 
-            var identityResult = ServiceContext.UserManager.CreateSync(orguser, value.Password);
+            if (this.CurrentUser is SuperUser)
+            {
+                orguser.OrganisationId = Guid.Parse(value.Organisation.Id);
+                orguser.Organisation = null;
+            }
+            else if (this.CurrentUser is OrgUser)
+                orguser.OrganisationId = this.CurrentOrgUser.OrganisationId.Value;
+
+            // generate a random password
+            var randomPassword = System.Web.Security.Membership.GeneratePassword(12, 1);
+            var identityResult = ServiceContext.UserManager.CreateSync(orguser, randomPassword);
 
             if (!identityResult.Succeeded)
                 throw new Exception(identityResult.Errors.ToString(". "));
 
+            // assign roles by type.
             orguser.Type = UnitOfWork.OrgUserTypesRepository.Find(orguser.TypeId);
             UnitOfWork.UserManager.AssignRolesByUserType(orguser);
+
+            var organisation = this.UnitOfWork.OrganisationRepository.Find(orguser.OrganisationId.Value);
 
             if (value.Type.Name.ToLower() == "administrator")
             {
                 var projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
-                    .Where(p => p.OrganisationId == this.CurrentOrgUser.OrganisationId);
+                    .Where(p => p.OrganisationId == orguser.OrganisationId.Value);
 
-                foreach (var project in projects)
+                foreach (var item in projects)
                 {
-                    var assignment = new Assignment
+                    var orgUserAssignment = new Assignment
                     {
-                        ProjectId = project.Id,
+                        ProjectId = item.Id,
                         OrgUserId = orguser.Id,
                         CanView = true,
                         CanAdd = true,
@@ -148,11 +210,63 @@ namespace WebApi.Controllers
                         CanExportZip = true
                     };
 
-                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
                 }
 
                 UnitOfWork.Save();
             }
+
+            // create a project for this user
+            var project = new Project()
+            {
+                Name = $"{orguser.FirstName} {orguser.Surname}",
+                StartDate = DateTimeService.UtcNow,
+                OrganisationId = organisation.Id,
+                CreatedById = orguser.Id
+            };
+
+            UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
+            UnitOfWork.Save();
+
+            // assign this user to their project.
+            var assignment = new Assignment()
+            {
+                ProjectId = project.Id,
+                OrgUserId = orguser.Id,
+                CanView = true,
+                CanAdd = true,
+                CanEdit = false,
+                CanDelete = false,
+                CanExportPdf = false,
+                CanExportZip = false
+            };
+
+            UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+
+            // assign organisation admin to this project
+            if (organisation.RootUser != null)
+            {
+                UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
+                {
+                    ProjectId = project.Id,
+                    OrgUserId = organisation.RootUserId.Value,
+                    CanView = true,
+                    CanAdd = true,
+                    CanEdit = true,
+                    CanDelete = true,
+                    CanExportPdf = true,
+                    CanExportZip = true
+                });
+            }
+
+            UnitOfWork.Save();
+
+            // set user's current project
+            var _orgUser = UnitOfWork.OrgUsersRepository.Find(orguser.Id);
+            _orgUser.CurrentProjectId = project.Id;
+
+            UnitOfWork.OrgUsersRepository.InsertOrUpdate(_orgUser);
+            UnitOfWork.Save();
 
             // send account confirmation email
             var code = await this.UserManager.GenerateEmailConfirmationTokenAsync(orguser.Id);
@@ -162,12 +276,14 @@ namespace WebApi.Controllers
             var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
             var callbackUrl = $"{baseUrl}#!/verify-email?userId={orguser.Id}&code={encodedCode}";
 
-            var messageBody = GenerateAccountConfirmationEmail(callbackUrl);
+            var messageBody = GenerateAccountConfirmationEmail(callbackUrl, randomPassword);
             await UserManager.SendEmailAsync(orguser.Id, "Confirm your account", messageBody);
 
             return Ok();
         }
 
+        [HttpPut]
+        [Route("api/orgusers/{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]OrgUserDTO value)
         {
             var orguser = Users.Find(id);
@@ -206,6 +322,8 @@ namespace WebApi.Controllers
                 return BadRequest(result.Errors.ToString(", "));
         }
 
+        [HttpDelete]
+        [Route("api/orgusers/{id:guid}")]
         public IHttpActionResult Delete(Guid id)
         {
             if (id == CurrentUser.Id)
@@ -249,7 +367,7 @@ namespace WebApi.Controllers
 
         #endregion
 
-        private string GenerateAccountConfirmationEmail(string callbackUrl)
+        private string GenerateAccountConfirmationEmail(string callbackUrl, string randomPassword)
         {
             var path = HostingEnvironment.MapPath("~/EmailTemplates/email-confirmation.html");
             var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
@@ -257,10 +375,12 @@ namespace WebApi.Controllers
             var messageHeaderKey = "{{MESSAGE_HEADING}}";
             var messageBodyKey = "{{MESSAGE_BODY}}";
 
-            var content = @"<p>Your new account has been created. To complete your registration please confirm your email address by clicking the link below.</p>
-                            <p><a href='" + callbackUrl + @"'>Verify Email</a></p>";
+            var content = @"<p>Complete your registration by verifying your email address. Click the link below to continue.</p>
+                            <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p><br>
+                            <p>Your password is <strong>" + randomPassword + @"</strong>.</p>
+                            <p>Make sure to change your password after you've signed in.</p>";
 
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Complete your registration");
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Welcome to OnRecord");
             emailTemplate = emailTemplate.Replace(messageBodyKey, content);
 
             return emailTemplate;

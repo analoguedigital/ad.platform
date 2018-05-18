@@ -9,6 +9,7 @@ using Microsoft.Owin.Security.OAuth;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -94,6 +95,7 @@ namespace WebApi.Models
                     Gender = orgUser.Gender,
                     Birthdate = orgUser.Birthdate,
                     Address = orgUser.Address,
+                    Email = orgUser.Email,  // THIS COULD BE REMOVED AS WELL
                     PhoneNumber = orgUser.PhoneNumber,  // REMOVE THIS PROPERTY
                     IsSubscribed = orgUser.IsSubscribed,
                     ExpiryDate = expiryDate,
@@ -147,7 +149,18 @@ namespace WebApi.Models
             // otherwise the identity tokens are still open on our server.
             // PS. the sign out function is a bit different with 2FA enabled.
 
-            //Authentication.SignOut( CookieAuthenticationDefaults.AuthenticationType);
+            // there's no logout in OWIN and bearer tokens. you just generate
+            // a token and it is valid for a set period of time. we could use
+            // a refresh token provider though.
+
+            //Authentication.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+
+            //Request.GetOwinContext()
+            //    .Authentication
+            //    .SignOut(Request.GetOwinContext()
+            //               .Authentication.GetAuthenticationTypes()
+            //               .Select(o => o.AuthenticationType).ToArray());
+
             return Ok();
         }
 
@@ -597,7 +610,7 @@ namespace WebApi.Models
                     Destination = model.PhoneNumber,
                     Body = "Your security code is: " + code
                 };
-                
+
                 await UserManager.SmsService.SendAsync(message);
             }
 
@@ -896,7 +909,7 @@ namespace WebApi.Models
             var messageBodyKey = "{{MESSAGE_BODY}}";
 
             var content = @"<p>Your new account has been created. To complete your registration please confirm your email address by clicking the link below.</p>
-                            <p><a href='" + callbackUrl + @"'>Verify Email</a></p>";
+                            <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p>";
 
             emailTemplate = emailTemplate.Replace(messageHeaderKey, "Complete your registration");
             emailTemplate = emailTemplate.Replace(messageBodyKey, content);

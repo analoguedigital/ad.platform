@@ -99,9 +99,9 @@
                 var $translate, fn, message, notValid, _results;
                 scope.errors = [];
                 _results = [];
+
                 for (var property in errors) {
                     if (errors.hasOwnProperty(property)) {
-
                         notValid = errors[property];
                         message = $input.attr('ng-em-' + property);
                         if (!message) {
@@ -130,6 +130,7 @@
                         }
                     }
                 }
+
                 return _results;
             }, true);
 

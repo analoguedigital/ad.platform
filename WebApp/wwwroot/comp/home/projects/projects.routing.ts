@@ -31,6 +31,7 @@
                 url: "/case-assignments/:organisationId",
                 templateUrl: "comp/home/projects/caseAssignments/caseAssignmentsView.html",
                 controller: "caseAssignmentsController",
+                controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Directory of cases' },
                 module: 'private'
             })
@@ -38,6 +39,7 @@
                 url: "/thread-assignments",
                 templateUrl: "comp/home/projects/threadAssignments/threadAssignmentsView.html",
                 controller: "threadAssignmentsController",
+                controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Directory of threads' },
                 module: 'private'
             })

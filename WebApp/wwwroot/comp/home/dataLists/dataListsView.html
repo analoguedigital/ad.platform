@@ -3,12 +3,11 @@
     <div class="box">
         <div class="box-title">
             <h5>All your data lists</h5>
+            <div class="box-tools">
+                <a ui-sref="home.datalists.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
+            </div>
         </div>
         <div class="box-content">
-            <p>
-                <a ui-sref="home.datalists.edit"><i class="fa fa-plus-square"></i> Add new</a>
-            </p>
-
             <div st-table="displayedDataLists" st-safe-src="dataLists">
                 <div>
                     <form name="search-dataList" class="form-inline">

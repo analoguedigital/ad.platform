@@ -64,17 +64,17 @@
                             </td>
                             <td class="text-center" ng-if="ctrl.hasAccess(survey.formTemplateId, 'view')">
                                 <a ui-sref="home.surveys.view({surveyId: survey.id})" uib-tooltip="View record">
-                                    <i class="fa fa-eye"></i> <span class="hidden-xs"></span>
+                                    <i class="fa fa-eye"></i> 
                                 </a>
                             </td>
                             <td class="text-center" ng-if="ctrl.hasAccess(survey.formTemplateId, 'edit')">
-                                <a ui-sref="home.surveys.edit({surveyId: survey.id})" uib-tooltip="Edit record"><i class="fa fa-pencil"></i><span class="hidden-xs"></span></a>
+                                <a ui-sref="home.surveys.edit({surveyId: survey.id})" uib-tooltip="Edit record"><i class="fa fa-pencil"></i></a>
                             </td>
                             <td class="text-center" ng-if="ctrl.hasAccess(survey.formTemplateId, 'delete')">
                                 <a title="Delete" uib-tooltip="Delete record"
                                    ng-bootbox-confirm="Are you sure you want to delete this?"
                                    ng-bootbox-confirm-action="ctrl.delete(survey.id)">
-                                    <i class="fa fa-remove"></i><span class="hidden-xs"></span>
+                                    <i class="fa fa-remove"></i>
                                 </a>
                             </td>
                         </tr>

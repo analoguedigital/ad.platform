@@ -48,7 +48,7 @@ module App {
             this.organisationResource.get({ id: organisationId }).$promise.then((organisation) => {
                 this.$scope.organisation = organisation;
 
-                this.orgUserResource.query({ organisationId: organisationId }).$promise.then((users) => {
+                this.orgUserResource.query({ listType: 2, organisationId: organisationId }).$promise.then((users) => {
                     this.$scope.users = users;
                     this.$scope.displayedUsers = [].concat(users);
                 });
@@ -57,6 +57,7 @@ module App {
 
         submit(form: ng.IFormController) {
             if (form.$invalid) {
+                this.toastr.warning('Fix your validation errors first');
                 return;
             }
             var organisationId = this.$stateParams['id'];

@@ -18,8 +18,9 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>User Name</th>
-                                <th>Email address</th>
+                                <th st-sort="accountType" class="text-center" width="40">Type</th>
+                                <th st-sort="name">User Name</th>
+                                <th st-sort="email">Email address</th>
                                 <th class="text-center" width="100">Web User</th>
                                 <th class="text-center" width="100">Mobile User</th>
                                 <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
@@ -30,6 +31,15 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="user in ctrl.displayedAssignments track by user.userId">
+                                <td class="text-center">
+                                    <span ng-if="user.accountType === 0">
+                                        <i class="fa fa-phone-square"></i>
+                                    </span>
+
+                                    <span ng-if="user.accountType === 1">
+                                        <i class="fa fa-laptop"></i>
+                                    </span>
+                                </td>
                                 <td>
                                     <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
                                     <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.name}}

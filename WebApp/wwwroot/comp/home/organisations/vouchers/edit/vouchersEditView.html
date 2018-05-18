@@ -6,23 +6,40 @@
         </div>
         <div class="box-content">
             <form name="voucherForm" class="form-horizontal" novalidate>
-                <lm-form-group label="Organisation: " ng-if="currentUserIsSuperUser">
+                <lm-form-group label="Organisation: *" ng-if="currentUserIsSuperUser">
                     <select id="organisation" name="organisation" ng-model="voucher.organisation" ng-options="organisation as organisation.name for organisation in organisations track by organisation.id" required></select>
                 </lm-form-group>
-                <lm-form-group label="Title: ">
+                <lm-form-group label="Title: *" form-group-class="has-feedback" feedback-value="{{voucher.title.length}}">
                     <input type="text" id="title" name="title" ng-model="voucher.title" required placeholder="Choose a title for this voucher" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="voucher.title.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!voucher.title.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Code: ">
+                <lm-form-group label="Code: *" form-group-class="has-feedback" feedback-value="{{voucher.code.length}}">
                     <input type="text" id="code" name="code" ng-model="voucher.code" required placeholder="The voucher code" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="voucher.code.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!voucher.code.length"></span>
                 </lm-form-group>
-                <lm-form-group label="Amount: ">
+                <!--<lm-form-group label="Amount: *" form-group-class="has-feedback" feedback-value="{{voucher.amount.length}}">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <i class="fa fa-gbp"></i>
                         </div>
                         <input type="text" id="amount" name="amount" ng-model="voucher.amount" required placeholder="The credit amount. Used with your organization's monthly rate" />
                     </div>
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="voucher.amount"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!voucher.amount"></span>
+                </lm-form-group>-->
+
+                <lm-form-group label="Period: *">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-bell"></i>
+                        </div>
+                        <select id="period" name="period" ng-model="voucher.period" class="form-control"
+                                ng-options="item.value as item.text for item in periodOptions" required></select>
+                    </div>
                 </lm-form-group>
+
                 <lm-form-group label="Is Redeemed: ">
                     <div class="checkbox checkbox-default">
                         <input type="checkbox" name="isRedeemed" ng-model="voucher.isRedeemed" />

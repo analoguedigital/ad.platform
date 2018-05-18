@@ -2,12 +2,18 @@
 module App {
     "use strict";
 
+    interface PeriodOptionModel {
+        value: number;
+        text: string;
+    }
+
     interface IOrganisationVouchersEditControllerScope extends ng.IScope {
         title: string;
         searchTerm: string;
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
+        periodOptions: PeriodOptionModel[];
 
         voucher: Models.IVoucher;
         organisations: Models.IOrganisation[];
@@ -32,6 +38,16 @@ module App {
             private toastr: any) {
 
             $scope.title = "Edit Voucher";
+
+            $scope.periodOptions = [];
+            for (var i = 1; i <= 12; i++) {
+                var itemText = i === 1 ? 'month' : 'months';
+                this.$scope.periodOptions.push({
+                    value: i,
+                    text: `${i} ${itemText}`
+                });
+            }
+
             this.activate();
         }
         
@@ -50,7 +66,7 @@ module App {
                     id: '',
                     title: '',
                     code: '',
-                    amount: 0,
+                    period: 1,
                     isRedeemed: false,
                     organisationId: ''
                 };
