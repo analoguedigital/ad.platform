@@ -25,6 +25,7 @@
                 url: "/mobile/:organisationId",
                 templateUrl: "comp/home/users/mobile/mobileUsersView.html",
                 controller: "mobileUsersController",
+                controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Mobile Users' },
                 module: 'private'
             })

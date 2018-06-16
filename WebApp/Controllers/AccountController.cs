@@ -584,7 +584,36 @@ namespace WebApi.Models
 
             var result = await UserManager.ConfirmEmailAsync(model.UserId, model.Code);
             if (result.Succeeded)
+            {
+                // subscribe this user under OnRecord with full access.
+                var orgUser = this.UnitOfWork.OrgUsersRepository.Find(model.UserId);
+                if (orgUser.AccountType == AccountType.MobileAccount && !orgUser.Subscriptions.Any())
+                {
+                    var subscription = new Subscription
+                    {
+                        IsActive = true,
+                        Type = UserSubscriptionType.Organisation,
+                        StartDate = DateTimeService.UtcNow,
+                        EndDate = null,
+                        Note = $"Joined organisation - OnRecord",
+                        OrgUserId = model.UserId
+                    };
+
+                    UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+
+                    var orgUserAssignment = orgUser.Assignments.Where(x => x.ProjectId == orgUser.CurrentProject.Id).SingleOrDefault();
+                    orgUserAssignment.CanExportPdf = true;
+                    orgUserAssignment.CanExportZip = true;
+
+                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
+
+                    orgUser.IsSubscribed = true;
+
+                    UnitOfWork.Save();
+                }
+
                 return Ok();
+            }
 
             var errorString = new StringBuilder();
             foreach (var err in result.Errors)
