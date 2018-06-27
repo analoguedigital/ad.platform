@@ -43,21 +43,8 @@
                 (err) => { });
         }
 
-        joinOrganisation() {
-            this.close();
-
-            var modalInstance = this.$uibModal.open({
-                animation: true,
-                templateUrl: 'comp/home/myAccount/joinOrganisation/joinOrganisationView.html',
-                controller: 'joinOrganisationController',
-                controllerAs: 'ctrl'
-            }).result.then(
-                (res) => {
-                    location.reload(true);
-                },
-                (err) => {
-                    console.error(err);
-                });
+        suggestOrganisation() {
+            this.toastr.info("OKAY");
         }
 
         close() {

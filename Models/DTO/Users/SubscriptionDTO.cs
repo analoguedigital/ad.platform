@@ -27,6 +27,10 @@ namespace LightMethods.Survey.Models.DTO
 
         public OrgUserDTO OrgUser { get; set; }
 
+        public Guid? OrganisationId { get; set; }
+
+        public OrganisationDTO Organisation { get; set; }
+
         public Guid? SubscriptionPlanId { get; set; }
 
         public SubscriptionPlanDTO SubscriptionPlan { get; set; }

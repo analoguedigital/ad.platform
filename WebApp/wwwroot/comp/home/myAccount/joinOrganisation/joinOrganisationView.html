@@ -2,7 +2,7 @@
     <h3 class="modal-title">Organisation Invitation</h3>
 </div>
 <div class="modal-body">
-    <p>Enter your invitation token to join an organisation.</p>
+    <p>Enter your invitation token to join your organisation.</p>
     <form name="invitationForm">
         <lm-form-group label="Invitation Token:">
             <input type="text" name="token" id="token" class="form-control" ng-model="ctrl.token" required placeholder="8-digit invitation code" />
@@ -11,5 +11,5 @@
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
-    <button class="btn btn-primary" type="button" ng-click="ctrl.processCode(invitationForm)">Join Organisation</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.processCode(invitationForm)">Join organisation</button>
 </div>

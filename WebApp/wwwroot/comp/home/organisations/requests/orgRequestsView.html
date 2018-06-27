@@ -1,0 +1,66 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="box">
+        <div class="box-title">
+            <h5>Organisation Requests</h5>
+        </div>
+        <div class="box-content">
+            <div st-table="displayedRequests" st-safe-src="requests">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <table class="table table-hover table-mail">
+                    <thead>
+                        <tr>
+                            <th>User name</th>
+                            <th>Email</th>
+                            <th>Org. Name</th>
+                            <th>Contact Name</th>
+                            <th>Address</th>
+                            <th>Telephone</th>
+                            <th>Postcode</th>
+                            <th class="text-center" width="100"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="request in displayedRequests">
+                            <td>{{request.orgUser.firstName}} {{request.orgUser.surname}}</td>
+                            <td>{{request.orgUser.email}}</td>
+                            <td class="info">{{request.name}}</td>
+                            <td>
+                                <span ng-if="request.contactName.length">{{request.contactName}}</span>
+                                <span ng-if="!request.contactName.length">NA</span>
+                            </td>
+                            <td>
+                                <span ng-if="request.contactName.length">{{request.address}}</span>
+                                <span ng-if="!request.contactName.length">NA</span>
+                            </td>
+                            <td>
+                                <span ng-if="request.telNumber.length">{{request.telNumber}}</span>
+                                <span ng-if="!request.telNumber.length">NA</span>
+                            </td>
+                            <td>
+                                <span ng-if="request.postcode.length">{{request.postcode}}</span>
+                                <span ng-if="!request.postcode.length">NA</span>
+                            </td>
+                            <td class="text-center">
+                                <a ng-bootbox-confirm="Are you sure you want to delete this request?" ng-bootbox-confirm-action="delete(request.id)">
+                                    <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr ng-if="!displayedRequests.length">
+                            <td colspan="8">No requests were found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+        </div>
+    </div>
+</div>

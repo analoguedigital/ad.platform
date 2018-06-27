@@ -1,0 +1,30 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Request Organisation</h3>
+</div>
+<div class="modal-body">
+    <p>Enter the organisation details and send your request. Once we have reviewed your information, we'll help you setup your connection.</p>
+    <form name="requestOrgForm">
+        <lm-form-group label="Name:">
+            <input type="text" name="name" id="name" class="form-control" ng-model="ctrl.model.name" required placeholder="Organisation name (required)" />
+        </lm-form-group>
+        <lm-form-group label="Address:">
+            <input type="text" name="address" id="address" class="form-control" ng-model="ctrl.model.address" placeholder="Address" />
+        </lm-form-group>
+        <lm-form-group label="Contact name:">
+            <input type="text" name="contactName" id="contactName" class="form-control" ng-model="ctrl.model.contactName" placeholder="Contact name" />
+        </lm-form-group>
+        <lm-form-group label="Email:">
+            <input type="email" name="email" id="email" class="form-control" ng-model="ctrl.model.email" placeholder="Email address" />
+        </lm-form-group>
+        <lm-form-group label="Telephone:">
+            <input type="text" name="telNumber" id="telNumber" class="form-control" ng-model="ctrl.model.telNumber" placeholder="Telephone number" />
+        </lm-form-group>
+        <lm-form-group label="Postcode:">
+            <input type="text" name="postcode" id="postcode" class="form-control" ng-model="ctrl.model.postcode" placeholder="Postcode" />
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.sendRequest(requestOrgForm)">Send request</button>
+</div>

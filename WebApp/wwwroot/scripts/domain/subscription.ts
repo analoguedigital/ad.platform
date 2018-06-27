@@ -26,10 +26,11 @@
     export interface ISubscription extends ng.resource.IResource<ISubscription> {
         id: string;
         startDate: Date;
-        endDate: Date;
+        endDate?: Date;
         note: string;
         paymentRecordId: string;
         orgUserId: string;
+        organisationId: string;
         dateCreated: number;
         dateUpdated: number;
     }

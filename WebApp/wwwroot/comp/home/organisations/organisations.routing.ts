@@ -67,6 +67,22 @@
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Edit Invitation', parent: 'home.organisations.invitations' },
                 module: 'private'
+            })
+            .state("home.organisations.connectionRequests", <App.Models.IAppRoute>{
+                url: "/connection-requests/:organisationId",
+                templateUrl: "comp/home/organisations/connectionRequests/connectionRequestsView.html",
+                controller: "orgConnectionRequestsController",
+                controllerAs: "ctrl",
+                ncyBreadcrumb: { label: 'Connection Requests' },
+                module: 'private'
+            })
+            .state("home.organisations.requests", <App.Models.IAppRoute>{
+                url: "/requests",
+                templateUrl: "comp/home/organisations/requests/orgRequestsView.html",
+                controller: "orgRequestsController",
+                controllerAs: "ctrl",
+                ncyBreadcrumb: { label: 'Requests' },
+                module: 'private'
             });
     }
 })();

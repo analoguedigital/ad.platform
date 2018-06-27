@@ -76,11 +76,11 @@
                 </ul>
             </li>
             <!-- Organisation Management -->
-            <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') }">
+            <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') || $state.includes('home.organisations.connectionRequests') || $state.includes('home.organisations.requests')}">
                 <a aria-expanded="false">
                     <i class="fa fa-cubes"></i> <span class="nav-label">Organisation Mgmt</span> <span class="fa arrow"></span>
                 </a>
-                <ul aria-expanded="false" class="nav nav-second-level" ng-class="{'collapse in': $state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') || $state.includes('home.organisations.invitations') }">
+                <ul aria-expanded="false" class="nav nav-second-level" ng-class="{'collapse in': $state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') || $state.includes('home.organisations.invitations') || $state.includes('home.organisations.connectionRequests') || $state.includes('home.organisations.requests') }">
                     <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{'active':$state.includes('home.users.list')}">
                         <a ui-sref="home.users.list" ui-sref-opts="{reload: true}">
                             <i class="fa fa-user-circle-o"></i> Staff management
@@ -99,6 +99,16 @@
                     <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{ 'active': $state.includes('home.organisations.invitations')}">
                         <a ui-sref="home.organisations.invitations" ui-sref-opts="{reload: true}">
                             <i class="fa fa-hashtag"></i> Invitation Tokens
+                        </a>
+                    </li>
+                    <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{ 'active': $state.includes('home.organisations.connectionRequests')}">
+                        <a ui-sref="home.organisations.connectionRequests" ui-sref-opts="{reload: true}">
+                            <i class="fa fa-handshake-o"></i> Conn. Requests
+                        </a>
+                    </li>
+                    <li lm-access="System administrator,Platform administrator" ng-class="{ 'active': $state.includes('home.organisations.requests')}">
+                        <a ui-sref="home.organisations.requests" ui-sref-opts="{reload: true}">
+                            <i class="fa fa-address-book"></i> Org. Requests
                         </a>
                     </li>
                 </ul>

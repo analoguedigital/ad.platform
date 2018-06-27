@@ -129,7 +129,9 @@
     <Compile Include="DAL\FormTemplates\AttachmentMetricsRepository.cs" />
     <Compile Include="DAL\FormTemplates\TimeMetricsRepository.cs" />
     <Compile Include="DAL\OrganisationTeamsRepository.cs" />
+    <Compile Include="DAL\OrgConnectionRequestsRepository.cs" />
     <Compile Include="DAL\OrgInvitationsRepository.cs" />
+    <Compile Include="DAL\OrgRequestsRepository.cs" />
     <Compile Include="DAL\OrgTeamUsersRepository.cs" />
     <Compile Include="DAL\PaymentsRepository.cs" />
     <Compile Include="DAL\SubscriptionPlansRepository.cs" />
@@ -171,7 +173,9 @@
     <Compile Include="DTO\Users\MonthlyQuotaDTO.cs" />
     <Compile Include="DTO\Users\OrganisationDTO.cs" />
     <Compile Include="DTO\Users\OrganisationTeamDTO.cs" />
+    <Compile Include="DTO\Users\OrgConnectionRequestDTO.cs" />
     <Compile Include="DTO\Users\OrgInvitationDTO.cs" />
+    <Compile Include="DTO\Users\OrgRequestDTO.cs" />
     <Compile Include="DTO\Users\OrgTeamUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserDTO.cs" />
     <Compile Include="DTO\Users\OrgUserTypeDTO.cs" />
@@ -189,6 +193,8 @@
     <Compile Include="Entities\FormTemplates\AttachmentType.cs" />
     <Compile Include="Entities\OrganisationInvitation.cs" />
     <Compile Include="Entities\OrganisationTeam.cs" />
+    <Compile Include="Entities\OrgConnectionRequest.cs" />
+    <Compile Include="Entities\OrgRequest.cs" />
     <Compile Include="Entities\OrgTeamUser.cs" />
     <Compile Include="Entities\SubscriptionPlan.cs" />
     <Compile Include="Entities\ThreadAssignment.cs" />
@@ -215,6 +221,8 @@
     <Compile Include="EntityConfig\OrganisationConfig.cs" />
     <Compile Include="EntityConfig\OrganisationInvitationConfig.cs" />
     <Compile Include="EntityConfig\OrganisationWorkerConfig.cs" />
+    <Compile Include="EntityConfig\OrgConnectionRequestConfig.cs" />
+    <Compile Include="EntityConfig\OrgRequestConfig.cs" />
     <Compile Include="EntityConfig\OrgTeamUserConfig.cs" />
     <Compile Include="EntityConfig\OrgUserConfig.cs" />
     <Compile Include="EntityConfig\PaymentRecordConfig.cs" />
@@ -573,6 +581,22 @@
     <Compile Include="Migrations\201805151323597_Replace_voucher_amount_with_period.Designer.cs">
       <DependentUpon>201805151323597_Replace_voucher_amount_with_period.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806191136186_Add_org_connection_requests.cs" />
+    <Compile Include="Migrations\201806191136186_Add_org_connection_requests.Designer.cs">
+      <DependentUpon>201806191136186_Add_org_connection_requests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806231335318_Add_approval_date_to_connection_requests.cs" />
+    <Compile Include="Migrations\201806231335318_Add_approval_date_to_connection_requests.Designer.cs">
+      <DependentUpon>201806231335318_Add_approval_date_to_connection_requests.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806231340350_Add_organisation_to_subscriptions.cs" />
+    <Compile Include="Migrations\201806231340350_Add_organisation_to_subscriptions.Designer.cs">
+      <DependentUpon>201806231340350_Add_organisation_to_subscriptions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806241255085_Add_org_requests.cs" />
+    <Compile Include="Migrations\201806241255085_Add_org_requests.Designer.cs">
+      <DependentUpon>201806241255085_Add_org_requests.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -747,6 +771,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201805151323597_Replace_voucher_amount_with_period.resx">
       <DependentUpon>201805151323597_Replace_voucher_amount_with_period.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806191136186_Add_org_connection_requests.resx">
+      <DependentUpon>201806191136186_Add_org_connection_requests.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806231335318_Add_approval_date_to_connection_requests.resx">
+      <DependentUpon>201806231335318_Add_approval_date_to_connection_requests.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806231340350_Add_organisation_to_subscriptions.resx">
+      <DependentUpon>201806231340350_Add_organisation_to_subscriptions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806241255085_Add_org_requests.resx">
+      <DependentUpon>201806241255085_Add_org_requests.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -168,6 +168,8 @@ namespace WebApi
             Mapper.CreateMap<OrgTeamUser, OrgTeamUserDTO>().ReverseMap();
 
             Mapper.CreateMap<OrganisationInvitation, OrgInvitationDTO>().ReverseMap();
+            Mapper.CreateMap<OrgConnectionRequest, OrgConnectionRequestDTO>().ReverseMap();
+            Mapper.CreateMap<OrgRequest, OrgRequestDTO>().ReverseMap();
 
             Mapper.CreateMap<DataList, GetDataListsResItemDTO>();
 

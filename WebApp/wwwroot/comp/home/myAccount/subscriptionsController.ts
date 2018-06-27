@@ -65,9 +65,9 @@ module App {
                         this.latestSubscription = res.date;
                     });
 
-                this.subscriptionPlanResource.query().$promise.then((plans) => {
-                    this.$scope.subscriptionPlans = plans;
-                });
+                //this.subscriptionPlanResource.query().$promise.then((plans) => {
+                //    this.$scope.subscriptionPlans = plans;
+                //});
 
                 this.subscriptionResource.getLastSubscription((res) => {
                     this.$scope.lastSubscription = res;
@@ -116,6 +116,17 @@ module App {
                 (err) => {
                     console.error(err);
                 });
+        }
+
+        openOrganisationsModal() {
+            var modalInstance = this.$uibModal.open({
+                animation: true,
+                templateUrl: 'comp/home/myAccount/organisations/organisationsModal.html',
+                controller: 'organisationsModalController',
+                controllerAs: 'ctrl'
+            }).result.then(
+                (res) => { },
+                (err) => { });
         }
 
     }

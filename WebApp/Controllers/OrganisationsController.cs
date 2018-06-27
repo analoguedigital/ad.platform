@@ -34,6 +34,21 @@ namespace WebApi.Controllers
         }
 
         [DeflateCompression]
+        [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
+        [Route("api/organisations/getlist")]
+        public IHttpActionResult GetList()
+        {
+            var orgs = Organisations.AllAsNoTracking
+                .Where(x => !x.Name.Contains("OnRecord"))
+                .OrderBy(x => x.Name)
+                .ToList()
+                .Select(x => Mapper.Map<OrganisationDTO>(x))
+                .ToList();
+
+            return Ok(orgs);
+        }
+
+        [DeflateCompression]
         [ResponseType(typeof(OrganisationDTO))]
         [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult Get(Guid id)
@@ -162,6 +177,61 @@ namespace WebApi.Controllers
                         });
                     }
                 }
+
+                // cancel last subscription, if any.
+                var lastSubscription = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking
+                   .Where(x => x.OrgUserId == userId && x.IsActive)
+                   .OrderByDescending(x => x.DateCreated)
+                   .FirstOrDefault();
+
+                if (lastSubscription != null)
+                {
+                    if (lastSubscription.Type == UserSubscriptionType.Organisation)
+                    {
+                        lastSubscription.EndDate = DateTimeService.UtcNow;
+                        lastSubscription.IsActive = false;
+
+                        this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(lastSubscription);
+                    }
+                    else
+                    {
+                        var paymentRecord = this.UnitOfWork.PaymentsRepository.Find(lastSubscription.PaymentRecord.Id);
+                        foreach (var record in paymentRecord.Subscriptions)
+                        {
+                            record.IsActive = false;
+                        }
+
+                        this.UnitOfWork.PaymentsRepository.InsertOrUpdate(paymentRecord);
+                    }
+                }
+
+                // grant export access to the user
+                if (orgUser.CurrentProjectId.HasValue)
+                {
+                    var orgUserAssignment = orgUser.Assignments.Where(x => x.ProjectId == orgUser.CurrentProject.Id).SingleOrDefault();
+                    if (orgUserAssignment != null)
+                    {
+                        orgUserAssignment.CanExportPdf = true;
+                        orgUserAssignment.CanExportZip = true;
+
+                        UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
+                    }
+                }
+
+                var subscription = new Subscription
+                {
+                    IsActive = true,
+                    Type = UserSubscriptionType.Organisation,
+                    StartDate = DateTimeService.UtcNow,
+                    EndDate = null,
+                    Note = $"Joined organisation - {org.Name}",
+                    OrgUserId = userId,
+                    OrganisationId = org.Id
+                };
+
+                UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+
+                // TODO: notify the user by email.
             }
 
             UnitOfWork.Save();
@@ -263,6 +333,19 @@ namespace WebApi.Controllers
 
                 this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
             }
+
+            // subscribe this user to OnRecord again.
+            var onRecordSubscription = new Subscription
+            {
+                IsActive = true,
+                Type = UserSubscriptionType.Organisation,
+                StartDate = DateTimeService.UtcNow,
+                EndDate = null,
+                Note = $"Joined organisation - OnRecord",
+                OrgUserId = orgUser.Id
+            };
+
+            UnitOfWork.SubscriptionsRepository.InsertOrUpdate(onRecordSubscription);
 
             try
             {
