@@ -99,12 +99,16 @@
             <p ng-if="ctrl.latestSubscription">Your next renewal is on <strong>{{ctrl.latestSubscription | amDateFormat: 'DD/MM/YYYY'}}</strong></p>
 
             <p>
-                <button class="btn btn-info" ng-click="ctrl.addSubscription()">
-                    <i class="fa fa-credit-card"></i> Add Subscription
+                <!--<button class="btn btn-info" ng-click="ctrl.addSubscription()">
+                    <i class="fa fa-credit-card"></i> Add subscription
+                </button>-->
+
+                <button class="btn btn-info" ng-click="ctrl.openOrganisationsModal()">
+                    <i class="fa fa-cubes"></i> Connect to an organisation
                 </button>
 
                 <button class="btn btn-primary" ng-click="ctrl.redeemCode()">
-                    <i class="fa fa-gift"></i> Redeem Voucher
+                    <i class="fa fa-gift"></i> Redeem voucher
                 </button>
             </p>
 
@@ -125,7 +129,10 @@
                         <tbody>
                             <tr ng-repeat="entry in subscriptions track by $index" ng-class="{ 'success': entry.isActive }">
                                 <td class="text-center">{{entry.startDate | amDateFormat: 'DD/MM/YYYY'}}</td>
-                                <td class="text-center">{{entry.endDate | amDateFormat: 'DD/MM/YYYY'}}</td>
+                                <td class="text-center">
+                                    <span ng-if="entry.endDate">{{entry.endDate | amDateFormat: 'DD/MM/YYYY'}}</span>
+                                    <span ng-if="!entry.endDate">NA</span>
+                                </td>
                                 <td class="text-center">
                                     <span ng-if="entry.price">{{entry.price | currency : '&pound;'}}</span>
                                     <span ng-if="!entry.price">NA</span>

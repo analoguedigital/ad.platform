@@ -154,6 +154,30 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
+        private OrgConnectionRequestsRepository _OrgConnectionRequestsRepository;
+        public OrgConnectionRequestsRepository OrgConnectionRequestsRepository
+        {
+            get
+            {
+                if (this._OrgConnectionRequestsRepository == null)
+                    this._OrgConnectionRequestsRepository = new OrgConnectionRequestsRepository(this);
+
+                return this._OrgConnectionRequestsRepository;
+            }
+        }
+
+        private OrgRequestsRepository _OrgRequestsRepository;
+        public OrgRequestsRepository OrgRequestsRepository
+        {
+            get
+            {
+                if (_OrgRequestsRepository == null)
+                    _OrgRequestsRepository = new OrgRequestsRepository(this);
+
+                return _OrgRequestsRepository;
+            }
+        }
+
         private AssignmentsRepository _AssignmentsRepository;
         public AssignmentsRepository AssignmentsRepository
         {

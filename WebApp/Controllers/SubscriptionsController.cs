@@ -4,6 +4,7 @@ using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Web.Hosting;
@@ -211,7 +212,8 @@ namespace WebApi.Controllers
                 StartDate = DateTimeService.UtcNow,
                 EndDate = null,
                 Note = $"Joined organisation - {invitation.Organisation.Name}",
-                OrgUserId = this.CurrentOrgUser.Id
+                OrgUserId = this.CurrentOrgUser.Id,
+                OrganisationId = invitation.Organisation.Id
             };
 
             UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
@@ -407,14 +409,28 @@ namespace WebApi.Controllers
             var messageHeaderKey = "{{MESSAGE_HEADING}}";
             var messageBodyKey = "{{MESSAGE_BODY}}";
 
+            var rootIndex = GetRootIndexPath();
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
+
             var content = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
                             <p>The user's personal case is now filed under your organisation and you have access to it.</p>
-                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>";
+                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
+                            <p><br></p>
+                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
 
             emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Has Joined Your Organisation");
             emailTemplate = emailTemplate.Replace(messageBodyKey, content);
 
             return emailTemplate;
+        }
+
+        private string GetRootIndexPath()
+        {
+            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
+            if (!string.IsNullOrEmpty(rootIndexPath))
+                return rootIndexPath;
+
+            return "wwwroot/index.html";
         }
 
     }

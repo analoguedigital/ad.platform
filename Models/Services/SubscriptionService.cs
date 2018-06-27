@@ -29,6 +29,8 @@ namespace LightMethods.Survey.Models.Services
         public bool IsActive { get; set; }
 
         public SubscriptionPlanDTO SubscriptionPlan { get; set; }
+
+        public OrganisationDTO Organisation { get; set; }
     }
 
     public class SubscriptionService
@@ -77,28 +79,32 @@ namespace LightMethods.Survey.Models.Services
                     StartDate = item.StartDate,
                     EndDate = item.EndDate,
                     Note = item.Note,
-                    IsActive = item.IsActive
+                    IsActive = item.IsActive,
+                    Organisation = Mapper.Map<OrganisationDTO>(item.Organisation)
                 });
             }
 
             foreach (var item in payments)
             {
-                var entry = new SubscriptionEntryDTO();
+                if (item.Subscriptions.Any())
+                {
+                    var entry = new SubscriptionEntryDTO();
 
-                var startDate = item.Subscriptions.Min(x => x.StartDate);
-                var endDate = item.Subscriptions.Max(x => x.EndDate);
-                var lastSubscription = item.Subscriptions.OrderByDescending(x => x.DateCreated).Take(1).ToList().SingleOrDefault();
+                    var startDate = item.Subscriptions.Min(x => x.StartDate);
+                    var endDate = item.Subscriptions.Max(x => x.EndDate);
+                    var lastSubscription = item.Subscriptions.OrderByDescending(x => x.DateCreated).Take(1).ToList().SingleOrDefault();
 
-                entry.Type = lastSubscription.Type;
-                entry.StartDate = startDate;
-                entry.EndDate = endDate;
-                entry.Note = item.Note;
-                entry.Price = item.Amount;
-                entry.Reference = item.Reference;
-                entry.IsActive = lastSubscription.IsActive;
-                entry.SubscriptionPlan = Mapper.Map<SubscriptionPlanDTO>(lastSubscription.SubscriptionPlan);
+                    entry.Type = lastSubscription.Type;
+                    entry.StartDate = startDate;
+                    entry.EndDate = endDate;
+                    entry.Note = item.Note;
+                    entry.Price = item.Amount;
+                    entry.Reference = item.Reference;
+                    entry.IsActive = lastSubscription.IsActive;
+                    entry.SubscriptionPlan = Mapper.Map<SubscriptionPlanDTO>(lastSubscription.SubscriptionPlan);
 
-                result.Add(entry);
+                    result.Add(entry);
+                }
             }
 
             result = result.OrderByDescending(x => x.StartDate).ToList();

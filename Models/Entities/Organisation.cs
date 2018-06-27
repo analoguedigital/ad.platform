@@ -73,6 +73,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual ICollection<OrganisationInvitation> Invitations { get; set; }
 
+        public virtual ICollection<OrgConnectionRequest> ConnectionRequests { get; set; }
+
         public Organisation()
         {
             IsActive = true;

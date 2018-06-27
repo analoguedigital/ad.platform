@@ -73,14 +73,6 @@ namespace WebApi.Controllers
                     this.UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
                 }
 
-                var userEmail = new Email
-                {
-                    To = this.CurrentOrgUser.Email,
-                    Subject = $"Thank you for your feedback!",
-                    Content = GenerateFeedbackEmail(feedback, "Your Feedback")
-                };
-
-                this.UnitOfWork.EmailsRepository.InsertOrUpdate(userEmail);
                 this.UnitOfWork.Save();
 
                 return Ok();

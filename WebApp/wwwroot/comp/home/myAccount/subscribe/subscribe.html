@@ -2,25 +2,11 @@
     <h3 class="modal-title">Add Subscription</h3>
 </div>
 <div class="modal-body subscribe-modal">
-    <p>
-        Buy a monthly subscription, or connect to an organisation to get started.
-    </p>
-
+    <p>Choose a subscription plan to get started.</p>
     <div class="list-group">
         <a href="" class="list-group-item" ng-click="ctrl.purchase(plan)" ng-repeat="plan in ctrl.plans track by plan.id">
             <h4 class="list-group-item-heading">{{plan.name}}</h4>
             <p class="list-group-item-text">{{plan.description}}</p>
-        </a>
-    </div>
-
-    <p class="fancy">
-        <span>OR</span>
-    </p>
-
-    <div class="list-group">
-        <a href="" class="list-group-item" ng-click="ctrl.joinOrganisation()">
-            <h4 class="list-group-item-heading"><i class="fa fa-handshake-o"></i> Connect to an organisation</h4>
-            <p class="list-group-item-text">Enter your invitation code to subscribe to an organization.</p>
         </a>
     </div>
 </div>

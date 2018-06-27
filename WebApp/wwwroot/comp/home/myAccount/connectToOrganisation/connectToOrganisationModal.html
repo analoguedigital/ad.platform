@@ -1,0 +1,27 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Request to join an organisation</h3>
+</div>
+<div class="modal-body subscribe-modal">
+    <div class="list-group">
+        <a href="" class="list-group-item" ng-click="ctrl.requestToJoin(org.id)" ng-repeat="org in ctrl.organisations track by org.id">
+            <h4 class="list-group-item-heading">{{org.name}}</h4>
+            <p class="list-group-item-text">
+                <div ng-if="org.addressLine1.length">
+                    Address 1: {{org.addressLine1}}
+                </div>
+                <div ng-if="org.addressLine2.length">
+                    Address 2: {{org.addressLine2}}
+                </div>
+                <div ng-if="org.postcode.length">
+                    Postcode: {{org.postcode}}
+                </div>
+                <div ng-if="org.telNumber.length">
+                    Telephone: {{org.telNumber}}
+                </div>
+            </p>
+        </a>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+</div>

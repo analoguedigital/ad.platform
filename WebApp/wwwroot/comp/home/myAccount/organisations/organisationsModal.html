@@ -1,0 +1,29 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Connect to an organisation</h3>
+</div>
+<div class="modal-body subscribe-modal">
+    <div class="list-group">
+        <a href="" class="list-group-item" ng-click="ctrl.joinOrganisation()">
+            <h4 class="list-group-item-heading"><i class="fa fa-hashtag"></i> Invitation tokens</h4>
+            <p class="list-group-item-text">Use your invitation token to directly subscribe to your organization.</p>
+        </a>
+        <a href="" class="list-group-item" ng-click="ctrl.connectToOrganisation()">
+            <h4 class="list-group-item-heading"><i class="fa fa-handshake-o"></i> Connection requests</h4>
+            <p class="list-group-item-text">Select an organization and request to join them.</p>
+        </a>
+    </div>
+
+    <p class="fancy">
+        <span>OR</span>
+    </p>
+
+    <div class="list-group">
+        <a href="" class="list-group-item" ng-click="ctrl.requestOrganisation()">
+            <h4 class="list-group-item-heading"><i class="fa fa-lightbulb-o"></i> Unknown organisations</h4>
+            <p class="list-group-item-text">If the organisation you're looking for is not available, help us sort it out for you.</p>
+        </a>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+</div>

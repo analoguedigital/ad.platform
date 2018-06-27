@@ -26,6 +26,10 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual OrgUser OrgUser { get; set; }
 
+        public Guid? OrganisationId { get; set; }
+
+        public virtual Organisation Organisation { get; set; }
+
         public Guid? SubscriptionPlanId { get; set; }
 
         public virtual SubscriptionPlan SubscriptionPlan { get; set; }
