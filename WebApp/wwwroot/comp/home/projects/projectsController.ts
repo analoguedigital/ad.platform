@@ -1,6 +1,12 @@
 ﻿module App {
     "use strict";
 
+    interface IAddAdviceThreadModel {
+        title: string;
+        description: string;
+        colour: string;
+    }
+
     interface IProjectsControllerScope extends ng.IScope {
         title: string;
         searchTerm: string;
@@ -9,6 +15,8 @@
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
+        minicolorSettings: any;
+        model: IAddAdviceThreadModel;
 
         delete: (id: string) => void;
     }
@@ -19,11 +27,12 @@
     }
 
     class ProjectsController implements IProjectsController {
-        static $inject: string[] = ["$scope", "$stateParams", "projectResource"];
+        static $inject: string[] = ["$scope", "$stateParams", "$uibModal", "projectResource"];
 
         constructor(
             private $scope: IProjectsControllerScope,
             private $stateParams: ng.ui.IStateParamsService,
+            private $uibModal: ng.ui.bootstrap.IModalService,
             private projectResource: Resources.IProjectResource) {
 
             $scope.title = "Cases";
@@ -33,6 +42,14 @@
         }
 
         activate() {
+            this.$scope.minicolorSettings = {
+                control: 'hue',
+                format: 'hex',
+                opacity: false,
+                theme: 'bootstrap',
+                position: 'top left'
+            };
+
             this.load();
         }
 
@@ -49,6 +66,24 @@
                     this.$scope.displayedProjects = [].concat(this.$scope.projects);
                 });
             }
+        }
+
+        addAdviceThread(id: string) {
+            var modalInstance = this.$uibModal.open({
+                animation: true,
+                templateUrl: 'comp/home/projects/addAdviceThread/addAdviceThreadModalView.html',
+                controller: 'addAdviceThreadModalController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    projectId: () => {
+                        return id;
+                    }
+                }
+            }).result.then(
+                (res) => {
+                    // advice thread created
+                },
+                (err) => { });
         }
 
         delete(id: string) {

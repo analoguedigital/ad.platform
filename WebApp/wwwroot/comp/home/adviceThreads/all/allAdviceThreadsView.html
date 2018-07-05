@@ -1,0 +1,20 @@
+﻿<div class="box">
+    <div class="box-title">
+        <h5>
+            <span ng-if="ctrl.formTemplate.projectId" class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></span>
+            <i class="fa fa-windows" ng-if="!ctrl.formTemplate.projectId"></i>
+            {{ctrl.formTemplate.title}}
+        </h5>
+
+        <div class="box-tools" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'add')">
+            <a ui-sref="home.surveys.new({formTemplateId: ctrl.formTemplate.id, projectId: ctrl.project.id})" style="color: inherit">
+                <i class="fa fa-plus-square"></i> Add record
+            </a>
+        </div>
+    </div>
+    <div class="box-content">
+        <div ng-include="'comp/home/adviceThreads/all/_searchForm.html'"></div>
+        <div ng-include="'comp/home/adviceThreads/all/_dataTable.html'"></div>
+    </div>
+</div>
+

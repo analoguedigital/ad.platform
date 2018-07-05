@@ -24,6 +24,7 @@
                 url: "/:organisationId",
                 templateUrl: "comp/home/projects/projectsView.html",
                 controller: "projectsController",
+                controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Directory' },
                 module: "private"
             })

@@ -26,9 +26,9 @@ namespace WebApi.Controllers
         // GET api/<controller>
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateDTO>))]
-        public IHttpActionResult Get(Guid? projectId = null)
+        public IHttpActionResult Get(FormTemplateDiscriminators discriminator, Guid? projectId = null)
         {
-            var response = this.FormTemplatesService.Get(projectId);
+            var response = this.FormTemplatesService.Get(projectId, discriminator);
             return Ok(response);
         }
 
@@ -83,6 +83,7 @@ namespace WebApi.Controllers
 
             formTemplate.OrganisationId = Guid.Parse(value.Organisation.Id);
             formTemplate.ProjectId = value.Project.Id;
+            formTemplate.Discriminator = FormTemplateDiscriminators.RegularThread;
 
             var response = this.FormTemplatesService.Create(formTemplate);
             if (!response.Success)

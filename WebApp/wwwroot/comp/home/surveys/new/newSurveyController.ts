@@ -56,9 +56,11 @@ module App {
             this.tabs = _.map(Object.keys(pageGroups), (pageNumber) => { return { number: pageNumber, title: "Page " + pageNumber }; });
             this.tabs[0].active = true;
 
-            this.$timeout(() => {
-                this.$scope.$broadcast('rzSliderForceRender');
-            }, 200);
+            this.$scope.$on('$viewContentLoaded', () => {
+                this.$timeout(() => {
+                    this.$scope.$broadcast('rzSliderForceRender');
+                }, 500);
+            });
 
             this.getLocations();
         }
@@ -133,11 +135,15 @@ module App {
             if (form.$invalid)
                 return;
 
+            var prevState = this.$rootScope.previousState;
+            var prevParams = this.$rootScope.previousStateParams;
+
             if (this.survey.id == null) {
                 this.surveyResource.save(this.survey).$promise
                     .then(
                     () => {
-                        this.$state.go('home.surveys.list.summary', { projectId: this.project.id });
+                        //this.$state.go('home.surveys.list.summary', { projectId: this.project.id });
+                        this.$state.go(prevState.name, prevParams);
                     },
                     (err) => {
                         console.log(err);
@@ -147,7 +153,8 @@ module App {
             else {
                 this.surveyResource.update(this.survey,
                     () => {
-                        this.$state.go('home.surveys.list.summary', { projectId: this.survey.projectId });
+                        //this.$state.go('home.surveys.list.summary', { projectId: this.survey.projectId });
+                        this.$state.go(prevState.name, prevParams);
                     },
                     (err) => {
                         console.log(err);

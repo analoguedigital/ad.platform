@@ -219,6 +219,11 @@
     <Content Include="wwwroot\comp\common\pageHeader.html" />
     <Content Include="wwwroot\comp\common\resetPassword\resetPasswordView.html" />
     <Content Include="wwwroot\comp\common\topnavbar\topnavbarView.html" />
+    <Content Include="wwwroot\comp\home\adviceThreads\adviceThreadsView.html" />
+    <Content Include="wwwroot\comp\home\adviceThreads\all\allAdviceThreadsView.html" />
+    <Content Include="wwwroot\comp\home\adviceThreads\all\_dataTable.html" />
+    <Content Include="wwwroot\comp\home\adviceThreads\all\_searchForm.html" />
+    <Content Include="wwwroot\comp\home\adviceThreads\summary\adviceThreadsSummaryView.html" />
     <Content Include="wwwroot\comp\home\dashboard\dashboardView.html" />
     <Content Include="wwwroot\comp\home\dashboard\students\chart\details\chartDetailsView.html" />
     <Content Include="wwwroot\comp\home\dashboard\students\chart\studentChartView.html" />
@@ -260,6 +265,7 @@
     <Content Include="wwwroot\comp\home\organisations\requests\orgRequestsView.html" />
     <Content Include="wwwroot\comp\home\organisations\vouchers\edit\vouchersEditView.html" />
     <Content Include="wwwroot\comp\home\organisations\vouchers\vouchersView.html" />
+    <Content Include="wwwroot\comp\home\projects\addAdviceThread\addAdviceThreadModalView.html" />
     <Content Include="wwwroot\comp\home\projects\assignments\projectAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\caseAssignments\caseAssignmentsView.html" />
     <Content Include="wwwroot\comp\home\projects\summary\print\projectSummaryPrintView.html" />
@@ -466,6 +472,7 @@
     <Content Include="wwwroot\comp\home\users\editSuperUser\_superUserEditView.scss" />
     <Content Include="wwwroot\comp\home\projects\edit\_projectEditView.scss" />
     <Content Include="wwwroot\comp\home\myAccount\subscribe\_subscribe.scss" />
+    <Content Include="wwwroot\comp\home\adviceThreads\summary\_summary.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -505,6 +512,10 @@
     <TypeScriptCompile Include="wwwroot\comp\common\navigation\navigationController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\resetPassword\resetPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\topnavbar\topnavbarController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\adviceThreads\adviceThreads.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\adviceThreads\adviceThreadsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\adviceThreads\all\allAdviceThreadsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\adviceThreads\summary\adviceThreadsSummaryController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\dashboard\dashboardController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\dashboard\dashboard.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\dashboard\students\chart\details\chartDetailsController.ts" />
@@ -548,6 +559,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\requests\orgRequestsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\vouchers\edit\organisationVouchersEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\organisations\vouchers\organisationVouchersController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\addAdviceThread\addAdviceThreadModalController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\assignments\projectAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\caseAssignments\caseAssignmentsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\projects.routing.ts" />

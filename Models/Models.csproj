@@ -597,6 +597,10 @@
     <Compile Include="Migrations\201806241255085_Add_org_requests.Designer.cs">
       <DependentUpon>201806241255085_Add_org_requests.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806271540294_Add_formTemplate_discriminators.cs" />
+    <Compile Include="Migrations\201806271540294_Add_formTemplate_discriminators.Designer.cs">
+      <DependentUpon>201806271540294_Add_formTemplate_discriminators.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -783,6 +787,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806241255085_Add_org_requests.resx">
       <DependentUpon>201806241255085_Add_org_requests.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806271540294_Add_formTemplate_discriminators.resx">
+      <DependentUpon>201806271540294_Add_formTemplate_discriminators.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

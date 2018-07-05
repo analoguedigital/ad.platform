@@ -49,7 +49,7 @@ namespace LightMethods.Survey.Models.Services
             return PostLoadFilters(result.ToList());
         }
 
-        public IEnumerable<FormTemplate> GetAllProjectTemplates(Guid? projectId)
+        public IEnumerable<FormTemplate> GetAllProjectTemplates(Guid? projectId, FormTemplateDiscriminators discriminator)
         {
             var templates = Enumerable.Empty<FormTemplate>().AsQueryable();
 
@@ -93,7 +93,9 @@ namespace LightMethods.Survey.Models.Services
                     .AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics))
                     .Where(t => projectId == null || t.ProjectId == projectId);
 
-            return PostLoadFilters(templates.ToList());
+            var result = templates.Where(t => t.Discriminator == discriminator).ToList();
+
+            return PostLoadFilters(result);
         }
 
         private IQueryable<FormTemplate> OnlyCanBeAccessedByUser(IQueryable<FormTemplate> datasource)

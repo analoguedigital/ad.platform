@@ -1,6 +1,11 @@
 ﻿module App.Models {
     "use strict";
 
+    export enum FormTemplateDiscriminators {
+        regularThread = 0,
+        adviceThread = 1
+    };
+
     export interface IFormTemplate extends angular.resource.IResource<IFormTemplate> {
         id: string;
         projectId: string;
@@ -12,6 +17,7 @@
         description: string;
         colour: string;
         formTemplateCategory: IFormTemplateCategory;
+        discriminator: FormTemplateDiscriminators;
         metricGroups: IMetricGroup[];
         isChecked: boolean;
         calendarDateMetricId: string;

@@ -10,6 +10,7 @@
         notes: string;
         archived: boolean;
         organisation: Models.IOrganisation;
+        createdBy: Models.IOrgUser;
         allowView: boolean;
         allowAdd: boolean;
         allowEdit: boolean;

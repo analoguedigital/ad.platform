@@ -1,20 +1,23 @@
 module App {
     "use strict";
 
-    interface ISurveysSummaryController {
+    interface IAdviceThreadsSummaryController {
         title: string;
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
+
         activate: () => void;
         getAttachmentsCount: (survey: Models.ISurvey) => number;
+        currentUserId: string;
     }
 
-    class SurveysSummaryController implements ISurveysSummaryController {
+    class AdviceThreadsSummaryController implements IAdviceThreadsSummaryController {
         title: string = "Surveys";
         formTemplates: Models.IFormTemplate[];
         surveys: Models.ISurvey[];
+        currentUserId: string;
 
-        static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'project'];
+        static $inject: string[] = ['$scope', '$stateParams', 'toastr', 'formTemplateResource', 'surveyResource', 'projectSummaryPrintSessionResource', 'userContextService', 'project'];
         constructor(
             public $scope: ng.IScope,
             public $stateParams: ng.ui.IStateParamsService,
@@ -22,12 +25,14 @@ module App {
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
+            private userContextService: Services.IUserContextService,
             public project: Models.IProject) {
 
             this.activate();
         }
 
         activate() {
+            this.currentUserId = this.userContextService.current.user.id;
             this.load();
         }
 
@@ -37,7 +42,7 @@ module App {
                 projectId = this.project.id;
             }
 
-            this.formTemplateResource.query({ discriminator: 0, projectId: projectId }).$promise
+            this.formTemplateResource.query({ discriminator: 1, projectId: projectId }).$promise
                 .then((templates) => {
                     this.formTemplates = templates;
                 }, (err) => {
@@ -45,7 +50,7 @@ module App {
                     console.log(err)
                 });
 
-            this.surveyResource.query({ discriminator: 0, projectId: projectId }).$promise
+            this.surveyResource.query({ discriminator: 1, projectId: projectId }).$promise
                 .then((surveys) => {
                     this.surveys = surveys;
                 }, (err) => {
@@ -114,7 +119,14 @@ module App {
 
             return authorized;
         }
+
+        isProjectOwner(survey: Models.ISurvey) {
+            var templates = _.filter(this.formTemplates, (t) => { return t.id == survey.formTemplateId; });
+            var createdBy = templates[0].project.createdBy;
+
+            return survey.filledById === createdBy.id;
+        }
     }
 
-    angular.module("app").controller("surveysSummaryController", SurveysSummaryController);
+    angular.module("app").controller("adviceThreadsSummaryController", AdviceThreadsSummaryController);
 }

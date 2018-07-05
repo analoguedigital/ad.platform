@@ -1,11 +1,11 @@
 ﻿module App {
     "use strict";
 
-    interface IAllSurveysControllerScope extends ng.IScope {
+    interface IAllAdviceThreadsControllerScope extends ng.IScope {
         filterValues: Models.IFilterValue[];
     }
 
-    interface IAllSurveysController {
+    interface IAllAdviceThreadsController {
         title: string;
         searchTerm: string;
         surveys: Models.ISurvey[];
@@ -21,6 +21,7 @@
         startDateCalendar: any;
         endDateCalendar: any;
         metricFilters: Models.IMetricFilter[];
+        currentUserId: string;
 
         activate: () => void;
         delete: (id: string) => void;
@@ -33,7 +34,7 @@
         getAttachmentsCount: (survey: Models.ISurvey) => number;
     }
 
-    class AllSurveysController implements IAllSurveysController {
+    class AllAdviceThreadsController implements IAllAdviceThreadsController {
         title: string;
         searchTerm: string;
         surveys: Models.ISurvey[];
@@ -48,6 +49,7 @@
         startDate: Date;
         endDate: Date;
         currentUser: Models.IOrgUser;
+        currentUserId: string;
         assignment: Models.IProjectAssignment;
         startDateCalendar: any;
         endDateCalendar: any;
@@ -56,7 +58,7 @@
 
         static $inject: string[] = ["$scope", "$rootScope", "$timeout", "project", "formTemplate", "formTemplateResource", "surveyResource", "dataResource", "userContextService"];
         constructor(
-            private $scope: IAllSurveysControllerScope,
+            private $scope: IAllAdviceThreadsControllerScope,
             private $rootScope: ng.IRootScopeService,
             private $timeout: ng.ITimeoutService,
             public project: Models.IProject,
@@ -72,6 +74,8 @@
         }
 
         activate() {
+            this.currentUserId = this.userContextService.current.user.id;
+
             this.startDateCalendar = { isOpen: false };
             this.endDateCalendar = { isOpen: false };
 
@@ -102,7 +106,7 @@
                 console.error(error);
             });
 
-            this.surveyResource.query({ discriminator: 0, projectId: this.project.id }).$promise.then((surveys) => {
+            this.surveyResource.query({ discriminator: 1, projectId: this.project.id }).$promise.then((surveys) => {
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
                 this.displayedSurveys = [].concat(this.surveys);
 
@@ -271,5 +275,5 @@
         }
     }
 
-    angular.module("app").controller("allSurveysController", AllSurveysController);
+    angular.module("app").controller("allAdviceThreadsController", AllAdviceThreadsController);
 }
