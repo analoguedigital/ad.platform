@@ -225,7 +225,6 @@
 
             function generateDatasets(xAxesTicks) {
                 var datasets = [];
-
                 var templateIds = _.uniq(_.map(scope.surveys, (s) => { return s.formTemplateId; }));
 
                 _.forEach(templateIds, (id) => {
@@ -233,47 +232,49 @@
                     var template = _.find(scope.formTemplates, (t) => { return t.id === id; });
                     var records = _.filter(scope.surveys, (survey) => { return survey.formTemplateId === id; });
 
-                    _.forEach(xAxesTicks, function (tick) {
-                        var foundSurveys = _.filter(records, (record) => {
-                            if (moment(tick).format('MM-DD-YYYY') === moment(record.date).format('MM-DD-YYYY')) {
-                                return record;
-                            }
-                        });
-
-                        if (foundSurveys.length) {
-                            let impactSum = 0;
-                            _.forEach(foundSurveys, (survey) => {
-                                var timelineBarFormValue = _.filter(survey.formValues, { 'metricId': template.timelineBarMetricId })[0];
-                                if (timelineBarFormValue) {
-                                    var value = timelineBarFormValue.numericValue;
-
-                                    if (typeof value === 'string') {
-                                        impactSum += parseInt(value);
-                                    } else {
-                                        impactSum += value;
-                                    }
+                    if (template) {
+                        _.forEach(xAxesTicks, function (tick) {
+                            var foundSurveys = _.filter(records, (record) => {
+                                if (moment(tick).format('MM-DD-YYYY') === moment(record.date).format('MM-DD-YYYY')) {
+                                    return record;
                                 }
                             });
 
-                            if (impactSum === 0) impactSum = 0.1;
+                            if (foundSurveys.length) {
+                                let impactSum = 0;
+                                _.forEach(foundSurveys, (survey) => {
+                                    var timelineBarFormValue = _.filter(survey.formValues, { 'metricId': template.timelineBarMetricId })[0];
+                                    if (timelineBarFormValue) {
+                                        var value = timelineBarFormValue.numericValue;
 
-                            data.push(impactSum);
-                        } else {
-                            data.push(0);
-                        }
-                    });
+                                        if (typeof value === 'string') {
+                                            impactSum += parseInt(value);
+                                        } else {
+                                            impactSum += value;
+                                        }
+                                    }
+                                });
 
-                    var ds = {
-                        label: template.title,
-                        formTemplateId: template.id,
-                        backgroundColor: template.colour,
-                        borderColor: template.colour,
-                        borderWidth: 2,
-                        data: data,
-                        stack: 1
-                    };
+                                if (impactSum === 0) impactSum = 0.1;
 
-                    datasets.push(ds);
+                                data.push(impactSum);
+                            } else {
+                                data.push(0);
+                            }
+                        });
+
+                        var ds = {
+                            label: template.title,
+                            formTemplateId: template.id,
+                            backgroundColor: template.colour,
+                            borderColor: template.colour,
+                            borderWidth: 2,
+                            data: data,
+                            stack: 1
+                        };
+
+                        datasets.push(ds);
+                    }
                 });
 
                 return datasets.reverse();

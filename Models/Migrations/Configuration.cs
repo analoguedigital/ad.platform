@@ -162,7 +162,11 @@ namespace LightMethods.Survey.Models.Migrations
                 context.FormTemplateCategories.AddOrUpdate(cat);
                 context.SaveChanges();
 
-                var template = new FormTemplate() { Id = Guid.Parse("52692cf5-fd17-4fc6-b72b-b65b7e8d4e98"), ProjectId = CurrentProject.Id, Code = "101", Title = "First Form", Description = "This is the first from.", Colour = "#ddff00", Version = 1.0, FormTemplateCategoryId = cat.Id, IsPublished = true, OrganisationId = org.Id, CreatedById = user.Id };
+                var adviceThreadsCat = new FormTemplateCategory() { Id = Guid.Parse("F4284C22-1FB4-4187-AD0F-B8FEB059C842"), Title = "Advice Recordings", OrganisationId = org.Id };
+                context.FormTemplateCategories.AddOrUpdate(adviceThreadsCat);
+                context.SaveChanges();
+
+                var template = new FormTemplate() { Id = Guid.Parse("52692cf5-fd17-4fc6-b72b-b65b7e8d4e98"), ProjectId = CurrentProject.Id, Code = "101", Title = "First Form", Description = "This is the first from.", Colour = "#ddff00", Version = 1.0, FormTemplateCategoryId = cat.Id, IsPublished = true, Discriminator = FormTemplateDiscriminators.RegularThread, OrganisationId = org.Id, CreatedById = user.Id };
                 context.FormTemplates.AddOrUpdate(template);
                 context.SaveChanges();
 
@@ -210,6 +214,25 @@ namespace LightMethods.Survey.Models.Migrations
                 var metric8 = new DichotomousMetric() { Id = Guid.Parse("e254bf53-2ddb-4817-a9d7-6d8513696a2f"), ShortTitle = "yn1", Description = "Are you ok?", Order = category1.GetMaxMetricOrder() };
                 category1.AddMetric(metric8);
                 context.DichotomousMetrics.AddOrUpdate(metric8);
+
+                context.SaveChanges();
+
+                // default advice thread template.
+                var adviceTemplate = new FormTemplate() { Id = Guid.Parse("780f4d2d-524f-4714-a5b2-a43c8eaff3c3"), ProjectId = CurrentProject.Id, Code = "202", Title = "Advice Form", Description = "This is the default advice form.", Colour = "#08874b", DescriptionFormat = "{{comment}}", Version = 1.0, FormTemplateCategoryId = adviceThreadsCat.Id, IsPublished = true, Discriminator = FormTemplateDiscriminators.AdviceThread, OrganisationId = org.Id, CreatedById = user.Id };
+                context.FormTemplates.AddOrUpdate(adviceTemplate);
+                context.SaveChanges();
+
+                var adviceFormCategory1 = new MetricGroup() { Id = Guid.Parse("3b940609-0e1c-4542-87be-f69f2b3faa79"), Title = "Advice Form", FormTemplateId = adviceTemplate.Id, Order = adviceTemplate.GetMaxGroupOrder() };
+                adviceTemplate.AddGroup(adviceFormCategory1);
+                context.MetricGroups.AddOrUpdate(adviceFormCategory1);
+
+                var adviceFormMetric1 = new FreeTextMetric() { Id = Guid.Parse("bbb60c5f-cc29-473f-994e-3a04d25c9b60"), ShortTitle = "Comment", Description = "Write your advice or comment here", NumberOfLine = 2, MaxLength = 500, Order = adviceFormCategory1.GetMaxMetricOrder(), Mandatory = true };
+                adviceFormCategory1.AddMetric(adviceFormMetric1);
+                context.FreeTextMetrics.AddOrUpdate(adviceFormMetric1);
+
+                var adviceFormMetric2 = new AttachmentMetric() { Id = Guid.Parse("a48e8139-4608-4b72-a85b-b9908714f242"), ShortTitle = "Attachments", Description = "Upload any supporting evidence or media", AllowMultipleFiles = true, Order = adviceFormCategory1.GetMaxMetricOrder() };
+                adviceFormCategory1.AddMetric(adviceFormMetric2);
+                context.AttachmentMetrics.AddOrUpdate(adviceFormMetric2);
 
                 context.SaveChanges();
 

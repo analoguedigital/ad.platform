@@ -50,9 +50,9 @@ module App {
 
             var promise: ng.IPromise<any>;
             if (selectedProject == null)
-                promise = this.formResource.query().$promise;
+                promise = this.formResource.query({ discriminator: 0 }).$promise;
             else
-                promise = this.formResource.query({ projectId: selectedProject.id }).$promise;
+                promise = this.formResource.query({ discriminator: 0, projectId: selectedProject.id }).$promise;
 
             promise.then((forms) => {
                 this.$scope.forms = forms;

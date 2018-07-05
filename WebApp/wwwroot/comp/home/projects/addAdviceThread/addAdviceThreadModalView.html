@@ -1,0 +1,25 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">Create a new advice thread</h3>
+</div>
+<div class="modal-body">
+    <p>Choose a title and colour and create a new advice thread.</p>
+    <form name="adviceThreadForm">
+        <lm-form-group label="Title:">
+            <input type="text" name="title" id="title" class="form-control" ng-model="ctrl.model.title" required placeholder="Thread title (required)" />
+        </lm-form-group>
+        <lm-form-group label="Description: ">
+            <textarea rows="3" id="description" name="description" placeholder="Short description about this thread" ng-model="ctrl.model.description" required />
+        </lm-form-group>
+        <lm-form-group label="Colour: ">
+            <input id="colour" name="colour" type="text" class="form-control" minicolors="minicolorSettings" placeholder="Colour" ng-model="ctrl.model.colour" />
+        </lm-form-group>
+
+        <button type="button" class="btn btn-sm btn-success" ng-click="ctrl.generateColor()">
+            <i class="fa fa-cogs"></i> Generate Colour
+        </button>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.createAdviceThread(adviceThreadForm)">Create thread</button>
+</div>

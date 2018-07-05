@@ -9,10 +9,16 @@ using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
+    public enum FormTemplateDiscriminators
+    {
+        RegularThread = 0,
+        AdviceThread = 1
+    }
+
     public class FormTemplate : Entity
     {
-        private Regex _descriptionFormatRegex = new Regex(@"\{\{([^}]*)\}\}");
-        private Regex _descriptionFormatValueRegex = new Regex("{{({?}?[^{}])*}}");
+        private readonly Regex _descriptionFormatRegex = new Regex(@"\{\{([^}]*)\}\}");
+        private readonly Regex _descriptionFormatValueRegex = new Regex("{{({?}?[^{}])*}}");
 
         [Required]
         public Guid OrganisationId { get; set; }
@@ -63,6 +69,8 @@ namespace LightMethods.Survey.Models.Entities
         [Required]
         public Guid? FormTemplateCategoryId { set; get; }
         public virtual FormTemplateCategory FormTemplateCategory { set; get; }
+
+        public FormTemplateDiscriminators Discriminator { get; set; }
 
         public virtual ICollection<MetricGroup> MetricGroups { get; set; }
 
@@ -122,8 +130,8 @@ namespace LightMethods.Survey.Models.Entities
                 OrganisationId = OrganisationId,
                 ProjectId = ProjectId,
                 Title = Title,
-                Version = Version
-                
+                Version = Version,
+                Discriminator = Discriminator
             };
 
             foreach (var metricGroup in MetricGroups)

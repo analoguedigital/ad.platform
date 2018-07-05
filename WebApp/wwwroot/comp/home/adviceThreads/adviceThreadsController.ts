@@ -1,11 +1,11 @@
-module App {
+﻿module App {
     "use strict";
 
-    interface ISurveysControllerScope extends ng.IScope {
+    interface IAdviceThreadsControllerScope extends ng.IScope {
         title: string;
     }
 
-    interface ISurveysController {
+    interface IAdviceThreadsController {
         projects: Models.IProject[];
         selectedProject: Models.IProject;
         formTemplates: Models.IFormTemplate[];
@@ -17,7 +17,7 @@ module App {
         project: Models.IProject;
     }
 
-    class SurveysController implements ISurveysController {
+    class AdviceThreadsController implements IAdviceThreadsController {
         public selectedProject: Models.IProject;
         formTemplates: Models.IFormTemplate[];
         projects: Models.IProject[];
@@ -26,7 +26,7 @@ module App {
         static $inject: string[] = ['$scope', '$stateParams', '$state', 'toastr', 'projectResource', 'formTemplateResource', 'surveyResource'];
 
         constructor(
-            private $scope: ISurveysControllerScope,
+            private $scope: IAdviceThreadsControllerScope,
             private $stateParams: IProjectStateParamsService,
             private $state: ng.ui.IStateService,
             private toastr: any,
@@ -38,7 +38,7 @@ module App {
         }
 
         activate() {
-            this.$scope.title = 'Threads';
+            this.$scope.title = 'Advice Threads';
 
             this.$scope.$on('$stateChangeSuccess', (args) => {
                 this.load();
@@ -49,15 +49,14 @@ module App {
             this.projectResource.query().$promise.then((projects) => {
                 this.projects = projects;
 
-                if (this.projects.length < 1) 
+                if (this.projects.length < 1)
                     this.selectedProject = null;
                 else {
                     var projectId = this.$state.params['projectId'];
                     if (projectId !== undefined && projectId.length) {
                         this.selectedProject = _.find(this.projects, { id: projectId });
                     } else {
-                        if (this.projects.length === 1)
-                        {
+                        if (this.projects.length === 1) {
                             this.selectedProject = this.projects[0];
                             this.selectedProjectChanged();
                         }
@@ -70,14 +69,14 @@ module App {
 
         selectedProjectChanged() {
             if (this.selectedProject) {
-                if (this.$state.current.name === 'home.surveys.list.all')
-                    this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id }, { reload: true });
+                if (this.$state.current.name === 'home.adviceThreads.list.all')
+                    this.$state.go("home.adviceThreads.list.all", { projectId: this.selectedProject.id }, { reload: true });
                 else
-                    this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
+                    this.$state.go("home.adviceThreads.list.summary", { projectId: this.selectedProject.id }, { reload: true });
             }
         }
 
     }
 
-    angular.module("app").controller("surveysController", SurveysController);
+    angular.module("app").controller("adviceThreadsController", AdviceThreadsController);
 }

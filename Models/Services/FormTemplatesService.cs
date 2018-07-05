@@ -28,10 +28,10 @@ namespace LightMethods.Survey.Models.Services
             this.CurrentUser = currentUser;
         }
 
-        public IEnumerable<FormTemplateDTO> Get(Guid? projectId)
+        public IEnumerable<FormTemplateDTO> Get(Guid? projectId, FormTemplateDiscriminators discriminator)
         {
             var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
-            var templates = surveyProvider.GetAllProjectTemplates(projectId);
+            var templates = surveyProvider.GetAllProjectTemplates(projectId, discriminator);
 
             var result = new List<FormTemplateDTO>();
 

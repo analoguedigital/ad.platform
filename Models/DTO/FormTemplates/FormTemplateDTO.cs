@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace LightMethods.Survey.Models.DTO
@@ -30,11 +31,14 @@ namespace LightMethods.Survey.Models.DTO
         public bool IsPublished { set; get; }
 
         public string Colour { set; get; }
+
         public string DescriptionFormat { get; set; }
 
         public Guid? CalendarDateMetricId { set; get; }
 
         public Guid? TimelineBarMetricId { set; get; }
+
+        public FormTemplateDiscriminators Discriminator { get; set; }
 
         public ICollection<MetricGroupDTO> MetricGroups { set; get; }
 

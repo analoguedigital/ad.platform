@@ -7,6 +7,8 @@
         assign(params: Object, success: Function, error?: Function);
         unassign(params: Object, success: Function, error?: Function);
         teams(params: Object, success: Function, error?: Function);
+
+        createAdviceThread(params: Object, success: Function, error?: Function);
     }
 
     ProjectResource.$inject = ["$resource"];
@@ -17,7 +19,8 @@
             'assignments': { method: 'GET', isArray: true, url: '/api/projects/:id/assignments', params: { id: '@id' } },
             'assign': { method: 'POST', url: '/api/projects/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
             'unassign': { method: 'DELETE', url: '/api/projects/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
-            'teams': { method: 'GET', isArray: true, url: '/api/projects/:id/teams', params: { id: '@id' } }
+            'teams': { method: 'GET', isArray: true, url: '/api/projects/:id/teams', params: { id: '@id' } },
+            'createAdviceThread': { method: 'POST', url: '/api/projects/:id/create-advice-thread', params: { id: '@id' } }
         });
     }
 

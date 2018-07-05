@@ -312,5 +312,57 @@ namespace WebApi.Controllers
                 return BadRequest("This case cannot be deleted!");
             }
         }
+
+        [HttpPost]
+        [Route("api/projects/{id:guid}/create-advice-thread")]
+        [ResponseType(typeof(FormTemplateDTO))]
+        public IHttpActionResult CreateAdviceThread(Guid id, [FromBody]CreateAdviceThreadDTO model)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("Project Id is empty");
+
+            var project = UnitOfWork.ProjectsRepository.Find(id);
+            if (project == null)
+                return NotFound();
+
+            //var templateId = Guid.Parse("74EADB8F-7434-49C0-AD5A-854B0E77BCBD");  // first form
+            var templateId = Guid.Parse("780f4d2d-524f-4714-a5b2-a43c8eaff3c3");    // advice template
+            var template = UnitOfWork.FormTemplatesRepository.Find(templateId);
+
+            //var random = new Random();
+            //var title = $"{model.Title} {random.Next(1, 10000)}";
+            //var color = String.Format("#{0:X6}", random.Next(0x1000000)); // = "#A197B9"
+
+            var adviceThread = UnitOfWork.FormTemplatesRepository.CreateAdviceThread(template, this.CurrentUser.Id, model.Title, model.Colour, id);
+            var returnValue = Mapper.Map<FormTemplateDTO>(adviceThread);
+
+            // create a thread assignment for the project owner.
+            if (project.CreatedById.HasValue)
+            {
+                var assignment = new ThreadAssignment
+                {
+                    CanView = true,
+                    CanAdd = true,
+                    CanEdit = false,
+                    CanDelete = false,
+                    FormTemplateId = adviceThread.Id,
+                    OrgUserId = project.CreatedById.Value
+                };
+
+                UnitOfWork.ThreadAssignmentsRepository.InsertOrUpdate(assignment);
+                UnitOfWork.Save();
+            }
+
+            return Ok(returnValue);
+        }
+    }
+
+    public class CreateAdviceThreadDTO
+    {
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public string Colour { get; set; }
     }
 }

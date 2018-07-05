@@ -103,8 +103,8 @@ module App {
 
         load() {
             this.$q.all([
-                this.formTemplateResource.query({ projectId: this.project.id }).$promise,
-                this.surveyResource.query({ projectId: this.project.id }).$promise
+                this.formTemplateResource.query({ discriminator: 0, projectId: this.project.id }).$promise,
+                this.surveyResource.query({ discriminator: 0, projectId: this.project.id }).$promise
             ]).then((data) => {
                 this.formTemplates = data[0];
                 this.surveys = data[1];

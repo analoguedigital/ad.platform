@@ -31,14 +31,16 @@ namespace WebApi.Controllers
         [DeflateCompression]
         [Route("api/surveys")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
-        public IHttpActionResult Get(Guid? projectId = null)
+        public IHttpActionResult Get(FormTemplateDiscriminators discriminator, Guid? projectId = null)
         {
             //TODO: refactore to api/projects/{projectId}/surveys
             var foundSurveys = new List<FilledFormDTO>();
 
             if (this.CurrentUser is SuperUser)
             {
-                var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking;
+                var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                    .Where(s => s.FormTemplate.Discriminator == discriminator);
+
                 if (projectId.HasValue && projectId != Guid.Empty)
                     surveys = surveys.Where(s => s.ProjectId == projectId);
 
@@ -51,7 +53,8 @@ namespace WebApi.Controllers
 
             if (this.CurrentUser is OrgUser)
             {
-                var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking;
+                var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                    .Where(s => s.FormTemplate.Discriminator == discriminator);
 
                 if (projectId.HasValue && projectId != Guid.Empty)
                 {
@@ -75,7 +78,7 @@ namespace WebApi.Controllers
                     // return all projects that this user has a case or thread assignment for.
                     var caseSurveys = surveys.Where(s => s.Project.Assignments.Any(a => a.OrgUserId == CurrentOrgUser.Id && a.CanView));
                     var threadSurveys = surveys.Where(s => s.FormTemplate.Assignments.Any(a => a.OrgUserId == CurrentOrgUser.Id && a.CanView));
-
+                    
                     var joinedSurveys = new List<FilledForm>();
                     joinedSurveys.AddRange(caseSurveys.ToList());
                     joinedSurveys.AddRange(threadSurveys.ToList());
@@ -109,8 +112,15 @@ namespace WebApi.Controllers
             if (assignment == null || !assignment.CanView)
                 return Unauthorized();
 
+            // we want records from advice threads too, so can't filter by FilledById.
+            // this might need a refactoring but works for now.
+
+            //var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
+            //    .Where(s => s.ProjectId == projectId && s.FilledById == this.CurrentOrgUser.Id)
+            //    .OrderByDescending(s => s.DateCreated);
+
             var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                .Where(s => s.ProjectId == projectId && s.FilledById == this.CurrentOrgUser.Id)
+                .Where(s => s.ProjectId == projectId)
                 .OrderByDescending(s => s.DateCreated);
 
             var result = surveys.ToList()
@@ -220,11 +230,17 @@ namespace WebApi.Controllers
             if (this.CurrentOrgUser != null)
             {
                 if (!this.HasAccessToAddRecords(this.CurrentOrgUser, survey.FormTemplateId, survey.ProjectId))
-                    return Unauthorized();
+                    return Unauthorized();   
             }
 
             var filledForm = Mapper.Map<FilledForm>(survey);
-            filledForm.FilledById = CurrentOrgUser.Id;
+            
+            //filledForm.FilledById = CurrentOrgUser.Id;
+            if (this.CurrentOrgUser != null)
+                filledForm.FilledById = CurrentOrgUser.Id;
+            else
+                filledForm.FilledById = CurrentUser.Id;
+
             try
             {
                 UnitOfWork.FilledFormsRepository.InsertOrUpdate(filledForm);
