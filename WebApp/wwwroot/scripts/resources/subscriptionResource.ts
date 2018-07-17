@@ -7,6 +7,9 @@
         getLastSubscription(success: Function, error?: Function);
         getUserSubscriptions(params: Object, success: Function, error?: Function);
         buy(params: Object, success: Function, error?: Function);
+        closeSubscription(params: Object, success: Function, error?: Function);
+        removeSubscription(params: Object, success: Function, error?: Function);
+        joinOnRecord(params: Object, success: Function, error?: Function);
     }
 
     SubscriptionResource.$inject = ["$resource"];
@@ -17,7 +20,10 @@
             'getLatest': { method: 'GET', url: '/api/subscriptions/getLatest' },
             'getLastSubscription': { method: 'GET', url: '/api/subscriptions/last' },
             'getQuota': { method: 'GET', url: '/api/subscriptions/quota' },
-            'buy': { method: 'POST', url: '/api/subscriptions/buy/:id', params: { id: '@id' } }
+            'buy': { method: 'POST', url: '/api/subscriptions/buy/:id', params: { id: '@id' } },
+            'closeSubscription': { method: 'POST', url: '/api/subscriptions/close' },
+            'removeSubscription': { method: 'POST', url: '/api/subscriptions/remove' },
+            'joinOnRecord': { method: 'POST', url: '/api/subscriptions/joinOnRecord/:userId', params: { userId: '@userId' } }
         });
     }
 

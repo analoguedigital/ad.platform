@@ -3,6 +3,7 @@ using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services;
+using System;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
 using System.Linq;
@@ -12,6 +13,13 @@ using System.Web.Http;
 
 namespace WebApi.Controllers
 {
+    public class SendEmailDTO
+    {
+        public string EmailAddress { get; set; }
+
+        public string Body { get; set; }
+    }
+
     public class FeedbackController : BaseApiController
     {
         FeedbacksRepository Feedbacks
@@ -34,6 +42,21 @@ namespace WebApi.Controllers
             var content = @"<p>" + feedback.Comment + @"</p>";
 
             emailTemplate = emailTemplate.Replace(messageHeaderKey, messageHeader);
+            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+
+            return emailTemplate;
+        }
+
+        private string GenerateEmailTemplate(string body)
+        {
+            var path = HostingEnvironment.MapPath("~/EmailTemplates/feedback.html");
+            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+
+            var messageHeaderKey = "{{MESSAGE_HEADING}}";
+            var messageBodyKey = "{{MESSAGE_BODY}}";
+            var content = $"<p>{body}</p>";
+
+            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Message from OnRecord");
             emailTemplate = emailTemplate.Replace(messageBodyKey, content);
 
             return emailTemplate;
@@ -88,6 +111,36 @@ namespace WebApi.Controllers
                 }
 
                 throw dbEx;
+            }
+        }
+
+        [HttpPost]
+        [Route("api/feedbacks/sendEmail")]
+        public IHttpActionResult SendEmail(SendEmailDTO value)
+        {
+            if (string.IsNullOrEmpty(value.EmailAddress))
+                return BadRequest("Email address is required");
+
+            if (string.IsNullOrEmpty(value.Body))
+                return BadRequest("Body content is required");
+
+            var email = new Email
+            {
+                To = value.EmailAddress,
+                Subject = string.Format("Message from OnRecord - {0}", this.CurrentUser.UserName),
+                Content = GenerateEmailTemplate(value.Body)
+            };
+
+            UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+
+            try
+            {
+                UnitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
     }

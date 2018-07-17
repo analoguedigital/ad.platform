@@ -18,6 +18,7 @@
                 url: "/:organisationId",
                 templateUrl: "comp/home/users/usersView.html",
                 controller: "usersController",
+                controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Staff Members' },
                 module: "private"
             })

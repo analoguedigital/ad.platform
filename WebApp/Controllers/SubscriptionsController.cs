@@ -14,6 +14,13 @@ using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
+    public class UpdateSubscriptionEntryDTO
+    {
+        public Guid RecordId { get; set; }
+
+        public UserSubscriptionType Type { get; set; }
+    }
+
     public class SubscriptionsController : BaseApiController
     {
         private SubscriptionService SubscriptionService { get; set; }
@@ -361,6 +368,109 @@ namespace WebApi.Controllers
             return Ok(quota);
         }
 
+        [HttpPost]
+        [Route("api/subscriptions/close")]
+        public IHttpActionResult CloseSubscription([FromBody] UpdateSubscriptionEntryDTO value)
+        {
+            if (value.Type == UserSubscriptionType.Organisation)
+            {
+                var subscription = UnitOfWork.SubscriptionsRepository.Find(value.RecordId);
+                if (subscription == null)
+                    return NotFound();
+
+                subscription.EndDate = DateTimeService.UtcNow;
+                subscription.IsActive = false;
+
+                UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+            }
+            else
+            {
+                var payment = UnitOfWork.PaymentsRepository.Find(value.RecordId);
+                if (payment == null)
+                    return NotFound();
+
+                foreach (var subscription in payment.Subscriptions)
+                    subscription.IsActive = false;
+
+                UnitOfWork.PaymentsRepository.InsertOrUpdate(payment);
+            }
+
+            try
+            {
+                UnitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/subscriptions/remove")]
+        public IHttpActionResult RemoveSubscription([FromBody] UpdateSubscriptionEntryDTO value)
+        {
+            if (value.Type == UserSubscriptionType.Organisation)
+                UnitOfWork.SubscriptionsRepository.Delete(value.RecordId);
+            else
+                UnitOfWork.PaymentsRepository.Delete(value.RecordId);
+
+            try
+            {
+                UnitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "System administrator,Platform administrator")]
+        [Route("api/subscriptions/joinOnRecord/{userId:guid}")]
+        public IHttpActionResult JoinOnRecord(Guid userId)
+        {
+            if (userId == null || userId == Guid.Empty)
+                return BadRequest();
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(userId);
+            if (orgUser == null)
+                return NotFound();
+
+            if (orgUser.AccountType != AccountType.MobileAccount)
+                return BadRequest("Only mobile users can join OnRecord");
+
+            var onRecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
+                .Where(x => x.Name == "OnRecord")
+                .SingleOrDefault();
+
+            var subscription = new Subscription
+            {
+                IsActive = true,
+                Type = UserSubscriptionType.Organisation,
+                StartDate = DateTimeService.UtcNow,
+                EndDate = null,
+                Note = $"Joined organisation - OnRecord",
+                OrgUserId = userId,
+                OrganisationId = onRecord.Id
+            };
+            
+            UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+
+            try
+            {
+                UnitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        #region Helpers
+
         private string GeneratePaidPlanEmail(SubscriptionPlan plan)
         {
             var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
@@ -432,6 +542,8 @@ namespace WebApi.Controllers
 
             return "wwwroot/index.html";
         }
+
+        #endregion
 
     }
 }

@@ -41,6 +41,8 @@
     }
 
     export interface ISubscriptionEntry extends ng.resource.IResource<ISubscriptionEntry> {
+        id: string;
+        paymentRecordId: string;
         startDate: Date;
         endDate?: Date;
         price?: number;

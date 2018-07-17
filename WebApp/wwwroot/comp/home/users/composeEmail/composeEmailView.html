@@ -1,0 +1,22 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">
+        <i class="fa fa-envelope-open-o"></i> Compose Email
+    </h3>
+</div>
+<div class="modal-body">
+    <form name="emailForm" novalidate>
+        <lm-form-group label="Email address: ">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-at"></i></span>
+                <input type="email" name="email" id="email" ng-model="ctrl.model.email" required placeholder="Email address" readonly />
+            </div>
+        </lm-form-group>
+        <lm-form-group label="Body content: ">
+            <div text-angular ng-model="ctrl.model.body"></div>
+        </lm-form-group>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-warning" type="button" ng-click="ctrl.close()">Close</button>
+    <button class="btn btn-primary" type="button" ng-click="ctrl.sendEmail(emailForm)"><i class="fa fa-paper-plane-o"></i> Send Email</button>
+</div>

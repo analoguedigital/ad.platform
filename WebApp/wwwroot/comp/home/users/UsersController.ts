@@ -135,6 +135,21 @@ module App {
                 this.toastr.info("Cases and threads moved to OnRecord");
             });
         }
+
+        composeEmail(user: Models.IOrgUser) {
+            var modalInstance = this.$uibModal.open({
+                animation: true,
+                size: 'lg',
+                templateUrl: 'comp/home/users/composeEmail/composeEmailView.html',
+                controller: 'composeEmailController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    emailAddress: () => {
+                        return user.email;
+                    }
+                }
+            });
+        }
     }
 
     angular.module("app").controller("usersController", UsersController);

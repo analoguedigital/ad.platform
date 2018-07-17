@@ -311,6 +311,7 @@
     <Content Include="wwwroot\comp\home\teams\edit\teamEditView.html" />
     <Content Include="wwwroot\comp\home\teams\manage\teamManageView.html" />
     <Content Include="wwwroot\comp\home\teams\teamsView.html" />
+    <Content Include="wwwroot\comp\home\users\composeEmail\composeEmailView.html" />
     <Content Include="wwwroot\comp\home\users\editSuperUser\superUserEditView.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
     <Content Include="wwwroot\comp\home\users\addSuperUser\addSuperUserView.html" />
@@ -589,6 +590,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\teams\manage\teamManageController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\teams.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\TeamsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\users\composeEmail\composeEmailController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\editSuperUser\superUserEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\edit\userEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\addSuperUser\addSuperUserController.ts" />
