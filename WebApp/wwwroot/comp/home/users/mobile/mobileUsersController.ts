@@ -104,6 +104,21 @@ module App {
                 this.load();
             });
         }
+
+        composeEmail(user: Models.IOrgUser) {
+            var modalInstance = this.$uibModal.open({
+                animation: true,
+                size: 'lg',
+                templateUrl: 'comp/home/users/composeEmail/composeEmailView.html',
+                controller: 'composeEmailController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    emailAddress: () => {
+                        return user.email;
+                    }
+                }
+            });
+        }
     }
 
     angular.module("app").controller("mobileUsersController", MobileUsersController);

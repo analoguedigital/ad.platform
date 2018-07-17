@@ -182,6 +182,51 @@ module App {
         openBirthDateCalendar() {
             this.birthDateCalendar.isOpen = true;
         }
+
+        closeSubscription(entry: Models.ISubscriptionEntry) {
+            var params = {
+                type: entry.type,
+                recordId: ''
+            };
+
+            if (entry.type === 1) params.recordId = entry.id;
+            else params.recordId = entry.paymentRecordId;
+
+            this.subscriptionResource.closeSubscription(params, (res) => {
+                location.reload(true);
+            }, (err) => {
+                console.error(err);
+                if (err.data.message)
+                    this.toastr.error(err.data.message);
+            });
+        }
+
+        removeSubscription(entry: Models.ISubscriptionEntry) {
+            var params = {
+                type: entry.type,
+                recordId: ''
+            };
+
+            if (entry.type === 1) params.recordId = entry.id;
+            else params.recordId = entry.paymentRecordId;
+
+            this.subscriptionResource.removeSubscription(params, (res) => {
+                location.reload(true);
+            }, (err) => {
+                if (err.data.message)
+                    this.toastr.error(err.data.message);
+            });
+        }
+
+        joinOnRecord() {
+            this.subscriptionResource.joinOnRecord({ userId: this.user.id }, (res) => {
+                location.reload(true);
+            }, (err) => {
+                console.error(err);
+                if (err.data.message)
+                    this.toastr.error(err.data.message);
+            });
+        }
     }
 
     angular.module("app").controller("userEditController", UserEditController);

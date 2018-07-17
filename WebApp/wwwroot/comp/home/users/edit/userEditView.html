@@ -151,7 +151,7 @@
             </div>
         </div>
     </div>
-    <div class="box" ng-if="ctrl.subscriptions.length">
+    <div class="box">
         <div class="box-title">
             <h5>Subscriptions</h5>
         </div>
@@ -166,9 +166,11 @@
                             <th class="text-center" width="100">Length</th>
                             <th>Note</th>
                             <th class="text-center" width="120">Type</th>
+                            <th class="text-center" width="80"></th>
+                            <th class="text-center" width="80"></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody ng-if="ctrl.subscriptions.length">
                         <tr ng-repeat="entry in ctrl.subscriptions track by $index" ng-class="{ 'success': entry.isActive }">
                             <td class="text-center">{{entry.startDate | amDateFormat: 'DD/MM/YYYY'}}</td>
                             <td class="text-center">{{entry.endDate | amDateFormat: 'DD/MM/YYYY'}}</td>
@@ -188,6 +190,23 @@
                                 <span ng-if="entry.type == 1">Organisation</span>
                                 <span ng-if="entry.type == 0">Paid plan</span>
                                 <span ng-if="entry.type == 2">Voucher</span>
+                            </td>
+                            <td class="text-center">
+                                <a ng-bootbox-confirm="Are you sure you want to close this record?" ng-bootbox-confirm-action="ctrl.closeSubscription(entry)">
+                                    <i class="fa fa-ban"></i><span class="hidden-xs"> close</span>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <a ng-bootbox-confirm="Are you sure you want to delete this record?" ng-bootbox-confirm-action="ctrl.removeSubscription(entry)">
+                                    <i class="fa fa-remove"></i><span class="hidden-xs"> remove</span>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-if="!ctrl.subscriptions.length">
+                        <tr>
+                            <td colspan="8">
+                                No subscriptions found. This user is unsubscribed. <a href="" ng-click="ctrl.joinOnRecord()">Click here</a> to subscribe this user to OnRecord.
                             </td>
                         </tr>
                     </tbody>

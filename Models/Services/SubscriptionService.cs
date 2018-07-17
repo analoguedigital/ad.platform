@@ -14,6 +14,8 @@ namespace LightMethods.Survey.Models.Services
 
     public class SubscriptionEntryDTO
     {
+        public Guid? Id { get; set; }
+
         public DateTime StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
@@ -23,6 +25,8 @@ namespace LightMethods.Survey.Models.Services
         public string Note { get; set; }
 
         public string Reference { get; set; }
+
+        public Guid? PaymentRecordId { get; set; }
 
         public UserSubscriptionType Type { get; set; }
 
@@ -75,6 +79,7 @@ namespace LightMethods.Survey.Models.Services
             {
                 result.Add(new SubscriptionEntryDTO
                 {
+                    Id = item.Id,
                     Type = item.Type,
                     StartDate = item.StartDate,
                     EndDate = item.EndDate,
@@ -94,6 +99,7 @@ namespace LightMethods.Survey.Models.Services
                     var endDate = item.Subscriptions.Max(x => x.EndDate);
                     var lastSubscription = item.Subscriptions.OrderByDescending(x => x.DateCreated).Take(1).ToList().SingleOrDefault();
 
+                    entry.PaymentRecordId = item.Id;
                     entry.Type = lastSubscription.Type;
                     entry.StartDate = startDate;
                     entry.EndDate = endDate;
