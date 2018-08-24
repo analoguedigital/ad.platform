@@ -3,6 +3,7 @@
 
     export interface IOrgUserResource extends ng.resource.IResourceClass<Models.IOrgUser> {
         update(user: Models.IOrgUser, success: Function, error?: Function): Models.IOrgUser;
+        deleteAccount(params: Object, success: Function, error?: Function);
     }
 
     export interface IUserResource extends ng.resource.IResourceClass<Models.IUser> {
@@ -13,7 +14,8 @@
     OrgUserResource.$inject = ["$resource"];
     export function OrgUserResource($resource: ng.resource.IResourceService): IOrgUserResource {
         var OrgUser = <IOrgUserResource>$resource('/api/orgUsers/:listType/:id/', { listType: '@listType', id: '@id' }, {
-            'update': { method: 'PUT' }
+            'update': { method: 'PUT' },
+            'deleteAccount': { method: 'POST', url: '/api/orgusers/deleteAccount/:id', params: { id: '@id' } }
         });
 
         OrgUser.prototype.toString = function OrgUser_toString() {

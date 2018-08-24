@@ -59,7 +59,7 @@ module App {
             var projectPromise = this.projectResource.get({ id: projectId }, (project) => {
                 this.project = project;
 
-                this.orgUserResource.query({ listType: 1, organisationId: this.project.organisation.id }, (users) => {
+                this.orgUserResource.query({ listType: 2, organisationId: this.project.organisation.id }, (users) => {
                     this.users = users;
 
                     this.projectResource.assignments({ id: projectId }, (assignments) => {

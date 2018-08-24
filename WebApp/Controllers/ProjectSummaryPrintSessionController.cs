@@ -1,7 +1,5 @@
-﻿using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.Services;
+﻿using LightMethods.Survey.Models.Services;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -22,6 +20,8 @@ namespace WebApi.Controllers
     [NeedsActiveSubscription]
     public class ProjectSummaryPrintSessionController : BaseApiController
     {
+
+        // GET api/projectSummaryPrintSession/{id}
         public IHttpActionResult Get(Guid id)
         {
             var session = ProjectSummaryPrintSessionService.GetSession(id);
@@ -32,12 +32,14 @@ namespace WebApi.Controllers
             return Ok(session);
         }
 
+        // POST api/projectSummaryPrintSession
         public IHttpActionResult Post([FromBody] ProjectSummaryPrintSessionDTO model)
         {
             var updatedModel = ProjectSummaryPrintSessionService.AddOrUpdateSession(model);
             return Ok(updatedModel);
         }
 
+        // GET api/projectSummaryPrintSession/downloadZip/{id}/{timeline}/{locations}/{piechart}
         [HttpGet]
         [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
         public HttpResponseMessage DownloadZip(Guid id, bool timeline, bool locations, bool piechart)
@@ -56,6 +58,7 @@ namespace WebApi.Controllers
             return ExportZipFile(session, id, timeline, locations, piechart);
         }
 
+        // GET api/projectSummaryPrintSession/downloadPdf/{id}/{timeline}/{locations}/{piechart}
         [HttpGet]
         [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
         public HttpResponseMessage DownloadPdf(Guid id, bool timeline, bool locations, bool piechart)
@@ -71,7 +74,7 @@ namespace WebApi.Controllers
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
             }
 
-            var rootIndex = GetRootIndexPath();
+            var rootIndex = WebHelpers.GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
@@ -84,24 +87,6 @@ namespace WebApi.Controllers
 
         #region helpers
 
-        // refactor this to a static helper.
-        private string GetRootIndexPath()
-        {
-            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
-            if (!string.IsNullOrEmpty(rootIndexPath))
-                return rootIndexPath;
-
-            return "wwwroot/index.html";
-        }
-
-        private string SanitizeFileName(string filename)
-        {
-            string invalidChars = System.Text.RegularExpressions.Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
-            string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
-
-            return System.Text.RegularExpressions.Regex.Replace(filename, invalidRegStr, "_");
-        }
-
         private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
         {
             if (this.CurrentOrgUser != null)
@@ -112,7 +97,7 @@ namespace WebApi.Controllers
                     return new HttpResponseMessage(HttpStatusCode.Forbidden);
             }
 
-            var rootIndex = GetRootIndexPath();
+            var rootIndex = WebHelpers.GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
@@ -134,7 +119,7 @@ namespace WebApi.Controllers
                     string folderPath = string.Empty;
                     if (!string.IsNullOrEmpty(survey.Description))
                     {
-                        var sanitizedFileName = SanitizeFileName(survey.FormTemplate.Title);
+                        var sanitizedFileName = WebHelpers.SanitizeFileName(survey.FormTemplate.Title);
                         folderPath = HostingEnvironment.MapPath($"/ExportTemp/{survey.Serial}_{sanitizedFileName}");
                     }
                     else

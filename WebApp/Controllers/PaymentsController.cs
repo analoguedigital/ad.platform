@@ -11,8 +11,12 @@ namespace WebApi.Controllers
 {
     public class PaymentsController : BaseApiController
     {
-        PaymentsRepository Payments { get { return UnitOfWork.PaymentsRepository; } }
+        PaymentsRepository Payments
+        {
+            get { return UnitOfWork.PaymentsRepository; }
+        }
 
+        // GET api/payments
         [DeflateCompression]
         [Route("api/payments")]
         [ResponseType(typeof(IEnumerable<PaymentRecordDTO>))]

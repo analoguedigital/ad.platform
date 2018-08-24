@@ -17,12 +17,14 @@
                     <thead>
                         <tr>
                             <th st-sort="name">Name</th>
-                            <th width="100"></th>
+                            <th class="text-center" width="140"></th>
+                            <td class="text-center" width="100"></td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="project in displayedProjects">
-                            <td><a ui-sref="home.surveys.list.summary({projectId:project.id})">{{project.name}}</a></td>
+                            <td><a ui-sref="home.surveys.list.summary({projectId: project.id})">{{project.name}}</a></td>
+                            <td><a ui-sref="home.adviceThreads.list.summary({projectId: project.id})"><i class="fa fa-medkit"></i><span class="hidden-xs"> advice threads</span></a></td>
                             <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
                         </tr>
                     </tbody>

@@ -1,11 +1,11 @@
-module App {
+﻿module App {
     "use strict";
 
-    interface ISurveysControllerScope extends ng.IScope {
+    interface ISharedThreadsControllerScope extends ng.IScope {
         title: string;
     }
 
-    interface ISurveysController {
+    interface ISharedThreadsController {
         projects: Models.IProject[];
         selectedProject: Models.IProject;
         formTemplates: Models.IFormTemplate[];
@@ -17,7 +17,7 @@ module App {
         project: Models.IProject;
     }
 
-    class SurveysController implements ISurveysController {
+    class SharedThreadsController implements ISharedThreadsController {
         public selectedProject: Models.IProject;
         formTemplates: Models.IFormTemplate[];
         projects: Models.IProject[];
@@ -26,7 +26,7 @@ module App {
         static $inject: string[] = ['$scope', '$stateParams', '$state', 'toastr', 'projectResource', 'formTemplateResource', 'surveyResource'];
 
         constructor(
-            private $scope: ISurveysControllerScope,
+            private $scope: ISharedThreadsControllerScope,
             private $stateParams: IProjectStateParamsService,
             private $state: ng.ui.IStateService,
             private toastr: any,
@@ -38,7 +38,7 @@ module App {
         }
 
         activate() {
-            this.$scope.title = 'Threads';
+            this.$scope.title = 'Shared Threads';
 
             this.$scope.$on('$stateChangeSuccess', (args) => {
                 this.load();
@@ -46,7 +46,7 @@ module App {
         }
 
         load() {
-            this.projectResource.query().$promise.then((projects) => {
+            this.projectResource.getSharedProjects().$promise.then((projects) => {
                 this.projects = projects;
 
                 if (this.projects.length < 1)
@@ -59,8 +59,6 @@ module App {
                         if (this.projects.length === 1) {
                             this.selectedProject = this.projects[0];
                             this.selectedProjectChanged();
-                        } else {
-
                         }
                     }
                 }
@@ -71,16 +69,16 @@ module App {
 
         selectedProjectChanged() {
             if (this.selectedProject) {
-                //if (this.$state.current.name === 'home.surveys.list.all')
-                //    this.$state.go("home.surveys.list.all", { projectId: this.selectedProject.id }, { reload: true });
+                //if (this.$state.current.name === 'home.sharedThreads.list.all')
+                //    this.$state.go("home.sharedThreads.list.all", { projectId: this.selectedProject.id }, { reload: true });
                 //else
-                //    this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
+                //    this.$state.go("home.sharedThreads.list.summary", { projectId: this.selectedProject.id }, { reload: true });
 
-                this.$state.go("home.surveys.list.summary", { projectId: this.selectedProject.id }, { reload: true });
+                this.$state.go("home.sharedThreads.list.summary", { projectId: this.selectedProject.id }, { reload: true });
             }
         }
 
     }
 
-    angular.module("app").controller("surveysController", SurveysController);
+    angular.module("app").controller("sharedThreadsController", SharedThreadsController);
 }

@@ -18,16 +18,32 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class SurveysController : BaseApiController
     {
-        FormTemplatesRepository Templates { get { return UnitOfWork.FormTemplatesRepository; } }
-        FilledFormsRepository FilledForms { get { return UnitOfWork.FilledFormsRepository; } }
-        FormValuesRepository FormValues { get { return UnitOfWork.FormValuesRepository; } }
 
+        #region Properties
+
+        FormTemplatesRepository Templates
+        {
+            get { return UnitOfWork.FormTemplatesRepository; }
+        }
+
+        FilledFormsRepository FilledForms
+        {
+            get { return UnitOfWork.FilledFormsRepository; }
+        }
+
+        FormValuesRepository FormValues
+        {
+            get { return UnitOfWork.FormValuesRepository; }
+        }
+
+        #endregion
+
+        // GET api/surveys
         [DeflateCompression]
         [Route("api/surveys")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
@@ -60,9 +76,18 @@ namespace WebApi.Controllers
                 {
                     if (this.CurrentOrgUser.Type != OrgUserTypesRepository.Administrator)
                     {
+                        var threadAssignments = UnitOfWork.ThreadAssignmentsRepository.AllAsNoTracking
+                            .Where(x => x.OrgUserId == this.CurrentOrgUser.Id)
+                            .ToList();
+
+                        var projectFound = threadAssignments.Any(x => x.FormTemplate.ProjectId == projectId);
                         var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
-                        if (assignment == null || !assignment.CanView)
-                            return Unauthorized();
+
+                        if (!projectFound)
+                        {
+                            if (assignment == null || !assignment.CanView)
+                                return Unauthorized();
+                        }
                     }
 
                     surveys = surveys.Where(s => s.ProjectId == projectId);
@@ -78,7 +103,7 @@ namespace WebApi.Controllers
                     // return all projects that this user has a case or thread assignment for.
                     var caseSurveys = surveys.Where(s => s.Project.Assignments.Any(a => a.OrgUserId == CurrentOrgUser.Id && a.CanView));
                     var threadSurveys = surveys.Where(s => s.FormTemplate.Assignments.Any(a => a.OrgUserId == CurrentOrgUser.Id && a.CanView));
-                    
+
                     var joinedSurveys = new List<FilledForm>();
                     joinedSurveys.AddRange(caseSurveys.ToList());
                     joinedSurveys.AddRange(threadSurveys.ToList());
@@ -96,6 +121,7 @@ namespace WebApi.Controllers
             return Ok(foundSurveys);
         }
 
+        // GET api/surveys/user/{projectId}
         [DeflateCompression]
         [Route("api/surveys/user/{projectId}")]
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
@@ -129,6 +155,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // POST api/surveys/search
         [HttpPost]
         [DeflateCompression]
         [Route("api/surveys/search")]
@@ -141,9 +168,18 @@ namespace WebApi.Controllers
 
             if (this.CurrentUser is OrgUser)
             {
+                var threadAssignments = UnitOfWork.ThreadAssignmentsRepository.AllAsNoTracking
+                    .Where(x => x.OrgUserId == this.CurrentOrgUser.Id)
+                    .ToList();
+
+                var projectFound = threadAssignments.Any(x => x.FormTemplate.Project.Id == model.ProjectId);
                 var assignment = this.CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == model.ProjectId);
-                if (assignment == null || !assignment.CanView)
-                    return Unauthorized();
+
+                if (!projectFound)
+                {
+                    if (assignment == null || !assignment.CanView)
+                        return Unauthorized();
+                }
             }
 
             var result = this.UnitOfWork.FilledFormsRepository.Search(model).OrderByDescending(r => r.Date);
@@ -152,6 +188,7 @@ namespace WebApi.Controllers
             return Ok(retVal);
         }
 
+        // GET api/projects/{projectId}/formTemplates/{formTemplateId}/data
         [DeflateCompression]
         [Route("api/projects/{projectId}/formTemplates/{formTemplateId}/data")]
         [ResponseType(typeof(IEnumerable<IEnumerable<string>>))]
@@ -173,6 +210,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/surveys/{id}
         [DeflateCompression]
         [Route("api/surveys/{id}")]
         [ResponseType(typeof(FilledFormDTO))]
@@ -190,6 +228,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/surveys/{surveyId}/attachment/{id}
         [HttpGet]
         [Route("api/surveys/{surveyId}/attachment/{id}")]
         public IHttpActionResult GetAttachment(Guid surveyId, Guid id)
@@ -221,7 +260,8 @@ namespace WebApi.Controllers
 
             return Ok(result);
         }
-
+        
+        // POST api/surveys
         [HttpPost]
         [Route("api/surveys")]
         [NeedsActiveMonthlyQuota]
@@ -230,11 +270,11 @@ namespace WebApi.Controllers
             if (this.CurrentOrgUser != null)
             {
                 if (!this.HasAccessToAddRecords(this.CurrentOrgUser, survey.FormTemplateId, survey.ProjectId))
-                    return Unauthorized();   
+                    return Unauthorized();
             }
 
             var filledForm = Mapper.Map<FilledForm>(survey);
-            
+
             //filledForm.FilledById = CurrentOrgUser.Id;
             if (this.CurrentOrgUser != null)
                 filledForm.FilledById = CurrentOrgUser.Id;
@@ -288,6 +328,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // PUT api/surveys/{id}
         [HttpPut]
         [Route("api/surveys/{id}")]
         public IHttpActionResult Put(Guid id, FilledFormDTO surveyDTO)
@@ -381,7 +422,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        // DELETE api/<controller>/5
+        // DELETE api/surveys/{id}
         [Route("api/surveys/{id}")]
         public IHttpActionResult Delete(Guid id)
         {
@@ -412,11 +453,11 @@ namespace WebApi.Controllers
                 return false;
 
             var isAuthorized = false;
-            if (projectAssignment != null)
-                isAuthorized = projectAssignment.CanView;
-
             if (threadAssignment != null)
                 isAuthorized = threadAssignment.CanView;
+
+            if (projectAssignment != null)
+                isAuthorized = projectAssignment.CanView;
 
             return isAuthorized;
         }
@@ -430,11 +471,11 @@ namespace WebApi.Controllers
                 return false;
 
             var isAuthorized = false;
-            if (projectAssignment != null)
-                isAuthorized = projectAssignment.CanAdd;
-
             if (threadAssignment != null)
                 isAuthorized = threadAssignment.CanAdd;
+
+            if (projectAssignment != null)
+                isAuthorized = projectAssignment.CanAdd;
 
             return isAuthorized;
         }
@@ -448,11 +489,11 @@ namespace WebApi.Controllers
                 return false;
 
             var isAuthorized = false;
-            if (projectAssignment != null)
-                isAuthorized = projectAssignment.CanEdit;
-
             if (threadAssignment != null)
                 isAuthorized = threadAssignment.CanEdit;
+
+            if (projectAssignment != null)
+                isAuthorized = projectAssignment.CanEdit;
 
             return isAuthorized;
         }
@@ -466,11 +507,11 @@ namespace WebApi.Controllers
                 return false;
 
             var isAuthorized = false;
-            if (projectAssignment != null)
-                isAuthorized = projectAssignment.CanDelete;
-
             if (threadAssignment != null)
                 isAuthorized = threadAssignment.CanDelete;
+
+            if (projectAssignment != null)
+                isAuthorized = projectAssignment.CanDelete;
 
             return isAuthorized;
         }

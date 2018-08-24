@@ -13,6 +13,8 @@ module App {
         pageSize: number;
         currentUserIsSuperUser: boolean;
 
+        selectedUser: Models.IOrgUser;
+
         delete: (id: string) => void;
         resetPassword: (user: Models.IUser) => void;
         revoke: (user) => void;
@@ -48,9 +50,43 @@ module App {
         }
 
         activate() {
+            var self = this;
+
+            this.$scope.customDialogButtons = {
+                deleteUser: {
+                    label: "Delete user",
+                    className: "btn-primary",
+                    callback: function (args) {
+                        if (self.$scope.selectedUser) {
+                            self.delete(self.$scope.selectedUser.id);
+                        }
+                    }
+                },
+                deleteAccount: {
+                    label: "Delete account",
+                    className: "btn-danger",
+                    callback: function () {
+                        if (self.$scope.selectedUser) {
+                            self.deleteAccount(self.$scope.selectedUser.id);
+                        }
+                    }
+                },
+                cancel: {
+                    label: "Cancel",
+                    className: "btn-default",
+                    callback: function () {
+
+                    }
+                }
+            };
+
             this.load();
         }
-        
+
+        selectedUserChanged(user: Models.IOrgUser) {
+            this.$scope.selectedUser = user;
+        }
+
         load() {
             var roles = ["System administrator", "Platform administrator"];
             this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
@@ -62,7 +98,7 @@ module App {
                     this.$scope.displayedUsers = [].concat(this.$scope.users);
                 });
             } else {
-                this.orgUserResource.query({ listType: 0, organisationId: null}).$promise.then((users) => {
+                this.orgUserResource.query({ listType: 0, organisationId: null }).$promise.then((users) => {
                     this.$scope.users = users;
                     this.$scope.displayedUsers = [].concat(this.$scope.users);
                 });
@@ -91,6 +127,16 @@ module App {
                     this.load();
                 },
                 (err) => {
+                    this.toastr.error(err.data.message);
+                });
+        }
+
+        deleteAccount(id: string) {
+            this.orgUserResource.deleteAccount({ id: id },
+                () => {
+                    this.toastr.success('Account deleted successfully');
+                    this.load();
+                }, (err) => {
                     this.toastr.error(err.data.message);
                 });
         }

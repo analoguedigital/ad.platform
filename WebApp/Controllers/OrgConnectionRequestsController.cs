@@ -5,10 +5,7 @@ using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Web.Hosting;
 using System.Web.Http;
@@ -18,6 +15,8 @@ namespace WebApi.Controllers
     [RoutePrefix("api/orgConnectionRequests")]
     public class OrgConnectionRequestsController : BaseApiController
     {
+
+        // GET api/orgConnectionRequests
         public IHttpActionResult Get(Guid? organisationId = null)
         {
             var result = new List<OrgConnectionRequestDTO>();
@@ -46,6 +45,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/orgConnectionRequests/{id}
         [Route("{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
@@ -59,6 +59,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<OrgConnectionRequestDTO>(connectionRequest));
         }
 
+        // POST api/orgConnectionRequests
         [HttpPost]
         [Route("{organisationId:guid}")]
         public IHttpActionResult Post(Guid organisationId)
@@ -101,11 +102,19 @@ namespace WebApi.Controllers
                         .Where(x => x.Id == onRecord.RootUserId.Value)
                         .SingleOrDefault();
 
+                    var rootIndex = WebHelpers.GetRootIndexPath();
+                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
+
+                    var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
+                            <p>Organisation: <b>" + organisation.Name + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+
                     var email = new Email
                     {
                         To = onRecordAdmin.Email,
                         Subject = $"A user has requested to join an organization",
-                        Content = GenerateOnRecordConnectionRequestEmail(organisation, this.CurrentOrgUser)
+                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested to join an organization")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -117,11 +126,18 @@ namespace WebApi.Controllers
                         .Where(x => x.Id == organisation.RootUser.Id)
                         .SingleOrDefault();
 
+                    var rootIndex = WebHelpers.GetRootIndexPath();
+                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
+
+                    var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+
                     var orgAdminEmail = new Email
                     {
                         To = orgAdmin.Email,
                         Subject = $"A user has requested to join your organization",
-                        Content = GenerateOrgAdminConnectionRequestEmail(this.CurrentOrgUser)
+                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has request to join your organization")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
@@ -137,6 +153,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // DEL api/orgConnectionRequests/{id}
         [HttpDelete]
         [Route("{id:guid}")]
         public IHttpActionResult Delete(Guid id)
@@ -154,6 +171,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/orgConnectionRequests/{id}/approve
         [HttpPost]
         [Route("{id:guid}/approve")]
         public IHttpActionResult Approve(Guid id)
@@ -282,11 +300,15 @@ namespace WebApi.Controllers
             {
                 orgUser.IsSubscribed = true;
 
+                var content = @"<p>You have joined the <strong>" + organisation.Name + @"</strong> organization.</p>
+                            <p>Your personal case and its threads are now filed under this organization.</p>
+                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
+
                 var email = new Email
                 {
                     To = orgUser.Email,
                     Subject = $"Joined organization - {organisation.Name}",
-                    Content = GenerateOrgSubscriptionEmail(organisation)
+                    Content = WebHelpers.GenerateEmailTemplate(content, "You have joined an organization")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -297,11 +319,20 @@ namespace WebApi.Controllers
                         .Where(x => x.Id == organisation.RootUserId.Value)
                         .SingleOrDefault();
 
+                    var rootIndex = WebHelpers.GetRootIndexPath();
+                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
+
+                    var emailBody = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
+                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
+                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
+                            <p><br></p>
+                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
+
                     var orgAdminEmail = new Email
                     {
                         To = orgAdmin.Email,
                         Subject = $"User joined organization - {orgUser.UserName}",
-                        Content = GenerateOrgSubscriptionAdminEmail(orgUser)
+                        Content = WebHelpers.GenerateEmailTemplate(emailBody, "A user has joined your organization")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
@@ -315,99 +346,6 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        private string GenerateOrgSubscriptionEmail(Organisation organisation)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>You have joined the <strong>" + organisation.Name + @"</strong> organization.</p>
-                            <p>Your personal case and its threads are now filed under this organization.</p>
-                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You've joined an organisation");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateOrgSubscriptionAdminEmail(OrgUser orgUser)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var rootIndex = GetRootIndexPath();
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
-
-            var content = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
-                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
-                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
-                            <p><br></p>
-                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Has Joined Your Organisation");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateOnRecordConnectionRequestEmail(Organisation organisation, OrgUser orgUser)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/org-connection-request.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var rootIndex = GetRootIndexPath();
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
-
-            var content = @"<p>User name: <b>" + orgUser.UserName + @"</b></p>
-                            <p>Organisation: <b>" + organisation.Name + @"</b></p>
-                            <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Has Requested to Join an Organization");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateOrgAdminConnectionRequestEmail(OrgUser orgUser)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/org-connection-request.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var rootIndex = GetRootIndexPath();
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
-
-            var content = @"<p>User name: <b>" + orgUser.UserName + @"</b></p>
-                            <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Has Requested to Join Your Organization");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GetRootIndexPath()
-        {
-            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
-            if (!string.IsNullOrEmpty(rootIndexPath))
-                return rootIndexPath;
-
-            return "wwwroot/index.html";
         }
 
     }

@@ -14,6 +14,8 @@ namespace WebApi.Controllers
 {
     public class DataListsController : BaseApiController
     {
+
+        // GET api/dataLists
         [ResponseType(typeof(IEnumerable<GetDataListsResDTO>))]
         public IHttpActionResult Get()
         {
@@ -46,6 +48,7 @@ namespace WebApi.Controllers
             return Ok(new GetDataListsResDTO() { Items = result.ToList() });
         }
 
+        // GET api/dataLists/{id}
         [DeflateCompression]
         [ResponseType(typeof(DataListDTO))]
         public IHttpActionResult Get(Guid id)
@@ -64,6 +67,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<DataListDTO>(datalist));
         }
 
+        // GET api/dataLists/{id}/items
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<DataListItemDTO>))]
         [Route("api/datalists/{datalistId}/items")]
@@ -80,6 +84,7 @@ namespace WebApi.Controllers
             return Ok(datalist.AllItems.Select(i => Mapper.Map<DataListItemDTO>(i)));
         }
 
+        // POST api/dataLists
         public IHttpActionResult Post([FromBody]DataListDTO dataListDTO)
         {
             var dataList = Mapper.Map<DataList>(dataListDTO);
@@ -101,6 +106,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // PUT api/dataLists/{id}
         public IHttpActionResult Put(Guid id, [FromBody]DataListDTO dataListDTO)
         {
             var dataList = Mapper.Map<DataList>(dataListDTO);
@@ -159,6 +165,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // DEL api/dataLists/{id}
         public IHttpActionResult Delete(Guid id)
         {
             try
@@ -174,6 +181,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // GET api/dataLists/{dataListId}/references
         [ResponseType(typeof(GetDataListReferencesResDTO))]
         [Route("api/datalists/{datalistId}/references")]
         public IHttpActionResult GetReferences(Guid datalistId)
@@ -204,6 +212,7 @@ namespace WebApi.Controllers
             });
         }
 
+        // POST api/dataLists/{dataListId}/relationships
         [HttpPost]
         [Route("api/datalists/{datalistId}/relationships")]
         [ResponseType(typeof(DataListRelationshipDTO))]
@@ -242,6 +251,7 @@ namespace WebApi.Controllers
 
         }
 
+        // PUT api/dataLists/{dataListId}/relationships/{id}
         [HttpPut]
         [Route("api/datalists/{datalistId}/relationships/{id}")]
         public IHttpActionResult EditRelationship(Guid datalistId, Guid id, [FromBody] EditDataListRelationshipReqDTO req)
@@ -269,6 +279,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // DEL api/dataLists/{dataListId}/relationships/{id}
         [HttpDelete]
         [Route("api/datalists/{datalistId}/relationships/{id}")]
         public IHttpActionResult DeleteRelationship(Guid datalistId, Guid id)

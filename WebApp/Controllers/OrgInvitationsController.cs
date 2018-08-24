@@ -4,10 +4,7 @@ using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace WebApi.Controllers
@@ -15,6 +12,8 @@ namespace WebApi.Controllers
     [RoutePrefix("api/orginvitations")]
     public class OrgInvitationsController : BaseApiController
     {
+
+        // GET api/orgInvitations/{organisationId?}
         public IHttpActionResult Get(Guid? organisationId = null)
         {
             var result = new List<OrgInvitationDTO>();
@@ -41,6 +40,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/orgInvitations/{id}
         [Route("{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
@@ -54,6 +54,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<OrgInvitationDTO>(invitation));
         }
 
+        // POST api/orgInvitations
         [HttpPost]
         public IHttpActionResult Post([FromBody]OrgInvitationDTO value)
         {
@@ -86,6 +87,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // PUT api/orgInvitations/{id}
         [HttpPut]
         [Route("{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]OrgInvitationDTO value)
@@ -116,6 +118,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // DEL api/orgInvitations/{id}
         [HttpDelete]
         [Route("{id:guid}")]
         public IHttpActionResult Delete(Guid id)

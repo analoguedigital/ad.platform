@@ -117,7 +117,11 @@ namespace LightMethods.Survey.Models.DAL
             }
             else
             {
-                var assignment = template.Assignments.Where(a => a.OrgUserId == userId).SingleOrDefault();
+                //var assignment = template.Assignments.Where(a => a.OrgUserId == userId).SingleOrDefault();
+                var assignment = base.CurrentUOW.ThreadAssignmentsRepository.AllAsNoTracking
+                    .Where(x => x.FormTemplateId == template.Id && x.OrgUserId == userId)
+                    .SingleOrDefault();
+
                 if (assignment != null)
                 {
                     result.CanView = assignment.CanView;

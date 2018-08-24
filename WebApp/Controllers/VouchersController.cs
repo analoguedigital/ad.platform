@@ -1,14 +1,14 @@
-﻿using LightMethods.Survey.Models.Services;
-using System.Net;
-using System.Web.Http;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Data.Entity.Infrastructure;
-using LightMethods.Survey.Models.Entities;
-using System.Web.Hosting;
+using System.Linq;
+using System.Net;
 using System.Text;
+using System.Web.Hosting;
+using System.Web.Http;
 
 namespace WebApi.Controllers
 {
@@ -21,6 +21,7 @@ namespace WebApi.Controllers
             this.SubscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
         }
 
+        // GET api/vouchers
         public IHttpActionResult Get()
         {
             var vouchers = UnitOfWork.VouchersRepository.AllAsNoTracking;
@@ -29,6 +30,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/vouchers/{id}
         [Route("api/vouchers/{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
@@ -68,7 +70,7 @@ namespace WebApi.Controllers
             }
         }
 
-        // PUT api/vouchers/5
+        // PUT api/vouchers/{id}
         [HttpPut]
         [Route("api/vouchers/{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]VoucherDTO value)
@@ -96,7 +98,7 @@ namespace WebApi.Controllers
             }
         }
 
-        // DELETE api/vouchers/5
+        // DELETE api/vouchers/{id}
         [HttpDelete]
         [Route("api/vouchers/{id:guid}")]
         public IHttpActionResult Delete(Guid id)
@@ -121,6 +123,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/vouchers/redeem/{code}
         [HttpPost]
         [Route("api/vouchers/redeem/{code}")]
         public IHttpActionResult Redeem(string code)
@@ -141,11 +144,15 @@ namespace WebApi.Controllers
                     {
                         var voucher = this.UnitOfWork.VouchersRepository.AllAsNoTracking.Where(x => x.Code == code).SingleOrDefault();
 
+
+                        var message = @"<p>You have redeemed your voucher code and are now subscribed.</p>
+                            <p>This subscription has a fixed monthly quota. If you need more space to continue please purchase a paid plan or join an organization.</p>";
+
                         var email = new Email
                         {
                             To = this.CurrentOrgUser.Email,
                             Subject = $"Voucher Redeemed",
-                            Content = GenerateVoucherEmail(voucher)
+                            Content = WebHelpers.GenerateEmailTemplate(message, "Voucher Redeemed")
                         };
 
                         UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -158,21 +165,5 @@ namespace WebApi.Controllers
             }   
         }
 
-        private string GenerateVoucherEmail(Voucher voucher)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/voucher-redeemed.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>You have redeemed your voucher code and are now subscribed.</p>
-                            <p>This subscription has a fixed monthly quota. If you need more space to continue please purchase a paid plan or join an organization.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Voucher Redeemed");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
     }
 }

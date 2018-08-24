@@ -7,8 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
-using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
@@ -17,9 +15,22 @@ namespace WebApi.Controllers
 {
     public class OrganisationsController : BaseApiController
     {
-        private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
-        private OrgUsersRepository OrgUsers { get { return UnitOfWork.OrgUsersRepository; } }
 
+        #region Properties
+
+        private OrganisationRepository Organisations
+        {
+            get { return UnitOfWork.OrganisationRepository; }
+        }
+
+        private OrgUsersRepository OrgUsers
+        {
+            get { return UnitOfWork.OrgUsersRepository; }
+        }
+
+        #endregion
+
+        // GET api/organisations
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
         [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
@@ -33,6 +44,7 @@ namespace WebApi.Controllers
             return Ok(orgs);
         }
 
+        // GET api/organisations/getList
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
         [Route("api/organisations/getlist")]
@@ -48,6 +60,7 @@ namespace WebApi.Controllers
             return Ok(orgs);
         }
 
+        // GET api/organisations/{id}
         [DeflateCompression]
         [ResponseType(typeof(OrganisationDTO))]
         [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
@@ -64,6 +77,7 @@ namespace WebApi.Controllers
             return Ok(org);
         }
 
+        // POST api/organisations
         [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Post([FromBody]OrganisationDTO value)
         {
@@ -89,6 +103,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // PUT api/organisations/{id}
         [Authorize(Roles = "System administrator,Platform administrator")]
         public void Put(Guid id, [FromBody]OrganisationDTO value)
         {
@@ -102,6 +117,7 @@ namespace WebApi.Controllers
             UnitOfWork.Save();
         }
 
+        // DEL api/organisations/{id}
         [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Delete(Guid id)
         {
@@ -118,6 +134,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/organisations/{id}/assign
         [HttpPost]
         [Route("api/organisations/{id:guid}/assign")]
         [Authorize(Roles = "System administrator,Platform administrator")]
@@ -239,6 +256,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // DEL api/organisations/{id}/revoke/{userId}
         [HttpDelete]
         [Route("api/organisations/{id:guid}/revoke/{userId:guid}")]
         [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
@@ -349,22 +367,28 @@ namespace WebApi.Controllers
 
             try
             {
+                var content = @"<p>You have left the <strong>" + org.Name + @"</strong> organization.</p>
+                            <p>Your personal case has been moved back to OnRecord. And they don't have access to your files anymore, except for any assignments you might have created.</p>";
+
                 var email = new Email
                 {
                     To = orgUser.Email,
                     Subject = $"Left organization - {org.Name}",
-                    Content = GenerateRevokeUserEmail(org)
+                    Content = WebHelpers.GenerateEmailTemplate(content, "You have left an organization")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
 
                 if (org.RootUser != null)
                 {
+                    var emailBody = @"<p>A user has left your organization: <strong>" + orgUser.UserName + @"</strong>.</p>
+                            <p>And their personal case has been moved back to OnRecord.</p>";
+
                     var adminEmail = new Email
                     {
                         To = org.RootUser.Email,
                         Subject = $"User left organization - {orgUser.UserName}",
-                        Content = GenerateRevokeUserAdminEmail(orgUser)
+                        Content = WebHelpers.GenerateEmailTemplate(emailBody, "A user has left your organization")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
@@ -378,45 +402,6 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        public class OrganisationAssignmentDTO
-        {
-            public List<Guid> OrgUsers { get; set; }
-        }
-
-        private string GenerateRevokeUserEmail(Organisation organisation)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/left-organization.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>You have left the <strong>" + organisation.Name + @"</strong> organization.</p>
-                            <p>Your personal case has been moved back to OnRecord. And they don't have access to your files anymore, except for any assignments you might have created.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You have left an organization");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateRevokeUserAdminEmail(OrgUser orgUser)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/left-organization.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>A user has left your organization: <strong>" + orgUser.UserName + @"</strong>.</p>
-                            <p>And their personal case has been moved back to OnRecord.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Left Your Organization");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
         }
 
     }

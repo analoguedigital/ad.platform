@@ -13,15 +13,11 @@ using System.Web.Http;
 
 namespace WebApi.Controllers
 {
-    public class SendEmailDTO
-    {
-        public string EmailAddress { get; set; }
-
-        public string Body { get; set; }
-    }
-
     public class FeedbackController : BaseApiController
     {
+
+        #region Properties
+
         FeedbacksRepository Feedbacks
         {
             get { return this.UnitOfWork.FeedbacksRepository; }
@@ -32,36 +28,9 @@ namespace WebApi.Controllers
             get { return this.UnitOfWork.EmailsRepository; }
         }
 
-        private string GenerateFeedbackEmail(Feedback feedback, string messageHeader)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/feedback.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+        #endregion
 
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-            var content = @"<p>" + feedback.Comment + @"</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, messageHeader);
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateEmailTemplate(string body)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/feedback.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-            var content = $"<p>{body}</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Message from OnRecord");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
+        // POST api/feedbacks
         [HttpPost]
         [Route("api/feedbacks")]
         public IHttpActionResult Post(FeedbackDTO model)
@@ -87,11 +56,13 @@ namespace WebApi.Controllers
                 if (onrecord.RootUserId.HasValue)
                 {
                     var onRecordAdmin = this.UnitOfWork.OrgUsersRepository.Find(onrecord.RootUserId.Value);
+                    var content = $"<p>{feedback.Comment}</p>";
+
                     var adminEmail = new Email
                     {
                         To = onrecord.RootUser.Email,
                         Subject = $"New feedback arrived - {this.CurrentOrgUser.UserName}",
-                        Content = GenerateFeedbackEmail(feedback, string.Format("Feedback from {0}", this.CurrentOrgUser.UserName))
+                        Content = WebHelpers.GenerateEmailTemplate(content, "User Feedback")
                     };
                     this.UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
                 }
@@ -114,6 +85,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/feedbacks/sendEmail
         [HttpPost]
         [Route("api/feedbacks/sendEmail")]
         public IHttpActionResult SendEmail(SendEmailDTO value)
@@ -128,7 +100,7 @@ namespace WebApi.Controllers
             {
                 To = value.EmailAddress,
                 Subject = string.Format("Message from OnRecord - {0}", this.CurrentUser.UserName),
-                Content = GenerateEmailTemplate(value.Body)
+                Content = WebHelpers.GenerateEmailTemplate(value.Body, "Message from OnRecord")
             };
 
             UnitOfWork.EmailsRepository.InsertOrUpdate(email);
