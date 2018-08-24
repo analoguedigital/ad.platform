@@ -59,7 +59,11 @@
                         }], project:
                     ['$stateParams', 'projectResource',
                         ($stateParams, projectResource: App.Resources.IProjectResource) => {
-                            return projectResource.get({ id: $stateParams['projectId'] }).$promise.then((data) => {
+                            //return projectResource.get({ id: $stateParams['projectId'] }).$promise.then((data) => {
+                            //    return data;
+                            //});
+
+                            return projectResource.getDirect({ id: $stateParams['projectId'] }).$promise.then((data) => {
                                 return data;
                             });
                         }],

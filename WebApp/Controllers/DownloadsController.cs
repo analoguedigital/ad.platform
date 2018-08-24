@@ -14,6 +14,9 @@ namespace WebApi.Controllers
 {
     public class DownloadsController : ApiController
     {
+
+        #region Properties
+
         public UnitOfWork UnitOfWork
         {
             get { return ServiceContext.UnitOfWork; }
@@ -24,6 +27,9 @@ namespace WebApi.Controllers
             get { return ServiceContext.CurrentUser; }
         }
 
+        #endregion
+
+        // GET api/downloads/{id}
         [AllowAnonymous]
         [Route("api/downloads/{id}")]
         public HttpResponseMessage Get(string id)
@@ -48,6 +54,7 @@ namespace WebApi.Controllers
             return new HttpResponseMessage(HttpStatusCode.Unauthorized);
         }
 
+        // GET api/downloads/file/{id}
         [Authorize]
         [Route("api/downloads/file/{id:guid}")]
         public IHttpActionResult GetFile(Guid id)

@@ -13,6 +13,8 @@ namespace WebApi.Controllers
     [RoutePrefix("api/orgRequests")]
     public class OrgRequestsController : BaseApiController
     {
+
+        // GET api/orgRequests
         public IHttpActionResult Get()
         {
             var orgRequests = UnitOfWork.OrgRequestsRepository
@@ -27,6 +29,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/orgRequests/{id}
         [Route("{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
@@ -40,6 +43,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<OrgRequestDTO>(orgRequest));
         }
 
+        // POST api/orgRequests
         [HttpPost]
         public IHttpActionResult Post([FromBody]OrgRequestDTO model)
         {
@@ -89,11 +93,19 @@ namespace WebApi.Controllers
                         .Where(x => x.Id == onRecord.RootUserId.Value)
                         .SingleOrDefault();
 
+                    var rootIndex = WebHelpers.GetRootIndexPath();
+                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/requests/";
+
+                    var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
+                            <p>Organisation: <b>" + model.Name + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>organization requests</a> on the dashboard.</p>";
+
                     var email = new Email
                     {
                         To = onRecordAdmin.Email,
                         Subject = $"A user has requested an organization",
-                        Content = GenerateOnRecordOrgRequestEmail(model, this.CurrentOrgUser)
+                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested to join an organization")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -109,6 +121,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // DEL api/orgRequests/{id}
         [HttpDelete]
         [Route("{id:guid}")]
         public IHttpActionResult Delete(Guid id)
@@ -124,37 +137,6 @@ namespace WebApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        private string GenerateOnRecordOrgRequestEmail(OrgRequestDTO model, OrgUser orgUser)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/org-connection-request.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var rootIndex = GetRootIndexPath();
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/requests/";
-
-            var content = @"<p>User name: <b>" + orgUser.UserName + @"</b></p>
-                            <p>Organisation: <b>" + model.Name + @"</b></p>
-                            <p><br></p>
-                            <p>View <a href='" + url + @"'>organization requests</a> on the dashboard.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Has Requested an Organization");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GetRootIndexPath()
-        {
-            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
-            if (!string.IsNullOrEmpty(rootIndexPath))
-                return rootIndexPath;
-
-            return "wwwroot/index.html";
         }
 
     }

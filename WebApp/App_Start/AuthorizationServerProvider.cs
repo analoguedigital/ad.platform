@@ -30,7 +30,7 @@ namespace WebApi
 
             return base.MatchEndpoint(context);
         }
-
+        
         public override Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
             return Task.FromResult(context.Validated());
@@ -53,11 +53,12 @@ namespace WebApi
                 var orgUser = user as OrgUser;
                 if (OrgUserHasAccess(orgUser))
                 {
-                    if (!orgUser.EmailConfirmed)
-                    {
-                        context.SetError("email_not_verified", "You haven't confirmed your email address yet.");
-                        return;
-                    }
+                    // temporarily disabled. but we need this in production!
+                    //if (!orgUser.EmailConfirmed)
+                    //{
+                    //    context.SetError("email_not_verified", "You haven't confirmed your email address yet.");
+                    //    return;
+                    //}
 
                     // if we get here, current org user has access. sign in.
                     await GenerateUserIdentity(context, orgUser);

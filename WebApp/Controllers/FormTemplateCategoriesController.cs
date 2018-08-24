@@ -12,6 +12,8 @@ namespace WebApi.Controllers
 {
     public class FormTemplateCategoriesController : BaseApiController
     {
+
+        // GET api/formTemplateCategories
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateCategoryDTO>))]
         public IHttpActionResult Get()
@@ -38,6 +40,7 @@ namespace WebApi.Controllers
 
         }
 
+        // GET api/formTemplateCategories/{id}
         [DeflateCompression]
         [ResponseType(typeof(FormTemplateCategoryDTO))]
         public IHttpActionResult Get(Guid id)
@@ -62,6 +65,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // POST api/formTemplateCategories
         [ResponseType(typeof(FormTemplateCategoryDTO))]
         public IHttpActionResult Post(FormTemplateCategoryDTO category)
         {
@@ -83,6 +87,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // PUT api/formTemplateCategories/{id}
         public IHttpActionResult Put(Guid id, FormTemplateCategoryDTO category)
         {
             var item = UnitOfWork.FormTemplateCategoriesRepository.All
@@ -107,6 +112,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // DEL api/formTemplateCategories/{id}
         public IHttpActionResult Delete(Guid id)
         {
             var item = UnitOfWork.FormTemplateCategoriesRepository.All

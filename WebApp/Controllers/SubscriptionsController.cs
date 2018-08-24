@@ -1,26 +1,15 @@
-﻿using AutoMapper;
-using LightMethods.Survey.Models.DTO;
+﻿using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
-    public class UpdateSubscriptionEntryDTO
-    {
-        public Guid RecordId { get; set; }
-
-        public UserSubscriptionType Type { get; set; }
-    }
-
     public class SubscriptionsController : BaseApiController
     {
         private SubscriptionService SubscriptionService { get; set; }
@@ -30,6 +19,7 @@ namespace WebApi.Controllers
             this.SubscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
         }
 
+        // GET api/subscriptions
         [DeflateCompression]
         [Route("api/subscriptions")]
         [ResponseType(typeof(IEnumerable<SubscriptionEntryDTO>))]
@@ -42,6 +32,7 @@ namespace WebApi.Controllers
             return Ok(subscriptions);
         }
 
+        // GET api/subscriptions/user/{id}
         [DeflateCompression]
         [Route("api/subscriptions/user/{id:guid}")]
         [ResponseType(typeof(IEnumerable<SubscriptionEntryDTO>))]
@@ -51,6 +42,7 @@ namespace WebApi.Controllers
             return Ok(subscriptions);
         }
 
+        // GET api/subscriptions/getLatest
         [DeflateCompression]
         [Route("api/subscriptions/getLatest")]
         [ResponseType(typeof(LatestSubscriptionDTO))]
@@ -65,6 +57,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/subscriptions/last
         [DeflateCompression]
         [Route("api/subscriptions/last")]
         [ResponseType(typeof(SubscriptionDTO))]
@@ -78,6 +71,7 @@ namespace WebApi.Controllers
             return Ok(lastSubscription);
         }
 
+        // POST api/subscriptions/buy/{id}
         [HttpPost]
         [Route("api/subscriptions/buy/{id:guid}")]
         public IHttpActionResult Buy(Guid id)
@@ -168,11 +162,20 @@ namespace WebApi.Controllers
             {
                 this.CurrentOrgUser.IsSubscribed = true;
 
+                var content = @"<p>Subscription purchased: <strong>" + plan.Name + @"</strong></p>
+                            <p>Description: " + plan.Description + @"</p>
+                            <p>Price: " + plan.Price + @" GBP</p>
+                            <p>Length: " + plan.Length + @" month(s)</p>
+                            <p>Is Limited: " + plan.IsLimited + @"</p>
+                            <p>Monthly Quota: " + plan.MonthlyQuota.ToString() + @"</p>
+                            <p>PDF Export: " + plan.PdfExport + @"</p>
+                            <p>Zip Export: " + plan.ZipExport + @"</p>";
+
                 var email = new Email
                 {
                     To = this.CurrentOrgUser.Email,
                     Subject = $"Subscription purchase - {plan.Name}",
-                    Content = GeneratePaidPlanEmail(plan)
+                    Content = WebHelpers.GenerateEmailTemplate(content, "Subscription Purchased")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -186,6 +189,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/subscriptions/joinOrganisation/{token}
         [HttpPost]
         [Route("api/subscriptions/joinorganisation/{token}")]
         public IHttpActionResult JoinOrganisation(string token)
@@ -323,11 +327,15 @@ namespace WebApi.Controllers
             {
                 this.CurrentOrgUser.IsSubscribed = true;
 
+                var content = @"<p>You have joined the <strong>" + invitation.Organisation.Name + @"</strong> organization.</p>
+                            <p>Your personal case and its threads are now filed under this organization.</p>
+                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
+
                 var email = new Email
                 {
                     To = this.CurrentOrgUser.Email,
                     Subject = $"Joined organization - {invitation.Organisation.Name}",
-                    Content = GenerateOrgSubscriptionEmail(invitation)
+                    Content = WebHelpers.GenerateEmailTemplate(content, "You've joined an organisation")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -338,11 +346,21 @@ namespace WebApi.Controllers
                         .Where(x => x.Id == invitation.Organisation.RootUser.Id)
                         .SingleOrDefault();
 
+                    // generate the email body.
+                    var rootIndex = WebHelpers.GetRootIndexPath();
+                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
+
+                    var emailBody = @"<p>A new user has joined your organisation: <strong>" + this.CurrentOrgUser.UserName + @"</strong>.</p>
+                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
+                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
+                            <p><br></p>
+                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
+
                     var orgAdminEmail = new Email
                     {
                         To = orgAdmin.Email,
                         Subject = $"User joined organization - {this.CurrentOrgUser.UserName}",
-                        Content = GenerateOrgSubscriptionAdminEmail(invitation, this.CurrentOrgUser)
+                        Content = WebHelpers.GenerateEmailTemplate(emailBody, "A User Has Joined Your Organisation")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
@@ -358,6 +376,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // GET api/subscriptions/quota
         [Route("api/subscriptions/quota")]
         public IHttpActionResult GetQuota()
         {
@@ -368,6 +387,7 @@ namespace WebApi.Controllers
             return Ok(quota);
         }
 
+        // POST api/subscriptions/close
         [HttpPost]
         [Route("api/subscriptions/close")]
         public IHttpActionResult CloseSubscription([FromBody] UpdateSubscriptionEntryDTO value)
@@ -406,6 +426,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/subscriptions/remove
         [HttpPost]
         [Route("api/subscriptions/remove")]
         public IHttpActionResult RemoveSubscription([FromBody] UpdateSubscriptionEntryDTO value)
@@ -426,6 +447,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/subscriptions/joinOnRecord/{userId}
         [HttpPost]
         [Authorize(Roles = "System administrator,Platform administrator")]
         [Route("api/subscriptions/joinOnRecord/{userId:guid}")]
@@ -468,82 +490,6 @@ namespace WebApi.Controllers
                 return InternalServerError(ex);
             }
         }
-
-        #region Helpers
-
-        private string GeneratePaidPlanEmail(SubscriptionPlan plan)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-            var content = @"<p>Subscription purchased: <strong>" + plan.Name + @"</strong></p>
-                            <p>Description: " + plan.Description + @"</p>
-                            <p>Price: " + plan.Price + @" GBP</p>
-                            <p>Length: " + plan.Length + @" month(s)</p>
-                            <p>Is Limited: " + plan.IsLimited + @"</p>
-                            <p>Monthly Quota: " + plan.MonthlyQuota.ToString() + @"</p>
-                            <p>PDF Export: " + plan.PdfExport + @"</p>
-                            <p>Zip Export: " + plan.ZipExport + @"</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, plan.Name);
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateOrgSubscriptionEmail(OrganisationInvitation invitation)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>You have joined the <strong>" + invitation.Organisation.Name + @"</strong> organization.</p>
-                            <p>Your personal case and its threads are now filed under this organization.</p>
-                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You've joined an organisation");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateOrgSubscriptionAdminEmail(OrganisationInvitation invitation, OrgUser orgUser)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/subscribed-paid-plan.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var rootIndex = GetRootIndexPath();
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
-
-            var content = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
-                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
-                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
-                            <p><br></p>
-                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "A User Has Joined Your Organisation");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GetRootIndexPath()
-        {
-            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
-            if (!string.IsNullOrEmpty(rootIndexPath))
-                return rootIndexPath;
-
-            return "wwwroot/index.html";
-        }
-
-        #endregion
 
     }
 }

@@ -7,13 +7,13 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class MetricsController : BaseApiController
     {
 
+        // GET api/metrics/{metricType}
         [HttpGet]
         [ResponseType(typeof(MetricDTO))]
         [Route("api/metrics/{metricType}")]
@@ -37,8 +37,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map(metric, metric.GetType(), typeof(MetricDTO)));
         }
 
-
-        // GET api/<controller>/5
+        // GET api/formTemplates/{formTemplateId}/metrics/{id}
         [DeflateCompression]
         [ResponseType(typeof(MetricDTO))]
         [Route("api/formtemplates/{formTemplateId:Guid}/metrics/{id:Guid}")]
@@ -53,7 +52,7 @@ namespace WebApi.Controllers
 
         }
 
-        // POST api/<controller>
+        // POST api/formTemplates/{formTemplateId}/metrics
         [Route("api/formtemplates/{formTemplateId:Guid}/metrics")]
         public IHttpActionResult Post(Guid formTemplateId, MetricDTO metricDto)
         {
@@ -71,7 +70,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        // PUT api/<controller>/5
+        // PUT api/formTemplates/{formTemplateId}/metrics/{id}
         [Route("api/formtemplates/{formTemplateId:guid}/metrics/{id:guid}")]
         public IHttpActionResult Put(Guid formTemplateId, Guid id, [FromBody]MetricDTO metricDto)
         {
@@ -86,7 +85,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        // DELETE api/<controller>/5
+        // DELETE api/formTemplates/{formTemplateId}/metrics/{id}
         [Route("api/formtemplates/{formTemplateId:guid}/metrics/{id:guid}")]
         public IHttpActionResult Delete(Guid formTemplateId, Guid id)
         {

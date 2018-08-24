@@ -15,6 +15,7 @@ namespace WebApi.Controllers
             get { return UnitOfWork.OrgUsersRepository; }
         }
 
+        // POST api/changePassword
         [HttpPost]
         [Route("api/changePassword")]
         public async Task<IHttpActionResult> Post([FromBody]ChangePasswordDTO value)

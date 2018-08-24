@@ -15,6 +15,7 @@ namespace WebApi.Controllers
 {
     public class UsersController : BaseApiController
     {
+        // GET api/users
         [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Get()
         {
@@ -26,6 +27,7 @@ namespace WebApi.Controllers
             return Ok(users);
         }
 
+        // GET api/users/{id}
         [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Get(Guid id)
         {
@@ -36,6 +38,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<UserDTO>(user));
         }
 
+        // POST api/users
         [HttpPost]
         [DeflateCompression]
         [ResponseType(typeof(UserDTO))]
@@ -60,6 +63,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // PUT api/users/{id}
         [HttpPut]
         public IHttpActionResult Put(Guid id, [FromBody]UserDTO value)
         {

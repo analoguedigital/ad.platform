@@ -149,6 +149,7 @@
     <Compile Include="DTO\FilledForms\FilledFormLocationDTO.cs" />
     <Compile Include="DTO\FilledForms\FormValueDTO.cs" />
     <Compile Include="DTO\FormTemplates\CloneReqDTO.cs" />
+    <Compile Include="DTO\FormTemplates\CreateAdviceThreadDTO.cs" />
     <Compile Include="DTO\FormTemplates\EditBasicDetailsReqDTO.cs" />
     <Compile Include="DTO\FormTemplates\ThreadAssignmentDTO.cs" />
     <Compile Include="DTO\Metrics\AttachmentMetricDTO.cs" />
@@ -170,7 +171,9 @@
     <Compile Include="DTO\Metrics\RateMetricDTO.cs" />
     <Compile Include="DTO\Metrics\TimeMetricDTO.cs" />
     <Compile Include="DTO\OperationResult.cs" />
+    <Compile Include="DTO\SendEmailDTO.cs" />
     <Compile Include="DTO\Users\MonthlyQuotaDTO.cs" />
+    <Compile Include="DTO\Users\OrganisationAssignmentsDTO.cs" />
     <Compile Include="DTO\Users\OrganisationDTO.cs" />
     <Compile Include="DTO\Users\OrganisationTeamDTO.cs" />
     <Compile Include="DTO\Users\OrgConnectionRequestDTO.cs" />
@@ -183,6 +186,7 @@
     <Compile Include="DTO\Projects\ProjectAssignmentDTO.cs" />
     <Compile Include="DTO\Projects\ProjectDTO.cs" />
     <Compile Include="DTO\Users\SubscriptionPlanDTO.cs" />
+    <Compile Include="DTO\Users\UpdateSubscriptionEntryDTO.cs" />
     <Compile Include="DTO\Users\VoucherDTO.cs" />
     <Compile Include="DTO\Users\SubscriptionDTO.cs" />
     <Compile Include="DTO\Users\UserDTO.cs" />
@@ -234,6 +238,7 @@
     <Compile Include="EntityConfig\ReportTemplateConfig.cs" />
     <Compile Include="EntityConfig\SubscriptionConfig.cs" />
     <Compile Include="EntityConfig\ThreadAssignmentConfig.cs" />
+    <Compile Include="Enums\OrgUserListType.cs" />
     <Compile Include="Enums\UserSubscriptionType.cs" />
     <Compile Include="Extenstions\JsonCreationConverter.cs" />
     <Compile Include="FilterValues\FilterValue.cs" />

@@ -2,6 +2,7 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Enums;
 using LightMethods.Survey.Models.Services;
 using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -23,6 +24,9 @@ namespace WebApi.Controllers
 {
     public class OrgUsersController : BaseApiController
     {
+
+        #region Properties
+
         private OrgUsersRepository Users
         {
             get { return UnitOfWork.OrgUsersRepository; }
@@ -41,21 +45,13 @@ namespace WebApi.Controllers
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
         {
-            get
-            {
-                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-
+            get { return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>(); }
             private set { _userManager = value; }
         }
 
-        public enum OrgUserListType
-        {
-            MobileAccounts = 0,
-            WebAccounts = 1,
-            AllAccounts = 2
-        }
+        #endregion
 
+        // GET api/orgUsers/{listType}/{organisationId?}
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         [Route("api/orgusers/{listType:int}/{organisationId?}")]
@@ -126,6 +122,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET /api/orgUsers/{id}
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         [Route("api/orgusers/{id:guid}")]
@@ -145,6 +142,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // POST api/orgUsers
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]OrgUserDTO value)
         {
@@ -272,16 +270,24 @@ namespace WebApi.Controllers
             var code = await this.UserManager.GenerateEmailConfirmationTokenAsync(orguser.Id);
             var encodedCode = HttpUtility.UrlEncode(code);
 
-            var rootIndex = GetRootIndexPath();
+            var rootIndex = WebHelpers.GetRootIndexPath();
             var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
             var callbackUrl = $"{baseUrl}#!/verify-email?userId={orguser.Id}&code={encodedCode}";
 
-            var messageBody = GenerateAccountConfirmationEmail(callbackUrl, randomPassword);
-            await UserManager.SendEmailAsync(orguser.Id, "Confirm your account", messageBody);
+            var content = @"<p>Complete your registration by verifying your email address. Click the link below to continue.</p>
+                            <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p><br>
+                            <p>Your password is <strong>" + randomPassword + @"</strong>.</p>
+                            <p>Make sure to change your password after you've signed in.</p>
+                            <p>For more information please read our <a href='https://onrecord.tech/privacy-policy/' target='_blank'>privacy policy</a> guide.</p>";
+
+            var emailBody = WebHelpers.GenerateEmailTemplate(content, "Welcome to OnRecord");
+
+            await UserManager.SendEmailAsync(orguser.Id, "Confirm your account", emailBody);
 
             return Ok();
         }
 
+        // PUT api/orgUsers/{id}
         [HttpPut]
         [Route("api/orgusers/{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]OrgUserDTO value)
@@ -322,19 +328,20 @@ namespace WebApi.Controllers
                 return BadRequest(result.Errors.ToString(", "));
         }
 
+        // DELETE api/orgUsers/{id}
         [HttpDelete]
         [Route("api/orgusers/{id:guid}")]
         public IHttpActionResult Delete(Guid id)
         {
             if (id == CurrentUser.Id)
-                throw new InvalidOperationException("Current user cannot be deleted!");
+                throw new InvalidOperationException("Current user cannot be deleted");
 
             var orguser = Users.Find(id);
             if (orguser == null)
                 return NotFound();
 
             if (orguser.IsRootUser)
-                return BadRequest();
+                return BadRequest("Cannot delete a root user");
 
             try
             {
@@ -353,37 +360,113 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        #region helpers
-
-        // this needs to be refactored to a global static helper.
-        private string GetRootIndexPath()
+        [HttpPost]
+        [Route("api/orgusers/deleteAccount/{id:guid}")]
+        public IHttpActionResult DeleteAccount(Guid id)
         {
-            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
-            if (!string.IsNullOrEmpty(rootIndexPath))
-                return rootIndexPath;
+            if (id == Guid.Empty)
+                return BadRequest();
 
-            return "wwwroot/index.html";
-        }
+            if (id == CurrentUser.Id)
+                throw new InvalidOperationException("Current user cannot be deleted");
 
-        #endregion
+            var orgUser = Users.Find(id);
+            if (orgUser == null)
+                return NotFound();
 
-        private string GenerateAccountConfirmationEmail(string callbackUrl, string randomPassword)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/email-confirmation.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
+            if (orgUser.IsRootUser)
+                return BadRequest("Cannot delete a root user");
 
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
+            try
+            {
+                if (orgUser.CurrentProjectId.HasValue)
+                {
+                    var projectId = orgUser.CurrentProject.Id;
 
-            var content = @"<p>Complete your registration by verifying your email address. Click the link below to continue.</p>
-                            <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p><br>
-                            <p>Your password is <strong>" + randomPassword + @"</strong>.</p>
-                            <p>Make sure to change your password after you've signed in.</p>";
+                    // delete threads, including metric groups and metrics
+                    var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
+                        .Where(x => x.ProjectId == orgUser.CurrentProject.Id)
+                        .ToList();
 
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Welcome to OnRecord");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
+                    // nullify calendar-date-metric and timeline-bar-metric
+                    foreach (var thread in threads)
+                    {
+                        thread.CalendarDateMetricId = null;
+                        thread.TimelineBarMetricId = null;
 
-            return emailTemplate;
+                        UnitOfWork.FormTemplatesRepository.InsertOrUpdate(thread);
+                    }
+
+                    // delete all records
+                    var records = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                        .Where(x => x.ProjectId == orgUser.CurrentProject.Id)
+                        .ToList();
+
+                    UnitOfWork.FilledFormsRepository.Delete(records);
+
+                    // remove subscriptions
+                    if (orgUser.Subscriptions.Any())
+                    {
+                        var subscriptions = orgUser.Subscriptions.ToList();
+                        UnitOfWork.SubscriptionsRepository.Delete(subscriptions);
+                    }
+
+                    UnitOfWork.Save();
+
+                    // delete form templates
+                    var templates = UnitOfWork.FormTemplatesRepository.AllIncluding(t => t.MetricGroups.Select(g => g.Metrics))
+                        .Where(x => x.ProjectId == orgUser.CurrentProject.Id)
+                        .ToList();
+
+                    foreach (var template in templates)
+                    {
+                        var groups = UnitOfWork.MetricGroupsRepository.All
+                            .Where(x => x.FormTemplateId == template.Id)
+                            .ToList();
+
+                        var metrics = UnitOfWork.MetricsRepository.All
+                            .Where(x => x.FormTemplateId == template.Id)
+                            .ToList();
+
+                        UnitOfWork.MetricsRepository.Delete(metrics);
+                        UnitOfWork.MetricGroupsRepository.Delete(groups);
+                    }
+                    
+                    UnitOfWork.Save();
+
+                    UnitOfWork.FormTemplatesRepository.Delete(templates);
+
+                    // delete team memberships
+                    var teamUsers = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
+                        .Where(x => x.OrgUserId == orgUser.Id)
+                        .ToList();
+                    UnitOfWork.OrgTeamUsersRepository.Delete(teamUsers);
+
+                    // nullify the current project
+                    orgUser.CurrentProjectId = null;
+                    UnitOfWork.OrgUsersRepository.InsertOrUpdate(orgUser);
+
+                    UnitOfWork.Save();
+
+                    // delete the project
+                    UnitOfWork.ProjectsRepository.Delete(projectId);
+
+                    // delete the user account
+                    UnitOfWork.OrgUsersRepository.Delete(id);
+
+                    UnitOfWork.Save();
+                }
+
+                return Ok();
+            }
+            catch (DbUpdateException dbEx)
+            {
+                return BadRequest(dbEx.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

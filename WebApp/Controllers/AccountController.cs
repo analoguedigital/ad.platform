@@ -27,16 +27,12 @@ namespace WebApi.Models
     [RoutePrefix("api/Account")]
     public class AccountController : BaseApiController
     {
+
+        #region Properties
+
         private const string LocalLoginProvider = "Local";
+
         private ApplicationUserManager _userManager;
-
-        public AccountController() { }
-
-        public AccountController(ApplicationUserManager userManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
-        {
-            UserManager = userManager;
-            AccessTokenFormat = accessTokenFormat;
-        }
 
         public ApplicationUserManager UserManager
         {
@@ -49,6 +45,16 @@ namespace WebApi.Models
         }
 
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
+
+        #endregion
+
+        public AccountController() { }
+
+        public AccountController(ApplicationUserManager userManager, ISecureDataFormat<AuthenticationTicket> accessTokenFormat)
+        {
+            UserManager = userManager;
+            AccessTokenFormat = accessTokenFormat;
+        }
 
         // GET api/Account/UserInfo
         [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
@@ -241,8 +247,23 @@ namespace WebApi.Models
                 return Ok();
 
             // generate the reset token and send the email.
-            var message = await GenerateForgotPasswordEmail(user.Id, model.Email);
-            await UserManager.SendEmailAsync(user.Id, "Password reset request", message);
+            string token = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            var encodedToken = HttpUtility.UrlEncode(token);
+
+            var rootIndex = WebHelpers.GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var redirectLink = $"{baseUrl}#!/set-password?email={model.Email}&token={encodedToken}";
+
+            //var baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
+            //var redirectLink = baseUrl + "/wwwroot/dist/index.html#!/set-password?email=" + model.Email + "&token=" + encodedToken;
+
+            var content = @"<p>Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.</p><br>
+                    <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
+                    <p style='color: gray; font-weight: italic'>" + encodedToken + @"</p>";
+
+            var emailBody = WebHelpers.GenerateEmailTemplate(content, "Reset your password");
+
+            await UserManager.SendEmailAsync(user.Id, "Password reset request", emailBody);
 
             return Ok();
         }
@@ -478,8 +499,8 @@ namespace WebApi.Models
                 CanAdd = true,
                 CanEdit = false,
                 CanDelete = false,
-                CanExportPdf = false,
-                CanExportZip = false
+                CanExportPdf = true,    // temporary. turn off in production.
+                CanExportZip = true     // temporary. turn off in production.
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
@@ -513,11 +534,14 @@ namespace WebApi.Models
             var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
             var encodedCode = HttpUtility.UrlEncode(code);
 
-            var rootIndex = GetRootIndexPath();
+            var rootIndex = WebHelpers.GetRootIndexPath();
             var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
             var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
 
-            var messageBody = GenerateAccountConfirmationEmail(callbackUrl);
+            var content = @"<p>Your new account has been created. To complete your registration please confirm your email address by clicking the link below.</p>
+                            <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p>";
+
+            var messageBody = WebHelpers.GenerateEmailTemplate(content, "Confirm your registration");
             await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
 
             return Ok();
@@ -549,6 +573,7 @@ namespace WebApi.Models
             return Ok();
         }
 
+        // POST api/account/sendEmailConfirmation
         [HttpPost]
         [AllowAnonymous]
         [Route("SendEmailConfirmation")]
@@ -564,16 +589,20 @@ namespace WebApi.Models
             var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
             var encodedCode = HttpUtility.UrlEncode(code);
 
-            var rootIndex = GetRootIndexPath();
+            var rootIndex = WebHelpers.GetRootIndexPath();
             var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
             var callbackUrl = $"{baseUrl}#!/verify-email?userId={user.Id}&code={encodedCode}";
 
-            var messageBody = GenerateAccountConfirmationEmail(callbackUrl);
+            var content = @"<p>Your new account has been created. To complete your registration please confirm your email address by clicking the link below.</p>
+                            <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p>";
+
+            var messageBody = WebHelpers.GenerateEmailTemplate(content, "Confirm your registration");
             await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
 
             return Ok();
         }
 
+        // POST api/account/confirmEmail
         [HttpPost]
         [AllowAnonymous]
         [Route("ConfirmEmail")]
@@ -622,6 +651,7 @@ namespace WebApi.Models
             return BadRequest(errorString.ToString());
         }
 
+        // POST api/account/addPhoneNumber
         [HttpPost]
         [Route("AddPhoneNumber")]
         public async Task<IHttpActionResult> AddPhoneNumber(AddPhoneNumberModel model)
@@ -648,6 +678,7 @@ namespace WebApi.Models
             return Ok();
         }
 
+        // POST api/account/verifyPhoneNumber
         [HttpPost]
         [Route("VerifyPhoneNumber")]
         public async Task<IHttpActionResult> VerifyPhoneNumber(VerifyPhoneNumberModel model)
@@ -678,6 +709,7 @@ namespace WebApi.Models
             return BadRequest(errorString.ToString());
         }
 
+        // POST api/account/removePhoneNumber
         [HttpPost]
         [Route("RemovePhoneNumber")]
         public IHttpActionResult RemovePhoneNumber()
@@ -699,6 +731,7 @@ namespace WebApi.Models
             }
         }
 
+        // POST api/account/changePhoneNumber
         [HttpPost]
         [Route("ChangePhoneNumber")]
         public async Task<IHttpActionResult> ChangePhoneNumber(ChangePhoneNumberModel model)
@@ -730,6 +763,7 @@ namespace WebApi.Models
             return Ok();
         }
 
+        // POST api/account/verifyChangedNumber
         [HttpPost]
         public async Task<IHttpActionResult> VerifyChangedNumber(VerifyChangedNumberModel model)
         {
@@ -769,67 +803,6 @@ namespace WebApi.Models
 
             base.Dispose(disposing);
         }
-
-        #region Helpers
-
-        private string GetRootIndexPath()
-        {
-            var rootIndexPath = ConfigurationManager.AppSettings["RootIndexPath"];
-            if (!string.IsNullOrEmpty(rootIndexPath))
-                return rootIndexPath;
-
-            return "wwwroot/index.html";
-        }
-
-        private async Task<string> GenerateForgotPasswordEmail(Guid userId, string email)
-        {
-            string token = await UserManager.GeneratePasswordResetTokenAsync(userId);
-            var encodedToken = HttpUtility.UrlEncode(token);
-
-            var baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-            var redirectLink = baseUrl + "/wwwroot/dist/index.html#!/set-password?email=" + email + "&token=" + encodedToken;
-
-            var messageBody = @"<html>
-                <head>
-                    <style>
-                        .message-container {
-                            border: 1px solid #e8e8e8;
-                            border-radius: 2px;
-                            padding: 10px 15px;
-                        }
-                    </style>
-                </head>
-                <body>
-                <div class='message-container'>
-                    <p>
-                        Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.
-                    </p>
-                    <br>
-                    <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
-                    <p style='color: gray; font-weight: italic'>" + token + @"</p>
-
-                    <br><br>
-                    <small style='color: gray;'>Copyright &copy; 2018. analogueDIGITAL platform</small>
-                </div>
-
-                </body></html>";
-
-            return messageBody;
-        }
-
-        //private async Task SignInAsync(ApplicationUser user, bool isPersistent)
-        //{
-        //    // Clear the temporary cookies used for external and two factor sign ins
-        //    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie,
-        //       DefaultAuthenticationTypes.TwoFactorCookie);
-        //    AuthenticationManager.SignIn(new AuthenticationProperties
-        //    {
-        //        IsPersistent = isPersistent
-        //    },
-        //       await user.GenerateUserIdentityAsync(UserManager));
-        //}
-
-        #endregion
 
         #region ExternalLogin helpers
 
@@ -927,24 +900,19 @@ namespace WebApi.Models
             }
         }
 
+        //private async Task SignInAsync(ApplicationUser user, bool isPersistent)
+        //{
+        //    // Clear the temporary cookies used for external and two factor sign ins
+        //    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie,
+        //       DefaultAuthenticationTypes.TwoFactorCookie);
+        //    AuthenticationManager.SignIn(new AuthenticationProperties
+        //    {
+        //        IsPersistent = isPersistent
+        //    },
+        //       await user.GenerateUserIdentityAsync(UserManager));
+        //}
+
         #endregion
-
-        private string GenerateAccountConfirmationEmail(string callbackUrl)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/email-confirmation.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>Your new account has been created. To complete your registration please confirm your email address by clicking the link below.</p>
-                            <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "Complete your registration");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
 
     }
 

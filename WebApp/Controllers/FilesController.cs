@@ -16,6 +16,7 @@ namespace WebApi.Controllers
             get { return HttpContext.Current; }
         }
 
+        // GET api/files
         [ResponseType(typeof(Guid))]
         [HttpPost]
         [Route("api/files")]

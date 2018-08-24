@@ -205,8 +205,11 @@
                     </tbody>
                     <tbody ng-if="!ctrl.subscriptions.length">
                         <tr>
-                            <td colspan="8">
+                            <td colspan="8" lm-access="System administrator,Platform administrator">
                                 No subscriptions found. This user is unsubscribed. <a href="" ng-click="ctrl.joinOnRecord()">Click here</a> to subscribe this user to OnRecord.
+                            </td>
+                            <td colspan="8" lm-access="Organisation administrator">
+                                No subscriptions found. This user is unsubscribed.
                             </td>
                         </tr>
                     </tbody>

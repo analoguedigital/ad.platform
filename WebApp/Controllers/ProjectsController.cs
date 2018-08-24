@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.DTO.FormTemplates;
 using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace WebApi.Controllers
 {
     public class ProjectsController : BaseApiController
     {
-        // GET api/<controller>
+        // GET api/projects
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
         public IHttpActionResult Get(Guid? organisationId = null)
         {
@@ -126,7 +127,109 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
-        // GET api/<controller>/5
+        [ResponseType(typeof(IEnumerable<ProjectDTO>))]
+        [Route("api/projects/shared")]
+        public IHttpActionResult GetSharedProjects()
+        {
+            if (this.CurrentUser is SuperUser)
+                return Ok();
+
+            var threadAssignments = UnitOfWork.ThreadAssignmentsRepository.AllAsNoTracking
+                .Where(x => x.OrgUserId == this.CurrentOrgUser.Id && x.FormTemplate.Discriminator == FormTemplateDiscriminators.RegularThread && x.FormTemplate.CreatedById != this.CurrentOrgUser.Id)
+                .ToList();
+
+            var projects = threadAssignments
+                .Select(x => x.FormTemplate.Project)
+                .ToList()
+                .Distinct()
+                .ToList();
+
+            var result = new List<ProjectDTO>();
+
+            foreach (var project in projects)
+            {
+                var dto = Mapper.Map<ProjectDTO>(project);
+                dto.AssignmentsCount = project.Assignments.Count();
+
+                var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+                Mapper.Map(assignment, dto);
+
+                // get last entry
+                var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                    .Where(x => x.ProjectId == project.Id)
+                    .OrderByDescending(x => x.SurveyDate)
+                    .Take(1)
+                    .FirstOrDefault();
+
+                if (lastEntry != null)
+                    dto.LastEntry = lastEntry.SurveyDate;
+
+                // get teams count
+                var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
+                    .Where(x => x.OrganisationId == project.OrganisationId);
+
+                var relatedTeams = new List<OrganisationTeamDTO>();
+                foreach (var team in teams)
+                {
+                    foreach (var user in team.Users)
+                    {
+                        if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
+                            relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
+                    }
+                }
+
+                dto.TeamsCount = relatedTeams.Distinct().Count();
+
+                result.Add(dto);
+            }
+
+            return Ok(result);
+        }
+
+        [ResponseType(typeof(ProjectDTO))]
+        [Route("api/projects/direct/{id:guid}")]
+        public IHttpActionResult GetDirect(Guid id)
+        {
+            var project = UnitOfWork.ProjectsRepository
+                .AllIncluding(x => x.Assignments)
+                .Where(x => x.Id == id)
+                .SingleOrDefault();
+
+            if (project == null)
+                return NotFound();
+
+            var dto = Mapper.Map<ProjectDTO>(project);
+            dto.AssignmentsCount = project.Assignments.Count();
+
+            var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
+            Mapper.Map(assignment, dto);
+
+            // get last entry
+            var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
+                .Where(x => x.ProjectId == project.Id)
+                .OrderByDescending(x => x.SurveyDate)
+                .Take(1)
+                .FirstOrDefault();
+
+            if (lastEntry != null)
+                dto.LastEntry = lastEntry.SurveyDate;
+
+            // get teams count
+            var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
+                .Where(x => x.OrganisationId == project.OrganisationId);
+
+            var relatedTeams = new List<OrganisationTeamDTO>();
+            foreach (var team in teams)
+                foreach (var user in team.Users)
+                    if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
+                        relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
+
+            dto.TeamsCount = relatedTeams.Distinct().Count();
+
+            return Ok(dto);
+        }
+
+        // GET api/projects/{id}
         [DeflateCompression]
         [ResponseType(typeof(ProjectDTO))]
         public IHttpActionResult Get(Guid id)
@@ -167,6 +270,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/projects/{id}/assignments
         [DeflateCompression]
         [Route("api/projects/{id:guid}/assignments")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
@@ -181,6 +285,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/projects/{id}/teams
         [DeflateCompression]
         [Route("api/projects/{id:guid}/teams")]
         [ResponseType(typeof(IEnumerable<OrganisationTeamDTO>))]
@@ -209,6 +314,7 @@ namespace WebApi.Controllers
             return Ok(result.Distinct());
         }
 
+        // POST api/projects/{id}/assign/{userId}/{accessLevel}}
         [HttpPost]
         [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
@@ -227,6 +333,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
         }
 
+        // DELETE api/projects/{id}/assign/{userId}/{accessLevel}
         [HttpDelete]
         [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
@@ -247,7 +354,7 @@ namespace WebApi.Controllers
             return Ok(new ProjectAssignmentDTO());
         }
 
-        // POST api/<controller>
+        // POST api/projects
         public IHttpActionResult Post([FromBody]ProjectDTO value)
         {
             var project = Mapper.Map<Project>(value);
@@ -269,7 +376,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        // PUT api/<controller>/5
+        // PUT api/projects/{id}
         public IHttpActionResult Put(Guid id, [FromBody]ProjectDTO value)
         {
             var project = UnitOfWork.ProjectsRepository.Find(id);
@@ -297,7 +404,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        // DELETE api/<controller>/5
+        // DELETE api/projects/{id}
         public IHttpActionResult Delete(Guid id)
         {
             try
@@ -313,6 +420,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/projects/{id}/create-advice-thread
         [HttpPost]
         [Route("api/projects/{id:guid}/create-advice-thread")]
         [ResponseType(typeof(FormTemplateDTO))]
@@ -355,14 +463,8 @@ namespace WebApi.Controllers
 
             return Ok(returnValue);
         }
+
     }
 
-    public class CreateAdviceThreadDTO
-    {
-        public string Title { get; set; }
-
-        public string Description { get; set; }
-
-        public string Colour { get; set; }
-    }
+  
 }

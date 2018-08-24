@@ -63,6 +63,12 @@
                     <i class="fa fa-medkit"></i> <span class="nav-label">Advice Threads</span>
                 </a>
             </li>
+            <!-- Shared Threads -->
+            <li lm-access="Organisation user" ng-class="{ 'active': $state.includes('home.sharedThreads.list') }">
+                <a ui-sref="home.sharedThreads.list" ui-sref-opts="{reload:true}">
+                    <i class="fa fa-universal-access"></i> <span class="nav-label">Shared Threads</span>
+                </a>
+            </li>
             <!-- Case Management -->
             <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.caseManagement')}">
                 <a aria-expanded="false">

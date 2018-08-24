@@ -166,15 +166,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="EmailTemplates\joined-team.html" />
-    <Content Include="EmailTemplates\left-team.html" />
-    <Content Include="EmailTemplates\email-confirmation.html" />
-    <Content Include="EmailTemplates\org-connection-request.html" />
-    <Content Include="EmailTemplates\voucher-redeemed.html" />
-    <Content Include="EmailTemplates\left-organization.html" />
-    <Content Include="EmailTemplates\subscribed-organization.html" />
-    <Content Include="EmailTemplates\subscribed-paid-plan.html" />
-    <Content Include="EmailTemplates\feedback.html" />
+    <Content Include="EmailTemplates\default-template.html" />
     <Content Include="gulpfile.config.js" />
     <Content Include="gulpfile.js" />
     <Content Include="index.html" />
@@ -219,6 +211,11 @@
     <Content Include="wwwroot\comp\common\pageHeader.html" />
     <Content Include="wwwroot\comp\common\resetPassword\resetPasswordView.html" />
     <Content Include="wwwroot\comp\common\topnavbar\topnavbarView.html" />
+    <Content Include="wwwroot\comp\home\sharedThreads\sharedThreadsView.html" />
+    <Content Include="wwwroot\comp\home\sharedThreads\all\allSharedThreadsView.html" />
+    <Content Include="wwwroot\comp\home\sharedThreads\all\_dataTable.html" />
+    <Content Include="wwwroot\comp\home\sharedThreads\all\_searchForm.html" />
+    <Content Include="wwwroot\comp\home\sharedThreads\summary\sharedThreadsSummaryView.html" />
     <Content Include="wwwroot\comp\home\adviceThreads\adviceThreadsView.html" />
     <Content Include="wwwroot\comp\home\adviceThreads\all\allAdviceThreadsView.html" />
     <Content Include="wwwroot\comp\home\adviceThreads\all\_dataTable.html" />
@@ -334,6 +331,7 @@
   <ItemGroup>
     <Compile Include="App_Code\CustomMultipartFormDataStreamProvider.cs" />
     <Compile Include="App_Code\ServiceContext.cs" />
+    <Compile Include="App_Code\WebHelpers.cs" />
     <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\AuthorizationServerProvider.cs" />
     <Compile Include="App_Start\HangFireConfig.cs" />
@@ -474,6 +472,7 @@
     <Content Include="wwwroot\comp\home\projects\edit\_projectEditView.scss" />
     <Content Include="wwwroot\comp\home\myAccount\subscribe\_subscribe.scss" />
     <Content Include="wwwroot\comp\home\adviceThreads\summary\_summary.scss" />
+    <Content Include="wwwroot\comp\home\sharedThreads\summary\_summary.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -513,6 +512,10 @@
     <TypeScriptCompile Include="wwwroot\comp\common\navigation\navigationController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\resetPassword\resetPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\topnavbar\topnavbarController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\sharedThreads.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\sharedThreadsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\all\allSharedThreadsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\summary\sharedThreadsSummaryController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\adviceThreads\adviceThreads.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\adviceThreads\adviceThreadsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\adviceThreads\all\allAdviceThreadsController.ts" />

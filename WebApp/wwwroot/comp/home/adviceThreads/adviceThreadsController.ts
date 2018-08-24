@@ -69,10 +69,12 @@
 
         selectedProjectChanged() {
             if (this.selectedProject) {
-                if (this.$state.current.name === 'home.adviceThreads.list.all')
-                    this.$state.go("home.adviceThreads.list.all", { projectId: this.selectedProject.id }, { reload: true });
-                else
-                    this.$state.go("home.adviceThreads.list.summary", { projectId: this.selectedProject.id }, { reload: true });
+                //if (this.$state.current.name === 'home.adviceThreads.list.all')
+                //    this.$state.go("home.adviceThreads.list.all", { projectId: this.selectedProject.id }, { reload: true });
+                //else
+                //    this.$state.go("home.adviceThreads.list.summary", { projectId: this.selectedProject.id }, { reload: true });
+
+                this.$state.go("home.adviceThreads.list.summary", { projectId: this.selectedProject.id }, { reload: true });
             }
         }
 

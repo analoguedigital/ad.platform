@@ -9,6 +9,7 @@
         getAssignments(params: Object, success: Function, error?: Function): Models.IThreadAssignment[];
         assign(params: Object, success: Function, error?: Function);
         unassign(params: Object, success: Function, error?: Function);
+        getSharedThreads(params: Object): Models.IFormTemplate[];
     }
 
     FormTemplateResource.$inject = ["$resource"];
@@ -20,7 +21,8 @@
             'getFilters': { method: 'GET', url: '/api/formtemplates/:id/filters', params: { id: '@id' }, isArray: true },
             'getAssignments': { method: 'GET', url: '/api/formtemplates/:id/assignments', params: { id: '@id' }, isArray: true },
             'assign': { method: 'POST', url: '/api/formtemplates/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
-            'unassign': { method: 'DELETE', url: '/api/formtemplates/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } }
+            'unassign': { method: 'DELETE', url: '/api/formtemplates/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
+            'getSharedThreads': { method: 'GET', url: '/api/formtemplates/shared/:projectId', params: { projectId: '@projectId' }, isArray: true }
         });
     }
 

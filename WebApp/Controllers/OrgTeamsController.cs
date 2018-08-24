@@ -6,11 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
@@ -21,11 +17,33 @@ namespace WebApi.Controllers
     [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator,Organisation team manager")]
     public class OrgTeamsController : BaseApiController
     {
-        private OrganisationRepository Organisations { get { return UnitOfWork.OrganisationRepository; } }
-        private OrganisationTeamsRepository Teams { get { return UnitOfWork.OrganisationTeamsRepository; } }
-        private OrgTeamUsersRepository TeamUsers { get { return UnitOfWork.OrgTeamUsersRepository; } }
-        private OrgUsersRepository OrgUsers { get { return UnitOfWork.OrgUsersRepository; } }
 
+        #region Properties
+
+        private OrganisationRepository Organisations
+        {
+            get { return UnitOfWork.OrganisationRepository; }
+        }
+
+        private OrganisationTeamsRepository Teams
+        {
+            get { return UnitOfWork.OrganisationTeamsRepository; }
+        }
+
+        private OrgTeamUsersRepository TeamUsers
+        {
+            get { return UnitOfWork.OrgTeamUsersRepository; }
+        }
+
+        private OrgUsersRepository OrgUsers
+        {
+            get { return UnitOfWork.OrgUsersRepository; }
+        }
+
+
+        #endregion
+
+        // GET api/orgTeams/{organisationId?}
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationTeamDTO>))]
         public IHttpActionResult Get(Guid? organisationId = null)
@@ -66,6 +84,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/orgTeams/{id}
         [DeflateCompression]
         [ResponseType(typeof(OrganisationTeamDTO))]
         public IHttpActionResult Get(Guid id)
@@ -81,6 +100,7 @@ namespace WebApi.Controllers
             return Ok(team);
         }
 
+        // GET api/orgTeams/getUserTeams/{userId}
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationTeamDTO>))]
         [Route("api/orgteams/getuserteams/{userId:guid}")]
@@ -99,6 +119,7 @@ namespace WebApi.Controllers
             return Ok(teams);
         }
 
+        // GET api/orgTeams/{id}/assignableUsers
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         [Route("api/orgteams/{id:guid}/assignableusers")]
@@ -123,6 +144,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/orgTeams/{id}/projects
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
         [Route("api/orgteams/{id:guid}/projects")]
@@ -149,6 +171,7 @@ namespace WebApi.Controllers
             return Ok(projects.Distinct());
         }
 
+        // GET api/orgTeams/{id}/assignments
         [HttpPost]
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
@@ -177,6 +200,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // POST api/orgTeams
         public IHttpActionResult Post([FromBody]OrganisationTeamDTO value)
         {
             var orgTeam = new OrganisationTeam();
@@ -201,6 +225,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // PUT api/orgTeams/{id}
         public IHttpActionResult Put(Guid id, [FromBody]OrganisationTeamDTO value)
         {
             var team = Teams.Find(Guid.Parse(value.Id));
@@ -226,6 +251,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // DEL api/orgTeams/{id}
         public IHttpActionResult Delete(Guid id)
         {
             if (id == Guid.Empty)
@@ -248,6 +274,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // DEL api/orgTeams/{id}/removeUser/{userId}
         [HttpDelete]
         [Route("api/orgteams/{id:guid}/removeuser/{userId:guid}")]
         public async Task<IHttpActionResult> RemoveUser(Guid id, Guid userId)
@@ -272,11 +299,13 @@ namespace WebApi.Controllers
                 UnitOfWork.OrgTeamUsersRepository.Delete(userId);
 
                 // notify the orgUser by email.
+                var content = @"<p>You have left <strong>" + orgTeam.Name + @"</strong> from <strong>" + orgTeam.Organisation.Name + @"</strong>.</p>";
+
                 var email = new Email
                 {
                     To = orgUser.Email,
                     Subject = $"Left organization team - {orgTeam.Name}",
-                    Content = GenerateLeftTeamEmail(orgTeam)
+                    Content = WebHelpers.GenerateEmailTemplate(content, "You have left a team")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -290,6 +319,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/orgTeams/{id}/assign
         [HttpPost]
         [Route("api/orgteams/{id:guid}/assign/")]
         public async Task<IHttpActionResult> AddAssignments(Guid id, OrgTeamAssignmentDTO model)
@@ -318,11 +348,13 @@ namespace WebApi.Controllers
                             await UnitOfWork.UserManager.AddToRoleAsync(orgUser.Id, Role.ORG_TEAM_MANAGER);
 
                         // notify the orgUser by email.
+                        var content = @"<p>You have joined <strong>" + orgTeam.Name + @"</strong> from <strong>" + orgTeam.Organisation.Name + @"</strong>.</p>";
+
                         var email = new Email
                         {
                             To = orgUser.Email,
                             Subject = $"Joined organization team - {orgTeam.Name}",
-                            Content = GenerateJoinedTeamEmail(orgTeam)
+                            Content = WebHelpers.GenerateEmailTemplate(content, "You have joined a team")
                         };
 
                         UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -341,6 +373,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // POST api/orgTeams/{id}/updateStatus/{userId}/{flag}
         [HttpPost]
         [Route("api/orgteams/{id:guid}/updatestatus/{userId:guid}/{flag:bool}")]
         public async Task<IHttpActionResult> UpdateUserStatus(Guid id, Guid userId, bool flag)
@@ -363,38 +396,6 @@ namespace WebApi.Controllers
             UnitOfWork.Save();
 
             return Ok();
-        }
-
-        private string GenerateLeftTeamEmail(OrganisationTeam team)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/left-team.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>You have left <strong>" + team.Name + @"</strong> from <strong>" + team.Organisation.Name + @"</strong>.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You Have Left A Team");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
-        }
-
-        private string GenerateJoinedTeamEmail(OrganisationTeam team)
-        {
-            var path = HostingEnvironment.MapPath("~/EmailTemplates/joined-team.html");
-            var emailTemplate = System.IO.File.ReadAllText(path, Encoding.UTF8);
-
-            var messageHeaderKey = "{{MESSAGE_HEADING}}";
-            var messageBodyKey = "{{MESSAGE_BODY}}";
-
-            var content = @"<p>You have joined <strong>" + team.Name + @"</strong> from <strong>" + team.Organisation.Name + @"</strong>.</p>";
-
-            emailTemplate = emailTemplate.Replace(messageHeaderKey, "You Have Joined A Team");
-            emailTemplate = emailTemplate.Replace(messageBodyKey, content);
-
-            return emailTemplate;
         }
 
     }

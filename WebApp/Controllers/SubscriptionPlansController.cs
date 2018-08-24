@@ -2,10 +2,7 @@
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace WebApi.Controllers
@@ -13,6 +10,8 @@ namespace WebApi.Controllers
     [RoutePrefix("api/subscriptionplans")]
     public class SubscriptionPlansController : BaseApiController
     {
+
+        // GET api/subscriptionPlans
         public IHttpActionResult Get()
         {
             var plans = UnitOfWork.SubscriptionPlansRepository.AllAsNoTracking;
@@ -21,6 +20,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/subscriptionPlans/{id}
         [Route("{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
@@ -31,6 +31,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<SubscriptionPlanDTO>(plan));
         }
 
+        // POST api/subscriptionPlans
         [HttpPost]
         public IHttpActionResult Post([FromBody]SubscriptionPlanDTO value)
         {
@@ -48,6 +49,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // PUT api/subscriptionPlans/{id}
         [HttpPut]
         [Route("{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]SubscriptionPlanDTO value)
@@ -81,6 +83,7 @@ namespace WebApi.Controllers
             }
         }
 
+        // DELETE api/subscritionPlans/{id}
         [HttpDelete]
         [Route("{id:guid}")]
         public IHttpActionResult Delete(Guid id)

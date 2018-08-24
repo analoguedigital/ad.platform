@@ -8,13 +8,12 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
-using WebApi.Models;
 
 namespace WebApi.Controllers
 {
     public class MetricGroupsController : BaseApiController
     {
-        // GET: api/MetricGroups
+        // GET: api/formTemplates/{formTemplateId}/metricGroups
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<MetricGroupDTO>))]
         [Route("api/formtemplates/{formTemplateId}/metricGroups")]
@@ -27,7 +26,7 @@ namespace WebApi.Controllers
                 .Select(m => Mapper.Map<MetricGroupDTO>(m)));
         }
 
-        // GET: api/MetricGroups/5
+        // GET: api/api/formTemplates/{formTemplateId}/metricGroups/{id}
         [DeflateCompression]
         [ResponseType(typeof(MetricGroupDTO))]
         [Route("api/formtemplates/{formTemplateId}/metricGroups/{id}")]
@@ -50,7 +49,7 @@ namespace WebApi.Controllers
             return Ok(group);
         }
 
-        // POST: api/MetricGroups
+        // POST api/formTemplates/{formTemplateId}/metricGroups
         [Route("api/formtemplates/{formTemplateId}/metricGroups")]
         public IHttpActionResult Post(Guid formTemplateId, MetricGroupDTO metricGroupDto)
         {
@@ -68,7 +67,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        // PUT: api/MetricGroups/5
+        // PUT: api/formTemplates/{formTemplateId}/metricGroups/{id}
         [Route("api/formtemplates/{formTemplateId}/metricGroups/{id}")]
         public IHttpActionResult Put(Guid formTemplateId, Guid id, [FromBody]MetricGroupDTO metricGroupDto)
         {
@@ -88,7 +87,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        // DELETE: api/MetricGroups/5
+        // DELETE: api/formTemplates/{formTemplateId}/metricGroups/{id}
         [Route("api/formtemplates/{formTemplateId}/metricGroups/{id}")]
         public IHttpActionResult Delete(Guid formTemplateId, Guid id)
         {
@@ -116,5 +115,6 @@ namespace WebApi.Controllers
                 .GetAllFormTemplates()
                 .SingleOrDefault(f => f.Id == id);
         }
+
     }
 }

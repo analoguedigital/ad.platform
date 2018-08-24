@@ -23,7 +23,7 @@ namespace WebApi.Controllers
             this.FormTemplatesService = new FormTemplatesService(this.UnitOfWork, this.CurrentOrgUser, this.CurrentUser);
         }
 
-        // GET api/<controller>
+        // GET api/formTemplates
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<FormTemplateDTO>))]
         public IHttpActionResult Get(FormTemplateDiscriminators discriminator, Guid? projectId = null)
@@ -32,7 +32,36 @@ namespace WebApi.Controllers
             return Ok(response);
         }
 
-        // GET api/<controller>/5
+        [ResponseType(typeof(IEnumerable<FormTemplateDTO>))]
+        [Route("api/formtemplates/shared/{projectId:guid}")]
+        public IHttpActionResult GetShared(Guid projectId)
+        {
+            if (this.CurrentUser is SuperUser)
+                return Ok();
+            
+            var threadAssignments = UnitOfWork.ThreadAssignmentsRepository.AllAsNoTracking
+                .Where(x => x.OrgUserId == this.CurrentOrgUser.Id && x.FormTemplate.ProjectId == projectId)
+                .ToList();
+
+            var threads = threadAssignments.Select(x => x.FormTemplate)
+                .Where(x => x.Discriminator == FormTemplateDiscriminators.RegularThread && x.CreatedById != this.CurrentOrgUser.Id)
+                .ToList();
+
+            var result = new List<FormTemplateDTO>();
+
+            foreach(var template in threads)
+            {
+                var dto = Mapper.Map<FormTemplateDTO>(template);
+                var assignment = this.UnitOfWork.FormTemplatesRepository.GetUserAssignment(template, this.CurrentOrgUser.Id);
+                Mapper.Map(assignment, dto);
+
+                result.Add(dto);
+            }
+
+            return Ok(result);
+        }
+
+        // GET api/formTemplates/{id}
         [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         public IHttpActionResult Get(Guid id)
@@ -44,6 +73,7 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        // GET api/formTemplates/{id}/filters
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<MetricFilter>))]
         [Route("api/formtemplates/{id:Guid}/filters")]
@@ -57,6 +87,7 @@ namespace WebApi.Controllers
             return Ok(metricFilters);
         }
 
+        // GET api/formTemplates/{id}/assignments
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<ThreadAssignmentDTO>))]
         [Route("api/formtemplates/{id:guid}/assignments")]
@@ -70,7 +101,7 @@ namespace WebApi.Controllers
             return Ok(assignments);
         }
 
-        // POST api/<controller>
+        // POST api/formTemplates
         [HttpPost]
         public IHttpActionResult Post(FormTemplateDTO value)
         {
@@ -100,7 +131,7 @@ namespace WebApi.Controllers
             return Ok(response.ReturnValue);
         }
 
-        // PUT api/<controller>/5
+        // PUT api/formTemplates/{id}
         [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
         public HttpResponseMessage Put(Guid id, FormTemplateDTO value)
@@ -121,6 +152,7 @@ namespace WebApi.Controllers
             return Request.CreateResponse(System.Net.HttpStatusCode.OK, retVal);
         }
 
+        // PUT api/formTemplates/{id}/details
         [HttpPut]
         [DeflateCompression]
         [ResponseType(typeof(FormTemplateDTO))]
@@ -142,7 +174,7 @@ namespace WebApi.Controllers
             return Ok(response.ReturnValue);
         }
 
-        // DELETE api/<controller>/5
+        // DEL api/formTemplates/{id}
         public IHttpActionResult Delete(Guid id)
         {
             var response = this.FormTemplatesService.Delete(id);
@@ -157,6 +189,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // POST api/formTemplates/{id}/clone
         [HttpPost]
         [DeflateCompression]
         [Route("api/formtemplates/{id:Guid}/clone")]
@@ -167,6 +200,7 @@ namespace WebApi.Controllers
             return Ok(response.ReturnValue);
         }
 
+        // PUT api/formTemplates/{id}/publish
         [HttpPut]
         [Route("api/formtemplates/{id:Guid}/publish")]
         public IHttpActionResult Publish(Guid id)
@@ -186,6 +220,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // DEL api/formTemplates/{id}/publish
         [HttpDelete]
         [Route("api/formtemplates/{id:Guid}/publish")]
         public IHttpActionResult UndoPublish(Guid id)
@@ -205,6 +240,7 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // POST api/formTemplates/{id}/assign/{userId}/{accessLevel}
         [HttpPost]
         [Route("api/formtemplates/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ThreadAssignmentDTO>))]
@@ -223,6 +259,7 @@ namespace WebApi.Controllers
             return Ok(Mapper.Map<ThreadAssignmentDTO>(result));
         }
 
+        // DEL api/formTemplates/{id}/assign/{userId}/{accessLevel}
         [HttpDelete]
         [Route("api/formtemplates/{id:guid}/assign/{userId:guid}/{accessLevel}")]
         [ResponseType(typeof(IEnumerable<ThreadAssignmentDTO>))]

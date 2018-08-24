@@ -10,10 +10,9 @@ using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
-
     public class OrgUserTypesController : BaseApiController
     {
-
+        // GET api/orgUserTypes
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserTypeDTO>))]
         public IHttpActionResult Get()
