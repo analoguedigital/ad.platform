@@ -106,11 +106,11 @@
                 this.surveys = _.filter(surveys, { formTemplateId: this.formTemplate.id });
                 this.displayedSurveys = [].concat(this.surveys);
 
-                this.dateResource.query({ projectId: this.project.id, formTemplateId: this.formTemplate.id }).$promise.then((dataRows) => {
-                    this.surveysDataHeaders = dataRows[0];
-                    this.surveysData = dataRows.slice(1);
-                    this.displayedSurveysData = [].concat(this.surveysData);
-                });
+                //this.dateResource.query({ projectId: this.project.id, formTemplateId: this.formTemplate.id }).$promise.then((dataRows) => {
+                //    this.surveysDataHeaders = dataRows[0];
+                //    this.surveysData = dataRows.slice(1);
+                //    this.displayedSurveysData = [].concat(this.surveysData);
+                //});
             });
         }
 

@@ -530,6 +530,30 @@ namespace WebApi.Models
             UnitOfWork.OrgUsersRepository.InsertOrUpdate(_orgUser);
             UnitOfWork.Save();
 
+            // subscribe this user under OnRecord with full access.
+            if (_orgUser.AccountType == AccountType.MobileAccount && !_orgUser.Subscriptions.Any())
+            {
+                var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
+                    .Where(x => x.Name == "OnRecord")
+                    .SingleOrDefault();
+
+                var subscription = new Subscription
+                {
+                    IsActive = true,
+                    Type = UserSubscriptionType.Organisation,
+                    StartDate = DateTimeService.UtcNow,
+                    EndDate = null,
+                    Note = $"Joined organisation - OnRecord",
+                    OrgUserId = user.Id,
+                    OrganisationId = onrecord.Id
+                };
+
+                UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+                _orgUser.IsSubscribed = true;
+
+                UnitOfWork.Save();
+            }
+
             // send account confirmation email
             var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
             var encodedCode = HttpUtility.UrlEncode(code);
@@ -618,6 +642,10 @@ namespace WebApi.Models
                 var orgUser = this.UnitOfWork.OrgUsersRepository.Find(model.UserId);
                 if (orgUser.AccountType == AccountType.MobileAccount && !orgUser.Subscriptions.Any())
                 {
+                    var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
+                        .Where(x => x.Name == "OnRecord")
+                        .SingleOrDefault();
+
                     var subscription = new Subscription
                     {
                         IsActive = true,
@@ -625,7 +653,8 @@ namespace WebApi.Models
                         StartDate = DateTimeService.UtcNow,
                         EndDate = null,
                         Note = $"Joined organisation - OnRecord",
-                        OrgUserId = model.UserId
+                        OrgUserId = model.UserId,
+                        OrganisationId = onrecord.Id
                     };
 
                     UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
@@ -635,7 +664,6 @@ namespace WebApi.Models
                     orgUserAssignment.CanExportZip = true;
 
                     UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
-
                     orgUser.IsSubscribed = true;
 
                     UnitOfWork.Save();

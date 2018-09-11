@@ -61,7 +61,8 @@
             <h5>Assignments</h5>
         </div>
         <div class="box-content">
-            <div class="table-responsive">
+            <h3 ng-if="!assignments.length"><i class="fa fa-info-circle"></i> No assignments were found</h3>
+            <div class="table-responsive" ng-if="assignments.length">
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -127,7 +128,8 @@
             <h5>Teams</h5>
         </div>
         <div class="box-content">
-            <div class="table-responsive">
+            <h3 ng-if="!teams.length"><i class="fa fa-info-circle"></i> No teams were found</h3>
+            <div class="table-responsive" ng-if="teams.length">
                 <table class="table table-hover">
                     <thead>
                         <tr>

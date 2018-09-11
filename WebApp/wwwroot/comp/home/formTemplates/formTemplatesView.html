@@ -50,59 +50,60 @@
         </div>
         <div class="box-content">
             <div st-table="displayedForms" st-safe-src="forms">
-                <div>
+                <h3 ng-if="!displayedForms.length"><i class="fa fa-info-circle"></i> No form templates were found</h3>
+                <div ng-if="displayedForms.length">
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
                             <input st-search type="text" id="search" name="search" />
                         </lm-form-group>
                     </form>
-                </div>
-                <hr />
+                    <hr />
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-mail">
-                        <thead>
-                            <tr>
-                                <th st-sort="projectName">Case</th>
-                                <th st-sort="startDate">Title</th>
-                                <th st-sort="isPublished">Status</th>
-                                <th class="hidden-xs" st-sort="name">Category</th>
-                                <th class="sorting" st-sort="code">Code</th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="form in displayedForms">
-                                <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
-                                <td ng-if="form.projectName">{{form.projectName}}</td>
-                                <td>
-                                    <a ui-sref="home.formtemplates.edit({id:form.id})">
-                                        <span class="color-block" ng-style="{'background-color': form.colour}"></span> {{form.title}}
-                                    </a>
-                                </td>
-                                <td ng-if="form.isPublished">Published (<a ng-bootbox-confirm="Are you sure you want to archive this?" ng-bootbox-confirm-action="archive(form)">archive</a>)</td>
-                                <td ng-if="!form.isPublished">Archived (<a ng-bootbox-confirm="Are you sure you want to publish this?" ng-bootbox-confirm-action="publish(form)">publish</a>)</td>
-                                <td class="hidden-xs">{{form.formTemplateCategory.title}}</td>
-                                <td>{{form.code}}</td>
-                                <td><a ui-sref="home.formtemplates.design({id: form.id})"><i class="fa fa-paint-brush"></i><span class="hidden-xs"> design</span></a></td>
-                                <td>
-                                    <a ui-sref="home.formtemplates.assignments({id:form.id})">
-                                        <i class="fa fa-link"></i> <span class="hidden-xs"> assign</span>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(form.id)">
-                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-mail">
+                            <thead>
+                                <tr>
+                                    <th st-sort="projectName">Case</th>
+                                    <th st-sort="startDate">Title</th>
+                                    <th st-sort="isPublished">Status</th>
+                                    <th class="hidden-xs" st-sort="name">Category</th>
+                                    <th class="sorting" st-sort="code">Code</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="form in displayedForms">
+                                    <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
+                                    <td ng-if="form.projectName">{{form.projectName}}</td>
+                                    <td>
+                                        <a ui-sref="home.formtemplates.edit({id:form.id})">
+                                            <span class="color-block" ng-style="{'background-color': form.colour}"></span> {{form.title}}
+                                        </a>
+                                    </td>
+                                    <td ng-if="form.isPublished">Published (<a ng-bootbox-confirm="Are you sure you want to archive this?" ng-bootbox-confirm-action="archive(form)">archive</a>)</td>
+                                    <td ng-if="!form.isPublished">Archived (<a ng-bootbox-confirm="Are you sure you want to publish this?" ng-bootbox-confirm-action="publish(form)">publish</a>)</td>
+                                    <td class="hidden-xs">{{form.formTemplateCategory.title}}</td>
+                                    <td>{{form.code}}</td>
+                                    <td><a ui-sref="home.formtemplates.design({id: form.id})"><i class="fa fa-paint-brush"></i><span class="hidden-xs"> design</span></a></td>
+                                    <td>
+                                        <a ui-sref="home.formtemplates.assignments({id:form.id})">
+                                            <i class="fa fa-link"></i> <span class="hidden-xs"> assign</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(form.id)">
+                                            <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                </div>
             </div>
         </div>
     </div>

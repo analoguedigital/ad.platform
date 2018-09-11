@@ -3,7 +3,8 @@
         <h5>Updates</h5>
     </div>
     <div class="box-content">
-        <div class="feed-activity-list">
+        <p ng-if="!ctrl.updates.length">Data not available</p>
+        <div class="feed-activity-list" ng-if="ctrl.updates.length">
             <div class="feed-element" ng-repeat="update in ctrl.updates">
                 <div class="media-body ">
                     <span>{{update.description}}</span><br>
@@ -18,6 +19,6 @@
         <h5>Analytics</h5>
     </div>
     <div class="box-content">
-
+        Data not available
     </div>
 </div>
