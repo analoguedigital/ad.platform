@@ -9,70 +9,73 @@
         </div>
         <div class="box-content">
             <div st-table="displayedProjects" st-safe-src="projects">
-                <div>
+                <h3 ng-if="!displayedProjects.length"><i class="fa fa-info-circle"></i> No cases were found</h3>
+                <div ng-if="displayedProjects.length">
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
                             <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
                         </lm-form-group>
                     </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-mail">
+                            <thead>
+                                <tr>
+                                    <th st-sort="name">Name</th>
+                                    <th st-sort="createdBy" width="200">Created by</th>
+                                    <th width="100" class="text-center">Teams</th>
+                                    <th width="100" class="text-center">Assignments</th>
+                                    <th st-sort="lastEntry" class="text-center" width="100">Last entry</th>
+                                    <th width="100"></th>
+                                    <th width="140"></th>
+                                    <th width="160"></th>
+                                    <th width="100"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="project in displayedProjects">
+                                    <td><a ui-sref="home.projects.edit({id:project.id})">{{project.name}}</a></td>
+                                    <td>
+                                        <span ng-if="project.createdBy">{{project.createdBy.email}}</span>
+                                        <span ng-if="!project.createdBy">NA</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-if="project.teamsCount > 0">{{project.teamsCount}}</span>
+                                        <span ng-if="project.teamsCount < 1">NA</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-if="project.assignmentsCount > 0">{{project.assignmentsCount}}</span>
+                                        <span ng-if="project.assignmentsCount < 1">NA</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-if="project.lastEntry">{{project.lastEntry | amDateFormat: 'L'}}</span>
+                                        <span ng-if="!project.lastEntry">NA</span>
+                                    </td>
+                                    <td>
+                                        <a ui-sref="home.surveys.list.summary({ projectId: project.id })">
+                                            <i class="fa fa-folder-o"></i> <span class="hidden-xs"> threads</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a ui-sref="home.adviceThreads.list.summary({ projectId: project.id })">
+                                            <i class="fa fa-medkit"></i> <span class="hidden-xs"> advice threads</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="" ng-click="ctrl.addAdviceThread(project.id)">
+                                            <i class="fa fa-plus-square"></i> <span class="hidden-xs"> add advice thread</span>
+                                        </a>
+                                    </td>
+                                    <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-mail">
-                        <thead>
-                            <tr>
-                                <th st-sort="name">Name</th>
-                                <th st-sort="createdBy" width="200">Created by</th>
-                                <th width="100" class="text-center">Teams</th>
-                                <th width="100" class="text-center">Assignments</th>
-                                <th st-sort="lastEntry" class="text-center" width="100">Last entry</th>
-                                <th width="100"></th>
-                                <th width="140"></th>
-                                <th width="160"></th>
-                                <th width="100"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="project in displayedProjects">
-                                <td><a ui-sref="home.projects.edit({id:project.id})">{{project.name}}</a></td>
-                                <td>
-                                    <span ng-if="project.createdBy">{{project.createdBy.email}}</span>
-                                    <span ng-if="!project.createdBy">NA</span>
-                                </td>
-                                <td class="text-center">
-                                    <span ng-if="project.teamsCount > 0">{{project.teamsCount}}</span>
-                                    <span ng-if="project.teamsCount < 1">NA</span>
-                                </td>
-                                <td class="text-center">
-                                    <span ng-if="project.assignmentsCount > 0">{{project.assignmentsCount}}</span>
-                                    <span ng-if="project.assignmentsCount < 1">NA</span>
-                                </td>
-                                <td class="text-center">
-                                    <span ng-if="project.lastEntry">{{project.lastEntry | amDateFormat: 'L'}}</span>
-                                    <span ng-if="!project.lastEntry">NA</span>
-                                </td>
-                                <td>
-                                    <a ui-sref="home.surveys.list.summary({ projectId: project.id })">
-                                        <i class="fa fa-folder-o"></i> <span class="hidden-xs"> threads</span>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a ui-sref="home.adviceThreads.list.summary({ projectId: project.id })">
-                                        <i class="fa fa-medkit"></i> <span class="hidden-xs"> advice threads</span>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="" ng-click="ctrl.addAdviceThread(project.id)">
-                                        <i class="fa fa-plus-square"></i> <span class="hidden-xs"> add advice thread</span>
-                                    </a>
-                                </td>
-                                <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                
             </div>
         </div>
     </div>

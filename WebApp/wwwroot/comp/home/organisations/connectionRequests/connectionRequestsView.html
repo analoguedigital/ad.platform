@@ -6,52 +6,54 @@
         </div>
         <div class="box-content">
             <div st-table="displayedConnectionRequests" st-safe-src="connectionRequests">
-                <div>
+                <h3 ng-if="!displayedConnectionRequests.length"><i class="fa fa-info-circle"></i> No connection requests were found</h3>
+
+                <div ng-if="displayedConnectionRequests.length">
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
                             <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
                         </lm-form-group>
                     </form>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-mail">
+                            <thead>
+                                <tr>
+                                    <th>User name</th>
+                                    <th>Email address</th>
+                                    <th>Coming from</th>
+                                    <th>Wants to connect to</th>
+                                    <th class="text-center" width="100"></th>
+                                    <th class="text-center" width="100"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="connectionRequest in displayedConnectionRequests" ng-class="{ 'success': connectionRequest.isApproved }">
+                                    <td>{{connectionRequest.orgUser.firstName}} {{connectionRequest.orgUser.surname}}</td>
+                                    <td>{{connectionRequest.orgUser.email}}</td>
+                                    <td>{{connectionRequest.orgUser.organisation.name}}</td>
+                                    <td>{{connectionRequest.organisation.name}}</td>
+                                    <td>
+                                        <a ng-bootbox-confirm="Are you sure you want to approve this request?" ng-bootbox-confirm-action="approve(connectionRequest.id)" ng-if="!connectionRequest.isApproved">
+                                            <i class="fa fa-thumbs-o-up"></i><span class="hidden-xs"> approve</span>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a ng-bootbox-confirm="Are you sure you want to decline this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)" ng-if="!connectionRequest.isApproved">
+                                            <i class="fa fa-ban"></i><span class="hidden-xs"> decline</span>
+                                        </a>
+
+                                        <a ng-bootbox-confirm="Are you sure you want to delete this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)" ng-if="connectionRequest.isApproved">
+                                            <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
                 </div>
-
-                <table class="table table-hover table-mail">
-                    <thead>
-                        <tr>
-                            <th>User name</th>
-                            <th>Email address</th>
-                            <th>Coming from</th>
-                            <th>Wants to connect to</th>
-                            <th class="text-center" width="100"></th>
-                            <th class="text-center" width="100"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr ng-repeat="connectionRequest in displayedConnectionRequests" ng-class="{ 'success': connectionRequest.isApproved }">
-                            <td>{{connectionRequest.orgUser.firstName}} {{connectionRequest.orgUser.surname}}</td>
-                            <td>{{connectionRequest.orgUser.email}}</td>
-                            <td>{{connectionRequest.orgUser.organisation.name}}</td>
-                            <td>{{connectionRequest.organisation.name}}</td>
-                            <td>
-                                <a ng-bootbox-confirm="Are you sure you want to approve this request?" ng-bootbox-confirm-action="approve(connectionRequest.id)" ng-if="!connectionRequest.isApproved">
-                                    <i class="fa fa-thumbs-o-up"></i><span class="hidden-xs"> approve</span>
-                                </a>
-                            </td>
-                            <td>
-                                <a ng-bootbox-confirm="Are you sure you want to decline this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)" ng-if="!connectionRequest.isApproved">
-                                    <i class="fa fa-ban"></i><span class="hidden-xs"> decline</span>
-                                </a>
-
-                                <a ng-bootbox-confirm="Are you sure you want to delete this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)" ng-if="connectionRequest.isApproved">
-                                    <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
-                                </a>
-                            </td>
-                        </tr>
-                        <tr ng-if="!displayedConnectionRequests.length">
-                            <td colspan="5">No connection requests were found.</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
             </div>
         </div>
     </div>

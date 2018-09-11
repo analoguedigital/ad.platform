@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         public IHttpActionResult GetList()
         {
             var orgs = Organisations.AllAsNoTracking
-                .Where(x => !x.Name.Contains("OnRecord"))
+                .Where(x => !x.Name.Equals("OnRecord"))
                 .OrderBy(x => x.Name)
                 .ToList()
                 .Select(x => Mapper.Map<OrganisationDTO>(x))

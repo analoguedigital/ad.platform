@@ -11,7 +11,8 @@
         </div>
     </div>
     <div class="box-content">
-        <div st-table="displayedProjects" st-safe-src="projects">
+        <h3 ng-if="!ctrl.surveys.length"><i class="fa fa-info-circle"></i> No surveys were found</h3>
+        <div st-table="displayedProjects" st-safe-src="projects" ng-if="ctrl.surveys.length">
             <div class="table-responsive">
                 <table class="table table-hover table-mail">
                     <thead>
@@ -56,7 +57,7 @@
 
         <p ng-if="ctrl.project.id">
             <a ui-sref="home.sharedThreads.list.all({formTemplateId: formTemplate.id, projectId: ctrl.project.id})"
-               class="text-primary">See all <i class="fa fa-arrow-right"></i></a>
+               class="text-primary"><i class="fa fa-arrow-right"></i> See all records</a>
         </p>
     </div>
 </div>

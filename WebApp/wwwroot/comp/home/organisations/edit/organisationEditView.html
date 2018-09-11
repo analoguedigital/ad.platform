@@ -107,7 +107,8 @@
             <h5>Users</h5>
         </div>
         <div class="box-content">
-            <div st-table="displayedUsers" st-safe-src="users">
+            <h3 ng-if="!displayedUsers.length"><i class="fa fa-info-circle"></i> No users were found</h3>
+            <div st-table="displayedUsers" st-safe-src="users" ng-if="displayedUsers.length">
                 <div>
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">

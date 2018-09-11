@@ -411,6 +411,20 @@ namespace WebApi.Controllers
                         UnitOfWork.SubscriptionsRepository.Delete(subscriptions);
                     }
 
+                    // remove organization requests
+                    var orgRequests = UnitOfWork.OrgRequestsRepository.AllAsNoTracking
+                        .Where(x => x.OrgUserId == orgUser.Id)
+                        .ToList();
+
+                    UnitOfWork.OrgRequestsRepository.Delete(orgRequests);
+
+                    // remove organization connection requests
+                    var orgConnectionRequests = UnitOfWork.OrgConnectionRequestsRepository.AllAsNoTracking
+                        .Where(x => x.OrgUserId == orgUser.Id)
+                        .ToList();
+
+                    UnitOfWork.OrgConnectionRequestsRepository.Delete(orgConnectionRequests);
+
                     UnitOfWork.Save();
 
                     // delete form templates

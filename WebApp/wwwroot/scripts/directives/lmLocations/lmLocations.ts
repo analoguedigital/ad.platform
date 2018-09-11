@@ -54,18 +54,19 @@ module App {
                 angular.forEach(scope.surveys, (survey) => {
                     angular.forEach(survey.locations, (loc) => {
                         let template = _.find(scope.formTemplates, (template) => { return template.id == survey.formTemplateId; });
+                        if (template) {
+                            let location: ProjectSummaryController.Models.ISurveyLocation = {
+                                accuracy: loc.accuracy,
+                                error: loc.error,
+                                event: loc.event,
+                                latitude: loc.latitude,
+                                longitude: loc.longitude,
+                                description: survey.description,
+                                color: template.colour
+                            };
 
-                        let location: ProjectSummaryController.Models.ISurveyLocation = {
-                            accuracy: loc.accuracy,
-                            error: loc.error,
-                            event: loc.event,
-                            latitude: loc.latitude,
-                            longitude: loc.longitude,
-                            description: survey.description,
-                            color: template.colour
-                        };
-
-                        scope.locations.push(location);
+                            scope.locations.push(location);
+                        }
                     });
                 });
 
