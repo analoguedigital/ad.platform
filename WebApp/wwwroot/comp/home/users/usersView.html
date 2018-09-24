@@ -9,8 +9,8 @@
         </div>
         <div class="box-content">
             <div st-table="displayedUsers" st-safe-src="users">
-                <h3 ng-if="!displayedUsers.length"><i class="fa fa-info-circle"></i> No users were found</h3>
-                <div ng-if="displayedUsers.length">
+                <!--<h3 ng-if="!displayedUsers.length"><i class="fa fa-info-circle"></i> No users were found</h3>-->
+                <div>
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
                             <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
@@ -61,6 +61,9 @@
                                             <i class="fa fa-unlink"></i><span class="hidden-xs"> remove</span>
                                         </a>
                                     </td>
+                                </tr>
+                                <tr ng-if="!displayedUsers.length">
+                                    <td colspan="9"><i class="fa fa-info-circle"></i> No users were found</td>
                                 </tr>
                             </tbody>
                         </table>

@@ -31,9 +31,11 @@ module App {
         formTemplateId: string;
         formTemplate: Models.IFormTemplate;
         orgUsers: Models.IOrgUser[];
+        assignments: Models.IThreadAssignment[];
         userAssignments: IThreadAssignmentUser[];
         displayedAssignments: IThreadAssignmentUser[];
         searchTerm: string;
+        listType: string;
 
         static $inject: string[] = ["$scope", "$state", "$stateParams", "$uibModal", "formTemplateResource", "orgUserResource"];
 
@@ -50,6 +52,8 @@ module App {
         }
 
         activate() {
+            this.listType = '2'; // all accounts
+
             if (this.formTemplateId === '') {
                 this.formTemplateId = '00000000-0000-0000-0000-000000000000';
 
@@ -60,41 +64,46 @@ module App {
                 this.formTemplateResource.get({ id: this.formTemplateId }).$promise.then((form) => {
                     this.formTemplate = form;
 
-                    this.orgUserResource.query({ listType: 1, organisationId: this.formTemplate.organisation.id }).$promise.then((users) => {
-                        this.orgUsers = users;
-                        this.userAssignments = [];
-
-                        this.formTemplateResource.getAssignments({ id: this.formTemplateId }, (assignments) => {
-                            _.forEach(users, (user) => {
-                                var userName = user.email;
-                                if (user.firstName || user.surname)
-                                    userName = `${user.firstName} ${user.surname}`;
-
-                                var assgn = _.find(assignments, { 'orgUserId': user.id });
-                                var userAssignment = <Models.IThreadAssignment>assgn;
-
-                                var record: IThreadAssignmentUser = {
-                                    userId: user.id,
-                                    name: userName,
-                                    email: user.email,
-                                    accountType: user.accountType,
-                                    isRootUser: user.isRootUser,
-                                    isWebUser: user.isWebUser,
-                                    isMobileUser: user.isMobileUser,
-                                    canAdd: userAssignment ? userAssignment.canAdd : false,
-                                    canEdit: userAssignment ? userAssignment.canEdit : false,
-                                    canView: userAssignment ? userAssignment.canView : false,
-                                    canDelete: userAssignment ? userAssignment.canDelete : false
-                                };
-
-                                this.userAssignments.push(record);
-                            });
-
-                            this.displayedAssignments = [].concat(this.userAssignments);
-                        });
+                    this.formTemplateResource.getAssignments({ id: this.formTemplateId }, (assignments) => {
+                        this.assignments = assignments;
+                        this.load(+this.listType);
                     });
                 });
             }
+        }
+
+        load(listType: number) {
+            this.orgUserResource.query({ listType: listType, organisationId: this.formTemplate.organisation.id }).$promise.then((users) => {
+                this.orgUsers = users;
+                this.userAssignments = [];
+
+                _.forEach(users, (user) => {
+                    var userName = user.email;
+                    if (user.firstName || user.surname)
+                        userName = `${user.firstName} ${user.surname}`;
+
+                    var assgn = _.find(this.assignments, { 'orgUserId': user.id });
+                    var userAssignment = <Models.IThreadAssignment>assgn;
+
+                    var record: IThreadAssignmentUser = {
+                        userId: user.id,
+                        name: userName,
+                        email: user.email,
+                        accountType: user.accountType,
+                        isRootUser: user.isRootUser,
+                        isWebUser: user.isWebUser,
+                        isMobileUser: user.isMobileUser,
+                        canAdd: userAssignment ? userAssignment.canAdd : false,
+                        canEdit: userAssignment ? userAssignment.canEdit : false,
+                        canView: userAssignment ? userAssignment.canView : false,
+                        canDelete: userAssignment ? userAssignment.canDelete : false
+                    };
+
+                    this.userAssignments.push(record);
+                });
+
+                this.displayedAssignments = [].concat(this.userAssignments);
+            });
         }
 
         updateAssignment(assignment: IThreadAssignmentUser, accessLevel: string) {
@@ -141,6 +150,11 @@ module App {
             assignment.canEdit = newValue.canEdit;
             assignment.canDelete = newValue.canDelete;
         }
+
+        updateListType(type: string) {
+            this.load(+type);
+        }
+
     }
 
     angular.module("app").controller("formTemplateAssignmentsController", FormTemplateAssignmentsController);

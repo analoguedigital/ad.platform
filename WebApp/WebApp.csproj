@@ -211,6 +211,8 @@
     <Content Include="wwwroot\comp\common\pageHeader.html" />
     <Content Include="wwwroot\comp\common\resetPassword\resetPasswordView.html" />
     <Content Include="wwwroot\comp\common\topnavbar\topnavbarView.html" />
+    <Content Include="wwwroot\comp\home\calendar\calendarView.html" />
+    <Content Include="wwwroot\comp\home\emailRecipients\emailRecipientsView.html" />
     <Content Include="wwwroot\comp\home\sharedThreads\sharedThreadsView.html" />
     <Content Include="wwwroot\comp\home\sharedThreads\all\allSharedThreadsView.html" />
     <Content Include="wwwroot\comp\home\sharedThreads\all\_dataTable.html" />
@@ -347,6 +349,7 @@
     <Compile Include="Controllers\CustomControllers\MBS\Models\Evidence.cs" />
     <Compile Include="Controllers\CustomControllers\MBS\Models\Update.cs" />
     <Compile Include="Controllers\DownloadsController.cs" />
+    <Compile Include="Controllers\EmailRecipientsController.cs" />
     <Compile Include="Controllers\FeedbacksController.cs" />
     <Compile Include="Controllers\OrgConnectionRequestsController.cs" />
     <Compile Include="Controllers\OrgInvitationsController.cs" />
@@ -512,6 +515,10 @@
     <TypeScriptCompile Include="wwwroot\comp\common\navigation\navigationController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\resetPassword\resetPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\topnavbar\topnavbarController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\calendar\calendar.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\calendar\calendarController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\emailRecipients\emailRecipients.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\emailRecipients\emailRecipientsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\sharedThreads.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\sharedThreadsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\all\allSharedThreadsController.ts" />
@@ -633,6 +640,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataListItem.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataList.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\dataListRelationship.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\domain\emailRecipient.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\filterValue.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\multipleFilterValue.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\domain\filterValues\rangeFilterValue.ts" />
@@ -682,6 +690,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\dataListResource .ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\dataResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\downloadResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\emailRecipientResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateCategoryResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\metricGroupResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\formTemplateResource.ts" />

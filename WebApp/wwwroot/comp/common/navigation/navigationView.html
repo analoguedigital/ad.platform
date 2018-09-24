@@ -69,6 +69,12 @@
                     <i class="fa fa-universal-access"></i> <span class="nav-label">Shared Threads</span>
                 </a>
             </li>
+            <!-- Calendar View -->
+            <li lm-access="Organisation user" ng-class="{ 'active': $state.includes('home.calendar') }">
+                <a ui-sref="home.calendar" ui-sref-opts="{reload:true}">
+                    <i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span>
+                </a>
+            </li>
             <!-- Case Management -->
             <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.caseManagement')}">
                 <a aria-expanded="false">
@@ -150,6 +156,10 @@
             <!-- Subscription Plans -->
             <li lm-access="System administrator,Platform administrator" ng-class="{'active':$state.includes('home.subscriptionplans')}">
                 <a ui-sref="home.subscriptionplans.list" ui-sref-opts="{reload: true}"><i class="fa fa-credit-card-alt"></i> <span class="nav-label">Subscriptions</span></a>
+            </li>
+            <!-- Email Recipients -->
+            <li lm-access="System administrator,Platform administrator" ng-class="{'active':$state.includes('home.emailRecipients')}">
+                <a ui-sref="home.emailRecipients" ui-sref-opts="{reload: true}"><i class="fa fa-envelope"></i> <span class="nav-label">Email Recipients</span></a>
             </li>
         </ul>
     </div>

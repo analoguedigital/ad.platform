@@ -568,6 +568,32 @@ namespace WebApi.Models
             var messageBody = WebHelpers.GenerateEmailTemplate(content, "Confirm your registration");
             await UserManager.SendEmailAsync(user.Id, "Confirm your account", messageBody);
 
+            // find email recipients
+            var recipients = UnitOfWork.EmailRecipientsRepository.AllAsNoTracking
+                .Where(x => x.NewMobileUsers == true)
+                .ToList();
+
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{WebHelpers.GetRootIndexPath()}#!/users/mobile/";
+
+            foreach (var recipient in recipients)
+            {
+                var emailContent = $"<p>First name: {model.FirstName}</p>" +
+                    $"<p>Surname: {model.Surname}</p>" +
+                    $"<p>Email: {model.Email}</p><br>" +
+                    $"<p>View <a href='{url}'>mobile users</a> on the dashboard.</p>";
+
+                var recipientEmail = new Email
+                {
+                    To = recipient.OrgUser.Email,
+                    Subject = "A new mobile user has joined OnRecord",
+                    Content = WebHelpers.GenerateEmailTemplate(emailContent, "A new mobile user has joined OnRecord")
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
+            }
+
+            UnitOfWork.Save();
+
             return Ok();
         }
 

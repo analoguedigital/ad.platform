@@ -61,6 +61,7 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Email> Emails { get; set; }
+        public DbSet<EmailRecipient> EmailRecipients { get; set; }
 
         #endregion
 
@@ -176,6 +177,8 @@ namespace LightMethods.Survey.Models.DAL
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Configurations.Add(new EmailRecipientConfig());
 
             // projects and organisations config
             modelBuilder.Configurations.Add(new ProjectConfig());

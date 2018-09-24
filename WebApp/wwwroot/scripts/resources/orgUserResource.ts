@@ -2,6 +2,7 @@
     "use strict";
 
     export interface IOrgUserResource extends ng.resource.IResourceClass<Models.IOrgUser> {
+        getOnRecordStaff(success: Function, error?: Function): Models.IOrgUser[];
         update(user: Models.IOrgUser, success: Function, error?: Function): Models.IOrgUser;
         deleteAccount(params: Object, success: Function, error?: Function);
     }
@@ -14,6 +15,7 @@
     OrgUserResource.$inject = ["$resource"];
     export function OrgUserResource($resource: ng.resource.IResourceService): IOrgUserResource {
         var OrgUser = <IOrgUserResource>$resource('/api/orgUsers/:listType/:id/', { listType: '@listType', id: '@id' }, {
+            'getOnRecordStaff': { method: 'GET', url: '/api/orgusers/onrecord-staff', isArray: true },
             'update': { method: 'PUT' },
             'deleteAccount': { method: 'POST', url: '/api/orgusers/deleteAccount/:id', params: { id: '@id' } }
         });

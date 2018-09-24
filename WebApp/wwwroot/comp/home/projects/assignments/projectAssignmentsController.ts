@@ -31,6 +31,7 @@ module App {
     }
 
     class ProjectAssignmentsController implements IProjectAssignmentsController {
+        projectId: string;
         project: Models.IProject;
         users: Models.IOrgUser[];
         assignments: Models.IProjectAssignment[];
@@ -38,6 +39,7 @@ module App {
         displayedAssignments: IAssignmentUser[];
         searchTerm: string;
         errors: string;
+        listType: string;
 
         static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
         constructor(
@@ -54,47 +56,52 @@ module App {
 
         activate() {
             this.$scope.title = "Case Assignments"
+            this.listType = '2'; // all accounts
 
-            var projectId = this.$stateParams['id'];
-            var projectPromise = this.projectResource.get({ id: projectId }, (project) => {
+            this.projectId = this.$stateParams['id'];
+            var projectPromise = this.projectResource.get({ id: this.projectId }, (project) => {
                 this.project = project;
 
-                this.orgUserResource.query({ listType: 2, organisationId: this.project.organisation.id }, (users) => {
-                    this.users = users;
-
-                    this.projectResource.assignments({ id: projectId }, (assignments) => {
-                        this.userAssignments = [];
-
-                        _.forEach(this.users, (user) => {
-                            var userName = user.email;
-                            if (user.firstName || user.surname)
-                                userName = `${user.firstName} ${user.surname}`;
-
-                            var assgn = _.find(assignments, { 'orgUserId': user.id });
-                            var userAssignment = <Models.IProjectAssignment>assgn;
-
-                            var record: IAssignmentUser = {
-                                userId: user.id,
-                                name: userName,
-                                email: user.email,
-                                accountType: user.accountType,
-                                isRootUser: user.isRootUser,
-                                isWebUser: user.isWebUser,
-                                isMobileUser: user.isMobileUser,
-                                canAdd: userAssignment ? userAssignment.canAdd : false,
-                                canEdit: userAssignment ? userAssignment.canEdit : false,
-                                canView: userAssignment ? userAssignment.canView : false,
-                                canDelete: userAssignment ? userAssignment.canDelete : false,
-                                canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
-                                canExportZip: userAssignment ? userAssignment.canExportZip : false
-                            };
-
-                            this.userAssignments.push(record);
-                        });
-
-                        this.displayedAssignments = [].concat(this.userAssignments);
-                    });
+                this.projectResource.assignments({ id: this.projectId }, (assignments) => {
+                    this.assignments = assignments;
+                    this.load(+this.listType);
                 });
+            });
+        }
+
+        load(listType: number) {
+            this.orgUserResource.query({ listType: listType, organisationId: this.project.organisation.id }, (users) => {
+                this.users = users;
+                this.userAssignments = [];
+
+                _.forEach(this.users, (user) => {
+                    var userName = user.email;
+                    if (user.firstName || user.surname)
+                        userName = `${user.firstName} ${user.surname}`;
+
+                    var assgn = _.find(this.assignments, { 'orgUserId': user.id });
+                    var userAssignment = <Models.IProjectAssignment>assgn;
+
+                    var record: IAssignmentUser = {
+                        userId: user.id,
+                        name: userName,
+                        email: user.email,
+                        accountType: user.accountType,
+                        isRootUser: user.isRootUser,
+                        isWebUser: user.isWebUser,
+                        isMobileUser: user.isMobileUser,
+                        canAdd: userAssignment ? userAssignment.canAdd : false,
+                        canEdit: userAssignment ? userAssignment.canEdit : false,
+                        canView: userAssignment ? userAssignment.canView : false,
+                        canDelete: userAssignment ? userAssignment.canDelete : false,
+                        canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
+                        canExportZip: userAssignment ? userAssignment.canExportZip : false
+                    };
+
+                    this.userAssignments.push(record);
+                });
+
+                this.displayedAssignments = [].concat(this.userAssignments);
             });
         }
 
@@ -155,6 +162,10 @@ module App {
 
         clearErrors() {
             this.errors = undefined;
+        }
+
+        updateListType(type: string) {
+            this.load(+type);
         }
 
     }

@@ -39,7 +39,6 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
-
         private UsersRepository _UsersRepository;
         public UsersRepository UsersRepository
         {
@@ -440,7 +439,6 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
-
         private DataListItemsRepository _DataListItemsRepository;
         public DataListItemsRepository DataListItemsRepository
         {
@@ -562,6 +560,18 @@ namespace LightMethods.Survey.Models.DAL
                     this._EmailsRepository = new EmailsRepository(this);
 
                 return this._EmailsRepository;
+            }
+        }
+
+        private EmailRecipientsRepository _EmailRecipientsRepository;
+        public EmailRecipientsRepository EmailRecipientsRepository
+        {
+            get
+            {
+                if (this._EmailRecipientsRepository == null)
+                    this._EmailRecipientsRepository = new EmailRecipientsRepository(this);
+
+                return this._EmailRecipientsRepository;
             }
         }
 

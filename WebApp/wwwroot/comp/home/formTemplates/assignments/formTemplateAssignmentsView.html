@@ -2,7 +2,26 @@
 <div class="wrapper wrapper-content animated fadeInRight thread-assignments-view">
     <div class="box">
         <div class="box-title">
-            <h5>Form Template Assignments</h5>
+            <div class="pull-left">
+                <h5>Form Template: {{ctrl.formTemplate.title}}</h5>
+            </div>
+
+            <div class="pull-right">
+                <span>Account Type:&nbsp;&nbsp;</span>
+
+                <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
+                    <input type="radio" id="mobile-accounts-radio" name="list-type" value="0" ng-model="ctrl.listType" ng-change="ctrl.updateListType(0)" />
+                    <label for="mobile-accounts-radio">Mobile</label>
+                </div>
+                <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
+                    <input type="radio" id="web-accounts-radio" name="list-type" value="1" ng-model="ctrl.listType" ng-change="ctrl.updateListType(1)" />
+                    <label for="web-accounts-radio">Web</label>
+                </div>
+                <div class="radio radio-primary no-margins" style="display: inline-block">
+                    <input type="radio" id="all-accounts-radio" name="list-type" value="2" ng-model="ctrl.listType" ng-change="ctrl.updateListType(2)" />
+                    <label for="all-accounts-radio">All</label>
+                </div>
+            </div>
         </div>
         <div class="box-content">
             <div st-table="ctrl.displayedAssignments" st-safe-src="ctrl.userAssignments">
