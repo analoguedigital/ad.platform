@@ -122,6 +122,27 @@ namespace WebApi.Controllers
             return Ok(result);
         }
 
+        [DeflateCompression]
+        [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
+        [Route("api/orgusers/onrecord-staff")]
+        public IHttpActionResult GetOnRecordStaffMembers()
+        {
+            var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
+                .Where(x => x.Name == "OnRecord")
+                .SingleOrDefault();
+
+            var users = Users.AllIncluding(x => x.Type)
+                .OrderBy(x => x.Surname)
+                .ThenBy(x => x.FirstName)
+                .Where(x => x.AccountType == AccountType.WebAccount && x.OrganisationId == onrecord.Id);
+
+            var result = users.ToList()
+                .Select(x => Mapper.Map<OrgUserDTO>(x))
+                .ToList();
+
+            return Ok(result);
+        }
+
         // GET /api/orgUsers/{id}
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
@@ -445,7 +466,7 @@ namespace WebApi.Controllers
                         UnitOfWork.MetricsRepository.Delete(metrics);
                         UnitOfWork.MetricGroupsRepository.Delete(groups);
                     }
-                    
+
                     UnitOfWork.Save();
 
                     UnitOfWork.FormTemplatesRepository.Delete(templates);

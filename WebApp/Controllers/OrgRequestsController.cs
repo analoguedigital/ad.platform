@@ -87,28 +87,45 @@ namespace WebApi.Controllers
                 var onRecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
                     .Where(x => x.Name == "OnRecord").SingleOrDefault();
 
+                var rootIndex = WebHelpers.GetRootIndexPath();
+                var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/requests/";
+
+                var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
+                            <p>Organisation: <b>" + model.Name + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>organization requests</a> on the dashboard.</p>";
+
                 if (onRecord.RootUserId.HasValue)
                 {
                     var onRecordAdmin = UnitOfWork.OrgUsersRepository.AllAsNoTracking
                         .Where(x => x.Id == onRecord.RootUserId.Value)
                         .SingleOrDefault();
 
-                    var rootIndex = WebHelpers.GetRootIndexPath();
-                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/requests/";
-
-                    var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
-                            <p>Organisation: <b>" + model.Name + @"</b></p>
-                            <p><br></p>
-                            <p>View <a href='" + url + @"'>organization requests</a> on the dashboard.</p>";
-
                     var email = new Email
                     {
                         To = onRecordAdmin.Email,
                         Subject = $"A user has requested an organization",
-                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested to join an organization")
+                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested an organization")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+                }
+
+                // find email recipients
+                var recipients = UnitOfWork.EmailRecipientsRepository.AllAsNoTracking
+                    .Where(x => x.OrgRequests == true)
+                    .ToList();
+
+                foreach (var recipient in recipients)
+                {
+                    var recipientEmail = new Email
+                    {
+                        To = recipient.OrgUser.Email,
+                        Subject = $"A user has request an organization",
+                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has request an organization")
+                    };
+
+                    UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
                 }
 
                 UnitOfWork.Save();

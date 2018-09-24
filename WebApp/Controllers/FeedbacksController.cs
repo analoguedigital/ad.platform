@@ -64,7 +64,26 @@ namespace WebApi.Controllers
                         Subject = $"New feedback arrived - {this.CurrentOrgUser.UserName}",
                         Content = WebHelpers.GenerateEmailTemplate(content, "User Feedback")
                     };
+
                     this.UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
+                }
+
+                // find feedback recipients
+                var recipients = UnitOfWork.EmailRecipientsRepository.AllAsNoTracking
+                    .Where(x => x.Feedbacks == true)
+                    .ToList();
+
+                // queue emails for all recipients
+                foreach (var recipient in recipients)
+                {
+                    var recipientEmail = new Email
+                    {
+                        To = recipient.OrgUser.Email,
+                        Subject = $"New feedback arrived - {this.CurrentOrgUser.UserName}",
+                        Content = WebHelpers.GenerateEmailTemplate($"<p>{feedback.Comment}</p>", "User Feedback")
+                    };
+
+                    UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
                 }
 
                 this.UnitOfWork.Save();

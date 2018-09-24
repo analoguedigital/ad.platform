@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Enums
 {
-    public enum OrgUserListType
+    public enum EmailNotificationType
     {
-        MobileAccounts = 0,
-
-        WebAccounts = 1,
-
-        AllAccounts = 2
+        Feedbacks,
+        NewMobileUsers,
+        OrgRequests,
+        OrgConnectionRequests
     }
 }

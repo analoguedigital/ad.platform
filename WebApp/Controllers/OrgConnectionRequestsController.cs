@@ -96,14 +96,15 @@ namespace WebApi.Controllers
 
                 var onRecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
                     .Where(x => x.Name == "OnRecord").SingleOrDefault();
+
+                var rootIndex = WebHelpers.GetRootIndexPath();
+                var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
+
                 if (onRecord.RootUserId.HasValue)
                 {
                     var onRecordAdmin = UnitOfWork.OrgUsersRepository.AllAsNoTracking
                         .Where(x => x.Id == onRecord.RootUserId.Value)
                         .SingleOrDefault();
-
-                    var rootIndex = WebHelpers.GetRootIndexPath();
-                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
 
                     var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
                             <p>Organisation: <b>" + organisation.Name + @"</b></p>
@@ -126,9 +127,6 @@ namespace WebApi.Controllers
                         .Where(x => x.Id == organisation.RootUser.Id)
                         .SingleOrDefault();
 
-                    var rootIndex = WebHelpers.GetRootIndexPath();
-                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
-
                     var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
                             <p><br></p>
                             <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
@@ -141,6 +139,27 @@ namespace WebApi.Controllers
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
+                }
+
+                // find email recipients
+                var recipients = UnitOfWork.EmailRecipientsRepository.AllAsNoTracking
+                    .Where(x => x.OrgConnectionRequests == true)
+                    .ToList();
+
+                var emailContent = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
+                            <p>Organisation: <b>" + organisation.Name + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+                foreach (var recipient in recipients)
+                {
+                    var recipientEmail = new Email
+                    {
+                        To = recipient.OrgUser.Email,
+                        Subject = $"A user has request to join an organization",
+                        Content = WebHelpers.GenerateEmailTemplate(emailContent, "A user has requested to join an organization")
+                    };
+
+                    UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
                 }
 
                 UnitOfWork.Save();

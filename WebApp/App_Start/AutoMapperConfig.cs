@@ -25,6 +25,11 @@ namespace WebApi
                 .AfterMap((src, dest) => { dest.Email = src.OrgUser.Email; });
             Mapper.CreateMap<ProjectAssignmentDTO, Assignment>();
 
+            Mapper.CreateMap<EmailRecipient, EmailRecipientDTO>()
+                .AfterMap((src, dest) => { dest.IsRootUser = src.OrgUser.IsRootUser; })
+                .AfterMap((src, dest) => { dest.OrgUserName = src.OrgUser.ToString(); })
+                .AfterMap((src, dest) => { dest.Email = src.OrgUser.Email; });
+
             #endregion Projects and Assignments
 
             #region Form Templates and Categories

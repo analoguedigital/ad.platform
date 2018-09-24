@@ -9,7 +9,9 @@ namespace LightMethods.Survey.Models.Entities
     public enum UserSubscriptionType
     {
         Paid = 0,
+
         Organisation = 1,
+
         Voucher = 2
     }
 }
