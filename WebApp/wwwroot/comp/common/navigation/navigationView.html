@@ -43,22 +43,26 @@
             <li lm-access="System administrator,Platform administrator,Organisation user" ng-class="{'active':$state.includes('home.dashboard.layout')}">
                 <a ui-sref="home.dashboard.layout" ui-sref-opts="{reload: true}"><i class="fa fa-dashboard"></i> <span class="nav-label">Dashboard</span> </a>
             </li>
+            <!-- Administrators -->
+            <li lm-access="System administrator" ng-class="{'active':$state.includes('home.administrators.list')}">
+                <a ui-sref="home.administrators.list" ui-sref-opts="{reload: true}"><i class="fa fa-address-book"></i> <span class="nav-label">Administrators</span> </a>
+            </li>
             <!-- Organisations -->
             <li lm-access="System administrator,Platform administrator" ng-class="{'active':$state.includes('home.organisations.list')}">
                 <a ui-sref="home.organisations.list" ui-sref-opts="{reload: true}"><i class="fa fa-sitemap"></i> <span class="nav-label">Organisations</span></a>
             </li>
             <!-- Cases -->
-            <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.projects')}">
+            <li lm-access="System administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.projects')}">
                 <a ui-sref="home.projects.list" ui-sref-opts="{reload: true}"><i class="fa fa-briefcase"></i> <span class="nav-label">Cases</span></a>
             </li>
             <!-- Threads -->
-            <li lm-access="System administrator,Platform administrator,Organisation user" ng-class="{ 'active': $state.includes('home.surveys.list') }">
+            <li lm-access="System administrator,Organisation user" ng-class="{ 'active': $state.includes('home.surveys.list') }">
                 <a ui-sref="home.surveys.list" ui-sref-opts="{reload:true}">
                     <i class="fa fa-newspaper-o"></i> <span class="nav-label">Threads</span>
                 </a>
             </li>
             <!-- Advice Threads -->
-            <li lm-access="System administrator,Platform administrator,Organisation user" ng-class="{ 'active': $state.includes('home.adviceThreads.list') }">
+            <li lm-access="System administrator,Organisation user" ng-class="{ 'active': $state.includes('home.adviceThreads.list') }">
                 <a ui-sref="home.adviceThreads.list" ui-sref-opts="{reload:true}">
                     <i class="fa fa-medkit"></i> <span class="nav-label">Advice Threads</span>
                 </a>
@@ -70,13 +74,13 @@
                 </a>
             </li>
             <!-- Calendar View -->
-            <li lm-access="Organisation user" ng-class="{ 'active': $state.includes('home.calendar') }">
+            <li lm-access="System administrator,Organisation administrator,Organisation user" ng-class="{ 'active': $state.includes('home.calendar') }">
                 <a ui-sref="home.calendar" ui-sref-opts="{reload:true}">
                     <i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span>
                 </a>
             </li>
             <!-- Case Management -->
-            <li lm-access="System administrator,Platform administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.caseManagement')}">
+            <li lm-access="System administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.caseManagement')}">
                 <a aria-expanded="false">
                     <i class="fa fa-suitcase"></i> <span class="nav-label">Case Management</span> <span class="fa arrow"></span>
                 </a>
@@ -132,7 +136,7 @@
                 </ul>
             </li>
             <!-- Form Templates and Data Lists -->
-            <li lm-access="System administrator,Platform administrator" ng-class="{ 'active': $state.includes('home.formtemplates.list') || $state.includes('home.datalists.list') }">
+            <li lm-access="System administrator" ng-class="{ 'active': $state.includes('home.formtemplates.list') || $state.includes('home.datalists.list') }">
                 <a ui-sref="home.designer" aria-expanded="false"><i class="fa fa-paint-brush"></i> <span class="nav-label">Designer</span><span class="fa arrow"></span></a>
                 <ul aria-expanded="false" class="nav nav-second-level" ng-class="{ 'collapse in': $state.includes('home.formtemplates.list') || $state.includes('home.datalists.list') }">
                     <li ui-sref-active="active">

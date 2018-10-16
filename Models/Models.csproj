@@ -135,6 +135,7 @@
     <Compile Include="DAL\OrgRequestsRepository.cs" />
     <Compile Include="DAL\OrgTeamUsersRepository.cs" />
     <Compile Include="DAL\PaymentsRepository.cs" />
+    <Compile Include="DAL\PlatformUsersRepository.cs" />
     <Compile Include="DAL\SubscriptionPlansRepository.cs" />
     <Compile Include="DAL\VouchersRepository.cs" />
     <Compile Include="DAL\RolesRepository.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Entities\OrgConnectionRequest.cs" />
     <Compile Include="Entities\OrgRequest.cs" />
     <Compile Include="Entities\OrgTeamUser.cs" />
+    <Compile Include="Entities\PlatformUser.cs" />
     <Compile Include="Entities\SubscriptionPlan.cs" />
     <Compile Include="Entities\ThreadAssignment.cs" />
     <Compile Include="EntityConfig\AdultAddressConfig.cs" />

@@ -9,6 +9,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Name { set; get; }
 
+        public OrganisationDTO Organisation { get; set; }
+
         public ICollection<DataListItemDTO> Items { set; get; } = new List<DataListItemDTO>();
 
         public ICollection<DataListRelationshipDTO> Relationships { set; get; }

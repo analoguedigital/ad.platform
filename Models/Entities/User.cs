@@ -29,6 +29,14 @@ namespace LightMethods.Survey.Models.Entities
         [Display(Name = "Last Login")]
         public DateTime? LastLogin { set; get; }
 
+        [Display(Name = "First name")]
+        [MaxLength(30)]
+        public string FirstName { get; set; }
+
+        [Display(Name = "Surname")]
+        [MaxLength(30)]
+        public string Surname { get; set; }
+
         public GenderType? Gender { set; get; }
 
         public DateTime? Birthdate { set; get; }

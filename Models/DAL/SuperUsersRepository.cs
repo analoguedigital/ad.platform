@@ -8,11 +8,7 @@ namespace LightMethods.Survey.Models.DAL
 {
     public class SuperUsersRepository : Repository<SuperUser>
     {
-        public SuperUsersRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        public SuperUsersRepository(UnitOfWork uow) : base(uow) { }
 
     }
 }

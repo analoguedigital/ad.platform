@@ -51,6 +51,9 @@
                                 </td>
                                 <td>{{user.email}}</td>
                             </tr>
+                            <tr ng-if="!displayedUsers.length">
+                                <td colspan="3">No users were found</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

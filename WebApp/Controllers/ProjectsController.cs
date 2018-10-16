@@ -13,12 +13,16 @@ using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
 namespace WebApi.Controllers
 {
+    //[Authorize(Roles = "System administrator,Organisation administrator")]
     public class ProjectsController : BaseApiController
     {
         // GET api/projects
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
         public IHttpActionResult Get(Guid? organisationId = null)
         {
+            if (this.CurrentUser is PlatformUser)
+                return Ok();
+
             var projects = new List<Project>();
             var result = new List<ProjectDTO>();
 

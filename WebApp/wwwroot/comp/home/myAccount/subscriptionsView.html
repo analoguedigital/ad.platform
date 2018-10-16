@@ -151,6 +151,9 @@
                                     <span ng-if="entry.type == 2">Voucher</span>
                                 </td>
                             </tr>
+                            <tr ng-if="!subscriptions.length">
+                                <td colspan="6">No subscriptions were found</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

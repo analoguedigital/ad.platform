@@ -97,6 +97,9 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr ng-if="!ctrl.displayedAssignments.length">
+                                <td colspan="9">No users were found</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

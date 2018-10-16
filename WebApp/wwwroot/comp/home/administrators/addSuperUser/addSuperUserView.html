@@ -6,15 +6,20 @@
 </div>
 <div class="modal-body">
     <form name="addSuperUserForm" novalidate>
+        <lm-form-group label="First name: *" form-group-class="has-feedback" feedback-value="{{ctrl.model.firstName.length}}">
+            <input type="text" name="firstName" id="firstName" placeholder="First name" ng-model="ctrl.model.firstName" required />
+        </lm-form-group>
+        <lm-form-group label="Surname: *" form-group-class="has-feedback" feedback-value="{{ctrl.model.surname.length}}">
+            <input type="text" name="lastName" id="lastName" placeholder="Surname" ng-model="ctrl.model.surname" required />
+        </lm-form-group>
         <lm-form-group label="Email address: *" form-group-class="has-feedback" feedback-value="{{ctrl.model.email.length}}">
             <input type="email" name="email" id="email" ng-model="ctrl.model.email" required placeholder="Email address" />
         </lm-form-group>
-
         <lm-form-group label="Password: *" form-group-class="has-feedback" feedback-value="{{ctrl.model.password.length}}">
-            <input type="password" name="password" id="password" ng-model="ctrl.model.password" required ng-minlength="6" ng-em-minlength="Passwords must be at least 6 characters." />
+            <input type="password" name="password" id="password" placeholder="Choose a password" ng-model="ctrl.model.password" required ng-minlength="6" ng-em-minlength="Passwords must be at least 6 characters." />
         </lm-form-group>
         <lm-form-group label="Confirm password: *" form-group-class="has-feedback" feedback-value="{{ctrl.model.confirmPassword.length}}">
-            <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.model.confirmPassword" ng-change="ctrl.checkMatch()" required />
+            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm password" ng-model="ctrl.model.confirmPassword" ng-change="ctrl.checkMatch()" required />
             <p ng-show="!ctrl.isMatch" class="text-danger">Passwords do not match!</p>
         </lm-form-group>
     </form>

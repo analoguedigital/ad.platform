@@ -1,24 +1,58 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content animated fadeInRight calendar-view">
     <div class="box">
         <div class="box-title">
-            <h5>Calendar View</h5>
+            <h5>{{today | amDateFormat: 'MMMM Do YYYY'}}</h5>
         </div>
         <div class="box-content">
-            <button type="button" class="btn btn-primary" ng-click="calendarView = 'year'">Year</button>
-            <button type="button" class="btn btn-primary" ng-click="calendarView = 'month'">Month</button>
-            <button type="button" class="btn btn-primary" ng-click="calendarView = 'day'">Day</button>
+            <div ng-if="ctrl.isCurrentUserAnAdmin" style="margin-bottom: 15px">
+                <ui-select append-to-body="true" ng-model="ctrl.selectedProject" on-select="ctrl.selectedProjectChanged()">
+                    <ui-select-match placeholder="Select a case">
+                        <span ng-bind="$select.selected.name"></span>
+                    </ui-select-match>
+                    <ui-select-choices repeat="project in (ctrl.projects | filter: $select.search) track by project.id">
+                        <span ng-bind="project.name"></span>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            
+            <div ng-if="events.length">
+                <div>
+                    <div class="pull-left">
+                        <div class="btn-group" role="group" aria-label="calendar view">
+                            <button type="button" class="btn btn-default" ng-click="calendarView = 'year'" ng-class="{ 'active': calendarView === 'year' }">Year</button>
+                            <button type="button" class="btn btn-default" ng-click="calendarView = 'month'" ng-class="{ 'active': calendarView === 'month' }">Month</button>
+                            <button type="button" class="btn btn-default" ng-click="calendarView = 'day'" ng-class="{ 'active': calendarView === 'day' }">Day</button>
+                        </div>
+                    </div>
 
-            <hr />
+                    <div class="pull-right">
+                        <div class="btn-group" role="group" aria-label="calendar date">
+                            <button type="button" class="btn btn-default" ng-click="ctrl.goPrevious()">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="ctrl.goToday()">Today</button>
+                            <button type="button" class="btn btn-default" ng-click="ctrl.goNext()">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
 
-            <mwl-calendar view="calendarView"
-                          view-date="viewDate"
-                          events="events"
-                          view-title="calendarTitle"
-                          on-event-click="eventClicked(calendarEvent)"
-                          on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
-                          cell-is-open="true">
-            </mwl-calendar>
+                    <div class="clearfix"></div>
+                </div>
+
+                <hr />
+
+                <mwl-calendar view="calendarView"
+                              view-date="viewDate"
+                              events="events"
+                              view-title="calendarTitle"
+                              on-timespan-click="ctrl.timespanClicked(calendarDate)"
+                              on-event-click="ctrl.eventClicked(calendarEvent)"
+                              on-event-times-changed="calendarEvent.startsAt = calendarNewEventStart; calendarEvent.endsAt = calendarNewEventEnd"
+                              cell-is-open="true">
+                </mwl-calendar>
+            </div>
         </div>
     </div>
 </div>

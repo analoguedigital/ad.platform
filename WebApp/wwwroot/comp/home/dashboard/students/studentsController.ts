@@ -1,5 +1,4 @@
-﻿
-module App {
+﻿module App {
     "use strict";
 
     interface IStudentsControllerScope extends ng.IScope {
@@ -17,14 +16,15 @@ module App {
     }
 
     class StudentsController implements IStudentsController {
-        static $inject: string[] = ["$scope", "$state", "projectResource"];
-
+        static $inject: string[] = ["$scope", "$state", "$timeout", "projectResource"];
         constructor(
             private $scope: IStudentsControllerScope,
             private $state: ng.ui.IStateService,
+            private $timeout: ng.ITimeoutService,
             private projectResource: Resources.IProjectResource) {
 
             $scope.title = "Projects";
+
             this.activate();
         }
 
@@ -42,6 +42,7 @@ module App {
                 }
             });
         }
+
     }
 
     angular.module("app").controller("studentsController", StudentsController);

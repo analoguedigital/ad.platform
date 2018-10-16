@@ -20,12 +20,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             return new SurveyContext();
         }
-        public SurveyContext()
-           : base(CONNECTION_WEB_CONFIG_KEY)
-        { }
+        public SurveyContext() : base(CONNECTION_WEB_CONFIG_KEY) { }
 
-        public SurveyContext(bool autoDetectChangesEnabled = true)
-            : base(CONNECTION_WEB_CONFIG_KEY)
+        public SurveyContext(bool autoDetectChangesEnabled = true) : base(CONNECTION_WEB_CONFIG_KEY)
         {
             this.Configuration.AutoDetectChangesEnabled = autoDetectChangesEnabled;
         }
@@ -43,6 +40,7 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<Address> Addresses { get; set; }
         public DbSet<AddressType> AddressTypes { get; set; }
         public DbSet<SuperUser> SupersUsers { get; set; }
+        public DbSet<PlatformUser> PlatformUsers { get; set; }
         public DbSet<Organisation> Organisations { get; set; }
         public DbSet<OrganisationTeam> OrganisationTeams { get; set; }
         public DbSet<OrgTeamUser> OrgTeamUsers { get; set; }

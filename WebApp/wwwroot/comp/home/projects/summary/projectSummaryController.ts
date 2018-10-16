@@ -62,8 +62,8 @@ module App {
         metricFilters: Models.IMetricFilter[];
 
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
-            "projectSummaryPrintSessionResource", "projectResource",
-            "formTemplateResource", "surveyResource", "project", "toastr"];
+            "projectSummaryPrintSessionResource", "projectResource", "$timeout", 
+            "formTemplateResource", "surveyResource", "project", "toastr", "uiTourService"];
 
         constructor(
             private $scope: IProjectSummaryControllerScope,
@@ -73,10 +73,12 @@ module App {
             private $stateParams: ng.ui.IStateParamsService,
             private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
             private projectResource: Resources.IProjectResource,
+            private $timeout: ng.ITimeoutService,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             public project: Models.IProject,
-            private toastr: any) {
+            private toastr: any,
+            private uiTourService: any) {
 
             this.activate();
         }
@@ -97,6 +99,8 @@ module App {
             this.$rootScope.$on('timeline-in-month-view', () => {
                 this.timelineSnapshotView = false;
             });
+
+            this.$scope.onTourStart = () => { this.onTourStart(); };
 
             this.load();
         }
@@ -123,6 +127,8 @@ module App {
                 this.displayedSurveys = this.surveys;
                 this.selectedTemplates = this.formTemplates;
                 this.$scope.displayedSurveys = this.displayedSurveys;
+
+                //this.uiTourService.getTour().start();
             });
         }
 
@@ -256,8 +262,20 @@ module App {
         }
 
         getThreadsCount() {
-            let templates = _.uniq(_.map(this.displayedSurveys, (r) => { return r.formTemplateId }));
-            return templates.length;
+            //let templates = _.uniq(_.map(this.displayedSurveys, (r) => { return r.formTemplateId }));
+            //return templates.length;
+
+            let templates = _.uniq(_.map(this.surveys, (r) => { return r.formTemplateId }));
+
+            var counter = 0;
+            _.forEach(templates, (tid) => {
+                var res = _.filter(this.formTemplates, (t) => { return t.id == tid; });
+                if (res.length) {
+                    counter++;
+                }
+            });
+
+            return counter;
         }
 
         openStartDateCalendar() {
@@ -432,6 +450,83 @@ module App {
             }
 
             return authorized;
+        }
+
+        onTourStart() {
+            console.log('onTourStart');
+
+            var tour = this.uiTourService.getTour();
+
+            tour.createStep({
+                selector: '.timeline-box',
+                order: 1,
+                fixed: true,
+                position: 'bottom',
+                title: 'Timeline',
+                content: 'A smart overview of your activities'
+            });
+
+            tour.createStep({
+                selector: '.locations-box',
+                order: 2,
+                fixed: true,
+                position: 'right',
+                title: 'Locations',
+                content: 'Find your records on the map'
+            });
+
+            tour.createStep({
+                selector: '.pie-chart-box',
+                order: 3,
+                fixed: true,
+                position: 'left',
+                title: 'Threads',
+                content: 'Record distribution across threads'
+            });
+
+            tour.createStep({
+                selector: '.recordings-box',
+                order: 4,
+                position: 'top',
+                fixed: false,
+                scrollIntoView: true,
+                title: 'Recordings',
+                content: 'All of your records are listed here'
+            });
+
+            tour.createStep({
+                selector: '.search-box',
+                order: 5,
+                fixed: false,
+                position: 'left',
+                scrollIntoView: true,
+                title: 'Search & filter',
+                content: 'You can search and filter your data here'
+            });
+
+            tour.createStep({
+                selector: '#keyword-search',
+                order: 6,
+                position: 'bottom-left',
+                title: 'Keyword Search',
+                content: 'Find key words or numbers, including records by serial numbers'
+            });
+
+            tour.createStep({
+                selector: '#date-range-search',
+                order: 7,
+                position: 'left',
+                title: 'Date Range',
+                content: 'Filter records by the date they were uploaded'
+            });
+
+            tour.createStep({
+                selector: '#threads-container',
+                order: 8,
+                position: 'left',
+                title: 'Select Threads',
+                content: 'Select the threads you want and click the search button to filter records'
+            });
         }
 
     }

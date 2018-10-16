@@ -7,10 +7,16 @@
         .config(ConfigRoutes)
         .config(ConfigHttpProvider)
         .config(ConfigDateTransformer)
-        .config(ConfigLoadingBar);
+        .config(ConfigLoadingBar)
+        .config(ConfigUITour);
 
     angular.module("app")
         .value('RedirectUrlAfterLogin', { url: '/' });
+
+    ConfigUITour.$inject = ["TourConfigProvider"];
+    function ConfigUITour(TourConfigProvider) {
+        TourConfigProvider.enableNavigationInterceptors();
+    }
 
     ConfigRoutes.$inject = ["$stateProvider", "$urlRouterProvider"];
     function ConfigRoutes($stateProvider: angular.ui.IStateProvider,
