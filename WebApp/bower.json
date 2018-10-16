@@ -44,7 +44,8 @@
     "magnific-popup": "1.1.0",
     "angular-ui-select": "0.19.8",
     "angular-bootstrap-calendar": "^1.0.0",
-    "font-awesome": "Font-Awesome#v4.7.0"
+    "font-awesome": "Font-Awesome#v4.7.0",
+    "angular-ui-tour": "^0.9.2"
   },
   "resolutions": {
     "bootstrap": "3.3.7",

@@ -1,56 +1,36 @@
 module App {
     "use strict";
 
-    interface GenderType {
-        id: number;
-        label: string;
-    }
-
     interface ISuperUserEditControllerScope extends ng.IScope {
+        title: string;
         emailConfirmed: boolean;
         phoneNumberConfirmed: boolean;
     }
 
     interface ISuperUserEditController {
-        title: string;
         user: Models.IUser;
         errors: string;
-        birthDateCalendar: any;
-        teams: Models.IOrgTeam[];
 
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
         activate: () => void;
-        openBirthDateCalendar: () => void;
     }
 
     class SuperUserEditController implements ISuperUserEditController {
-        title: string;
         user: Models.IUser;
         isInsertMode: boolean;
         errors: string;
-        genderTypes: GenderType[];
-        birthDateCalendar = { isOpen: false };
-        teams: Models.IOrgTeam[];
 
-        static $inject: string[] = ["$scope", "$state", "$stateParams", "orgTeamResource", "userContextService", "toastr", "userResource"];
+        static $inject: string[] = ["$scope", "$state", "$stateParams", "userContextService", "toastr", "userResource"];
         constructor(
             private $scope: ISuperUserEditControllerScope,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
-            private orgTeamResource: Resources.IOrgTeamResource,
             private userContextService: Services.IUserContextService,
             private toastr: any,
             private userResource: Resources.IUserResource
         ) {
-            this.title = "Super Users";
-
-            this.genderTypes = [
-                { id: 0, label: 'Male' },
-                { id: 1, label: 'Female' },
-                { id: 2, label: 'Other' }
-            ];
-
+            this.$scope.title = "Administrators";
             this.activate();
         }
 
@@ -66,10 +46,6 @@ module App {
                     // put these on $scope for lm-form-group bindings
                     this.$scope.emailConfirmed = user.emailConfirmed;
                     this.$scope.phoneNumberConfirmed = user.phoneNumberConfirmed;
-
-                    this.orgTeamResource.getUserTeams({ userId: user.id }, (teams) => {
-                        this.teams = teams;
-                    });
                 });
             }
         }
@@ -83,7 +59,7 @@ module App {
             if (userId === '') {
                 this.userResource.save(
                     this.user,
-                    () => { this.$state.go('home.users.list'); },
+                    () => { this.$state.go('home.administrators.list'); },
                     (err) => {
                         if (err.status === 400)
                             this.toastr.error(err.data.message);
@@ -93,7 +69,7 @@ module App {
             else {
                 this.userResource.update(
                     this.user,
-                    () => { this.$state.go('home.users.list'); },
+                    () => { this.$state.go('home.administrators.list'); },
                     (err) => {
                         if (err.status === 400)
                             this.toastr.error(err.data.message);
@@ -104,10 +80,6 @@ module App {
 
         clearErrors() {
             this.errors = undefined;
-        }
-
-        openBirthDateCalendar() {
-            this.birthDateCalendar.isOpen = true;
         }
     }
 

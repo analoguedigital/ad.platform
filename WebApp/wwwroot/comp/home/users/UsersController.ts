@@ -6,19 +6,16 @@ module App {
         title: string;
         searchTerm: string;
         users: Models.IOrgUser[];
-        superUsers: Models.IUser[];
         displayedUsers: Models.IOrgUser[];
-        displayedSuperUsers: Models.IUser[];
+
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
-        currentUserIsSuperUser: boolean;
 
         selectedUser: Models.IOrgUser;
 
         delete: (id: string) => void;
         resetPassword: (user: Models.IUser) => void;
-        addSuperUser: () => void;
         revoke: (user) => void;
     }
 
@@ -26,7 +23,6 @@ module App {
         activate: () => void;
         delete: (id: string) => void;
         resetPassword: (user: Models.IUser) => void;
-        addSuperUser: () => void;
         revokeUser: (user) => void;
     }
 
@@ -47,7 +43,6 @@ module App {
             $scope.title = "Users";
             $scope.delete = (id) => { this.delete(id); };
             $scope.resetPassword = (user) => { this.resetPassword(user); }
-            $scope.addSuperUser = () => { this.addSuperUser(); }
             $scope.revoke = (user) => { this.revokeUser(user); }
 
             this.activate();
@@ -92,16 +87,6 @@ module App {
         }
 
         load() {
-            var roles = ["System administrator", "Platform administrator"];
-            this.$scope.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
-
-            if (this.$scope.currentUserIsSuperUser) {
-                this.userResource.query().$promise.then((users) => {
-                    this.$scope.superUsers = users;
-                    this.$scope.displayedSuperUsers = [].concat(this.$scope.superUsers);
-                });
-            }
-
             var orgId = this.$stateParams["organisationId"];
             if (orgId !== undefined && orgId.length) {
                 this.orgUserResource.query({ listType: 1, organisationId: orgId }).$promise.then((users) => {
@@ -150,21 +135,6 @@ module App {
                 }, (err) => {
                     this.toastr.error(err.data.message);
                 });
-        }
-
-        addSuperUser() {
-            var modalInstance = this.$uibModal.open({
-                animation: true,
-                templateUrl: 'comp/home/users/addSuperUser/addSuperUserView.html',
-                controller: 'addSuperUserController',
-                controllerAs: 'ctrl'
-            });
-
-            modalInstance.result.then((res) => {
-                console.log(res);
-            }, (err) => {
-                console.warn(err);
-            });
         }
 
         revokeUser(user: Models.IOrgUser) {

@@ -37,14 +37,6 @@
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Edit User', parent: '{{parentBreadcrumb}}' },
                 module: "private"
-            })
-            .state("home.users.editSuperUser", <App.Models.IAppRoute>{
-                url: "/edit-super/:id",
-                templateUrl: "comp/home/users/editSuperUser/superUserEditView.html",
-                controller: "superUserEditController",
-                controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Edit User', parent: 'home.users.list' },
-                module: 'private'
             });
     }
 })();

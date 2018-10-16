@@ -96,9 +96,9 @@ namespace LightMethods.Survey.Models.Migrations
             context.Calendars.AddOrUpdate(new Calendar() { Id = Guid.Parse("bf51856c-616c-4289-84e7-84ef9d282a4f"), Order = 20, SystemName = "Persian", Name = "Persian" });
             context.SaveChanges();
 
-            context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("53d7285b-0f7e-434e-9319-ca1b12c1344c"), Name = "Document", MaxFileSize = 1024, AllowedExtensions = "doc,docx,txt,pdf,rtf,csv,xls,xlsx" });
+            context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("53d7285b-0f7e-434e-9319-ca1b12c1344c"), Name = "Document", MaxFileSize = 1024, AllowedExtensions = "pages,doc,docx,txt,pdf,rtf,csv,xls,xlsx" });
             context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("9252a389-459b-48c9-81b8-475a6a35a706"), Name = "Image", MaxFileSize = 2048, AllowedExtensions = "jpg,jpeg,png,gif" });
-            context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("d87266db-6fd1-4f9b-8afa-28b1af6bb5c6"), Name = "Audio", MaxFileSize = 2048, AllowedExtensions = "wav,mp3,wma,amr,aac,ogg" });
+            context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("d87266db-6fd1-4f9b-8afa-28b1af6bb5c6"), Name = "Audio", MaxFileSize = 2048, AllowedExtensions = "wav,mp3,m4a,wma,amr,aac,ogg" });
             context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("8022c0d5-ecc7-4ad0-be45-3cfc6c12f0a3"), Name = "Video", MaxFileSize = 8192, AllowedExtensions = "avi,mpg,mpeg,mp4,mov,wmv" });
             context.SaveChanges();
 

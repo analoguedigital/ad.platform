@@ -8,6 +8,10 @@
                 </div>
                 <div class="box-content">
                     <form name="dataListForm" novalidate>
+                        <lm-form-group label="Organisation: *" ng-if="ctrl.currentUserIsSuperUser">
+                            <select id="organisation" name="organisation" ng-model="ctrl.dataList.organisation"
+                                    ng-options="organisation as organisation.name for organisation in ctrl.organisations track by organisation.id" required></select>
+                        </lm-form-group>
                         <lm-form-group label="Name: *">
                             <input type="text" id="name" name="name" ng-model="ctrl.dataList.name" required placeholder="Choose a name for this data list" />
                         </lm-form-group>

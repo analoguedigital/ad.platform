@@ -27,9 +27,8 @@
             </ul>
         </div>
     </div>
-    <div class="box-content">
-        <h3 ng-if="!ctrl.displayedSurveys.length"><i class="fa fa-info-circle"></i> No surveys were found</h3>
-        <div st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys" ng-if="ctrl.displayedSurveys.length">
+    <div class="box-content recordings-box">
+        <div st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys">
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
@@ -78,6 +77,9 @@
                                     <i class="fa fa-remove"></i>
                                 </a>
                             </td>
+                        </tr>
+                        <tr ng-if="!ctrl.displayedSurveys.length">
+                            <td colspan="9">No records were found</td>
                         </tr>
                     </tbody>
                 </table>

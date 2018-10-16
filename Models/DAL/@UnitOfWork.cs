@@ -78,6 +78,18 @@ namespace LightMethods.Survey.Models.DAL
             }
         }
 
+        private PlatformUsersRepository _PlatformUsersRepository;
+        public PlatformUsersRepository PlatformUsersRepository
+        {
+            get
+            {
+                if (_PlatformUsersRepository == null)
+                    _PlatformUsersRepository = new PlatformUsersRepository(this);
+
+                return _PlatformUsersRepository;
+            }
+        }
+
         private OrgUsersRepository _OrgUsersRepository;
         public OrgUsersRepository OrgUsersRepository
         {

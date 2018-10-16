@@ -36,7 +36,8 @@ var App;
         "jtt_angular_xgallerify",
         "angular-loading-bar",
         "ui.select",
-        "mwl.calendar"
+        "mwl.calendar",
+        "bm.uiTour"
     ]);
 })(App || (App = {}));
 

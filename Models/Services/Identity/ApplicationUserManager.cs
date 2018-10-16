@@ -102,9 +102,18 @@ namespace LightMethods.Survey.Models.Services.Identity
 
         public void AssignRolesByUserType(User user)
         {
+            // this method gets executed only in update requests.
+            // removing and readding roles is necessary for OrgUsers
+            // since their type might change. but not required for 
+            // super users or platform users. we don't need to touch them.
+
             if (user is SuperUser)
             {
                 this.AddToRole(user.Id, Role.SYSTEM_ADMINSTRATOR);
+            }
+            else if (user is PlatformUser)
+            {
+                this.AddToRole(user.Id, Role.PLATFORM_ADMINISTRATOR);
             }
             else if (user is OrgUser)
             {

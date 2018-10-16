@@ -9,50 +9,50 @@
         </div>
         <div class="box-content">
             <div st-table="displayedInvitations" st-safe-src="invitations">
-                <h3 ng-if="!displayedInvitations.length"><i class="fa fa-info-circle"></i> No invitation tokens were found</h3>
-                <div ng-if="displayedInvitations.length">
-                    <form name="search-form" class="form-inline">
-                        <lm-form-group label="Search: ">
-                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
-                        </lm-form-group>
-                    </form>
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                    </lm-form-group>
+                </form>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-mail">
-                            <thead>
-                                <tr>
-                                    <th st-sort="name">Name</th>
-                                    <th st-sort="organisation.name">Organisation</th>
-                                    <th st-sort="token" class="text-center" width="100">Token</th>
-                                    <th class="text-center" width="100">Limit</th>
-                                    <th class="text-center" width="100">Used</th>
-                                    <th class="text-center" width="100">Is Active</th>
-                                    <th class="text-center" width="80"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="invitation in displayedInvitations" ng-class="{ 'success': invitation.limit == invitation.used }">
-                                    <td><a ui-sref="home.organisations.invitationsEdit({id:invitation.id})">{{invitation.name}}</a></td>
-                                    <td>{{invitation.organisation.name}}</td>
-                                    <td class="text-center">{{invitation.token}}</td>
-                                    <td class="text-center">{{invitation.limit}}</td>
-                                    <td class="text-center">{{invitation.used}}</td>
-                                    <td class="text-center">
-                                        <i class="fa fa-check" ng-if="invitation.isActive"></i>
-                                        <i class="fa fa-times" ng-if="!invitation.isActive"></i>
-                                    </td>
-                                    <td>
-                                        <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(invitation.id)">
-                                            <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th st-sort="name">Name</th>
+                                <th st-sort="organisation.name">Organisation</th>
+                                <th st-sort="token" class="text-center" width="100">Token</th>
+                                <th class="text-center" width="100">Limit</th>
+                                <th class="text-center" width="100">Used</th>
+                                <th class="text-center" width="100">Is Active</th>
+                                <th class="text-center" width="80"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="invitation in displayedInvitations" ng-class="{ 'success': invitation.limit == invitation.used }">
+                                <td><a ui-sref="home.organisations.invitationsEdit({id:invitation.id})">{{invitation.name}}</a></td>
+                                <td>{{invitation.organisation.name}}</td>
+                                <td class="text-center">{{invitation.token}}</td>
+                                <td class="text-center">{{invitation.limit}}</td>
+                                <td class="text-center">{{invitation.used}}</td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="invitation.isActive"></i>
+                                    <i class="fa fa-times" ng-if="!invitation.isActive"></i>
+                                </td>
+                                <td>
+                                    <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(invitation.id)">
+                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-if="!displayedInvitations.length">
+                                <td colspan="7">No invitation tokens were found</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
             </div>
         </div>
     </div>

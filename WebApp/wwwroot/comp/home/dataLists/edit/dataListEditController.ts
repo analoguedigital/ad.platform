@@ -7,6 +7,9 @@ module App {
         activate: () => void;
         dataList: Models.IDataList;
         errors: string;
+        currentUserIsSuperUser: boolean;
+        organisations: Models.IOrganisation[];
+
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
     }
@@ -15,14 +18,17 @@ module App {
         title: string = "Data list details";
         dataListId: string;
         dataList: Models.IDataList;
-        references: Models.IDataListBasic[];
+        references: Models.IDataListBasic[] = [];
+        organisations: Models.IOrganisation[] = [];
         isAddMode: boolean;
         errors: string;
+        currentUserIsSuperUser: boolean;
 
         metricsDraggableOptions = {
         };
 
-        static $inject: string[] = ["dataListResource", "dataListRelationshipResource", "$state", "$stateParams", "$uibModal", "toastr"];
+        static $inject: string[] = ["dataListResource", "dataListRelationshipResource", "$state",
+            "$stateParams", "$uibModal", "toastr", "userContextService", "organisationResource"];
 
         constructor(
             private dataListResource: Resources.IDataListResource,
@@ -30,16 +36,27 @@ module App {
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
             private $uibModal: ng.ui.bootstrap.IModalService,
-            private toastr: any
+            private toastr: any,
+            private userContextService: Services.IUserContextService,
+            private organisationResource: Resources.IOrganisationResource
         ) {
             this.dataListId = $stateParams['id'];
             this.activate();
         }
 
         activate() {
+            var roles = ["System administrator"];
+            this.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
+
             if (this.dataListId === '') {
                 this.dataListId = '00000000-0000-0000-0000-000000000000';
                 this.isAddMode = true;
+            }
+
+            if (this.currentUserIsSuperUser) {
+                this.organisationResource.query().$promise.then((organisations) => {
+                    this.organisations = organisations;
+                });
             }
 
             this.dataListResource.get({ id: this.dataListId })

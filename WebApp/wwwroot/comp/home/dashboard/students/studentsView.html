@@ -4,34 +4,35 @@
     </div>
     <div class="box-content">
         <div st-table="displayedProjects" st-safe-src="projects">
-            <h3 ng-if="!displayedProjects.length"><i class="fa fa-info-circle"></i> No cases were found</h3>
-            <div ng-if="displayedProjects.length">
-                <form name="search-form" class="form-inline">
-                    <lm-form-group label="Search: ">
-                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
-                    </lm-form-group>
-                </form>
+            <form name="search-form" class="form-inline">
+                <lm-form-group label="Search: ">
+                    <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                </lm-form-group>
+            </form>
 
-                <div class="table-responsive">
-                    <table class="table table-hover table-mail">
-                        <thead>
-                            <tr>
-                                <th st-sort="name">Name</th>
-                                <th class="text-center" width="140"></th>
-                                <td class="text-center" width="100"></td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="project in displayedProjects">
-                                <td><a ui-sref="home.surveys.list.summary({projectId: project.id})">{{project.name}}</a></td>
-                                <td><a ui-sref="home.adviceThreads.list.summary({projectId: project.id})"><i class="fa fa-medkit"></i><span class="hidden-xs"> advice threads</span></a></td>
-                                <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div st-pagination st-items-by-page="20" st-displayed-pages="7"></div>
+            <div class="table-responsive">
+                <table class="table table-hover table-mail">
+                    <thead>
+                        <tr>
+                            <th st-sort="name">Name</th>
+                            <th class="text-center" width="140"></th>
+                            <td class="text-center" width="100"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="project in displayedProjects">
+                            <td><a ui-sref="home.surveys.list.summary({projectId: project.id})">{{project.name}}</a></td>
+                            <td><a ui-sref="home.adviceThreads.list.summary({projectId: project.id})"><i class="fa fa-medkit"></i><span class="hidden-xs"> advice threads</span></a></td>
+                            <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
+                        </tr>
+                        <tr ng-if="!displayedProjects.length">
+                            <td colspan="3">No records were found</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
+
+            <div st-pagination st-items-by-page="20" st-displayed-pages="7"></div>
         </div>
     </div>
 </div>

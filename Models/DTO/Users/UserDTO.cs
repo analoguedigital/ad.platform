@@ -17,9 +17,9 @@ namespace LightMethods.Survey.Models.DTO
 
         public DateTime? LastLogin { get; set; }
 
-        public GenderType? Gender { get; set; }
+        public string FirstName { get; set; }
 
-        public DateTime? Birthdate { get; set; }
+        public string Surname { get; set; }
 
         public string Address { get; set; }
 

@@ -31,48 +31,48 @@
         </div>
         <div class="box-content">
             <div st-table="displayedForms" st-safe-src="forms">
-                <h3 ng-if="!displayedForms.length"><i class="fa fa-info-circle"></i> No form templates were found</h3>
-                <div ng-if="displayedForms.length">
-                    <form name="search-form" class="form-inline">
-                        <lm-form-group label="Search: ">
-                            <input st-search type="text" id="search" name="search" />
-                        </lm-form-group>
-                    </form>
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" />
+                    </lm-form-group>
+                </form>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-mail">
-                            <thead>
-                                <tr>
-                                    <th st-sort="projectName" width="300">Case</th>
-                                    <th st-sort="title" width="300">Title</th>
-                                    <th class="text-center hidden-xs" st-sort="name" width="120">Category</th>
-                                    <th class="text-center" st-sort="code" width="120">Code</th>
-                                    <th class="text-center" width="40"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="form in displayedForms">
-                                    <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
-                                    <td ng-if="form.projectName">{{form.projectName}}</td>
-                                    <td>
-                                        <a ui-sref="home.formtemplates.edit({id:form.id})">
-                                            <span class="color-block" ng-style="{'background-color': form.colour}"></span> {{form.title}}
-                                        </a>
-                                    </td>
-                                    <td class="text-center hidden-xs">{{form.formTemplateCategory.title}}</td>
-                                    <td class="text-center">{{form.code}}</td>
-                                    <td>
-                                        <a ui-sref="home.formtemplates.assignments({id:form.id})">
-                                            <i class="fa fa-link"></i> <span class="hidden-xs"> assign</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th st-sort="projectName" width="300">Case</th>
+                                <th st-sort="title" width="300">Title</th>
+                                <th class="text-center hidden-xs" st-sort="name" width="120">Category</th>
+                                <th class="text-center" st-sort="code" width="120">Code</th>
+                                <th class="text-center" width="40"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="form in displayedForms">
+                                <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
+                                <td ng-if="form.projectName">{{form.projectName}}</td>
+                                <td>
+                                    <a ui-sref="home.formtemplates.edit({id:form.id})">
+                                        <span class="color-block" ng-style="{'background-color': form.colour}"></span> {{form.title}}
+                                    </a>
+                                </td>
+                                <td class="text-center hidden-xs">{{form.formTemplateCategory.title}}</td>
+                                <td class="text-center">{{form.code}}</td>
+                                <td>
+                                    <a ui-sref="home.formtemplates.assignments({id:form.id})">
+                                        <i class="fa fa-link"></i> <span class="hidden-xs"> assign</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-if="!displayedForms.length">
+                                <td colspan="5">No form templates were found</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
             </div>
         </div>
     </div>

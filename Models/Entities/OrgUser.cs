@@ -17,14 +17,6 @@ namespace LightMethods.Survey.Models.Entities
 
     public class OrgUser : User
     {
-        [Display(Name = "First names")]
-        [MaxLength(30)]
-        public string FirstName { get; set; }
-
-        [Display(Name = "Surname")]
-        [MaxLength(30)]
-        public string Surname { get; set; }
-
         public Guid? OrganisationId { get; set; }
         public virtual Organisation Organisation { get; set; }
 

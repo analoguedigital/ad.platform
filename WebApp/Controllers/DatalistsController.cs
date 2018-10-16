@@ -56,15 +56,27 @@ namespace WebApi.Controllers
             if (id == Guid.Empty)
                 return Ok(Mapper.Map<DataListDTO>(new DataList()));
 
-            var datalist = UnitOfWork.DataListsRepository
-                .AllIncludingNoTracking(d => d.AllItems)
-                .Where(d => d.Id == id && d.OrganisationId == CurrentOrgUser.OrganisationId)
-                .SingleOrDefault();
+            DataList dataList = null;
 
-            if (datalist == null)
+            if (this.CurrentOrgUser != null)
+            {
+                dataList = UnitOfWork.DataListsRepository
+                    .AllIncludingNoTracking(d => d.AllItems)
+                    .Where(d => d.Id == id && d.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .SingleOrDefault();
+            }
+            else
+            {
+                dataList = UnitOfWork.DataListsRepository
+                    .AllIncludingNoTracking(d => d.AllItems)
+                    .Where(d => d.Id == id)
+                    .SingleOrDefault();
+            }
+
+            if (dataList == null)
                 return NotFound();
 
-            return Ok(Mapper.Map<DataListDTO>(datalist));
+            return Ok(Mapper.Map<DataListDTO>(dataList));
         }
 
         // GET api/dataLists/{id}/items
@@ -73,15 +85,27 @@ namespace WebApi.Controllers
         [Route("api/datalists/{datalistId}/items")]
         public IHttpActionResult GetDataListItems(Guid datalistId)
         {
-            var datalist = UnitOfWork.DataListsRepository
-                .AllIncludingNoTracking(d => d.AllItems)
-                .Where(d => d.Id == datalistId && d.OrganisationId == CurrentOrgUser.OrganisationId)
-                .SingleOrDefault();
+            DataList dataList = null;
 
-            if (datalist == null)
+            if (this.CurrentOrgUser != null)
+            {
+                dataList = UnitOfWork.DataListsRepository
+                    .AllIncludingNoTracking(d => d.AllItems)
+                    .Where(d => d.Id == datalistId && d.OrganisationId == CurrentOrgUser.OrganisationId)
+                    .SingleOrDefault();
+            }
+            else
+            {
+                dataList = UnitOfWork.DataListsRepository
+                    .AllIncludingNoTracking(d => d.AllItems)
+                    .Where(d => d.Id == datalistId)
+                    .SingleOrDefault();
+            }
+
+            if (dataList == null)
                 return NotFound();
 
-            return Ok(datalist.AllItems.Select(i => Mapper.Map<DataListItemDTO>(i)));
+            return Ok(dataList.AllItems.Select(i => Mapper.Map<DataListItemDTO>(i)));
         }
 
         // POST api/dataLists
@@ -94,7 +118,16 @@ namespace WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            dataList.OrganisationId = CurrentOrganisationId.Value;
+            if (this.CurrentUser is SuperUser)
+            {
+                dataList.OrganisationId = Guid.Parse(dataListDTO.Organisation.Id);
+                dataList.Organisation = null;
+            }
+            else
+            {
+                dataList.OrganisationId = CurrentOrganisationId.Value;
+                dataList.Organisation = null;
+            }
 
             var order = 1;
             foreach (var item in dataList.AllItems)

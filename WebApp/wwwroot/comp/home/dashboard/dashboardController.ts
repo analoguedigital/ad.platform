@@ -19,7 +19,7 @@ module App {
             this.activate();
         }
 
-        activate() { }
+        activate() {  }
 
     }
 

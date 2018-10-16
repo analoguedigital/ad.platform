@@ -1,0 +1,53 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight platformuser-edit-view">
+    <div class="box">
+        <div class="box-title">
+            <h5>Details</h5>
+        </div>
+        <div class="box-content">
+            <form name="userForm" class="form-horizontal" novalidate>
+                <lm-form-group label="Email: *" form-group-class="has-feedback" feedback-value="{{emailConfirmed}}">
+                    <input type="email" name="email" id="email" ng-model="ctrl.user.email" required placeholder="Email address" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.emailConfirmed"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.emailConfirmed"></span>
+                </lm-form-group>
+                <lm-form-group label="First name: *" form-group-class="has-feedback" feedback-value="{{ctrl.user.firstName.length}}">
+                    <input type="text" name="firstName" id="firstName" ng-model="ctrl.user.firstName" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.firstName.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.firstName.length"></span>
+                </lm-form-group>
+                <lm-form-group label="Surname: *" form-group-class="has-feedback" feedback-value="{{ctrl.user.surname.length}}">
+                    <input type="text" name="lastName" id="lastName" ng-model="ctrl.user.surname" required />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.surname.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!ctrl.user.surname.length"></span>
+                </lm-form-group>
+                <lm-form-group label="Address:">
+                    <input type="text" name="address" id="address" ng-model="ctrl.user.address" placeholder="Address" />
+                </lm-form-group>
+                <lm-form-group label="Phone number:" form-group-class="has-feedback" feedback-value="{{ctrl.user.phoneNumber.length && phoneNumberConfirmed}}">
+                    <input type="text" name="phoneNumber" id="phoneNumber" ng-model="ctrl.user.phoneNumber" ng-disabled="ctrl.user.phoneNumberConfirmed" placeholder="Phone number" />
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumberConfirmed"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="ctrl.user.phoneNumber.length && !ctrl.user.phoneNumberConfirmed"></span>
+                </lm-form-group>
+                <lm-form-group label="Password: *" ng-if="ctrl.isInsertMode">
+                    <input type="password" name="password" id="password" ng-model="ctrl.user.password" required placeholder="Password" />
+                </lm-form-group>
+                <lm-form-group label="Confirm password: *" ng-if="ctrl.isInsertMode">
+                    <input type="password" name="confirmPassword" id="confirmPassword" ng-model="ctrl.user.confirmPassword" required placeholder="Confirm password" />
+                </lm-form-group>
+                <lm-form-group ng-if="ctrl.errors !== undefined" class="">
+                    <div class="alert alert-danger animated fadeInDown">
+                        {{ctrl.errors}}
+                        <a class="alert-link pull-right" ng-click="ctrl.clearErrors()"><i class="fa fa-times"></i></a>
+                    </div>
+                </lm-form-group>
+                <lm-form-group>
+                    <button type="submit" class="btn btn-primary" ng-click="ctrl.submit(userForm)">Submit</button>
+                </lm-form-group>
+                <a ui-sref="home.administrators.list"><i class="fa fa-arrow-left"></i> Back to list</a>
+            </form>
+
+        </div>
+    </div>
+</div>
+

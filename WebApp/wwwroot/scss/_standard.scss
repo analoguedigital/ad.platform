@@ -221,3 +221,8 @@ canvas {
 video {
     width: auto !important;
 }
+
+.ui-tour-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+    fill: rgba(0, 0, 0, 0.5);
+}

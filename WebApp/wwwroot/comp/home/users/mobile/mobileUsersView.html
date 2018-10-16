@@ -9,71 +9,71 @@
         </div>
         <div class="box-content">
             <div st-table="displayedUsers" st-safe-src="users">
-                <h3 ng-if="!displayedUsers.length"><i class="fa fa-info-circle"></i> No users were found</h3>
-                <div ng-if="displayedUsers.length">
-                    <form name="search-form" class="form-inline">
-                        <lm-form-group label="Search: ">
-                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
-                        </lm-form-group>
-                    </form>
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                    </lm-form-group>
+                </form>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-mail">
-                            <thead>
-                                <tr>
-                                    <th st-sort="email">Email address</th>
-                                    <th width="150" st-sort="firstName">First name</th>
-                                    <th width="150" st-sort="surname">Surname</th>
-                                    <th class="text-center" width="150" st-sort="organisation.name">Organisation</th>
-                                    <th class="text-center" width="150" st-sort="type.name">Type</th>
-                                    <th class="text-center" width="100"></th>
-                                    <th class="text-center" width="150" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
-                                    <th class="text-center" width="100" lm-access="System administrator,Platform administrator"></th>
-                                    <th class="text-center" width="100" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="user in displayedUsers">
-                                    <td>
-                                        <i class="fa fa-user-secret" ng-if="user.type.name == 'Administrator'"></i>
-                                        <i class="fa fa-user-o" ng-if="user.type.name !== 'Administrator'"></i>
-                                        &nbsp;
-                                        <a ui-sref="home.users.edit({ id: user.id, accountType: 'mobile-account' })">{{user.email}}</a>
-                                    </td>
-                                    <td>{{user.firstName}}</td>
-                                    <td>{{user.surname}}</td>
-                                    <td class="text-center">{{user.organisation.name}}</td>
-                                    <td class="text-center">{{user.type.name}}</td>
-                                    <td class="text-center">
-                                        <a ng-click="ctrl.composeEmail(user)">
-                                            <i class="fa fa-paper-plane"></i> <span class="hidden-sm hidden-xs">Compose</span>
-                                        </a>
-                                    </td>
-                                    <td class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator">
-                                        <a ng-click="resetPassword(user)">
-                                            <i class="fa fa-key"></i><span class="hidden-sm hidden-xs"> Reset Password</span>
-                                        </a>
-                                    </td>
-                                    <td class="text-center" lm-access="System administrator,Platform administrator">
-                                        <a ng-if="!user.isRootUser" ng-click="ctrl.selectedUserChanged(user)"
-                                           ng-bootbox-title="Are you sure you want to do this?"
-                                           ng-bootbox-custom-dialog="Deleting a user tries to remove the user account. If there are related records in the database you'll get an error. Deleting the account tries to remove everything from the database. I hope you know what you're doing!"
-                                           ng-bootbox-buttons="customDialogButtons">
-                                            <i class="fa fa-remove"></i><span class="hidden-sm hidden-xs"> delete</span>
-                                        </a>
-                                    </td>
-                                    <td class="text-center" ng-if="user.organisation.name !== 'OnRecord' && !user.isRootUser" lm-access="System administrator,Platform administrator,Organisation administrator">
-                                        <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="revoke(user)">
-                                            <i class="fa fa-unlink"></i><span class="hidden-sm hidden-xs"> remove</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th st-sort="email">Email address</th>
+                                <th width="150" st-sort="firstName">First name</th>
+                                <th width="150" st-sort="surname">Surname</th>
+                                <th class="text-center" width="150" st-sort="organisation.name">Organisation</th>
+                                <th class="text-center" width="150" st-sort="type.name">Type</th>
+                                <th class="text-center" width="100"></th>
+                                <th class="text-center" width="150" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
+                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator"></th>
+                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in displayedUsers">
+                                <td>
+                                    <i class="fa fa-user-secret" ng-if="user.type.name == 'Administrator'"></i>
+                                    <i class="fa fa-user-o" ng-if="user.type.name !== 'Administrator'"></i>
+                                    &nbsp;
+                                    <a ui-sref="home.users.edit({ id: user.id, accountType: 'mobile-account' })">{{user.email}}</a>
+                                </td>
+                                <td>{{user.firstName}}</td>
+                                <td>{{user.surname}}</td>
+                                <td class="text-center">{{user.organisation.name}}</td>
+                                <td class="text-center">{{user.type.name}}</td>
+                                <td class="text-center">
+                                    <a ng-click="ctrl.composeEmail(user)">
+                                        <i class="fa fa-paper-plane"></i> <span class="hidden-sm hidden-xs">Compose</span>
+                                    </a>
+                                </td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator">
+                                    <a ng-click="resetPassword(user)">
+                                        <i class="fa fa-key"></i><span class="hidden-sm hidden-xs"> Reset Password</span>
+                                    </a>
+                                </td>
+                                <td class="text-center" lm-access="System administrator,Platform administrator">
+                                    <a ng-if="!user.isRootUser" ng-click="ctrl.selectedUserChanged(user)"
+                                       ng-bootbox-title="Are you sure you want to do this?"
+                                       ng-bootbox-custom-dialog="Deleting a user tries to remove the user account. If there are related records in the database you'll get an error. Deleting the account tries to remove everything from the database. I hope you know what you're doing!"
+                                       ng-bootbox-buttons="customDialogButtons">
+                                        <i class="fa fa-remove"></i><span class="hidden-sm hidden-xs"> delete</span>
+                                    </a>
+                                </td>
+                                <td class="text-center" ng-if="user.organisation.name !== 'OnRecord' && !user.isRootUser" lm-access="System administrator,Platform administrator,Organisation administrator">
+                                    <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="revoke(user)">
+                                        <i class="fa fa-unlink"></i><span class="hidden-sm hidden-xs"> remove</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-if="!displayedUsers.length">
+                                <td colspan="9">No mobile users were found</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
             </div>
         </div>
     </div>

@@ -1,0 +1,29 @@
+﻿.calendar-view {
+    .calendar-view-item {
+    }
+
+    .view-action, .edit-action {
+        color: #aaa;
+
+        & :hover {
+            color: #ddd;
+        }
+    }
+
+    /*mwl-calendar .badge-important {
+        background-color: #D1DADE !important;
+    }*/
+
+    .badge {
+        color: #fff !important;
+    }
+
+    .day-event > .event-item, 
+    .day-event > .cal-hours {
+        color: #E8E8E8;
+
+        & :hover {
+            color: white;
+        }
+    }
+}

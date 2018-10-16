@@ -13,10 +13,10 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "System administrator")]
     public class UsersController : BaseApiController
     {
         // GET api/users
-        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Get()
         {
             var users = UnitOfWork.SuperUsersRepository
@@ -28,7 +28,6 @@ namespace WebApi.Controllers
         }
 
         // GET api/users/{id}
-        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Get(Guid id)
         {
             var user = UnitOfWork.SuperUsersRepository.Find(id);
@@ -40,8 +39,8 @@ namespace WebApi.Controllers
 
         // POST api/users
         [HttpPost]
-        [DeflateCompression]
-        [ResponseType(typeof(UserDTO))]
+        //[DeflateCompression]
+        //[ResponseType(typeof(UserDTO))]
         public async Task<IHttpActionResult> CreateSuperUser(CreateSuperUserDTO model)
         {
             if (string.IsNullOrEmpty(model.Email))
@@ -54,11 +53,13 @@ namespace WebApi.Controllers
             {
                 Id = Guid.NewGuid(),
                 UserName = model.Email,
-                Email = model.Email
+                Email = model.Email,
+                FirstName = model.FirstName,
+                Surname = model.Surname
             };
 
             UnitOfWork.UserManager.AddOrUpdateUser(superUser, model.Password);
-            await UnitOfWork.UserManager.AddToRoleAsync(superUser.Id, Role.PLATFORM_ADMINISTRATOR);
+            await UnitOfWork.UserManager.AddToRoleAsync(superUser.Id, Role.SYSTEM_ADMINSTRATOR);
 
             return Ok();
         }
@@ -72,14 +73,32 @@ namespace WebApi.Controllers
                 return NotFound();
 
             user.Email = value.Email;
-            user.Gender = value.Gender;
-            user.Birthdate = value.Birthdate;
             user.Address = value.Address;
+            user.FirstName = value.FirstName;
+            user.Surname = value.Surname;
 
             if (!user.PhoneNumberConfirmed)
                 user.PhoneNumber = value.PhoneNumber;
 
             var result = UnitOfWork.UserManager.UpdateSync(user);
+            if (result.Succeeded)
+                return Ok();
+
+            return BadRequest(result.Errors.ToString(", "));
+        }
+
+        // DEL api/users/{id}
+        [HttpDelete]
+        public async Task<IHttpActionResult> Delete(Guid id)
+        {
+            if (id == null || id == Guid.Empty)
+                return BadRequest();
+
+            var user = UnitOfWork.SuperUsersRepository.Find(id);
+            if (user == null)
+                return NotFound();
+
+            var result = await UnitOfWork.UserManager.DeleteAsync(user);
             if (result.Succeeded)
                 return Ok();
 

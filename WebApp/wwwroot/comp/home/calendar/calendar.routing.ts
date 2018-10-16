@@ -14,7 +14,7 @@
                 templateUrl: "comp/home/calendar/calendarView.html",
                 controller: "calendarController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Calendar' },
+                ncyBreadcrumb: { label: 'Calendar View' },
                 module: "private"
             });
     }

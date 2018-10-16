@@ -211,6 +211,9 @@
     <Content Include="wwwroot\comp\common\pageHeader.html" />
     <Content Include="wwwroot\comp\common\resetPassword\resetPasswordView.html" />
     <Content Include="wwwroot\comp\common\topnavbar\topnavbarView.html" />
+    <Content Include="wwwroot\comp\home\administrators\addPlatformUser\addPlatformUserView.html" />
+    <Content Include="wwwroot\comp\home\administrators\administratorsView.html" />
+    <Content Include="wwwroot\comp\home\administrators\editPlatformUser\platformUserEditView.html" />
     <Content Include="wwwroot\comp\home\calendar\calendarView.html" />
     <Content Include="wwwroot\comp\home\emailRecipients\emailRecipientsView.html" />
     <Content Include="wwwroot\comp\home\sharedThreads\sharedThreadsView.html" />
@@ -311,9 +314,9 @@
     <Content Include="wwwroot\comp\home\teams\manage\teamManageView.html" />
     <Content Include="wwwroot\comp\home\teams\teamsView.html" />
     <Content Include="wwwroot\comp\home\users\composeEmail\composeEmailView.html" />
-    <Content Include="wwwroot\comp\home\users\editSuperUser\superUserEditView.html" />
+    <Content Include="wwwroot\comp\home\administrators\editSuperUser\superUserEditView.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
-    <Content Include="wwwroot\comp\home\users\addSuperUser\addSuperUserView.html" />
+    <Content Include="wwwroot\comp\home\administrators\addSuperUser\addSuperUserView.html" />
     <Content Include="wwwroot\comp\home\users\mobile\mobileUsersView.html" />
     <Content Include="wwwroot\comp\home\users\usersView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\allSurveysView.html" />
@@ -355,6 +358,7 @@
     <Compile Include="Controllers\OrgInvitationsController.cs" />
     <Compile Include="Controllers\OrgRequestsController.cs" />
     <Compile Include="Controllers\OrgTeamsController.cs" />
+    <Compile Include="Controllers\PlatformUsersController.cs" />
     <Compile Include="Controllers\ProjectSummaryPrintSessionController.cs" />
     <Compile Include="Controllers\DataListsController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
@@ -471,11 +475,13 @@
     <Content Include="wwwroot\comp\home\projects\threadAssignments\_threadAssignments.scss" />
     <Content Include="wwwroot\comp\emailConfirmation\sendToken\_sendEmailTokenView.scss" />
     <Content Include="wwwroot\comp\emailConfirmation\verifyToken\_verifyEmailTokenView.scss" />
-    <Content Include="wwwroot\comp\home\users\editSuperUser\_superUserEditView.scss" />
+    <Content Include="wwwroot\comp\home\administrators\editSuperUser\_superUserEditView.scss" />
     <Content Include="wwwroot\comp\home\projects\edit\_projectEditView.scss" />
     <Content Include="wwwroot\comp\home\myAccount\subscribe\_subscribe.scss" />
     <Content Include="wwwroot\comp\home\adviceThreads\summary\_summary.scss" />
     <Content Include="wwwroot\comp\home\sharedThreads\summary\_summary.scss" />
+    <Content Include="wwwroot\comp\home\administrators\editPlatformUser\_platformUserEditView.scss" />
+    <Content Include="wwwroot\comp\home\calendar\_calendar.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -515,6 +521,10 @@
     <TypeScriptCompile Include="wwwroot\comp\common\navigation\navigationController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\resetPassword\resetPasswordController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\common\topnavbar\topnavbarController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\administrators\addPlatformUser\addPlatformUserController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\administrators\administrators.routing.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\administrators\administratorsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\administrators\editPlatformUser\platformUserEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\calendar\calendar.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\calendar\calendarController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\emailRecipients\emailRecipients.routing.ts" />
@@ -601,9 +611,9 @@
     <TypeScriptCompile Include="wwwroot\comp\home\teams\teams.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\TeamsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\composeEmail\composeEmailController.ts" />
-    <TypeScriptCompile Include="wwwroot\comp\home\users\editSuperUser\superUserEditController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\administrators\editSuperUser\superUserEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\edit\userEditController.ts" />
-    <TypeScriptCompile Include="wwwroot\comp\home\users\addSuperUser\addSuperUserController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\administrators\addSuperUser\addSuperUserController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\mobile\mobileUsersController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\users.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\UsersController.ts" />
@@ -702,9 +712,11 @@
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgTeamResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserTypeResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\orgUserResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\platformUserResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\projectSummaryPrintSessionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\paymentResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionPlanResource.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\resources\superUserResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\voucherResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\subscriptionResource.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\resources\surveyResource.ts" />

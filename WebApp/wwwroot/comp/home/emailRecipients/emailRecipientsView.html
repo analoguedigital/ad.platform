@@ -6,62 +6,62 @@
         </div>
         <div class="box-content">
             <div st-table="ctrl.displayedRecipients" st-safe-src="ctrl.recipientRecords">
-                <h3 ng-if="!ctrl.displayedRecipients.length"><i class="fa fa-info-circle"></i> No users were found</h3>
-                <div ng-if="ctrl.displayedRecipients.length">
-                    <form name="search-form" class="form-inline">
-                        <lm-form-group label="Search: ">
-                            <input st-search type="text" id="search" name="search" />
-                        </lm-form-group>
-                    </form>
-                    <hr />
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" />
+                    </lm-form-group>
+                </form>
+                <hr />
 
-                    <div class="table-responsive">
-                        <table class="table table-hover table-mail">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th class="text-center">Feedbacks</th>
-                                    <th class="text-center">New Mobile Users</th>
-                                    <th class="text-center">Org Requests</th>
-                                    <th class="text-center">Org Connections</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="user in ctrl.displayedRecipients">
-                                    <td>{{user.name}}</td>
-                                    <td>{{user.email}}</td>
-                                    <td class="text-center">
-                                        <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                            <input type="checkbox" id="feedbacks-{{user.userId}}" ng-model="user.feedbacks" ng-change="ctrl.updateRecipient(user, 'feedbacks')" />
-                                            <label for="feedbacks-{{user.userId}}"></label>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                            <input type="checkbox" id="newMobileUsers-{{user.userId}}" ng-model="user.newMobileUsers" ng-change="ctrl.updateRecipient(user, 'newMobileUsers')" />
-                                            <label for="newMobileUsers-{{user.userId}}"></label>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                            <input type="checkbox" id="orgRequests-{{user.userId}}" ng-model="user.orgRequests" ng-change="ctrl.updateRecipient(user, 'orgRequests')" />
-                                            <label for="orgRequests-{{user.userId}}"></label>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                            <input type="checkbox" id="orgConnectionRequests-{{user.userId}}" ng-model="user.orgConnectionRequests" ng-change="ctrl.updateRecipient(user, 'orgConnectionRequests')" />
-                                            <label for="orgConnectionRequests-{{user.userId}}"></label>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th class="text-center">Feedbacks</th>
+                                <th class="text-center">New Mobile Users</th>
+                                <th class="text-center">Org Requests</th>
+                                <th class="text-center">Org Connections</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in ctrl.displayedRecipients">
+                                <td>{{user.name}}</td>
+                                <td>{{user.email}}</td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="feedbacks-{{user.userId}}" ng-model="user.feedbacks" ng-change="ctrl.updateRecipient(user, 'feedbacks')" />
+                                        <label for="feedbacks-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="newMobileUsers-{{user.userId}}" ng-model="user.newMobileUsers" ng-change="ctrl.updateRecipient(user, 'newMobileUsers')" />
+                                        <label for="newMobileUsers-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="orgRequests-{{user.userId}}" ng-model="user.orgRequests" ng-change="ctrl.updateRecipient(user, 'orgRequests')" />
+                                        <label for="orgRequests-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                                        <input type="checkbox" id="orgConnectionRequests-{{user.userId}}" ng-model="user.orgConnectionRequests" ng-change="ctrl.updateRecipient(user, 'orgConnectionRequests')" />
+                                        <label for="orgConnectionRequests-{{user.userId}}"></label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr ng-if="!ctrl.displayedRecipients.length">
+                                <td colspan="6">No staff members were found</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
             </div>
         </div>
     </div>

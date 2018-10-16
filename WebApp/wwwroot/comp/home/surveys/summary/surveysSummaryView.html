@@ -13,8 +13,7 @@
     <div class="box-content">
         <div st-table="displayedProjects" st-safe-src="projects">
             <div class="table-responsive">
-                <h3 ng-if="!ctrl.surveys.length">No surveys were found</h3>
-                <div class="table-responsive" ng-if="ctrl.surveys.length">
+                <div class="table-responsive">
                     <table class="table table-hover table-mail">
                         <thead>
                             <tr>
@@ -50,6 +49,9 @@
                                         <i class="fa fa-remove"></i>
                                     </a>
                                 </td>
+                            </tr>
+                            <tr ng-if="!ctrl.surveys.length">
+                                <td colspan="8">No records were found</td>
                             </tr>
                         </tbody>
                     </table>
