@@ -4,45 +4,71 @@ using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
-using WebApi.Filters;
 using WebApi.Models;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
     [Authorize(Roles = "System administrator")]
     public class PlatformUsersController : BaseApiController
     {
+
+        private const string CACHE_KEY = "PLATFORM_USERS";
+
         // GET api/platform-users
         [Route("api/platform-users")]
         public IHttpActionResult Get()
         {
-            var users = UnitOfWork.PlatformUsersRepository
-                .AllAsNoTracking.ToList()
-                .Select(x => Mapper.Map<UserDTO>(x))
-                .ToList();
+            var cacheEntry = MemoryCacher.GetValue(CACHE_KEY);
+            if (cacheEntry == null)
+            {
+                var users = UnitOfWork.PlatformUsersRepository
+                    .AllAsNoTracking
+                    .ToList()
+                    .Select(x => Mapper.Map<UserDTO>(x))
+                    .ToList();
 
-            return Ok(users);
+                MemoryCacher.Add(CACHE_KEY, users, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(users);
+            }
+            else
+            {
+                var result = (List<UserDTO>)cacheEntry;
+                return new CachedResult<List<UserDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/platform-users/{id}
         [Route("api/platform-users/{id:guid}")]
         public IHttpActionResult Get(Guid id)
         {
-            var user = UnitOfWork.PlatformUsersRepository.Find(id);
-            if (user == null)
-                return NotFound();
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            return Ok(Mapper.Map<UserDTO>(user));
+            if (cacheEntry == null)
+            {
+                var user = UnitOfWork.PlatformUsersRepository.Find(id);
+                if (user == null)
+                    return NotFound();
+
+                var result = Mapper.Map<UserDTO>(user);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = (UserDTO)cacheEntry;
+                return new CachedResult<UserDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
+        // POST api/platform-users
         [HttpPost]
-        //[DeflateCompression]
-        //[ResponseType(typeof(UserDTO))]
         [Route("api/platform-users")]
         public async Task<IHttpActionResult> Post(CreateSuperUserDTO model)
         {
@@ -61,10 +87,19 @@ namespace WebApi.Controllers
                 Surname = model.Surname
             };
 
-            UnitOfWork.UserManager.AddOrUpdateUser(platformUser, model.Password);
-            await UnitOfWork.UserManager.AddToRoleAsync(platformUser.Id, Role.PLATFORM_ADMINISTRATOR);
+            try
+            {
+                UnitOfWork.UserManager.AddOrUpdateUser(platformUser, model.Password);
+                await UnitOfWork.UserManager.AddToRoleAsync(platformUser.Id, Role.PLATFORM_ADMINISTRATOR);
 
-            return Ok();
+                MemoryCacher.Delete(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // PUT api/platform-users/{id}
@@ -72,6 +107,9 @@ namespace WebApi.Controllers
         [Route("api/platform-users/{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]UserDTO value)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             var user = UnitOfWork.PlatformUsersRepository.Find(id);
             if (user == null)
                 return NotFound();
@@ -84,11 +122,21 @@ namespace WebApi.Controllers
             if (!user.PhoneNumberConfirmed)
                 user.PhoneNumber = value.PhoneNumber;
 
-            var result = UnitOfWork.UserManager.UpdateSync(user);
-            if (result.Succeeded)
-                return Ok();
+            try
+            {
+                var result = UnitOfWork.UserManager.UpdateSync(user);
+                if (result.Succeeded)
+                {
+                    MemoryCacher.DeleteListAndItem(CACHE_KEY, id);
+                    return Ok();
+                }
 
-            return BadRequest(result.Errors.ToString(", "));
+                return BadRequest(result.Errors.ToString(", "));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DEL api/platform-users/{id}
@@ -96,18 +144,28 @@ namespace WebApi.Controllers
         [Route("api/platform-users/{id:guid}")]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
-            if (id == null || id == Guid.Empty)
-                return BadRequest();
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
 
             var user = UnitOfWork.PlatformUsersRepository.Find(id);
             if (user == null)
                 return NotFound();
 
-            var result = await UnitOfWork.UserManager.DeleteAsync(user);
-            if (result.Succeeded)
-                return Ok();
+            try
+            {
+                var result = await UnitOfWork.UserManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    MemoryCacher.DeleteListAndItem(CACHE_KEY, id);
+                    return Ok();
+                }
 
-            return BadRequest(result.Errors.ToString(", "));
+                return BadRequest(result.Errors.ToString(", "));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
     }

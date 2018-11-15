@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LightMethods.Survey.Models.Enums;
+using System;
 
 namespace LightMethods.Survey.Models.Entities
 {

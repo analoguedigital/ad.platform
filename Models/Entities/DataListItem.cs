@@ -1,13 +1,10 @@
 ﻿using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
-using LightMethods.Survey.Models.Services;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -15,6 +12,7 @@ namespace LightMethods.Survey.Models.Entities
     {
         [Index]
         public Guid DataListId { set; get; }
+
         public virtual DataList DataList { set; get; }
 
         [MaxLength(256)]
@@ -50,7 +48,7 @@ namespace LightMethods.Survey.Models.Entities
                 Text = Text,
                 Value = Value,
                 Order = Order,
-// TODO: ATTRibues
+                // TODO: ATTRibues
                 DateArchived = DateArchived.HasValue ? DateTimeService.UtcNow : (DateTime?)null
             };
 
@@ -61,12 +59,15 @@ namespace LightMethods.Survey.Models.Entities
     {
         [Index]
         public Guid OwnerId { set; get; }
+
         public virtual DataListItem Owner { set; get; }
 
         public Guid RelationshipId { set; get; }
+
         public virtual DataListRelationship Relationship { set; get; }
 
         public Guid ValueId { set; get; }
+
         public virtual DataListItem Value { set; get; }
 
     }

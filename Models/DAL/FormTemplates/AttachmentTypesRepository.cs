@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LightMethods.Survey.Models.Entities;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
-using System.ComponentModel.DataAnnotations;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class AttachmentTypesRepository : Repository<AttachmentType>
     {
-
-        public AttachmentTypesRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        public AttachmentTypesRepository(UnitOfWork uow) : base(uow) { }
 
         private static AttachmentType EnsureHasValue(ref AttachmentType prop)
         {
@@ -48,6 +39,7 @@ namespace LightMethods.Survey.Models.DAL
             if (Image.AllowedExtensions.Contains(ext)) return Image;
             if (Audio.AllowedExtensions.Contains(ext)) return Audio;
             if (Video.AllowedExtensions.Contains(ext)) return Video;
+
             return null;
         }
 

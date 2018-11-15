@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class ReportTemplateCategory : Entity
     {
-
         public Guid OrganisationId { set; get; }
+
         public Organisation Organisation { set; get; }
 
         [Required]

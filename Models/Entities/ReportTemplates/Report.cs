@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using LightMethods.Survey.Models.DTO;
+using System;
 using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DTO;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LightMethods.Survey.Models.Entities
@@ -11,9 +8,11 @@ namespace LightMethods.Survey.Models.Entities
     public class Report: Entity
     {
         public Guid TemplateId { get; set; }
+
         public virtual ReportTemplate Template { set; get; }
 
         public virtual Project Project { get; set; }
+
         public Guid ProjectId { get; set; }
 
         [Display(Name="Start date")]
@@ -24,6 +23,7 @@ namespace LightMethods.Survey.Models.Entities
 
         [Display(Name = "Created by")]
         public User CreatedBy { set; get; }
+
         public Guid CreatedById { set; get; }
 
         [UIHint("RichText")]
@@ -35,11 +35,10 @@ namespace LightMethods.Survey.Models.Entities
         public string Conclusion { get; set; }
 
         public Guid PdfFileId { set; get; }
+
         public virtual Document PdfFile { set; get; }
 
         [NotMapped]
         public DocumentDTO DocumentDTO { set; get; }
-
-
     }
 }

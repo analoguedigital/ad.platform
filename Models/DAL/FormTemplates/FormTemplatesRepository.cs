@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data.Entity;
+﻿using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.DTO;
+using System;
+using System.Data.Entity;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class FormTemplatesRepository : Repository<FormTemplate>
     {
-        public FormTemplatesRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        public FormTemplatesRepository(UnitOfWork uow) : base(uow) { }
 
         //Getting a form template with preloaded metrics
         public FormTemplate GetNotTrackedFullTemplate(Guid id)
@@ -141,6 +135,5 @@ namespace LightMethods.Survey.Models.DAL
 
             return result;
         }
-
     }
 }

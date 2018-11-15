@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace LightMethods.Survey.Models.MetricFilters
+﻿namespace LightMethods.Survey.Models.MetricFilters
 {
     public enum MetricFilterTypes
     {

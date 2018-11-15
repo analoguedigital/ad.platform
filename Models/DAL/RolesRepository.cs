@@ -1,18 +1,11 @@
 ﻿using LightMethods.Survey.Models.Entities;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class RolesRepository : Repository<Role>
     {
-
-        public RolesRepository(UnitOfWork uow)
-            : base(uow)
-        { }
+        public RolesRepository(UnitOfWork uow) : base(uow) { }
 
         private static Role EnsureHasValue(ref Role prop)
         {
@@ -23,6 +16,7 @@ namespace LightMethods.Survey.Models.DAL
             {
                 var roles = uow.RolesRepository.AllAsNoTracking.ToList();
                 _SystemAdministrator = roles.Where(i => i.Name == Role.SYSTEM_ADMINSTRATOR).Single();
+                _PlatformAdministrator = roles.Where(i => i.Name == Role.PLATFORM_ADMINISTRATOR).Single();
                 _OrgUser = roles.Where(i => i.Name == Role.ORG_USER).Single();
                 _OrgAdministrator = roles.Where(i => i.Name == Role.ORG_ADMINSTRATOR).Single();
                 _OrgTemplateManagement = roles.Where(i => i.Name == Role.ORG_TEMPLATES_MANAGMENT).Single();
@@ -35,6 +29,9 @@ namespace LightMethods.Survey.Models.DAL
 
         private static Role _SystemAdministrator;
         public static Role SystemAdministrator { get { return EnsureHasValue(ref _SystemAdministrator); } }
+
+        private static Role _PlatformAdministrator;
+        public static Role PlatformAdministrator { get { return EnsureHasValue(ref _PlatformAdministrator); } }
 
         private static Role _OrgAdministrator;
         public static Role OrgAdministrator { get { return EnsureHasValue(ref _OrgAdministrator); } }

@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AppHelper;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {

@@ -8,39 +8,28 @@ using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
     public class OrgUsersController : BaseApiController
     {
 
         #region Properties
 
-        private OrgUsersRepository Users
-        {
-            get { return UnitOfWork.OrgUsersRepository; }
-        }
-
-        private OrganisationRepository Organisations
-        {
-            get { return UnitOfWork.OrganisationRepository; }
-        }
-
-        private OrgUserTypesRepository Types
-        {
-            get { return UnitOfWork.OrgUserTypesRepository; }
-        }
+        private const string CACHE_KEY = "ORG_USERS";
+        private const string ORG_ADMIN_KEY = "ORG_ADMIN";
+        private const string ADMIN_KEY = "ADMIN";
 
         private ApplicationUserManager _userManager;
         public ApplicationUserManager UserManager
@@ -49,7 +38,14 @@ namespace WebApi.Controllers
             private set { _userManager = value; }
         }
 
+        private UserService UserService { get; set; }
+
         #endregion
+
+        public OrgUsersController()
+        {
+            UserService = new UserService(UnitOfWork);
+        }
 
         // GET api/orgUsers/{listType}/{organisationId?}
         [DeflateCompression]
@@ -57,121 +53,106 @@ namespace WebApi.Controllers
         [Route("api/orgusers/{listType:int}/{organisationId?}")]
         public IHttpActionResult Get(OrgUserListType listType, Guid? organisationId = null)
         {
-            var result = new List<OrgUserDTO>();
-
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
             {
-                var users = Users.AllIncluding(u => u.Type)
-                    .Where(u => u.OrganisationId == CurrentOrganisationId)
-                    .OrderBy(u => u.Surname)
-                    .ThenBy(u => u.FirstName)
-                    .AsQueryable();
+                var cacheKey = $"{CACHE_KEY}_{listType}_{CurrentOrgUser.OrganisationId}";
+                var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-                if (listType != OrgUserListType.AllAccounts)
+                if (cacheEntry == null)
                 {
-                    var accType = (AccountType)(int)listType;
-                    users = users.Where(x => x.AccountType == accType);
-                }
+                    var users = UserService.GetOrgUsers(listType, CurrentOrgUser.OrganisationId);
+                    MemoryCacher.Add(cacheKey, users, DateTimeOffset.UtcNow.AddMinutes(1));
 
-                result = users
-                    .ToList()
-                    .Select(u => Mapper.Map<OrgUserDTO>(u))
-                    .ToList();
-            }
-            else
-            {
-                if (organisationId.HasValue)
-                {
-                    var users = Users.AllIncluding(u => u.Type)
-                        .Where(u => u.OrganisationId == organisationId)
-                        .OrderBy(u => u.Surname)
-                        .ThenBy(u => u.FirstName)
-                        .AsQueryable();
-
-                    if (listType != OrgUserListType.AllAccounts)
-                    {
-                        var accType = (AccountType)(int)listType;
-                        users = users.Where(x => x.AccountType == accType);
-                    }
-
-                    result = users
-                        .ToList()
-                        .Select(u => Mapper.Map<OrgUserDTO>(u))
-                        .ToList();
+                    return Ok(users);
                 }
                 else
                 {
-                    var users = Users.AllIncluding(u => u.Type)
-                      .OrderBy(u => u.Surname)
-                      .ThenBy(u => u.FirstName)
-                      .AsQueryable();
-
-                    if (listType != OrgUserListType.AllAccounts)
-                    {
-                        var accType = (AccountType)(int)listType;
-                        users = users.Where(x => x.AccountType == accType);
-                    }
-
-                    result = users
-                        .ToList()
-                        .Select(u => Mapper.Map<OrgUserDTO>(u))
-                        .ToList();
+                    var result = (List<OrgUserDTO>)cacheEntry;
+                    return new CachedResult<List<OrgUserDTO>>(result, TimeSpan.FromMinutes(1), this);
                 }
             }
 
-            return Ok(result);
+            // else if current user is SuperUser or PlatformUser
+            var _cacheKey = organisationId.HasValue ? $"{CACHE_KEY}_{listType}_{organisationId.Value}" : $"{CACHE_KEY}_{listType}";
+            var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
+
+            if (_cacheEntry == null)
+            {
+                var users = UserService.GetOrgUsers(listType, organisationId);
+                MemoryCacher.Add(_cacheKey, users, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(users);
+            }
+            else
+            {
+                var retVal = (List<OrgUserDTO>)_cacheEntry;
+                return new CachedResult<List<OrgUserDTO>>(retVal, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         [Route("api/orgusers/onrecord-staff")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult GetOnRecordStaffMembers()
         {
-            var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
-                .Where(x => x.Name == "OnRecord")
-                .SingleOrDefault();
+            var cacheKey = "ONRECORD_STAFF";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            var users = Users.AllIncluding(x => x.Type)
-                .OrderBy(x => x.Surname)
-                .ThenBy(x => x.FirstName)
-                .Where(x => x.AccountType == AccountType.WebAccount && x.OrganisationId == onrecord.Id);
+            if (cacheEntry == null)
+            {
+                var staffMembers = UserService.GetOnRecordStaff();
+                MemoryCacher.Add(cacheKey, staffMembers, DateTimeOffset.UtcNow.AddMinutes(1));
 
-            var result = users.ToList()
-                .Select(x => Mapper.Map<OrgUserDTO>(x))
-                .ToList();
-
-            return Ok(result);
+                return Ok(staffMembers);
+            }
+            else
+            {
+                var result = (List<OrgUserDTO>)cacheEntry;
+                return new CachedResult<List<OrgUserDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET /api/orgUsers/{id}
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         [Route("api/orgusers/{id:guid}")]
+        [OverrideAuthorization()]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation user,Restricted user")]
         public IHttpActionResult Get(Guid id)
         {
-            var user = Users.Find(id);
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
 
-            var orgUser = user as OrgUser;
-            var result = Mapper.Map<OrgUserDTO>(user);
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            if (orgUser != null)
+            if (cacheEntry == null)
             {
-                var assignments = orgUser.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a)).ToList();
-                result.Assignments = assignments;
-            }
+                var orgUser = UserService.GetOrgUser(id);
+                MemoryCacher.Add(cacheKey, orgUser, DateTimeOffset.UtcNow.AddMinutes(1));
 
-            return Ok(result);
+                return Ok(orgUser);
+            }
+            else
+            {
+                var result = (OrgUserDTO)cacheEntry;
+                return new CachedResult<OrgUserDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/orgUsers
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]OrgUserDTO value)
         {
-            if (value.Password.IsEmpty())
-                ModelState.AddModelError("Password", "Please provide password.");
+            if (string.IsNullOrEmpty(value.Password))
+                //ModelState.AddModelError("Password", "Please provide password.");
+                return BadRequest("password is required");
 
             if (value.Password != value.ConfirmPassword)
-                ModelState.AddModelError("ConfirmPassword", "'Password' and 'Confirm password' must be the same.");
+                //ModelState.AddModelError("ConfirmPassword", "'Password' and 'Confirm password' must be the same.");
+                return BadRequest("password and confirm password do not match");
 
             if (value.AccountType == AccountType.MobileAccount)
             {
@@ -179,7 +160,8 @@ namespace WebApi.Controllers
                 // so the Type is null at this point. fetch and populate.
                 // TeamUser Type ID: 379c989a-9919-4338-a468-a7c20eb76e28
 
-                var teamUserType = this.UnitOfWork.OrgUserTypesRepository.AllAsNoTracking
+                var teamUserType = UnitOfWork.OrgUserTypesRepository
+                    .AllAsNoTracking
                     .Where(x => x.SystemName == "TeamUser")
                     .SingleOrDefault();
 
@@ -189,13 +171,13 @@ namespace WebApi.Controllers
             var orguser = Mapper.Map<OrgUser>(value);
             orguser.UserName = orguser.Email;
 
-            if (this.CurrentUser is SuperUser)
+            if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
             {
                 orguser.OrganisationId = Guid.Parse(value.Organisation.Id);
                 orguser.Organisation = null;
             }
-            else if (this.CurrentUser is OrgUser)
-                orguser.OrganisationId = this.CurrentOrgUser.OrganisationId.Value;
+            else if (CurrentUser is OrgUser)
+                orguser.OrganisationId = CurrentOrgUser.OrganisationId.Value;
 
             // generate a random password
             var randomPassword = System.Web.Security.Membership.GeneratePassword(12, 1);
@@ -208,18 +190,21 @@ namespace WebApi.Controllers
             orguser.Type = UnitOfWork.OrgUserTypesRepository.Find(orguser.TypeId);
             UnitOfWork.UserManager.AssignRolesByUserType(orguser);
 
-            var organisation = this.UnitOfWork.OrganisationRepository.Find(orguser.OrganisationId.Value);
+            var organisation = UnitOfWork.OrganisationRepository.Find(orguser.OrganisationId.Value);
 
             if (value.Type.Name.ToLower() == "administrator")
             {
-                var projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
-                    .Where(p => p.OrganisationId == orguser.OrganisationId.Value);
+                var projects = UnitOfWork.ProjectsRepository
+                    .AllAsNoTracking
+                    .Where(p => p.OrganisationId == orguser.OrganisationId.Value)
+                    .Select(x => x.Id)
+                    .ToList();
 
-                foreach (var item in projects)
+                foreach (var projectId in projects)
                 {
                     var orgUserAssignment = new Assignment
                     {
-                        ProjectId = item.Id,
+                        ProjectId = projectId,
                         OrgUserId = orguser.Id,
                         CanView = true,
                         CanAdd = true,
@@ -254,10 +239,10 @@ namespace WebApi.Controllers
                 OrgUserId = orguser.Id,
                 CanView = true,
                 CanAdd = true,
-                CanEdit = false,
-                CanDelete = false,
-                CanExportPdf = false,
-                CanExportZip = false
+                CanEdit = true,
+                CanDelete = true,
+                CanExportPdf = true,    // temporary. turn off in production.
+                CanExportZip = true     // temporary. turn off in production.
             };
 
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
@@ -287,8 +272,28 @@ namespace WebApi.Controllers
             UnitOfWork.OrgUsersRepository.InsertOrUpdate(_orgUser);
             UnitOfWork.Save();
 
+            // subscribe this user to the current organization
+            if (!_orgUser.Subscriptions.Any())
+            {
+                var subscription = new Subscription
+                {
+                    IsActive = true,
+                    Type = UserSubscriptionType.Organisation,
+                    StartDate = DateTimeService.UtcNow,
+                    EndDate = null,
+                    Note = $"Joined organisation - {organisation.Name}",
+                    OrgUserId = _orgUser.Id,
+                    OrganisationId = organisation.Id
+                };
+
+                UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
+                _orgUser.IsSubscribed = true;
+
+                UnitOfWork.Save();
+            }
+
             // send account confirmation email
-            var code = await this.UserManager.GenerateEmailConfirmationTokenAsync(orguser.Id);
+            var code = await UserManager.GenerateEmailConfirmationTokenAsync(orguser.Id);
             var encodedCode = HttpUtility.UrlEncode(code);
 
             var rootIndex = WebHelpers.GetRootIndexPath();
@@ -297,13 +302,15 @@ namespace WebApi.Controllers
 
             var content = @"<p>Complete your registration by verifying your email address. Click the link below to continue.</p>
                             <p><a href='" + callbackUrl + @"'>Verify Email Address</a></p><br>
-                            <p>Your password is <strong>" + randomPassword + @"</strong>.</p>
+                            <p>Your password is <strong>" + randomPassword + @"</strong></p>
                             <p>Make sure to change your password after you've signed in.</p>
                             <p>For more information please read our <a href='https://onrecord.tech/privacy-policy/' target='_blank'>privacy policy</a> guide.</p>";
 
             var emailBody = WebHelpers.GenerateEmailTemplate(content, "Welcome to OnRecord");
 
             await UserManager.SendEmailAsync(orguser.Id, "Confirm your account", emailBody);
+
+            MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
             return Ok();
         }
@@ -313,7 +320,10 @@ namespace WebApi.Controllers
         [Route("api/orgusers/{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]OrgUserDTO value)
         {
-            var orguser = Users.Find(id);
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
+            var orguser = UnitOfWork.OrgUsersRepository.Find(id);
             if (orguser == null)
                 return NotFound();
 
@@ -331,7 +341,7 @@ namespace WebApi.Controllers
             if (!orguser.PhoneNumberConfirmed)
                 orguser.PhoneNumber = string.IsNullOrEmpty(value.PhoneNumber) ? null : value.PhoneNumber;
 
-            if (this.CurrentUser is SuperUser)
+            if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
             {
                 if (value.CurrentProject != null)
                 {
@@ -342,61 +352,80 @@ namespace WebApi.Controllers
                 }
             }
 
-            var result = UnitOfWork.UserManager.UpdateSync(orguser);
-            if (result.Succeeded)
-                return Ok();
-            else
-                return BadRequest(result.Errors.ToString(", "));
+            try
+            {
+                var result = UnitOfWork.UserManager.UpdateSync(orguser);
+                if (result.Succeeded)
+                {
+                    MemoryCacher.DeleteStartingWith(CACHE_KEY);
+                    return Ok();
+                }
+                else
+                    return BadRequest(result.Errors.ToString(", "));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DELETE api/orgUsers/{id}
         [HttpDelete]
         [Route("api/orgusers/{id:guid}")]
+        [OverrideAuthorization()]
+        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Delete(Guid id)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             if (id == CurrentUser.Id)
                 throw new InvalidOperationException("Current user cannot be deleted");
 
-            var orguser = Users.Find(id);
+            var orguser = UnitOfWork.OrgUsersRepository.Find(id);
             if (orguser == null)
                 return NotFound();
 
             if (orguser.IsRootUser)
-                return BadRequest("Cannot delete a root user");
+                return BadRequest("root users cannot be deleted");
 
             try
             {
-                Users.Delete(id);
+                UnitOfWork.OrgUsersRepository.Delete(id);
                 UnitOfWork.Save();
+
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException dbEx)
             {
-                return BadRequest("Could not delete this user!");
+                return InternalServerError(dbEx);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
-
-            return Ok();
         }
 
         [HttpPost]
         [Route("api/orgusers/deleteAccount/{id:guid}")]
+        [OverrideAuthorization()]
+        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult DeleteAccount(Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest();
+                return BadRequest("id is empty");
 
             if (id == CurrentUser.Id)
                 throw new InvalidOperationException("Current user cannot be deleted");
 
-            var orgUser = Users.Find(id);
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(id);
             if (orgUser == null)
                 return NotFound();
 
             if (orgUser.IsRootUser)
-                return BadRequest("Cannot delete a root user");
+                return BadRequest("root users cannot be deleted");
 
             try
             {
@@ -492,15 +521,17 @@ namespace WebApi.Controllers
                     UnitOfWork.Save();
                 }
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
             catch (DbUpdateException dbEx)
             {
-                return BadRequest(dbEx.Message);
+                return InternalServerError(dbEx);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 

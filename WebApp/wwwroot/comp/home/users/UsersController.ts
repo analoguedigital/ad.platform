@@ -94,6 +94,7 @@ module App {
                     this.$scope.displayedUsers = [].concat(this.$scope.users);
                 });
             } else {
+                //var currentOrgId = this.userContextService.current.orgUser.organisationId;
                 this.orgUserResource.query({ listType: 1, organisationId: null }).$promise.then((users) => {
                     this.$scope.users = users;
                     this.$scope.displayedUsers = [].concat(this.$scope.users);

@@ -1,8 +1,5 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DAL;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.DAL;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -24,9 +21,7 @@ namespace LightMethods.Survey.Models.Entities
             yield return Role.ORG_USER;
 
             if (Id == OrgUserTypesRepository.Administrator.Id)
-            {
                 yield return Role.ORG_ADMINSTRATOR;
-            }
             else if (Id == OrgUserTypesRepository.Manager.Id)
             {
                 yield return Role.ORG_TEAM_MANAGER;

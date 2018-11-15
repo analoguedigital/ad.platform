@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebApi.Models
+namespace LightMethods.Survey.Models.DTO
 {
     public class OrgTeamAssignmentDTO
     {
-        public List<OrgTeamUserDTO> Users { get; set; }
+        public List<OrgTeamUserFlat> Users { get; set; }
     }
 
-    public class OrgTeamUserDTO
+    public class OrgTeamUserFlat
     {
         public Guid OrgUserId { get; set; }
 

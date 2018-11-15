@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System.Threading.Tasks;
+using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
     //http://typecastexception.com/post/2014/07/13/ASPNET-Identity-20-Extending-Identity-Models-and-Using-Integer-Keys-Instead-of-Strings.aspx
     public class UserClaim : IdentityUserClaim<Guid> { }
+
     public class UserLogin : IdentityUserLogin<Guid> { }
+
     public class UserRole : IdentityUserRole<Guid> { }
 
     public class User : IdentityUser<Guid, UserLogin, UserRole, UserClaim>, IEntity
@@ -62,6 +61,7 @@ namespace LightMethods.Survey.Models.Entities
         {
             return await manager.GeneratePasswordResetTokenAsync(this.Id);
         }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, Guid> manager, string authenticationType)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

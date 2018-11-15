@@ -12,9 +12,11 @@ namespace LightMethods.Survey.Models.DTO
         public int MinValue { get; set; }
 
         public int MaxValue { get; set; }
+
         public int DefaultValue { get; set; }
 
         public Guid? DataListId { set; get; }
+
         public bool IsAdHoc { set; get; }
 
         public ICollection<DataListItemDTO> AdHocItems { set; get; }
@@ -30,6 +32,7 @@ namespace LightMethods.Survey.Models.DTO
             entity = base.Map(entity, uow, org);
 
             ((RateMetric)entity).UpdateDataList(uow, org, IsAdHoc, newAdHocItems, deletedAdHocItems, DataListId, oldDataList);
+
             return entity;
         }
     }

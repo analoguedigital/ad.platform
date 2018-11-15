@@ -1,4 +1,5 @@
-﻿using LightMethods.Survey.Models.FilterValues;
+﻿using LightMethods.Survey.Models.Enums;
+using LightMethods.Survey.Models.FilterValues;
 using LightMethods.Survey.Models.MetricFilters;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,15 @@ namespace LightMethods.Survey.Models.Entities
 {
     public class MultipleChoiceMetric : Metric, IMeasureableMetric, IHasDataList, IHasAdHocDataList
     {
-
         public virtual DataList DataList { set; get; }
+
         public Guid DataListId { set; get; }
 
         [Required]
         [Display(Name = "Displayed as")]
         public MultipleChoiceViewType ViewType { set; get; }
 
-        public MultipleChoiceMetric()
-        {
-        }
+        public MultipleChoiceMetric() { }
 
         public override IEnumerable<ValidationResult> ValidateValue(FormValue value)
         {

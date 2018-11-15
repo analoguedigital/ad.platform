@@ -18,9 +18,7 @@ namespace LightMethods.Survey.Models.Entities
         [NotMapped]
         public TimeSpan? Value { set; get; }
 
-        public TimeMetric()
-        {
-        }
+        public TimeMetric() { }
 
         public override IEnumerable<ValidationResult> ValidateValue(FormValue value)
         {

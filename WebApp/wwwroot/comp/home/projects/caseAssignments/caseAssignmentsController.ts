@@ -28,7 +28,7 @@ module App {
             private projectResource: Resources.IProjectResource,
             private toastr: any) {
 
-            $scope.title = "Case Assignments";
+            $scope.title = "Assignments and Permissions";
             $scope.delete = (id) => { this.delete(id); };
 
             this.activate();

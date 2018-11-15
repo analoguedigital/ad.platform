@@ -1,6 +1,7 @@
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
 using Microsoft.AspNet.Identity;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -28,18 +29,26 @@ namespace WebApi.Controllers
             var user = selfReset ? currentUser : Users.Find(value.UserId);
 
             if (selfReset && userManager.PasswordHasher.VerifyHashedPassword(currentUser.PasswordHash, value.OldPassword) != PasswordVerificationResult.Success)
-                return BadRequest("Provided old password is incorrect!");
+                return BadRequest("provided old password is incorrect");
 
             if (!selfReset && !isAdmin)
                 return Unauthorized();
 
-            var token = await user.GeneratePasswordResetTokenAsync(userManager);
-            var result = userManager.ResetPassword(user.Id, token, value.NewPassword);
+            try
+            {
+                var token = await user.GeneratePasswordResetTokenAsync(userManager);
+                var result = userManager.ResetPassword(user.Id, token, value.NewPassword);
 
-            if (result.Succeeded)
-                return Ok();
+                if (result.Succeeded)
+                    return Ok();
 
-            return BadRequest(string.Join(" ,", result.Errors));
+                return BadRequest(string.Join(" ,", result.Errors));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
+
     }
 }

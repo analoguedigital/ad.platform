@@ -1,7 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
 
 namespace WebApi.Helpers
 {
@@ -24,10 +23,7 @@ namespace WebApi.Helpers
             return typeof(T).IsAssignableFrom(objectType);
         }
 
-        public override object ReadJson(JsonReader reader,
-                                        Type objectType,
-                                         object existingValue,
-                                         JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             // Load JObject from stream
             JObject jObject = JObject.Load(reader);
@@ -44,15 +40,10 @@ namespace WebApi.Helpers
 
         public override bool CanWrite
         {
-            get
-            {
-                return false; // Back to default converter
-            }
+            get { return false; }   // back to default converter
         }
 
-        public override void WriteJson(JsonWriter writer,
-                                       object value,
-                                       JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             throw new NotImplementedException();
         }

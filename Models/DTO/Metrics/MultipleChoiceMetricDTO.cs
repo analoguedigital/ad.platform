@@ -27,6 +27,7 @@ namespace LightMethods.Survey.Models.DTO
             entity = base.Map(entity, uow, org);
 
             ((MultipleChoiceMetric)entity).UpdateDataList(uow, org, IsAdHoc, newAdHocItems, deletedAdHocItems, DataListId, oldDataList);
+
             return entity;
         }
     }

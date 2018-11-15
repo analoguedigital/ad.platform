@@ -12,7 +12,6 @@ namespace LightMethods.Survey.Models.Entities
 {
     public class DateMetric : Metric
     {
-
         /// <summary>
         /// Just for UI usage
         /// </summary>
@@ -21,9 +20,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public bool HasTimeValue { get; set; }
 
-        public DateMetric()
-        {
-        }
+        public DateMetric() { }
 
         public override IEnumerable<ValidationResult> ValidateValue(FormValue value)
         {
@@ -46,7 +43,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public override Metric Clone(FormTemplate template, MetricGroup metricGroup)
         {
-            var clone =  BaseClone<DateMetric>(template, metricGroup);
+            var clone = BaseClone<DateMetric>(template, metricGroup);
             clone.HasTimeValue = HasTimeValue;
             return clone;
         }

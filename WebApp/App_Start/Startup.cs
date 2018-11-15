@@ -34,12 +34,12 @@ namespace WebApi
             app.UseWebApi(httpConfig);
 
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<SurveyContext, LightMethods.Survey.Models.Migrations.Configuration>());
+
             AttachmentsRepository.RootFolderPath = HttpContext.Current.Server.MapPath("~/Attachments/");
         }
 
         public void ConfigureOAuth(IAppBuilder app)
         {
-
             // Configure the db context, user manager and signin manager to use a single instance per request
             app.CreatePerOwinContext(SurveyContext.Create);
             app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);

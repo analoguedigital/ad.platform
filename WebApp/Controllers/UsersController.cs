@@ -7,47 +7,74 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
-using WebApi.Filters;
 using WebApi.Models;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
     [Authorize(Roles = "System administrator")]
     public class UsersController : BaseApiController
     {
+        private const string CACHE_KEY = "SUPERUSERS";
+
         // GET api/users
         public IHttpActionResult Get()
         {
-            var users = UnitOfWork.SuperUsersRepository
-                .AllAsNoTracking.ToList()
-                .Select(x => Mapper.Map<UserDTO>(x))
-                .ToList();
+            var values = MemoryCacher.GetValue(CACHE_KEY);
+            if (values == null)
+            {
+                var users = UnitOfWork.SuperUsersRepository
+                    .AllAsNoTracking
+                    .ToList()
+                    .Select(x => Mapper.Map<UserDTO>(x))
+                    .ToList();
 
-            return Ok(users);
+                MemoryCacher.Add(CACHE_KEY, users, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(users);
+            }
+            else
+            {
+                var result = (List<UserDTO>)values;
+                return new CachedResult<List<UserDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
+
         }
 
         // GET api/users/{id}
         public IHttpActionResult Get(Guid id)
         {
-            var user = UnitOfWork.SuperUsersRepository.Find(id);
-            if (user == null)
-                return NotFound();
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            return Ok(Mapper.Map<UserDTO>(user));
+            if (cacheEntry == null)
+            {
+                var user = UnitOfWork.SuperUsersRepository.Find(id);
+                if (user == null)
+                    return NotFound();
+
+                var result = Mapper.Map<UserDTO>(user);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = cacheEntry as UserDTO;
+                return new CachedResult<UserDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/users
         [HttpPost]
-        //[DeflateCompression]
-        //[ResponseType(typeof(UserDTO))]
         public async Task<IHttpActionResult> CreateSuperUser(CreateSuperUserDTO model)
         {
             if (string.IsNullOrEmpty(model.Email))
-                return BadRequest("Email address is required");
+                return BadRequest("email address is required");
 
             if (string.IsNullOrEmpty(model.Password))
-                return BadRequest("Password is required");
+                return BadRequest("password is required");
 
             var superUser = new SuperUser
             {
@@ -58,16 +85,28 @@ namespace WebApi.Controllers
                 Surname = model.Surname
             };
 
-            UnitOfWork.UserManager.AddOrUpdateUser(superUser, model.Password);
-            await UnitOfWork.UserManager.AddToRoleAsync(superUser.Id, Role.SYSTEM_ADMINSTRATOR);
+            try
+            {
+                UnitOfWork.UserManager.AddOrUpdateUser(superUser, model.Password);
+                await UnitOfWork.UserManager.AddToRoleAsync(superUser.Id, Role.SYSTEM_ADMINSTRATOR);
 
-            return Ok();
+                MemoryCacher.Delete(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // PUT api/users/{id}
         [HttpPut]
         public IHttpActionResult Put(Guid id, [FromBody]UserDTO value)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             var user = UnitOfWork.SuperUsersRepository.Find(id);
             if (user == null)
                 return NotFound();
@@ -80,29 +119,49 @@ namespace WebApi.Controllers
             if (!user.PhoneNumberConfirmed)
                 user.PhoneNumber = value.PhoneNumber;
 
-            var result = UnitOfWork.UserManager.UpdateSync(user);
-            if (result.Succeeded)
-                return Ok();
+            try
+            {
+                var result = UnitOfWork.UserManager.UpdateSync(user);
+                if (result.Succeeded)
+                {
+                    MemoryCacher.DeleteListAndItem(CACHE_KEY, id);
+                    return Ok();
+                }
 
-            return BadRequest(result.Errors.ToString(", "));
+                return BadRequest(result.Errors.ToString(", "));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DEL api/users/{id}
         [HttpDelete]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
-            if (id == null || id == Guid.Empty)
-                return BadRequest();
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
 
             var user = UnitOfWork.SuperUsersRepository.Find(id);
             if (user == null)
                 return NotFound();
 
-            var result = await UnitOfWork.UserManager.DeleteAsync(user);
-            if (result.Succeeded)
-                return Ok();
+            try
+            {
+                var result = await UnitOfWork.UserManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    MemoryCacher.DeleteListAndItem(CACHE_KEY, id);
+                    return Ok();
+                }
 
-            return BadRequest(result.Errors.ToString(", "));
+                return BadRequest(result.Errors.ToString(", "));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
     }

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class Attachment : Entity
     {
-
         public Guid FormValueId { set; get; }
 
         public virtual FormValue FormValue { set; get; }
@@ -23,10 +18,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public bool IsTemp
         {
-            get
-            {
-                return FileSize == -1;
-            }
+            get { return FileSize == -1; }
         }
 
         public string Url

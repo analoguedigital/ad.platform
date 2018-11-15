@@ -1,18 +1,13 @@
-﻿using AppHelper;
-using LightMethods.Survey.Models.DAL;
+﻿using LightMethods.Survey.Models.DAL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
-
     public class AttachmentMetric : Metric
     {
-
         [Display(Name = "Allow multiple file")]
         public bool AllowMultipleFiles { set; get; }
 
@@ -50,6 +45,7 @@ namespace LightMethods.Survey.Models.Entities
             var clone = BaseClone<AttachmentMetric>(template, metricGroup);
             clone.AllowMultipleFiles = AllowMultipleFiles;
             clone.AllowedAttachmentTypes = new List<AttachmentType>(AllowedAttachmentTypes);
+
             return clone;
         }
 

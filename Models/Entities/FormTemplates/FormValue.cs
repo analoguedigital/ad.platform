@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -11,24 +9,32 @@ namespace LightMethods.Survey.Models.Entities
     {
         [Index]
         public Guid? FilledFormId { set; get; }
+
         public virtual FilledForm FilledForm { set; get; }
 
         public Guid? MetricId { set; get; }
+
         public virtual Metric Metric { set; get; }
 
         public int? RowNumber { set; get; }
 
         public virtual DataListItem RowDataListItem { set; get; }
+
         public Guid? RowDataListItemId { set; get; }
 
         public string TextValue { set; get; }
 
         [UIHint("YesNo")]
         public bool? BoolValue { set; get; }
+
         public double? NumericValue { set; get; }
+
         public DateTime? DateValue { set; get; }
+
         public Guid? GuidValue { set; get; }
+
         public TimeSpan? TimeValue { set; get; }
+
         public virtual ICollection<Attachment> Attachments { set; get; }
 
         public FormValue()
@@ -115,6 +121,18 @@ namespace LightMethods.Survey.Models.Entities
         public static bool operator !=(FormValue value, Object obj)
         {
             return !(value == obj);
+        }
+
+        // TODO: make sure GetHashCode() is implemented correctly
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        // TODO: make sure Equals() is implemented correctly
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
         }
 
         public override IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

@@ -1,13 +1,9 @@
-﻿using Hangfire;
-using LightMethods.Survey.Models.DAL;
-using LightMethods.Survey.Models.Entities;
+﻿using LightMethods.Survey.Models.DAL;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace WebApi.Services
 {

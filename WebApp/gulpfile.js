@@ -4,6 +4,7 @@ var gulp = require('gulp');
 var domSrc = require('gulp-dom-src');
 var concat = require('gulp-concat');
 var cssmin = require('gulp-cssmin');
+var cleancss = require('gulp-cleancss');
 var uglify = require('gulp-uglify');
 var cheerio = require('gulp-cheerio');
 var templateCache = require('gulp-angular-templatecache');
@@ -62,6 +63,7 @@ gulp.task('css', function () {
     return domSrc({ file: 'wwwroot/index.html', selector: 'link', attribute: 'href' })
         .pipe(concat('app.full.min.css'))
         .pipe(cssmin())
+        //.pipe(cleancss({ keepBreaks: false, removeEmpty: true }))
         .pipe(gulp.dest('wwwroot/dist/css/'));
 });
 
@@ -98,19 +100,7 @@ gulp.task('indexHtml', function () {
             $('script').remove();
             $('link').remove();
 
-            $('head').append('<link rel="apple-touch-icon" sizes="57x57" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="60x60" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="72x72" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="76x76" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="114x114" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="120x120" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="144x144" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="152x152" href="favicon.png">');
-            $('head').append('<link rel="apple-touch-icon" sizes="180x180" href="favicon.png">');
-            $('head').append('<link rel="icon" type="image/png" sizes="192x192" href="favicon.png">');
-            $('head').append('<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">');
-            $('head').append('<link rel="icon" type="image/png" sizes="96x96" href="favicon.png">');
-            $('head').append('<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">');
+            $('head').append('<link rel="shortcut icon" type="image/x-icon" href="favicon.png" />');
 
             $('head').append('<link rel="stylesheet" href="css/app.full.min.css"/>');
             $('head').append('<link href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" rel="stylesheet"/>');

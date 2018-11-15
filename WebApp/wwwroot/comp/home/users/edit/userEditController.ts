@@ -123,7 +123,9 @@ module App {
                 });
             }
 
-            if (this.currentUserIsSuperUser && !this.isInsertMode) {
+            var adminRoles = ["System administrator", "Platform administrator", "Organisation administrator"];
+            var isAdmin = this.userContextService.userIsInAnyRoles(adminRoles);
+            if (isAdmin && !this.isInsertMode) {
                 this.subscriptionResource.getUserSubscriptions({ id: userId }, (data) => {
                     this.subscriptions = data;
                 }, (err) => {

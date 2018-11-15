@@ -12,6 +12,7 @@ using WebApi.Models;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "System administrator,Organisation administrator,Organisation user")]
     public class DownloadsController : ApiController
     {
 
@@ -34,6 +35,9 @@ namespace WebApi.Controllers
         [Route("api/downloads/{id}")]
         public HttpResponseMessage Get(string id)
         {
+            if (string.IsNullOrEmpty(id))
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "download id is empty");
+
             var attachmentId = OneTimeAccessService.GetFileIdForTicket(id);
             if (attachmentId != Guid.Empty)
             {
@@ -60,7 +64,7 @@ namespace WebApi.Controllers
         public IHttpActionResult GetFile(Guid id)
         {
             if (id == Guid.Empty)
-                return NotFound();
+                return BadRequest("id is empty");
 
             var attachment = UnitOfWork.AttachmentsRepository.Find(id);
             if (attachment == null)
@@ -108,5 +112,6 @@ namespace WebApi.Controllers
 
             return Ok(result);
         }
+
     }
 }

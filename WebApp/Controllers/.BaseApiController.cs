@@ -6,14 +6,14 @@ using System.Web.Http;
 namespace WebApi.Controllers
 {
     [Authorize]
-    public class BaseApiController: ApiController
+    public class BaseApiController : ApiController
     {
+        protected SurveyContext CurrentDbContext { set; get; }
+
         public BaseApiController()
         {
-            this.CurrentDbContext = ServiceContext.CurrentDbContext;
+            CurrentDbContext = ServiceContext.CurrentDbContext;
         }
-
-        protected SurveyContext CurrentDbContext { set; get; }
 
         protected UnitOfWork UnitOfWork
         {
@@ -32,7 +32,18 @@ namespace WebApi.Controllers
             }
         }
 
-        public Guid? CurrentOrganisationId { get { return (CurrentUser as OrgUser)?.OrganisationId; } }
+        protected OrgUser CurrentOrgUser
+        {
+            get { return CurrentUser as OrgUser; }
+        }
+
+        public Guid? CurrentOrganisationId
+        {
+            get
+            {
+                return (CurrentUser as OrgUser)?.OrganisationId;
+            }
+        }
 
         private Organisation _CurrentOrganisation;
         protected Organisation CurrentOrganisation
@@ -47,11 +58,6 @@ namespace WebApi.Controllers
 
                 return _CurrentOrganisation;
             }
-        }
-
-        protected OrgUser CurrentOrgUser
-        {
-            get { return CurrentUser as OrgUser; }
         }
     }
 }

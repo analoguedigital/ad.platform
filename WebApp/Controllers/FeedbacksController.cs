@@ -13,22 +13,9 @@ using System.Web.Http;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "Organisation user")]
     public class FeedbackController : BaseApiController
     {
-
-        #region Properties
-
-        FeedbacksRepository Feedbacks
-        {
-            get { return this.UnitOfWork.FeedbacksRepository; }
-        }
-
-        EmailsRepository Emails
-        {
-            get { return this.UnitOfWork.EmailsRepository; }
-        }
-
-        #endregion
 
         // POST api/feedbacks
         [HttpPost]
@@ -37,35 +24,37 @@ namespace WebApi.Controllers
         {
             var feedback = Mapper.Map<Feedback>(model);
             feedback.AddedAt = DateTimeService.UtcNow;
-            feedback.AddedById = this.CurrentOrgUser.Id;
-            feedback.OrganisationId = this.CurrentOrganisation.Id;
+            feedback.AddedById = CurrentOrgUser.Id;
+            feedback.OrganisationId = CurrentOrganisation.Id;
 
             ModelState.Clear();
             Validate(feedback);
+
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                this.UnitOfWork.FeedbacksRepository.InsertOrUpdate(feedback);
+                UnitOfWork.FeedbacksRepository.InsertOrUpdate(feedback);
 
-                var onrecord = this.UnitOfWork.OrganisationRepository.AllAsNoTracking
+                var onrecord = UnitOfWork.OrganisationRepository
+                    .AllAsNoTracking
                     .Where(x => x.Name == "OnRecord")
                     .SingleOrDefault();
 
                 if (onrecord.RootUserId.HasValue)
                 {
-                    var onRecordAdmin = this.UnitOfWork.OrgUsersRepository.Find(onrecord.RootUserId.Value);
+                    var onRecordAdmin = UnitOfWork.OrgUsersRepository.Find(onrecord.RootUserId.Value);
                     var content = $"<p>{feedback.Comment}</p>";
 
                     var adminEmail = new Email
                     {
                         To = onrecord.RootUser.Email,
-                        Subject = $"New feedback arrived - {this.CurrentOrgUser.UserName}",
+                        Subject = $"New feedback arrived - {CurrentOrgUser.UserName}",
                         Content = WebHelpers.GenerateEmailTemplate(content, "User Feedback")
                     };
 
-                    this.UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
+                    UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
                 }
 
                 // find feedback recipients
@@ -79,14 +68,14 @@ namespace WebApi.Controllers
                     var recipientEmail = new Email
                     {
                         To = recipient.OrgUser.Email,
-                        Subject = $"New feedback arrived - {this.CurrentOrgUser.UserName}",
+                        Subject = $"New feedback arrived - {CurrentOrgUser.UserName}",
                         Content = WebHelpers.GenerateEmailTemplate($"<p>{feedback.Comment}</p>", "User Feedback")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
                 }
 
-                this.UnitOfWork.Save();
+                UnitOfWork.Save();
 
                 return Ok();
             }
@@ -110,15 +99,15 @@ namespace WebApi.Controllers
         public IHttpActionResult SendEmail(SendEmailDTO value)
         {
             if (string.IsNullOrEmpty(value.EmailAddress))
-                return BadRequest("Email address is required");
+                return BadRequest("email address is required");
 
             if (string.IsNullOrEmpty(value.Body))
-                return BadRequest("Body content is required");
+                return BadRequest("email body is required");
 
             var email = new Email
             {
                 To = value.EmailAddress,
-                Subject = string.Format("Message from OnRecord - {0}", this.CurrentUser.UserName),
+                Subject = string.Format("Message from OnRecord - {0}", CurrentUser.UserName),
                 Content = WebHelpers.GenerateEmailTemplate(value.Body, "Message from OnRecord")
             };
 
@@ -134,5 +123,6 @@ namespace WebApi.Controllers
                 return InternalServerError(ex);
             }
         }
+
     }
 }

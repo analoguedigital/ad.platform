@@ -1,5 +1,6 @@
 ﻿using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Enums;
 using LightMethods.Survey.Models.Services;
 using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.AspNet.Identity;
@@ -8,7 +9,6 @@ using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -16,7 +16,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Hosting;
 using System.Web.Http;
 using WebApi.Controllers;
 using WebApi.Providers;
@@ -27,7 +26,6 @@ namespace WebApi.Models
     [RoutePrefix("api/Account")]
     public class AccountController : BaseApiController
     {
-
         #region Properties
 
         private const string LocalLoginProvider = "Local";
@@ -72,24 +70,24 @@ namespace WebApi.Models
 
             var userInfo = new UserInfoViewModel
             {
-                UserId = this.CurrentUser.Id,
+                UserId = CurrentUser.Id,
                 Email = User.Identity.GetUserName(),
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumber = phoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
                 HasRegistered = externalLogin == null,
                 LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
-                Language = this.CurrentOrganisation?.DefaultLanguage?.Calture,
-                Calendar = this.CurrentOrganisation?.DefaultCalendar?.SystemName,
-                Roles = ServiceContext.UserManager.GetRoles(this.CurrentUser.Id),
+                Language = CurrentOrganisation?.DefaultLanguage?.Calture,
+                Calendar = CurrentOrganisation?.DefaultCalendar?.SystemName,
+                Roles = ServiceContext.UserManager.GetRoles(CurrentUser.Id),
                 TwoFactorAuthenticationEnabled = twoFactorAuth,
             };
 
             if (orgUser != null)
             {
-                userInfo.OrganisationId = this.CurrentOrganisationId;
+                userInfo.OrganisationId = CurrentOrganisationId;
 
-                var subscriptionService = new SubscriptionService(orgUser, this.UnitOfWork);
+                var subscriptionService = new SubscriptionService(UnitOfWork);
                 var expiryDate = subscriptionService.GetLatest(orgUser.Id);
                 var lastSubscription = subscriptionService.GetLastSubscription(orgUser.Id);
                 var quota = subscriptionService.GetMonthlyQuota(orgUser.Id);
@@ -121,7 +119,7 @@ namespace WebApi.Models
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var orgUser = this.UnitOfWork.OrgUsersRepository.Find(this.CurrentUser.Id);
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(CurrentUser.Id);
             if (orgUser == null)
                 return BadRequest("User not found!");
 
@@ -136,8 +134,8 @@ namespace WebApi.Models
 
             try
             {
-                this.UnitOfWork.OrgUsersRepository.InsertOrUpdate(orgUser);
-                this.UnitOfWork.Save();
+                UnitOfWork.OrgUsersRepository.InsertOrUpdate(orgUser);
+                UnitOfWork.Save();
 
                 return Ok();
             }
@@ -665,7 +663,7 @@ namespace WebApi.Models
             if (result.Succeeded)
             {
                 // subscribe this user under OnRecord with full access.
-                var orgUser = this.UnitOfWork.OrgUsersRepository.Find(model.UserId);
+                var orgUser = UnitOfWork.OrgUsersRepository.Find(model.UserId);
                 if (orgUser.AccountType == AccountType.MobileAccount && !orgUser.Subscriptions.Any())
                 {
                     var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
@@ -768,7 +766,7 @@ namespace WebApi.Models
         [Route("RemovePhoneNumber")]
         public IHttpActionResult RemovePhoneNumber()
         {
-            var user = UnitOfWork.UsersRepository.Find(this.CurrentUser.Id);
+            var user = UnitOfWork.UsersRepository.Find(CurrentUser.Id);
             user.PhoneNumber = string.Empty;
             user.PhoneNumberConfirmed = false;
 

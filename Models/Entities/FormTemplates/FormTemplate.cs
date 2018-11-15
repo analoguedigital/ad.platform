@@ -1,11 +1,10 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.MetricFilters;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text.RegularExpressions;
-using LightMethods.Survey.Models.MetricFilters;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -22,9 +21,11 @@ namespace LightMethods.Survey.Models.Entities
 
         [Required]
         public Guid OrganisationId { get; set; }
+
         public virtual Organisation Organisation { get; set; }
 
         public Guid? ProjectId { set; get; }
+
         public virtual Project Project { set; get; }
 
         [Required]
@@ -44,6 +45,7 @@ namespace LightMethods.Survey.Models.Entities
 
         [Display(Name = "Created by")]
         public OrgUser CreatedBy { set; get; }
+
         public Guid CreatedById { set; get; }
 
         [Required]
@@ -61,13 +63,16 @@ namespace LightMethods.Survey.Models.Entities
         public string DescriptionFormat { get; set; }
 
         public Guid? CalendarDateMetricId { set; get; }
+
         public virtual Metric CalendarDateMetric { set; get; }
 
         public Guid? TimelineBarMetricId { set; get; }
+
         public virtual Metric TimelineBarMetric { set; get; }
 
         [Required]
         public Guid? FormTemplateCategoryId { set; get; }
+
         public virtual FormTemplateCategory FormTemplateCategory { set; get; }
 
         public FormTemplateDiscriminators Discriminator { get; set; }
@@ -171,7 +176,7 @@ namespace LightMethods.Survey.Models.Entities
 
             foreach (var metricGroup in this.MetricGroups)
             {
-                foreach (var metric in metricGroup.Metrics.Where(m =>!(m is AttachmentMetric) && !m.IsArchived()).OrderBy(m => m.Order))
+                foreach (var metric in metricGroup.Metrics.Where(m => !(m is AttachmentMetric) && !m.IsArchived()).OrderBy(m => m.Order))
                     filters.Add(metric.GetMetricFilter());
             }
 

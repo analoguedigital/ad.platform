@@ -17,20 +17,31 @@ namespace LightMethods.Survey.Models.Services
 {
     public class FormTemplatesService
     {
-        private UnitOfWork unitOfWork { get; set; }
+
+        #region Properties
+
+        private UnitOfWork UnitOfWork { get; set; }
+
         public OrgUser OrgUser { get; set; }
+
         public User CurrentUser { get; set; }
+
+        #endregion Properties
+
+        #region C-tor
 
         public FormTemplatesService(UnitOfWork uow, OrgUser user, User currentUser)
         {
-            this.unitOfWork = uow;
-            this.OrgUser = user as OrgUser;
-            this.CurrentUser = currentUser;
+            UnitOfWork = uow;
+            OrgUser = user as OrgUser;
+            CurrentUser = currentUser;
         }
+
+        #endregion C-tor
 
         public IEnumerable<FormTemplateDTO> Get(Guid? projectId, FormTemplateDiscriminators discriminator)
         {
-            var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, false);
             var templates = surveyProvider.GetAllProjectTemplates(projectId, discriminator);
 
             var result = new List<FormTemplateDTO>();
@@ -39,9 +50,9 @@ namespace LightMethods.Survey.Models.Services
             {
                 var dto = Mapper.Map<FormTemplateDTO>(template);
 
-                if (this.OrgUser != null)
+                if (OrgUser != null)
                 {
-                    var assignment = this.unitOfWork.FormTemplatesRepository.GetUserAssignment(template, this.OrgUser.Id);
+                    var assignment = UnitOfWork.FormTemplatesRepository.GetUserAssignment(template, OrgUser.Id);
                     Mapper.Map(assignment, dto);
                 }
                 else
@@ -63,15 +74,15 @@ namespace LightMethods.Survey.Models.Services
             if (id == Guid.Empty)
                 return Mapper.Map<FormTemplateDTO>(new FormTemplate() { });
 
-            var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, false);
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null) return null;
 
             var result = Mapper.Map<FormTemplateDTO>(form);
 
-            if (this.OrgUser != null)
+            if (OrgUser != null)
             {
-                var assignment = this.unitOfWork.FormTemplatesRepository.GetUserAssignment(form, this.OrgUser.Id);
+                var assignment = UnitOfWork.FormTemplatesRepository.GetUserAssignment(form, OrgUser.Id);
                 Mapper.Map(assignment, result);
             }
             else
@@ -98,14 +109,14 @@ namespace LightMethods.Survey.Models.Services
             {
                 entity.FormTemplateCategory = null;
 
-                if (this.OrgUser != null)
+                if (OrgUser != null)
                 {
-                    entity.CreatedById = this.OrgUser.Id;
-                    entity.OrganisationId = this.OrgUser.Organisation.Id;
+                    entity.CreatedById = OrgUser.Id;
+                    entity.OrganisationId = OrgUser.Organisation.Id;
                 }
                 else
                 {
-                    entity.CreatedById = this.CurrentUser.Id;
+                    entity.CreatedById = CurrentUser.Id;
 
                     // organisation and project are bound to dropdowns,
                     // and we have the IDs. so remove the DTO mappings to avoid EF validation errors.
@@ -113,8 +124,8 @@ namespace LightMethods.Survey.Models.Services
                     entity.Project = null;
                 }
 
-                this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(entity);
-                this.unitOfWork.Save();
+                UnitOfWork.FormTemplatesRepository.InsertOrUpdate(entity);
+                UnitOfWork.Save();
 
                 result.Success = true;
                 result.Message = "Form Template created";
@@ -152,7 +163,7 @@ namespace LightMethods.Survey.Models.Services
         {
             var result = new OperationResult();
 
-            var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, onlyPublished: false);
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == templateId).SingleOrDefault();
             if (form == null)
             {
@@ -172,7 +183,7 @@ namespace LightMethods.Survey.Models.Services
 
             // validate organisation. Project/Category organisations must match the selected organisation.
 
-            this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
+            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
 
             var groupOrder = 1;
             foreach (var valueGroup in model.MetricGroups)
@@ -186,7 +197,11 @@ namespace LightMethods.Survey.Models.Services
                     //result.Errors.Add(group.Id.ToString(), $"Group {group.Title} is not empty!");
                 }
 
-                group = valueGroup.Map(group, this.unitOfWork, this.OrgUser.Organisation);
+                if (CurrentUser is OrgUser)
+                    group = valueGroup.Map(group, UnitOfWork, OrgUser.Organisation);
+                else if (CurrentUser is SuperUser)
+                    group = valueGroup.Map(group, UnitOfWork, form.Organisation);
+
                 group.FormTemplateId = form.Id;
                 group.Order = groupOrder++;
 
@@ -199,10 +214,13 @@ namespace LightMethods.Survey.Models.Services
                     if (metric == null && valueMetric.isDeleted)
                         continue;
 
-                    metric = valueMetric.Map(metric, this.unitOfWork, this.OrgUser.Organisation);
+                    if (CurrentUser is OrgUser)
+                        metric = valueMetric.Map(metric, UnitOfWork, OrgUser.Organisation);
+                    else if (CurrentUser is SuperUser)
+                        metric = valueMetric.Map(metric, UnitOfWork, form.Organisation);
 
                     if (valueMetric.isDeleted) // Delete
-                        this.unitOfWork.MetricsRepository.Delete(metric);
+                        UnitOfWork.MetricsRepository.Delete(metric);
                     else
                     {   // Insert or update
                         metric.FormTemplateId = form.Id;
@@ -219,14 +237,14 @@ namespace LightMethods.Survey.Models.Services
                             //validationResult.ToList().ForEach(res => result.Errors.Add(metric.Id.ToString(), res.ErrorMessage));
                         }
 
-                        this.unitOfWork.MetricsRepository.InsertOrUpdate(metric);
+                        UnitOfWork.MetricsRepository.InsertOrUpdate(metric);
                     }
                 }
 
                 if (valueGroup.isDeleted && group != null)
-                    this.unitOfWork.MetricGroupsRepository.Delete(group);
+                    UnitOfWork.MetricGroupsRepository.Delete(group);
                 else
-                    this.unitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
+                    UnitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
             }
 
             if (result.ValidationErrors.Any())
@@ -250,7 +268,7 @@ namespace LightMethods.Survey.Models.Services
 
             try
             {
-                this.unitOfWork.Save();
+                UnitOfWork.Save();
 
                 result.Success = true;
                 result.Message = "Form Templated updated";
@@ -274,7 +292,7 @@ namespace LightMethods.Survey.Models.Services
                 result.Success = false;
                 result.Message = ex.Message;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result.Success = false;
                 result.Message = "Error occured updating form template";
@@ -287,7 +305,7 @@ namespace LightMethods.Survey.Models.Services
         {
             var result = new OperationResult();
 
-            var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false); ;
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, false); ;
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == templateId).SingleOrDefault();
             if (form == null)
             {
@@ -300,8 +318,8 @@ namespace LightMethods.Survey.Models.Services
             try
             {
                 Mapper.Map(model, form);
-                this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
-                this.unitOfWork.Save();
+                UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
+                UnitOfWork.Save();
 
                 result.Success = true;
                 result.Message = "Basic Details updated";
@@ -337,7 +355,7 @@ namespace LightMethods.Survey.Models.Services
         {
             var result = new OperationResult();
 
-            var surveyProvider = new SurveyProvider(this.OrgUser, this.unitOfWork, false);
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, false);
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null)
             {
@@ -349,8 +367,8 @@ namespace LightMethods.Survey.Models.Services
 
             try
             {
-                this.unitOfWork.FormTemplatesRepository.Delete(form);
-                this.unitOfWork.Save();
+                UnitOfWork.FormTemplatesRepository.Delete(form);
+                UnitOfWork.Save();
 
                 result.Success = true;
                 result.Message = "Form Template deleted";
@@ -368,8 +386,8 @@ namespace LightMethods.Survey.Models.Services
         {
             var result = new OperationResult();
 
-            var template = this.unitOfWork.FormTemplatesRepository.Find(id);
-            var clone = this.unitOfWork.FormTemplatesRepository.Clone(template, this.OrgUser as OrgUser, request.Title, request.Colour, request.ProjectId);
+            var template = UnitOfWork.FormTemplatesRepository.Find(id);
+            var clone = UnitOfWork.FormTemplatesRepository.Clone(template, OrgUser as OrgUser, request.Title, request.Colour, request.ProjectId);
 
             result.Success = true;
             result.Message = "Form Template cloned";
@@ -382,7 +400,7 @@ namespace LightMethods.Survey.Models.Services
         {
             var result = new OperationResult();
 
-            var template = this.unitOfWork.FormTemplatesRepository.Find(id);
+            var template = UnitOfWork.FormTemplatesRepository.Find(id);
             if (template == null)
             {
                 result.Success = false;
@@ -404,8 +422,8 @@ namespace LightMethods.Survey.Models.Services
             try
             {
                 result.ValidationErrors.Clear();
-                this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(template);
-                this.unitOfWork.Save();
+                UnitOfWork.FormTemplatesRepository.InsertOrUpdate(template);
+                UnitOfWork.Save();
 
                 result.Success = true;
                 result.Message = "Form Template published";
@@ -440,7 +458,7 @@ namespace LightMethods.Survey.Models.Services
         {
             var result = new OperationResult();
 
-            var template = this.unitOfWork.FormTemplatesRepository.Find(id);
+            var template = UnitOfWork.FormTemplatesRepository.Find(id);
             if (template == null)
             {
                 result.Success = false;
@@ -452,8 +470,8 @@ namespace LightMethods.Survey.Models.Services
             try
             {
                 template.IsPublished = false;
-                this.unitOfWork.FormTemplatesRepository.InsertOrUpdate(template);
-                this.unitOfWork.Save();
+                UnitOfWork.FormTemplatesRepository.InsertOrUpdate(template);
+                UnitOfWork.Save();
 
                 result.Success = true;
                 result.Message = "Form Template archived";

@@ -1,11 +1,7 @@
 ﻿using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -21,7 +17,7 @@ namespace WebApi.Filters
 
             if (currentUser is OrgUser && ((OrgUser)currentUser).AccountType == AccountType.MobileAccount)
             {
-                var subscriptionService = new SubscriptionService((OrgUser)currentUser, unitOfWork);
+                var subscriptionService = new SubscriptionService(unitOfWork);
                 var latestSubscription = subscriptionService.GetLatest(currentUser.Id);
                 if (latestSubscription == null)
                     throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.Unauthorized));

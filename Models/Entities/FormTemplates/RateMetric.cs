@@ -22,6 +22,7 @@ namespace LightMethods.Survey.Models.Entities
         public int DefaultValue { get; set; }
 
         public virtual DataList DataList { set; get; }
+
         [Column("RateMetricDataListId")]
         public Guid? DataListId { set; get; }
 
@@ -88,6 +89,7 @@ namespace LightMethods.Survey.Models.Entities
             clone.DefaultValue = DefaultValue;
             clone.DataList = DataList.IsAdHoc ? DataList.Clone() : null; // Create a new datalist only if it is an ad-hoc
             clone.DataListId = DataList.IsAdHoc ? null : DataListId;
+
             return clone;
         }
 

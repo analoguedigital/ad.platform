@@ -1,21 +1,17 @@
-﻿using System;
+﻿using AutoMapper;
+using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
 using System.Data.Entity;
+using System.Linq;
 using System.Linq.Expressions;
-using LightMethods.Survey.Models.Entities;
-using AppHelper;
-using AutoMapper;
-using LightMethods.Survey.Models.Services;
 
 namespace LightMethods.Survey.Models.DAL
 {
-
     public class Repository<T> : IRepository<T> where T : class, IEntity, new()
     {
-
         protected SurveyContext Context;
         protected UnitOfWork CurrentUOW;
 
@@ -90,7 +86,7 @@ namespace LightMethods.Survey.Models.DAL
                 // Existing entity
                 var entry = Context.Entry(entity);
 
-                if (entry.State == EntityState.Added || entry.State== EntityState.Detached)
+                if (entry.State == EntityState.Added || entry.State == EntityState.Detached)
                     Context.Entry(entity).State = EntityState.Modified;
 
                 if (entity is Entity && entry.State == EntityState.Modified)
@@ -104,7 +100,6 @@ namespace LightMethods.Survey.Models.DAL
             if (entities == null) return;
             foreach (var entity in entities)
                 InsertOrUpdate(entity);
-
         }
 
         public virtual void Update(T entity, ICollection<KeyValuePair<string, string>> values)
@@ -120,7 +115,6 @@ namespace LightMethods.Survey.Models.DAL
 
         public void Update(ICollection<T> dbSet, IEnumerable<T> newSet)
         {
-
             if (dbSet == null && newSet == null)
                 return;
 
@@ -152,15 +146,13 @@ namespace LightMethods.Survey.Models.DAL
                 if (d is Entity && Context.Entry(d).State == EntityState.Modified)
                     (d as Entity).DateUpdated = DateTimeService.UtcNow;
             });
-            
+
             itemsToDelete.ForEach(d => Delete(d));
             itemsToAdd.ForEach(d =>
             {
                 dbSet.Add(d);
                 InsertOrUpdate(d);
             });
-
-
         }
 
         public void Delete(System.Guid id)
@@ -168,7 +160,6 @@ namespace LightMethods.Survey.Models.DAL
             var entity = Find(id);
             Delete(entity);
             //Context.Entry(entity).State = EntityState.Deleted;
-
         }
 
         public virtual void Delete(IEnumerable<System.Guid> ids)

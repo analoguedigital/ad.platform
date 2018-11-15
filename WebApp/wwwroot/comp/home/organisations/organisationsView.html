@@ -35,7 +35,7 @@
                         <tbody>
                             <tr ng-repeat="organisation in displayedOrganisations" ng-if="displayedOrganisations.length">
                                 <td><a ui-sref="home.organisations.edit({id:organisation.id})">{{organisation.name}}</a></td>
-                                <td class="hidden-xs">{{organisation.rootUser.email}}</td>
+                                <td class="hidden-xs">{{organisation.rootUserEmail}}</td>
                                 <td class="text-center">
                                     <i class="fa fa-check" ng-if="organisation.subscriptionEnabled"></i>
                                     <i class="fa fa-times" ng-if="!organisation.subscriptionEnabled"></i>
@@ -58,7 +58,7 @@
                                 </td>
                                 <td>
                                     <a ui-sref="home.users.mobile({organisationId:organisation.id})">
-                                        <i class="fa fa-phone-square"></i> <span class="hidden-xs"> users</span>
+                                        <i class="fa fa-phone-square"></i> <span class="hidden-xs"> clients</span>
                                     </a>
                                 </td>
                                 <td>

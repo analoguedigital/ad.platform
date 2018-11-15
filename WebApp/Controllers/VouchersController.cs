@@ -1,33 +1,62 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Enums;
 using LightMethods.Survey.Models.Services;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Web.Hosting;
 using System.Web.Http;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "System administrator,Platform administrator")]
     public class VouchersController : BaseApiController
     {
+        #region Properties
+
+        private const string CACHE_KEY = "VOUCHERS";
+
         private SubscriptionService SubscriptionService { get; set; }
+
+        #endregion Properties
+
+        #region C-tor
 
         public VouchersController()
         {
-            this.SubscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
+            SubscriptionService = new SubscriptionService(UnitOfWork);
         }
+
+        #endregion C-tor
+
+        #region CRUD
 
         // GET api/vouchers
         public IHttpActionResult Get()
         {
-            var vouchers = UnitOfWork.VouchersRepository.AllAsNoTracking;
-            var result = vouchers.ToList().Select(v => Mapper.Map<VoucherDTO>(v));
+            var values = MemoryCacher.GetValue(CACHE_KEY);
+            if (values == null)
+            {
+                var vouchers = UnitOfWork.VouchersRepository
+                    .AllAsNoTracking
+                    .ToList()
+                    .Select(v => Mapper.Map<VoucherDTO>(v))
+                    .ToList();
 
-            return Ok(result);
+                MemoryCacher.Add(CACHE_KEY, vouchers, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(vouchers);
+            }
+            else
+            {
+                var result = (List<VoucherDTO>)values;
+                return new CachedResult<List<VoucherDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/vouchers/{id}
@@ -35,18 +64,27 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
-                return NotFound();
+                return BadRequest("id is empty");
 
-            var voucher = UnitOfWork.VouchersRepository.AllAsNoTracking
-                .Where(v => v.Id == id)
-                .SingleOrDefault();
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cachedValue = MemoryCacher.GetValue(cacheKey);
 
-            if (voucher == null)
-                return NotFound();
+            if (cachedValue == null)
+            {
+                var voucher = UnitOfWork.VouchersRepository.Find(id);
+                if (voucher == null)
+                    return NotFound();
 
-            var result = Mapper.Map<VoucherDTO>(voucher);
+                var result = Mapper.Map<VoucherDTO>(voucher);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
 
-            return Ok(result);
+                return Ok(result);
+            }
+            else
+            {
+                var result = (VoucherDTO)cachedValue;
+                return new CachedResult<VoucherDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/vouchers
@@ -62,11 +100,13 @@ namespace WebApi.Controllers
                 UnitOfWork.VouchersRepository.InsertOrUpdate(voucher);
                 UnitOfWork.Save();
 
+                MemoryCacher.Delete(CACHE_KEY);
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 
@@ -75,6 +115,9 @@ namespace WebApi.Controllers
         [Route("api/vouchers/{id:guid}")]
         public IHttpActionResult Put(Guid id, [FromBody]VoucherDTO value)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             var voucher = UnitOfWork.VouchersRepository.Find(id);
             if (voucher == null)
                 return NotFound();
@@ -90,11 +133,13 @@ namespace WebApi.Controllers
                 UnitOfWork.VouchersRepository.InsertOrUpdate(voucher);
                 UnitOfWork.Save();
 
+                MemoryCacher.DeleteListAndItem(CACHE_KEY, id);
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 
@@ -104,16 +149,18 @@ namespace WebApi.Controllers
         public IHttpActionResult Delete(Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest();
+                return BadRequest("id is empty");
 
             try
             {
                 UnitOfWork.VouchersRepository.Delete(id);
                 UnitOfWork.Save();
 
+                MemoryCacher.DeleteListAndItem(CACHE_KEY, id);
+
                 return Ok();
             }
-            catch(DbUpdateException dbEx)
+            catch (DbUpdateException dbEx)
             {
                 return BadRequest(dbEx.Message);
             }
@@ -123,47 +170,73 @@ namespace WebApi.Controllers
             }
         }
 
+        #endregion CRUD
+
+        #region Redeem Voucher
+
         // POST api/vouchers/redeem/{code}
         [HttpPost]
         [Route("api/vouchers/redeem/{code}")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "Organisation user")]
         public IHttpActionResult Redeem(string code)
         {
-            if (this.CurrentUser is SuperUser)
-                return BadRequest("Vouchers are only available to mobile users");
+            if (string.IsNullOrEmpty(code))
+                return BadRequest("voucher code is empty");
 
-            var result = this.SubscriptionService.RedeemCode(code);
+            if (CurrentOrgUser.AccountType != AccountType.MobileAccount)
+                return BadRequest("vouchers are only available to mobile users");
+
+            var result = SubscriptionService.RedeemCode(code, CurrentOrgUser);
+
             switch (result)
             {
-                case SubscriptionService.RedeemCodeStatus.SubscriptionDisabled:
-                    return Content(HttpStatusCode.Forbidden, "Subscriptions are disabled. Contact your administrator.");
-                case SubscriptionService.RedeemCodeStatus.SubscriptionRateNotSet:
-                    return Content(HttpStatusCode.Forbidden, "Subscription Rate is not set. Contact your administrator.");
-                case SubscriptionService.RedeemCodeStatus.SubscriptionCountLessThanOne:
-                    return Content(HttpStatusCode.Forbidden, "Subscription Count is zero! Contact your administrator.");
-                case SubscriptionService.RedeemCodeStatus.OK:
+                case RedeemCodeStatus.AlreadyRedeemed:
+                    return BadRequest("this code has already been redeemed");
+                case RedeemCodeStatus.SubscriptionDisabled:
+                    return Content(HttpStatusCode.Forbidden, "subscriptions are disabled. contact your administrator.");
+                case RedeemCodeStatus.SubscriptionRateNotSet:
+                    return Content(HttpStatusCode.Forbidden, "subscription rate is not set. contact your administrator.");
+                case RedeemCodeStatus.SubscriptionCountLessThanOne:
+                    return Content(HttpStatusCode.Forbidden, "invalid subscription period. contact your administrator.");
+                case RedeemCodeStatus.Error:
+                    return BadRequest("an error has occured processing your code. try again or contact your administrator");
+                case RedeemCodeStatus.NotFound:
+                    return NotFound();
+                case RedeemCodeStatus.OK:
                     {
-                        var voucher = this.UnitOfWork.VouchersRepository.AllAsNoTracking.Where(x => x.Code == code).SingleOrDefault();
-
-
-                        var message = @"<p>You have redeemed your voucher code and are now subscribed.</p>
-                            <p>This subscription has a fixed monthly quota. If you need more space to continue please purchase a paid plan or join an organization.</p>";
-
-                        var email = new Email
-                        {
-                            To = this.CurrentOrgUser.Email,
-                            Subject = $"Voucher Redeemed",
-                            Content = WebHelpers.GenerateEmailTemplate(message, "Voucher Redeemed")
-                        };
-
-                        UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+                        NotifyUserAboutVoucherSubscription();
                         UnitOfWork.Save();
+
+                        MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                         return Ok();
                     }
                 default:
                     return NotFound();
-            }   
+            }
         }
+
+        #endregion Redeem Voucher
+
+        #region Helpers
+
+        private void NotifyUserAboutVoucherSubscription()
+        {
+            var message = @"<p>You have redeemed your voucher code and are now subscribed.</p>
+                            <p>This subscription has a fixed monthly quota. If you need more space to continue please purchase a paid plan or join an organization.</p>";
+
+            var email = new Email
+            {
+                To = CurrentOrgUser.Email,
+                Subject = $"Voucher Redeemed",
+                Content = WebHelpers.GenerateEmailTemplate(message, "Voucher Redeemed")
+            };
+
+            UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+        }
+
+        #endregion
 
     }
 }

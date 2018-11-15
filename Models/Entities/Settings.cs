@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
 
 namespace LightMethods.Survey.Models.Entities
@@ -10,6 +7,7 @@ namespace LightMethods.Survey.Models.Entities
     {
         [Display(Name="Template used in the case home")]
         public virtual ReportTemplate ProjectViewTemplate { set; get; }
+
         public Guid? ProjectViewTemplateId { set; get; }
     }
 }

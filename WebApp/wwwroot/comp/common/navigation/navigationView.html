@@ -53,7 +53,7 @@
             </li>
             <!-- Cases -->
             <li lm-access="System administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.projects')}">
-                <a ui-sref="home.projects.list" ui-sref-opts="{reload: true}"><i class="fa fa-briefcase"></i> <span class="nav-label">Cases</span></a>
+                <a ui-sref="home.projects.list" ui-sref-opts="{reload: true}"><i class="fa fa-briefcase"></i> <span class="nav-label">Staff and Clients</span></a>
             </li>
             <!-- Threads -->
             <li lm-access="System administrator,Organisation user" ng-class="{ 'active': $state.includes('home.surveys.list') }">
@@ -82,17 +82,17 @@
             <!-- Case Management -->
             <li lm-access="System administrator,Organisation administrator,Organisation team manager" ng-class="{'active':$state.includes('home.caseManagement')}">
                 <a aria-expanded="false">
-                    <i class="fa fa-suitcase"></i> <span class="nav-label">Case Management</span> <span class="fa arrow"></span>
+                    <i class="fa fa-suitcase"></i> <span class="nav-label">Permissions</span> <span class="fa arrow"></span>
                 </a>
                 <ul aria-expanded="false" class="nav nav-second-level" ng-class="{ 'collapse in': $state.includes('home.caseManagement') }">
                     <li ng-class="{ 'active': $state.includes('home.caseManagement.caseAssignments')}">
                         <a ui-sref="home.caseManagement.caseAssignments" ui-sref-opts="{ reload: true }">
-                            <i class="fa fa-commenting-o"></i> Case assignments
+                            <i class="fa fa-commenting-o"></i> Staff and Clients
                         </a>
                     </li>
                     <li ng-class="{ 'active': $state.includes('home.caseManagement.threadAssignments')}">
                         <a ui-sref="home.caseManagement.threadAssignments" ui-sref-opts="{ reload: true }">
-                            <i class="fa fa-comments-o"></i> Thread assignments
+                            <i class="fa fa-comments-o"></i> Threads
                         </a>
                     </li>
                 </ul>
@@ -115,10 +115,10 @@
                     </li>
                     <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{ 'active': $state.includes('home.users.mobile')}">
                         <a ui-sref="home.users.mobile" ui-sref-opts="{reload: true}">
-                            <i class="fa fa-phone-square"></i> Mobile Users
+                            <i class="fa fa-phone-square"></i> Clients
                         </a>
                     </li>
-                    <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{ 'active': $state.includes('home.organisations.invitations')}">
+                    <li lm-access="System administrator,Platform administrator" ng-class="{ 'active': $state.includes('home.organisations.invitations')}">
                         <a ui-sref="home.organisations.invitations" ui-sref-opts="{reload: true}">
                             <i class="fa fa-hashtag"></i> Invitation Tokens
                         </a>

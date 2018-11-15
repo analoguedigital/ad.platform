@@ -8,22 +8,46 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "System administrator")]
     public class MetricGroupsController : BaseApiController
     {
+
+        private const string CACHE_KEY = "METRIC_GROUPS";
+
         // GET: api/formTemplates/{formTemplateId}/metricGroups
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<MetricGroupDTO>))]
         [Route("api/formtemplates/{formTemplateId}/metricGroups")]
         public IHttpActionResult Get(Guid formTemplateId)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            if (formTemplateId == Guid.Empty)
+                return BadRequest("form template id is empty");
 
-            return Ok(surveyProvider.GetFormTemplate(formTemplateId)
-                .MetricGroups
-                .Select(m => Mapper.Map<MetricGroupDTO>(m)));
+            var cacheKey = $"{CACHE_KEY}_{formTemplateId}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
+
+            if (cacheEntry == null)
+            {
+                var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, onlyPublished: false);
+                var metricGroups = surveyProvider.GetFormTemplate(formTemplateId)
+                    .MetricGroups
+                    .Select(m => Mapper.Map<MetricGroupDTO>(m))
+                    .ToList();
+
+                MemoryCacher.Add(cacheKey, metricGroups, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(metricGroups);
+            }
+            else
+            {
+                var result = (List<MetricGroupDTO>)cacheEntry;
+                return new CachedResult<List<MetricGroupDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET: api/api/formTemplates/{formTemplateId}/metricGroups/{id}
@@ -32,46 +56,78 @@ namespace WebApi.Controllers
         [Route("api/formtemplates/{formTemplateId}/metricGroups/{id}")]
         public IHttpActionResult Get(Guid formTemplateId, Guid id)
         {
+            if (formTemplateId == Guid.Empty)
+                return BadRequest("form template id is empty");
+
             if (id == Guid.Empty)
                 return Ok(Mapper.Map<MetricGroupDTO>(new MetricGroup() { FormTemplateId = formTemplateId }));
 
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var cacheKey = $"{CACHE_KEY}_{formTemplateId}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            var group = surveyProvider.GetFormTemplate(formTemplateId)
-                    .MetricGroups
-                    .Where(g => g.Id == id)
-                    .Select(g => Mapper.Map<MetricGroupDTO>(g))
-                    .SingleOrDefault();
+            if (cacheEntry == null)
+            {
+                var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, onlyPublished: false);
+                var group = surveyProvider.GetFormTemplate(formTemplateId)
+                        .MetricGroups
+                        .Where(g => g.Id == id)
+                        .Select(g => Mapper.Map<MetricGroupDTO>(g))
+                        .SingleOrDefault();
 
-            if (group == null)
-                return NotFound();
+                if (group == null)
+                    return NotFound();
 
-            return Ok(group);
+                MemoryCacher.Add(cacheKey, group, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(group);
+            }
+            else
+            {
+                var result = (MetricGroupDTO)cacheEntry;
+                return new CachedResult<MetricGroupDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/formTemplates/{formTemplateId}/metricGroups
         [Route("api/formtemplates/{formTemplateId}/metricGroups")]
         public IHttpActionResult Post(Guid formTemplateId, MetricGroupDTO metricGroupDto)
         {
-            var formTemplate = GetFormTemplate(formTemplateId);
+            if (formTemplateId == Guid.Empty)
+                return BadRequest("form template id is empty");
 
+            var formTemplate = GetFormTemplate(formTemplateId);
             if (formTemplate == null)
                 return NotFound();
 
             var group = Mapper.Map<MetricGroup>(metricGroupDto);
             group.FormTemplateId = formTemplateId;
 
-            UnitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
-            UnitOfWork.MetricGroupsRepository.Save();
+            try
+            {
+                UnitOfWork.MetricGroupsRepository.InsertOrUpdate(group);
+                UnitOfWork.MetricGroupsRepository.Save();
 
-            return Ok();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
-
+        
         // PUT: api/formTemplates/{formTemplateId}/metricGroups/{id}
         [Route("api/formtemplates/{formTemplateId}/metricGroups/{id}")]
         public IHttpActionResult Put(Guid formTemplateId, Guid id, [FromBody]MetricGroupDTO metricGroupDto)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            if (formTemplateId == Guid.Empty)
+                return BadRequest("form template id is empty");
+
+            if (id == Guid.Empty)
+                return BadRequest("metric group id is empty");
+
+            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, onlyPublished: false);
 
             var group = surveyProvider.GetFormTemplate(formTemplateId)
                     .MetricGroups
@@ -79,18 +135,33 @@ namespace WebApi.Controllers
                     .SingleOrDefault();
 
             if (group == null)
-                NotFound();
+                return NotFound();
 
-            Mapper.Map(metricGroupDto, group);
-            UnitOfWork.MetricGroupsRepository.Save();
+            try
+            {
+                Mapper.Map(metricGroupDto, group);
+                UnitOfWork.MetricGroupsRepository.Save();
 
-            return Ok();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DELETE: api/formTemplates/{formTemplateId}/metricGroups/{id}
         [Route("api/formtemplates/{formTemplateId}/metricGroups/{id}")]
         public IHttpActionResult Delete(Guid formTemplateId, Guid id)
         {
+            if (formTemplateId == Guid.Empty)
+                return BadRequest("form template id is empty");
+
+            if (id == Guid.Empty)
+                return BadRequest("metric group id is empty");
+
             var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
 
             var group = surveyProvider.GetFormTemplate(formTemplateId)
@@ -99,22 +170,35 @@ namespace WebApi.Controllers
                     .SingleOrDefault();
 
             if (group == null)
-                NotFound();
+                return NotFound();
 
-            UnitOfWork.MetricGroupsRepository.Delete(group);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.MetricGroupsRepository.Delete(group);
+                UnitOfWork.Save();
 
-            return Ok();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
+
+        #region Helpers
 
         private FormTemplate GetFormTemplate(Guid id)
         {
-            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, false);
+            var surveyProvider = new SurveyProvider(CurrentOrgUser, UnitOfWork, onlyPublished: false);
 
             return surveyProvider
                 .GetAllFormTemplates()
                 .SingleOrDefault(f => f.Id == id);
         }
+
+        #endregion
 
     }
 }

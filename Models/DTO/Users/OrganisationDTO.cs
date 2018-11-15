@@ -10,6 +10,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public OrgUserDTO RootUser { get; set; }
 
+        public string RootUserEmail { get; set; }
+
         public string TelNumber { get; set; }
 
         public string AddressLine1 { get; set; }

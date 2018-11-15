@@ -23,12 +23,13 @@
         public role_system_admin = 'System administrator';
         public role_org_admin = 'Organisation administrator';
 
-        static $inject: string[] = ['$q', 'httpService', 'authService', 'orgUserResource'];
+        static $inject: string[] = ['$q', 'httpService', 'authService', 'orgUserResource', 'toastr'];
         constructor(
             private $q: ng.IQService,
             private httpService: IHttpService,
             private authService: IAuthService,
-            private orgUserResource: Resources.IOrgUserResource) {
+            private orgUserResource: Resources.IOrgUserResource,
+            private toastr: any) {
 
             this.current = <IUserContext>{ user: null, orgUser: null };
 
@@ -61,9 +62,12 @@
                     // user is authenicated 
                     var authenticationData = new App.Services.AuthData(response.access_token, loginData.email);
                     this.authService.loginUser(authenticationData);
-                    this.setCurrentUser(authenticationData).then(() => {
-                        defer.resolve();
-                    });
+                    this.setCurrentUser(authenticationData)
+                        .then(() => {
+                            defer.resolve();
+                        }, (err) => {
+                            defer.reject(err);
+                        });
                 }, (err) => {
                     // user is not authenicated 
                     this.authService.logOutUser();
@@ -96,11 +100,15 @@
                         phoneNumberConfirmed: userinfo.phoneNumberConfirmed,
                         roles: userinfo.roles
                     };
+
                     if (userinfo.organisationId !== null) {
-                        this.orgUserResource.get({ id: this.current.user.id }).$promise.then((orguser: Models.IOrgUser) => {
-                            this.current.orgUser = orguser;
-                            deferred.resolve();
-                        });
+                        this.orgUserResource.get({ id: this.current.user.id }).$promise
+                            .then((orguser: Models.IOrgUser) => {
+                                this.current.orgUser = orguser;
+                                deferred.resolve();
+                            }, (err) => {
+                                deferred.reject(err);
+                            });
                     } else {
                         deferred.resolve();
                     }

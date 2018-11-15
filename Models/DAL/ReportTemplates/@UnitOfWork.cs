@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace LightMethods.Survey.Models.DAL
+﻿namespace LightMethods.Survey.Models.DAL
 {
     public partial class UnitOfWork
     {
@@ -13,10 +8,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ReportsRepository == null)
-                {
-                    this._ReportsRepository = new ReportsRepository(this);
-                }
+                if (_ReportsRepository == null)
+                    _ReportsRepository = new ReportsRepository(this);
+
                 return _ReportsRepository;
             }
         }
@@ -27,10 +21,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ReportTemplateCategoriesRepository == null)
-                {
-                    this._ReportTemplateCategoriesRepository = new ReportTemplateCategoriesRepository(this);
-                }
+                if (_ReportTemplateCategoriesRepository == null)
+                    _ReportTemplateCategoriesRepository = new ReportTemplateCategoriesRepository(this);
+
                 return _ReportTemplateCategoriesRepository;
             }
         }
@@ -41,10 +34,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ReportTemplatesRepository == null)
-                {
-                    this._ReportTemplatesRepository = new ReportTemplatesRepository(this);
-                }
+                if (_ReportTemplatesRepository == null)
+                    _ReportTemplatesRepository = new ReportTemplatesRepository(this);
+
                 return _ReportTemplatesRepository;
             }
         }
@@ -55,10 +47,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ReportChartsRepository == null)
-                {
-                    this._ReportChartsRepository = new ReportChartsRepository(this);
-                }
+                if (_ReportChartsRepository == null)
+                    _ReportChartsRepository = new ReportChartsRepository(this);
+
                 return _ReportChartsRepository;
             }
         }
@@ -69,10 +60,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ChartSerieTypesRepository == null)
-                {
-                    this._ChartSerieTypesRepository = new ChartSerieTypesRepository(this);
-                }
+                if (_ChartSerieTypesRepository == null)
+                    _ChartSerieTypesRepository = new ChartSerieTypesRepository(this);
+
                 return _ChartSerieTypesRepository;
             }
         }
@@ -83,10 +73,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ChartSeriesRepository == null)
-                {
-                    this._ChartSeriesRepository = new ChartSeriesRepository(this);
-                }
+                if (_ChartSeriesRepository == null)
+                    _ChartSeriesRepository = new ChartSeriesRepository(this);
+
                 return _ChartSeriesRepository;
             }
         }
@@ -97,10 +86,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ReportTablesRepository == null)
-                {
-                    this._ReportTablesRepository = new ReportTablesRepository(this);
-                }
+                if (_ReportTablesRepository == null)
+                    _ReportTablesRepository = new ReportTablesRepository(this);
+
                 return _ReportTablesRepository;
             }
         }
@@ -111,10 +99,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._TableColumnsRepository == null)
-                {
-                    this._TableColumnsRepository = new TableColumnsRepository(this);
-                }
+                if (_TableColumnsRepository == null)
+                    _TableColumnsRepository = new TableColumnsRepository(this);
+
                 return _TableColumnsRepository;
             }
         }
@@ -125,10 +112,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ReportListsRepository == null)
-                {
-                    this._ReportListsRepository = new ReportListsRepository(this);
-                }
+                if (_ReportListsRepository == null)
+                    _ReportListsRepository = new ReportListsRepository(this);
+
                 return _ReportListsRepository;
             }
         }
@@ -139,10 +125,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._ReportListDataTypesRepository == null)
-                {
-                    this._ReportListDataTypesRepository = new ReportListDataTypesRepository(this);
-                }
+                if (_ReportListDataTypesRepository == null)
+                    _ReportListDataTypesRepository = new ReportListDataTypesRepository(this);
+
                 return _ReportListDataTypesRepository;
             }
         }

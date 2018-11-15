@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DAL;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -24,16 +22,19 @@ namespace LightMethods.Survey.Models.Entities
 
         [Index]
         public Guid FormTemplateId { get; set; }
+
         public virtual FormTemplate FormTemplate { get; set; }
 
         [NotMapped]
         [Display(Name = "Is repeater")]
         public bool IsRepeater { get { return this.Type > 0; } }
+
         [NotMapped]
         public MetricGroupType Type { get { return GetTypeValue(); } }
 
         /// Data List Repeater
         public Guid? DataListId { set; get; }
+
         public virtual DataList DataList { set; get; }
 
         /// Iterative Repeater
@@ -51,10 +52,22 @@ namespace LightMethods.Survey.Models.Entities
         /// A metric group is single if it is the only group on a page
         /// </summary>
         [NotMapped]
-        public bool IsSingle { get { return FormTemplate == null ? true : !FormTemplate.MetricGroups.Any(g => g.Page == this.Page && g.Id != this.Id); } }
+        public bool IsSingle
+        {
+            get
+            {
+                return FormTemplate == null ? true : !FormTemplate.MetricGroups.Any(g => g.Page == this.Page && g.Id != this.Id);
+            }
+        }
 
         [NotMapped]
-        public int PageOrder { get { return Page * 1000 + Order; } }
+        public int PageOrder
+        {
+            get
+            {
+                return Page * 1000 + Order;
+            }
+        }
 
         public MetricGroup()
         {
@@ -70,6 +83,7 @@ namespace LightMethods.Survey.Models.Entities
             metric.MetricGroupId = this.Id;
             metric.FormTemplateId = this.FormTemplateId;
             Metrics.Add(metric);
+
             return metric;
         }
 
@@ -197,7 +211,7 @@ namespace LightMethods.Survey.Models.Entities
             Order = 1;
         }
 
-        internal void prepareForDelete()
+        internal void PrepareForDelete()
         {
             if (IsSingle)
                 FormTemplate.MetricGroups.Where(g => g.Page >= Page).ToList().ForEach(g => g.Page--);

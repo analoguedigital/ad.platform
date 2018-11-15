@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -13,6 +10,7 @@ namespace LightMethods.Survey.Models.Entities
         public const int MAX_RELATIONSHIPS = 10;
 
         public virtual Organisation Organisation { set; get; }
+
         public Guid OrganisationId { set; get; }
 
         [MaxLength(50)]

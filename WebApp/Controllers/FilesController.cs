@@ -11,19 +11,14 @@ namespace WebApi.Controllers
 {
     public class FilesController : ApiController
     {
-        HttpContext Context
-        {
-            get { return HttpContext.Current; }
-        }
 
-        // GET api/files
-        [ResponseType(typeof(Guid))]
         [HttpPost]
         [Route("api/files")]
+        [ResponseType(typeof(Guid))]
         public async Task<IHttpActionResult> Post()
         {
             if (!Request.Content.IsMimeMultipartContent("form-data"))
-                return BadRequest("Unsupported media type");
+                return BadRequest("media type not supported");
 
             var tempId = Guid.NewGuid();
             var workingFolder = HttpContext.Current.Server.MapPath("~/Uploads/" + tempId);
@@ -46,5 +41,6 @@ namespace WebApi.Controllers
                 return BadRequest(ex.GetBaseException().Message);
             }
         }
+
     }
 }

@@ -15,11 +15,12 @@
     }
 
     class LoginController implements ILoginController {
-        static $inject: string[] = ["$scope", "$state", "userContextService", "RedirectUrlAfterLogin"];
+        static $inject: string[] = ["$scope", "$state", "userContextService", "toastr", "RedirectUrlAfterLogin"];
         constructor(
             private $scope: ILoginControllerScope,
             private $state: ng.ui.IStateService,
             private userContextService: App.Services.IUserContextService,
+            private toastr: any,
             private RedirectUrlAfterLogin: any) {
 
             this.activate();
@@ -55,7 +56,9 @@
                     }
                 },
                 (err) => {
-                    alert(err);
+                    if (err.status && err.status === 401)
+                        this.toastr.error(err.data.message);
+                    else this.toastr.error(err);
                 })
                 .finally(() => {
                     this.$scope.isWorking = false;

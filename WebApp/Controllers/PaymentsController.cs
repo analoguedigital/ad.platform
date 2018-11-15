@@ -1,20 +1,19 @@
 ﻿using AutoMapper;
 using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.Entities;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "Organisation user")]
     public class PaymentsController : BaseApiController
     {
-        PaymentsRepository Payments
-        {
-            get { return UnitOfWork.PaymentsRepository; }
-        }
 
         // GET api/payments
         [DeflateCompression]
@@ -22,14 +21,22 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<PaymentRecordDTO>))]
         public IHttpActionResult Get()
         {
-            var payments = this.Payments.AllAsNoTracking
-                .Where(p => p.OrgUserId == this.CurrentOrgUser.Id)
+            // not necessary to check the OrgAdmin role,
+            // only mobile accounts have access anyway.
+            //var isOrgAdmin = await ServiceContext.UserManager.IsInRoleAsync(CurrentOrgUser.Id, "Organisation administrator");
+
+            if (CurrentOrgUser.AccountType != AccountType.MobileAccount)
+                return BadRequest("payments are only available to mobile users");
+
+            var payments = UnitOfWork.PaymentsRepository
+                .AllAsNoTracking
+                .Where(p => p.OrgUserId == CurrentOrgUser.Id)
                 .OrderByDescending(p => p.DateCreated)
+                .ToList()
+                .Select(p => Mapper.Map<PaymentRecordDTO>(p))
                 .ToList();
 
-            var result = payments.Select(p => Mapper.Map<PaymentRecordDTO>(p));
-
-            return Ok(result);
+            return Ok(payments);
         }
     }
 }

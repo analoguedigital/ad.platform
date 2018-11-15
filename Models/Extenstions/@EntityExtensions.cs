@@ -1,8 +1,6 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DTO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.DTO;
 
 namespace LightMethods.Survey.Models.Entities
 {

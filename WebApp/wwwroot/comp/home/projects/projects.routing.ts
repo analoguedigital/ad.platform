@@ -33,7 +33,7 @@
                 templateUrl: "comp/home/projects/caseAssignments/caseAssignmentsView.html",
                 controller: "caseAssignmentsController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Directory of cases' },
+                ncyBreadcrumb: { label: 'Directory of Staff and Clients' },
                 module: 'private'
             })
             .state("home.caseManagement.threadAssignments", <App.Models.IAppRoute>{

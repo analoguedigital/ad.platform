@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.DAL;
-using System.Data.Entity;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using LightMethods.Survey.Models.Services.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using System.Web;
 
 namespace WebApi
 {
     public class ServiceContext
     {
-
         static HttpContext Context { get { return HttpContext.Current; } }
 
         public static ApplicationSignInManager SignInManager
@@ -103,7 +97,6 @@ namespace WebApi
 
         public static User CreateCurrentUser()
         {
-
             if (!Context.GetOwinContext().Authentication.User.Identity.IsAuthenticated)
                 return null;
 

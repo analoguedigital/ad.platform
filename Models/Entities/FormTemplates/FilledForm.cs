@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DAL;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.RegularExpressions;
+﻿using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Services;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -15,6 +13,7 @@ namespace LightMethods.Survey.Models.Entities
         [Required]
         [Index]
         public Guid FormTemplateId { get; set; }
+
         public virtual FormTemplate FormTemplate { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -27,10 +26,12 @@ namespace LightMethods.Survey.Models.Entities
 
         [Display(Name = "Filled by")]
         public virtual User FilledBy { set; get; }
+
         public Guid FilledById { set; get; }
 
         [Required]
         public Guid ProjectId { set; get; }
+
         public virtual Project Project { set; get; }
 
         public virtual ICollection<FilledFormLocation> Locations { set; get; }
@@ -39,6 +40,7 @@ namespace LightMethods.Survey.Models.Entities
 
         [NotMapped]
         private string _description = string.Empty;
+
         public string Description
         {
             get

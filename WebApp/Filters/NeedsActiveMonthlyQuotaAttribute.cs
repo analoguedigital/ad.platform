@@ -1,12 +1,10 @@
 ﻿using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Enums;
 using LightMethods.Survey.Models.Services;
-using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
@@ -22,7 +20,7 @@ namespace WebApi.Filters
 
             if (currentUser is OrgUser && ((OrgUser)currentUser).AccountType == AccountType.MobileAccount)
             {
-                var subscriptionService = new SubscriptionService((OrgUser)currentUser, unitOfWork);
+                var subscriptionService = new SubscriptionService(unitOfWork);
                 var expiryDate = subscriptionService.GetLatest(currentUser.Id);
 
                 var fixedQuota = GetFixedMonthlyQuota();

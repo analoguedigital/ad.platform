@@ -2,291 +2,201 @@
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.DTO.FormTemplates;
 using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using WebApi.Results;
+using WebApi.Services;
 using static LightMethods.Survey.Models.DAL.AssignmentsRepository;
 
 namespace WebApi.Controllers
 {
-    //[Authorize(Roles = "System administrator,Organisation administrator")]
+    [Authorize(Roles = "System administrator,Organisation administrator")]
     public class ProjectsController : BaseApiController
     {
+
+        #region Properties
+
+        private const string CACHE_KEY = "PROJECTS";
+        private const string ADMIN_KEY = "ADMIN";
+        private const string ORG_ADMIN_KEY = "ORG_ADMIN";
+
+        private ProjectsService ProjectService { get; set; }
+
+        #endregion Properties
+
+        public ProjectsController()
+        {
+            ProjectService = new ProjectsService(UnitOfWork);
+        }
+
+        #region CRUD
+
         // GET api/projects
         [ResponseType(typeof(IEnumerable<ProjectDTO>))]
-        public IHttpActionResult Get(Guid? organisationId = null)
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation user,Restricted user")]
+        public async Task<IHttpActionResult> Get(Guid? organisationId = null)
         {
-            if (this.CurrentUser is PlatformUser)
-                return Ok();
-
-            var projects = new List<Project>();
-            var result = new List<ProjectDTO>();
-
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
             {
-                projects = UnitOfWork.ProjectsRepository
-                    .GetProjects(CurrentUser)
-                    .OrderByDescending(p => p.DateCreated)
-                    .ToList();
+                var isOrgAdmin = await ServiceContext.UserManager.IsInRoleAsync(CurrentOrgUser.Id, Role.ORG_ADMINSTRATOR);
 
-                foreach (var project in projects)
+                var _cacheKey = isOrgAdmin ?
+                    $"{CACHE_KEY}_{ORG_ADMIN_KEY}_{CurrentOrgUser.OrganisationId}" :
+                    $"{CACHE_KEY}_{CurrentOrgUser.OrganisationId}_{CurrentOrgUser.Id}";
+
+                var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
+                if (_cacheEntry == null)
                 {
-                    var dto = Mapper.Map<ProjectDTO>(project);
-                    dto.AssignmentsCount = project.Assignments.Count();
+                    var values = ProjectService.Get(CurrentOrgUser, organisationId: null);
+                    MemoryCacher.Add(_cacheKey, values, DateTimeOffset.UtcNow.AddMinutes(1));
 
-                    var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
-                    Mapper.Map(assignment, dto);
-
-                    // get last entry
-                    var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                        .Where(x => x.ProjectId == project.Id)
-                        .OrderByDescending(x => x.SurveyDate)
-                        .Take(1)
-                        .FirstOrDefault();
-
-                    if (lastEntry != null)
-                        dto.LastEntry = lastEntry.SurveyDate;
-
-                    // get teams count
-                    var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
-                        .Where(x => x.OrganisationId == project.OrganisationId);
-
-                    var relatedTeams = new List<OrganisationTeamDTO>();
-                    foreach (var team in teams)
-                    {
-                        foreach (var user in team.Users)
-                        {
-                            if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
-                                relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
-                        }
-                    }
-
-                    dto.TeamsCount = relatedTeams.Distinct().Count();
-
-                    result.Add(dto);
-                }
-            }
-            else
-            {
-                if (organisationId.HasValue)
-                {
-                    projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
-                        .Where(x => x.OrganisationId == organisationId.Value)
-                        .OrderByDescending(x => x.DateCreated)
-                        .ToList();
+                    return Ok(values);
                 }
                 else
                 {
-                    projects = UnitOfWork.ProjectsRepository.AllAsNoTracking
-                        .OrderByDescending(x => x.DateCreated)
-                        .ToList();
-                }
-
-                foreach (var project in projects)
-                {
-                    var dto = Mapper.Map<ProjectDTO>(project);
-                    dto.AssignmentsCount = project.Assignments.Count();
-
-                    dto.AllowView = true;
-                    dto.AllowAdd = true;
-                    dto.AllowEdit = true;
-                    dto.AllowDelete = true;
-                    dto.AllowExportPdf = true;
-                    dto.AllowExportZip = true;
-
-                    // get last entry
-                    var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                        .Where(x => x.ProjectId == project.Id)
-                        .OrderByDescending(x => x.SurveyDate)
-                        .Take(1)
-                        .FirstOrDefault();
-
-                    if (lastEntry != null)
-                        dto.LastEntry = lastEntry.SurveyDate;
-
-                    // get teams count
-                    var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
-                        .Where(x => x.OrganisationId == project.OrganisationId);
-
-                    var relatedTeams = new List<OrganisationTeamDTO>();
-                    foreach (var team in teams)
-                    {
-                        foreach (var user in team.Users)
-                        {
-                            if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
-                                relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
-                        }
-                    }
-
-                    dto.TeamsCount = relatedTeams.Distinct().Count();
-
-                    result.Add(dto);
+                    var values = (List<ProjectDTO>)_cacheEntry;
+                    return new CachedResult<List<ProjectDTO>>(values, TimeSpan.FromMinutes(1), this);
                 }
             }
 
-            return Ok(result);
-        }
+            // else if CurrentUser is SuperUser
+            var cacheKey = organisationId.HasValue ?
+                $"{CACHE_KEY}_{ADMIN_KEY}_{organisationId.Value}" :
+                $"{CACHE_KEY}_{ADMIN_KEY}";
 
-        [ResponseType(typeof(IEnumerable<ProjectDTO>))]
-        [Route("api/projects/shared")]
-        public IHttpActionResult GetSharedProjects()
-        {
-            if (this.CurrentUser is SuperUser)
-                return Ok();
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            var threadAssignments = UnitOfWork.ThreadAssignmentsRepository.AllAsNoTracking
-                .Where(x => x.OrgUserId == this.CurrentOrgUser.Id && x.FormTemplate.Discriminator == FormTemplateDiscriminators.RegularThread && x.FormTemplate.CreatedById != this.CurrentOrgUser.Id)
-                .ToList();
-
-            var projects = threadAssignments
-                .Select(x => x.FormTemplate.Project)
-                .ToList()
-                .Distinct()
-                .ToList();
-
-            var result = new List<ProjectDTO>();
-
-            foreach (var project in projects)
+            if (cacheEntry == null)
             {
-                var dto = Mapper.Map<ProjectDTO>(project);
-                dto.AssignmentsCount = project.Assignments.Count();
+                var values = ProjectService.Get(CurrentUser, organisationId);
+                MemoryCacher.Add(cacheKey, values, DateTimeOffset.UtcNow.AddMinutes(1));
 
-                var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
-                Mapper.Map(assignment, dto);
-
-                // get last entry
-                var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                    .Where(x => x.ProjectId == project.Id)
-                    .OrderByDescending(x => x.SurveyDate)
-                    .Take(1)
-                    .FirstOrDefault();
-
-                if (lastEntry != null)
-                    dto.LastEntry = lastEntry.SurveyDate;
-
-                // get teams count
-                var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
-                    .Where(x => x.OrganisationId == project.OrganisationId);
-
-                var relatedTeams = new List<OrganisationTeamDTO>();
-                foreach (var team in teams)
-                {
-                    foreach (var user in team.Users)
-                    {
-                        if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
-                            relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
-                    }
-                }
-
-                dto.TeamsCount = relatedTeams.Distinct().Count();
-
-                result.Add(dto);
+                return Ok(values);
             }
-
-            return Ok(result);
-        }
-
-        [ResponseType(typeof(ProjectDTO))]
-        [Route("api/projects/direct/{id:guid}")]
-        public IHttpActionResult GetDirect(Guid id)
-        {
-            var project = UnitOfWork.ProjectsRepository
-                .AllIncluding(x => x.Assignments)
-                .Where(x => x.Id == id)
-                .SingleOrDefault();
-
-            if (project == null)
-                return NotFound();
-
-            var dto = Mapper.Map<ProjectDTO>(project);
-            dto.AssignmentsCount = project.Assignments.Count();
-
-            var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
-            Mapper.Map(assignment, dto);
-
-            // get last entry
-            var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                .Where(x => x.ProjectId == project.Id)
-                .OrderByDescending(x => x.SurveyDate)
-                .Take(1)
-                .FirstOrDefault();
-
-            if (lastEntry != null)
-                dto.LastEntry = lastEntry.SurveyDate;
-
-            // get teams count
-            var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
-                .Where(x => x.OrganisationId == project.OrganisationId);
-
-            var relatedTeams = new List<OrganisationTeamDTO>();
-            foreach (var team in teams)
-                foreach (var user in team.Users)
-                    if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
-                        relatedTeams.Add(Mapper.Map<OrganisationTeamDTO>(team));
-
-            dto.TeamsCount = relatedTeams.Distinct().Count();
-
-            return Ok(dto);
+            else
+            {
+                var values = (List<ProjectDTO>)cacheEntry;
+                return new CachedResult<List<ProjectDTO>>(values, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/projects/{id}
         [DeflateCompression]
         [ResponseType(typeof(ProjectDTO))]
-        public IHttpActionResult Get(Guid id)
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Organisation user,Restricted user")]
+        public async Task<IHttpActionResult> Get(Guid id)
         {
             if (id == Guid.Empty)
                 return Ok(Mapper.Map<ProjectDTO>(new Project()));
 
-            var project = UnitOfWork.ProjectsRepository.GetProjects(CurrentUser).Where(p => p.Id == id).SingleOrDefault();
-            if (project == null)
-                return NotFound();
-
-            var result = Mapper.Map<ProjectDTO>(project);
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
             {
-                var assignment = UnitOfWork.ProjectsRepository.GetUserAssignment(project, this.CurrentUser.Id);
-                Mapper.Map(assignment, result);
+                var orgAdminRole = "Organisation administrator";
+                var isOrgAdmin = await ServiceContext.UserManager.IsInRoleAsync(CurrentOrgUser.Id, orgAdminRole);
+
+                var cacheKey = isOrgAdmin ?
+                    $"{CACHE_KEY}_{ORG_ADMIN_KEY}_{id}_{CurrentOrgUser.Id}" :
+                    $"{CACHE_KEY}_{id}_{CurrentOrgUser.Id}";
+
+                var cacheEntry = MemoryCacher.GetValue(cacheKey);
+                if (cacheEntry == null)
+                {
+                    var project = ProjectService.Get(CurrentUser, id);
+                    if (project == null)
+                        return NotFound();
+
+                    MemoryCacher.Add(cacheKey, project, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                    return Ok(project);
+                }
+                else
+                {
+                    var result = (ProjectDTO)cacheEntry;
+                    return new CachedResult<ProjectDTO>(result, TimeSpan.FromMinutes(1), this);
+                }
+            }
+
+            // else if current user is SuperUser
+            var _cacheKey = $"{CACHE_KEY}_{ADMIN_KEY}_{id}";
+            var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
+
+            if (_cacheEntry == null)
+            {
+                var project = ProjectService.Get(CurrentUser, id);
+                if (project == null)
+                    return NotFound();
+
+                MemoryCacher.Add(_cacheKey, project, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(project);
             }
             else
             {
-                result.AllowView = true;
-                result.AllowAdd = true;
-                result.AllowEdit = true;
-                result.AllowDelete = true;
-                result.AllowExportPdf = true;
-                result.AllowExportZip = true;
+                var response = (ProjectDTO)_cacheEntry;
+                return new CachedResult<ProjectDTO>(response, TimeSpan.FromMinutes(1), this);
             }
-
-            // get last entry
-            var lastEntry = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                .Where(x => x.ProjectId == project.Id)
-                .OrderByDescending(x => x.SurveyDate)
-                .Take(1)
-                .FirstOrDefault();
-
-            if (lastEntry != null)
-                result.LastEntry = lastEntry.SurveyDate;
-
-            return Ok(result);
         }
 
-        // GET api/projects/{id}/assignments
-        [DeflateCompression]
-        [Route("api/projects/{id:guid}/assignments")]
-        [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult GetAssignments(Guid id)
+        // GET api/projects/shared
+        [ResponseType(typeof(IEnumerable<ProjectDTO>))]
+        [Route("api/projects/shared")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "Organisation user,Restricted user")]
+        public IHttpActionResult GetSharedProjects()
         {
-            var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
-            if (project == null)
-                return NotFound();
+            var cacheKey = $"{CACHE_KEY}_SHARED_{CurrentOrgUser.Id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            var result = project.Assignments.Select(a => Mapper.Map<ProjectAssignmentDTO>(a));
+            if (cacheEntry == null)
+            {
+                var result = ProjectService.GetSharedProjects(CurrentOrgUser);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
 
-            return Ok(result);
+                return Ok(result);
+            }
+            else
+            {
+                var result = (List<ProjectDTO>)cacheEntry;
+                return new CachedResult<List<ProjectDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
+        }
+
+        [ResponseType(typeof(ProjectDTO))]
+        [Route("api/projects/direct/{id:guid}")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "Organisation user,Restricted user")]
+        public IHttpActionResult GetDirect(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
+
+            if (cacheEntry == null)
+            {
+                var result = ProjectService.GetDirect(CurrentUser, id);
+                if (result == null)
+                    return NotFound();
+
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = (ProjectDTO)cacheEntry;
+                return new CachedResult<ProjectDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/projects/{id}/teams
@@ -296,66 +206,26 @@ namespace WebApi.Controllers
         public IHttpActionResult GetTeams(Guid id)
         {
             if (id == Guid.Empty)
-                return NotFound();
+                return BadRequest("id is empty");
 
-            var project = UnitOfWork.ProjectsRepository.Find(id);
-            if (project == null)
-                return NotFound();
+            var cacheKey = $"{CACHE_KEY}_TEAMS_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            var teams = UnitOfWork.OrganisationTeamsRepository.AllAsNoTracking
-                .Where(x => x.OrganisationId == project.OrganisationId);
-
-            var result = new List<OrganisationTeamDTO>();
-            foreach (var team in teams)
+            if (cacheEntry == null)
             {
-                foreach (var user in team.Users)
-                {
-                    if (user.OrgUser.Assignments.Any(a => a.ProjectId == project.Id))
-                        result.Add(Mapper.Map<OrganisationTeamDTO>(team));
-                }
+                var project = UnitOfWork.ProjectsRepository.Find(id);
+                if (project == null)
+                    return NotFound();
+
+                var projectTeams = ProjectService.GetTeams(project);
+
+                return Ok(projectTeams);
             }
-
-            return Ok(result.Distinct());
-        }
-
-        // POST api/projects/{id}/assign/{userId}/{accessLevel}}
-        [HttpPost]
-        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
-        [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult AddAssignments(Guid id, Guid userId, AccessLevels accessLevel)
-        {
-            var project = UnitOfWork.ProjectsRepository.Find(id);
-            if (project == null)
-                return NotFound();
-
-            var orgUser = UnitOfWork.OrgUsersRepository.Find(userId);
-            if (orgUser == null)
-                return NotFound();
-
-            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
-
-            return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
-        }
-
-        // DELETE api/projects/{id}/assign/{userId}/{accessLevel}
-        [HttpDelete]
-        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
-        [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
-        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, AccessLevels accessLevel)
-        {
-            var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
-            if (project == null)
-                return NotFound();
-
-            var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == userId);
-            if (assignment == null)
-                return NotFound();
-
-            var result = this.UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
-            if (result != null)
-                return Ok(Mapper.Map<ProjectAssignmentDTO>(result));
-
-            return Ok(new ProjectAssignmentDTO());
+            else
+            {
+                var result = (List<OrganisationTeamDTO>)cacheEntry;
+                return new CachedResult<List<OrganisationTeamDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/projects
@@ -364,9 +234,9 @@ namespace WebApi.Controllers
             var project = Mapper.Map<Project>(value);
             project.Organisation = null;
 
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
                 project.OrganisationId = CurrentOrgUser.OrganisationId.Value;
-            else
+            else if (CurrentUser is SuperUser)
             {
                 if (value.Organisation == null)
                     return BadRequest("Organisation is required");
@@ -374,27 +244,38 @@ namespace WebApi.Controllers
                 project.OrganisationId = Guid.Parse(value.Organisation.Id);
             }
 
-            UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
+                UnitOfWork.Save();
 
-            return Ok();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // PUT api/projects/{id}
         public IHttpActionResult Put(Guid id, [FromBody]ProjectDTO value)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
                 return NotFound();
 
-            //Mapper.Map(value, project);
             project.Number = value.Number;
             project.Name = value.Name;
             project.StartDate = value.StartDate;
             project.EndDate = value.EndDate;
             project.Notes = value.Notes;
 
-            if (this.CurrentOrgUser == null)
+            if (CurrentUser is SuperUser)
             {
                 if (value.Organisation == null)
                     return BadRequest("Organisation is required");
@@ -402,27 +283,126 @@ namespace WebApi.Controllers
                 project.OrganisationId = Guid.Parse(value.Organisation.Id);
             }
 
-            UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
+                UnitOfWork.Save();
 
-            return Ok();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DELETE api/projects/{id}
         public IHttpActionResult Delete(Guid id)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             try
             {
                 UnitOfWork.ProjectsRepository.Delete(id);
                 UnitOfWork.Save();
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException dbEx)
             {
-                return BadRequest("This case cannot be deleted!");
+                return InternalServerError(dbEx);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
+
+        #endregion CRUD
+
+        #region Assignments
+
+        // POST api/projects/{id}/assign/{userId}/{accessLevel}}
+        [HttpPost]
+        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
+        [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
+        public IHttpActionResult AddAssignments(Guid id, Guid userId, AccessLevels accessLevel)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("project id is empty");
+
+            if (userId == Guid.Empty)
+                return BadRequest("user id is empty");
+
+            var project = UnitOfWork.ProjectsRepository.Find(id);
+            if (project == null)
+                return NotFound();
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(userId);
+            if (orgUser == null)
+                return NotFound();
+
+            var assignment = UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
+            var result = Mapper.Map<ProjectAssignmentDTO>(assignment);
+
+            return Ok(result);
+        }
+
+        // DELETE api/projects/{id}/assign/{userId}/{accessLevel}
+        [HttpDelete]
+        [Route("api/projects/{id:guid}/assign/{userId:guid}/{accessLevel}")]
+        [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
+        public IHttpActionResult DeleteAssignments(Guid id, Guid userId, AccessLevels accessLevel)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("project id is empty");
+
+            if (userId == Guid.Empty)
+                return BadRequest("user id is empty");
+
+            var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
+            if (project == null)
+                return NotFound();
+
+            var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == userId);
+            if (assignment == null)
+                return NotFound();
+
+            var updatedAssignment = UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
+            if (updatedAssignment != null)
+                return Ok(Mapper.Map<ProjectAssignmentDTO>(updatedAssignment));
+
+            return Ok(new ProjectAssignmentDTO());
+        }
+
+        // GET api/projects/{id}/assignments
+        [DeflateCompression]
+        [Route("api/projects/{id:guid}/assignments")]
+        [ResponseType(typeof(IEnumerable<ProjectAssignmentDTO>))]
+        public IHttpActionResult GetAssignments(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("project id is empty");
+
+            var project = UnitOfWork.ProjectsRepository.FindIncluding(id, p => p.Assignments);
+            if (project == null)
+                return NotFound();
+
+            var result = project.Assignments
+                .Select(a => Mapper.Map<ProjectAssignmentDTO>(a))
+                .ToList();
+
+            return Ok(result);
+        }
+
+        #endregion Assignments
+
+        #region Advice Threads
 
         // POST api/projects/{id}/create-advice-thread
         [HttpPost]
@@ -431,7 +411,7 @@ namespace WebApi.Controllers
         public IHttpActionResult CreateAdviceThread(Guid id, [FromBody]CreateAdviceThreadDTO model)
         {
             if (id == Guid.Empty)
-                return BadRequest("Project Id is empty");
+                return BadRequest("project id is empty");
 
             var project = UnitOfWork.ProjectsRepository.Find(id);
             if (project == null)
@@ -445,7 +425,7 @@ namespace WebApi.Controllers
             //var title = $"{model.Title} {random.Next(1, 10000)}";
             //var color = String.Format("#{0:X6}", random.Next(0x1000000)); // = "#A197B9"
 
-            var adviceThread = UnitOfWork.FormTemplatesRepository.CreateAdviceThread(template, this.CurrentUser.Id, model.Title, model.Colour, id);
+            var adviceThread = UnitOfWork.FormTemplatesRepository.CreateAdviceThread(template, CurrentUser.Id, model.Title, model.Colour, id);
             var returnValue = Mapper.Map<FormTemplateDTO>(adviceThread);
 
             // create a thread assignment for the project owner.
@@ -462,13 +442,26 @@ namespace WebApi.Controllers
                 };
 
                 UnitOfWork.ThreadAssignmentsRepository.InsertOrUpdate(assignment);
-                UnitOfWork.Save();
             }
 
-            return Ok(returnValue);
+            try
+            {
+                UnitOfWork.Save();
+
+                // TODO: we've created a new form-template, so i think
+                // we need to invalidate FORM_TEMPLATES from cache.
+
+                return Ok(returnValue);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
+
+        #endregion Advice Threads
 
     }
 
-  
+
 }

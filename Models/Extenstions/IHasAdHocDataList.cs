@@ -1,16 +1,14 @@
 ﻿using LightMethods.Survey.Models.DAL;
-using LightMethods.Survey.Models.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public static class IHasAdHocDataListExtensions
     {
-        public static void UpdateDataList(this IHasAdHocDataList entity, UnitOfWork uow, Organisation org, bool newIsAdHoc, IEnumerable<DataListItem> newAdHocItems, IEnumerable<DataListItem> deletedAdHocItems, Guid? newDataListId, DataList oldDataList)
+        public static void UpdateDataList(this IHasAdHocDataList entity, UnitOfWork uow,
+            Organisation org, bool newIsAdHoc, IEnumerable<DataListItem> newAdHocItems,
+            IEnumerable<DataListItem> deletedAdHocItems, Guid? newDataListId, DataList oldDataList)
         {
 
             if (oldDataList != null && !newIsAdHoc && newDataListId != null && oldDataList.IsAdHoc)
