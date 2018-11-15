@@ -6,38 +6,73 @@ using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web.Http;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
     [RoutePrefix("api/orginvitations")]
+    [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
     public class OrgInvitationsController : BaseApiController
     {
+
+        private const string CACHE_KEY = "ORG_INVITATIONS";
 
         // GET api/orgInvitations/{organisationId?}
         public IHttpActionResult Get(Guid? organisationId = null)
         {
-            var result = new List<OrgInvitationDTO>();
-
-            if (CurrentUser is SuperUser)
+            if (CurrentUser is OrgUser)
             {
-                var invitations = UnitOfWork.OrgInvitationsRepository.AllAsNoTracking;
+                var cacheKey = $"{CACHE_KEY}_{CurrentOrgUser.Organisation.Id}";
+                var cacheEntry = MemoryCacher.GetValue(cacheKey);
+
+                if (cacheEntry == null)
+                {
+                    var invitations = UnitOfWork.OrgInvitationsRepository
+                        .AllAsNoTracking
+                        .Where(x => x.OrganisationId == CurrentOrgUser.Organisation.Id)
+                        .ToList();
+
+                    var result = invitations
+                        .Select(i => Mapper.Map<OrgInvitationDTO>(i))
+                        .ToList();
+
+                    MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                    return Ok(result);
+                }
+                else
+                {
+                    var result = (List<OrgInvitationDTO>)cacheEntry;
+                    return new CachedResult<List<OrgInvitationDTO>>(result, TimeSpan.FromMinutes(1), this);
+                }
+            }
+
+            // else if current user is SuperUser or PlatformUser
+            var _cacheKey = organisationId.HasValue ? $"{CACHE_KEY}_{organisationId.Value}" : CACHE_KEY;
+            var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
+
+            if (_cacheEntry == null)
+            {
+                var _invitations = UnitOfWork.OrgInvitationsRepository.AllAsNoTracking;
 
                 if (organisationId.HasValue)
-                    invitations = invitations.Where(x => x.OrganisationId == organisationId.Value);
+                    _invitations = _invitations.Where(x => x.OrganisationId == organisationId.Value);
 
-                result = invitations.ToList()
-                    .Select(i => Mapper.Map<OrgInvitationDTO>(i)).ToList();
+                var retVal = _invitations
+                    .ToList()
+                    .Select(i => Mapper.Map<OrgInvitationDTO>(i))
+                    .ToList();
+
+                MemoryCacher.Add(_cacheKey, retVal, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(retVal);
             }
-            else if (CurrentUser is OrgUser)
+            else
             {
-                var orgInvitations = UnitOfWork.OrgInvitationsRepository.AllAsNoTracking
-                    .Where(x => x.OrganisationId == this.CurrentOrgUser.Organisation.Id);
-
-                result = orgInvitations.ToList()
-                    .Select(i => Mapper.Map<OrgInvitationDTO>(i)).ToList();
+                var retVal = (List<OrgInvitationDTO>)_cacheEntry;
+                return new CachedResult<List<OrgInvitationDTO>>(retVal, TimeSpan.FromMinutes(1), this);
             }
-
-            return Ok(result);
         }
 
         // GET api/orgInvitations/{id}
@@ -45,13 +80,27 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
-                return NotFound();
+                return BadRequest("id is empty");
 
-            var invitation = UnitOfWork.OrgInvitationsRepository.Find(id);
-            if (invitation == null)
-                return NotFound();
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            return Ok(Mapper.Map<OrgInvitationDTO>(invitation));
+            if (cacheEntry == null)
+            {
+                var invitation = UnitOfWork.OrgInvitationsRepository.Find(id);
+                if (invitation == null)
+                    return NotFound();
+
+                var result = Mapper.Map<OrgInvitationDTO>(invitation);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = (OrgInvitationDTO)cacheEntry;
+                return new CachedResult<OrgInvitationDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/orgInvitations
@@ -60,30 +109,30 @@ namespace WebApi.Controllers
         {
             var invitation = Mapper.Map<OrganisationInvitation>(value);
 
-            if (this.CurrentUser is SuperUser)
+            if (CurrentUser is OrgUser)
+                invitation.Organisation = CurrentOrgUser.Organisation;
+            else
             {
                 invitation.OrganisationId = Guid.Parse(value.Organisation.Id);
                 invitation.Organisation = null;
             }
-            else if (this.CurrentUser is OrgUser)
-            {
-                invitation.Organisation = this.CurrentOrgUser.Organisation;
-            }
+
+            UnitOfWork.OrgInvitationsRepository.InsertOrUpdate(invitation);
 
             try
             {
-                UnitOfWork.OrgInvitationsRepository.InsertOrUpdate(invitation);
                 UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                 return Ok();
             }
             catch (DbUpdateException)
             {
-                return BadRequest("Cannot create duplicate tokens.");
+                return BadRequest("cannot create duplicate invitation tokens");
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 
@@ -93,11 +142,11 @@ namespace WebApi.Controllers
         public IHttpActionResult Put(Guid id, [FromBody]OrgInvitationDTO value)
         {
             if (id == Guid.Empty)
-                return BadRequest();
+                return BadRequest("id is empty");
 
             var invitation = UnitOfWork.OrgInvitationsRepository.Find(id);
             if (invitation == null)
-                return BadRequest();
+                return NotFound();
 
             invitation.Name = value.Name;
             invitation.Token = value.Token;
@@ -110,11 +159,13 @@ namespace WebApi.Controllers
                 UnitOfWork.OrgInvitationsRepository.InsertOrUpdate(invitation);
                 UnitOfWork.Save();
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 
@@ -123,16 +174,21 @@ namespace WebApi.Controllers
         [Route("{id:guid}")]
         public IHttpActionResult Delete(Guid id)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             try
             {
                 UnitOfWork.OrgInvitationsRepository.Delete(id);
                 UnitOfWork.OrgInvitationsRepository.Save();
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 

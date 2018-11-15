@@ -49,6 +49,7 @@ namespace LightMethods.Survey.Models.Entities
             clone.MaxLength = MaxLength;
             clone.NumberOfLine = NumberOfLine;
             clone.MinLength = MinLength;
+
             return clone;
         }
 

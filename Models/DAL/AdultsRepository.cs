@@ -1,25 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
-using System.Collections.Specialized;
-using AppHelper;
 
 namespace LightMethods.Survey.Models.DAL
 {
-
     public class AdultsGenericsRepository<T> : Repository<T>, IAdultsRepository<T> where T : Adult, new()
     {
-        public AdultsGenericsRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        public AdultsGenericsRepository(UnitOfWork uow) : base(uow) { }
 
         public T InsertOrUpdate(T adult, Project project)
         {
             T result = null;
+
             using (var uow = new UnitOfWork(Context))
             {
                 if (adult.Id == Guid.Empty)
@@ -42,12 +34,12 @@ namespace LightMethods.Survey.Models.DAL
                     result = dbEntity;
                 }
             }
+
             return result;
         }
 
         public T CreateOrUpdate(T destAdult, T srcAdult, Project project)
         {
-
             using (var uow = new UnitOfWork(Context))
             {
                 if (destAdult == null)
@@ -70,13 +62,12 @@ namespace LightMethods.Survey.Models.DAL
                 //uow.AdultAddressesRepository.Update(dest.Addresses, src.Addresses);
 
             }
+
             return destAdult;
         }
 
         protected T UpdateCore(UnitOfWork uow, T dest, T src, Project project)
         {
-
-
             Context.Entry(dest).CurrentValues.SetValues(src);
             dest.ProjectId = project.Id;
             InsertOrUpdate(dest);
@@ -89,7 +80,6 @@ namespace LightMethods.Survey.Models.DAL
                 src.Addresses.ToList().ForEach(a => a.Adult = dest);
             uow.AdultAddressesRepository.Update(dest.Addresses, src.Addresses);
 
-
             return dest;
         }
 
@@ -97,11 +87,6 @@ namespace LightMethods.Survey.Models.DAL
 
     public class AdultsRepository : AdultsGenericsRepository<Adult>
     {
-        public AdultsRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
-
+        public AdultsRepository(UnitOfWork uow) : base(uow) { }
     }
 }

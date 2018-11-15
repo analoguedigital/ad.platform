@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Data.Entity;
-using System.Data.Entity.Core;
-using LightMethods.Survey.Models.Entities;
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNet.Identity.EntityFramework;
-using LightMethods.Survey.Models.Services;
+﻿using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.EntityConfig;
+using LightMethods.Survey.Models.Services;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.DependencyResolution;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.DAL
 {
+
     public class SurveyContext : IdentityDbContext<User, Role, Guid, UserLogin, UserRole, UserClaim>
     {
         public const string CONNECTION_WEB_CONFIG_KEY = "LightSurveys";
@@ -20,12 +22,17 @@ namespace LightMethods.Survey.Models.DAL
         {
             return new SurveyContext();
         }
+
+        #region C-tors
+
         public SurveyContext() : base(CONNECTION_WEB_CONFIG_KEY) { }
 
         public SurveyContext(bool autoDetectChangesEnabled = true) : base(CONNECTION_WEB_CONFIG_KEY)
         {
-            this.Configuration.AutoDetectChangesEnabled = autoDetectChangesEnabled;
+            Configuration.AutoDetectChangesEnabled = autoDetectChangesEnabled;
         }
+
+        #endregion C-tors
 
         #region System_Basic_Datasets
 
@@ -48,7 +55,7 @@ namespace LightMethods.Survey.Models.DAL
         public DbSet<OrgConnectionRequest> OrgConnectionRequests { get; set; }
         public DbSet<OrgRequest> OrgRequests { get; set; }
         public DbSet<AdultTitle> AdultTitles { get; set; }
-        public DbSet<File> Files { set; get; }
+        public DbSet<Entities.File> Files { set; get; }
         public DbSet<Guidance> Guidance { set; get; }
         public DbSet<Settings> Settings { set; get; }
         public DbSet<Language> Languages { set; get; }
@@ -117,7 +124,9 @@ namespace LightMethods.Survey.Models.DAL
 
         #endregion
 
-        public override System.Threading.Tasks.Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken)
+        #region Overrides
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
             EntitiesPreSaveActions();
             return base.SaveChangesAsync(cancellationToken);
@@ -226,5 +235,23 @@ namespace LightMethods.Survey.Models.DAL
             modelBuilder.Configurations.Add(new SubscriptionConfig());
             modelBuilder.Configurations.Add(new SubscriptionPlanConfig());
         }
+
+        #endregion Overrides
+
     }
+
+    public class SurveyContextConfiguration : DbConfiguration
+    {
+
+        public SurveyContextConfiguration() : base()
+        {
+            var modelStoreDir = AppDomain.CurrentDomain.BaseDirectory + @"\bin\edmx\";
+            if (!Directory.Exists(modelStoreDir))
+                Directory.CreateDirectory(modelStoreDir);
+
+            this.SetModelStore(new DefaultDbModelStore(modelStoreDir));
+        }
+
+    }
+
 }

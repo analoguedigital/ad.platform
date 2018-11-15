@@ -2,31 +2,45 @@
 using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using System;
-using System.Configuration;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Web.Hosting;
 using System.Web.Http;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
     [RoutePrefix("api/orgRequests")]
+    [Authorize(Roles = "System administrator,Platform administrator")]
     public class OrgRequestsController : BaseApiController
     {
+
+        private const string CACHE_KEY = "ORG_REQUESTS";
 
         // GET api/orgRequests
         public IHttpActionResult Get()
         {
-            var orgRequests = UnitOfWork.OrgRequestsRepository
-                .AllAsNoTracking
-                .OrderByDescending(x => x.DateCreated);
+            var cacheEntry = MemoryCacher.GetValue(CACHE_KEY);
+            if (cacheEntry == null)
+            {
+                var orgRequests = UnitOfWork.OrgRequestsRepository
+                    .AllAsNoTracking
+                    .OrderByDescending(x => x.DateCreated);
 
-            var result = orgRequests
-                .ToList()
-                .Select(x => Mapper.Map<OrgRequestDTO>(x))
-                .ToList();
+                var result = orgRequests
+                    .ToList()
+                    .Select(x => Mapper.Map<OrgRequestDTO>(x))
+                    .ToList();
 
-            return Ok(result);
+                MemoryCacher.Add(CACHE_KEY, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = (List<OrgRequestDTO>)cacheEntry;
+                return new CachedResult<List<OrgRequestDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/orgRequests/{id}
@@ -34,40 +48,55 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
-                return NotFound();
+                return BadRequest("id is empty");
 
-            var orgRequest = UnitOfWork.OrgRequestsRepository.Find(id);
-            if (orgRequest == null)
-                return NotFound();
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            return Ok(Mapper.Map<OrgRequestDTO>(orgRequest));
+            if (cacheEntry == null)
+            {
+                var orgRequest = UnitOfWork.OrgRequestsRepository.Find(id);
+                if (orgRequest == null)
+                    return NotFound();
+
+                var result = Mapper.Map<OrgRequestDTO>(orgRequest);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = (OrgRequestDTO)cacheEntry;
+                return new CachedResult<OrgRequestDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/orgRequests
         [HttpPost]
+        [OverrideAuthorization]
+        [Authorize(Roles = "Organisation user")]
         public IHttpActionResult Post([FromBody]OrgRequestDTO model)
         {
+            if (CurrentOrgUser.AccountType != AccountType.MobileAccount)
+                return BadRequest("organisation requests can only be made by mobile users");
+
             if (string.IsNullOrEmpty(model.Name))
-                return BadRequest("Organisation name is required");
+                return BadRequest("organisation name is required");
 
-            if (this.CurrentUser is SuperUser)
-                return BadRequest("Organisation requests can only be made by Organisation Users");
-
-            if (this.CurrentOrgUser.AccountType != AccountType.MobileAccount)
-                return BadRequest("Organisation requests can only be made by Mobile Users");
-
-            var existingOrg = UnitOfWork.OrganisationRepository.AllAsNoTracking
+            var existingOrg = UnitOfWork.OrganisationRepository
+                .AllAsNoTracking
                 .Where(x => x.Name == model.Name)
                 .FirstOrDefault();
 
             if (existingOrg != null)
-                return BadRequest("An organisation with this name already exists!");
+                return BadRequest("an organisation with this name already exists");
 
-            if (UnitOfWork.OrgRequestsRepository.AllAsNoTracking
-                .Count(x => x.OrgUserId == this.CurrentOrgUser.Id && x.Name == model.Name) > 0)
-            {
-                return BadRequest("You have already requested this organisation");
-            }
+            var requestCount = UnitOfWork.OrgRequestsRepository
+                .AllAsNoTracking
+                .Count(x => x.OrgUserId == CurrentOrgUser.Id && x.Name == model.Name);
+
+            if (requestCount > 0)
+                return BadRequest("you have already requested this organisation");
 
             try
             {
@@ -79,18 +108,20 @@ namespace WebApi.Controllers
                     Email = model.Email,
                     TelNumber = model.TelNumber,
                     Postcode = model.Postcode,
-                    OrgUserId = this.CurrentOrgUser.Id
+                    OrgUserId = CurrentOrgUser.Id
                 };
 
                 UnitOfWork.OrgRequestsRepository.InsertOrUpdate(orgRequest);
 
-                var onRecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
-                    .Where(x => x.Name == "OnRecord").SingleOrDefault();
+                var onRecord = UnitOfWork.OrganisationRepository
+                    .AllAsNoTracking
+                    .Where(x => x.Name == "OnRecord")
+                    .SingleOrDefault();
 
                 var rootIndex = WebHelpers.GetRootIndexPath();
                 var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/requests/";
 
-                var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
+                var content = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
                             <p>Organisation: <b>" + model.Name + @"</b></p>
                             <p><br></p>
                             <p>View <a href='" + url + @"'>organization requests</a> on the dashboard.</p>";
@@ -112,7 +143,8 @@ namespace WebApi.Controllers
                 }
 
                 // find email recipients
-                var recipients = UnitOfWork.EmailRecipientsRepository.AllAsNoTracking
+                var recipients = UnitOfWork.EmailRecipientsRepository
+                    .AllAsNoTracking
                     .Where(x => x.OrgRequests == true)
                     .ToList();
 
@@ -129,12 +161,13 @@ namespace WebApi.Controllers
                 }
 
                 UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 
@@ -143,16 +176,21 @@ namespace WebApi.Controllers
         [Route("{id:guid}")]
         public IHttpActionResult Delete(Guid id)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             try
             {
                 UnitOfWork.OrgRequestsRepository.Delete(id);
                 UnitOfWork.OrgRequestsRepository.Save();
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 

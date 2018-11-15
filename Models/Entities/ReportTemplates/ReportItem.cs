@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class ReportItem : Entity
     {
-
         public virtual ReportTemplate ReportTemplate { set; get; }
+
         public virtual Guid ReportTemplateId { get; set; }
 
         [MaxLength(100)]
         public string Name { get; set; }
 
         public int Order { set; get; }
-
 
         public void MoveUp()
         {
@@ -49,6 +46,5 @@ namespace LightMethods.Survey.Models.Entities
                 Order = MinBigger;
             }
         }
-
     }
 }

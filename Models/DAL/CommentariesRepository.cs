@@ -1,20 +1,15 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.DTO;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class CommentariesRepository : Repository<Commentary>
     {
-        public CommentariesRepository(UnitOfWork uow)
-            : base(uow)
-        {
+        public CommentariesRepository(UnitOfWork uow) : base(uow) { }
 
-        }
-        
         public void PrepareDocumentsDTO(Commentary commentary)
         {
             commentary.DocumentsDTO = commentary.Documents.ToDocumentDTO();
@@ -22,7 +17,6 @@ namespace LightMethods.Survey.Models.DAL
 
         public void PrepareDocuments(Commentary commentary)
         {
-
             if (commentary.DocumentsDTO == null)
                 commentary.DocumentsDTO = new List<DocumentDTO>();
 

@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LightMethods.Survey.Models.Entities;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class OrgUserTypesRepository : Repository<OrgUserType>
     {
-        public OrgUserTypesRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
-
+        public OrgUserTypesRepository(UnitOfWork uow) : base(uow) { }
 
         private static OrgUserType EnsureHasValue(ref OrgUserType prop)
         {

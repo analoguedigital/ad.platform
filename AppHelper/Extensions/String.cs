@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace System
 {
@@ -16,6 +15,7 @@ namespace System
                 ",
                RegexOptions.IgnorePatternWhitespace
             );
+
             return string.Join(" ", r.Split(s));
         }
 

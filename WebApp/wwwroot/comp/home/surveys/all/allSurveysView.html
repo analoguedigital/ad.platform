@@ -25,11 +25,8 @@
         <span class="clearfix"></span>-->
     </div>
     <div class="box-content">
-        <h3 ng-if="!ctrl.displayedSurveys.length"><i class="fa fa-info-circle"></i> No surveys were found</h3>
-        <div ng-if="ctrl.displayedSurveys.length">
-            <div ng-include="'comp/home/surveys/all/_searchForm.html'"></div>
-            <div ng-include="'comp/home/surveys/all/_dataTable.html'"></div>
-        </div>
+        <div ng-include="'comp/home/surveys/all/_searchForm.html'"></div>
+        <div ng-include="'comp/home/surveys/all/_dataTable.html'"></div>
     </div>
     <!--<div class="box-footer" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'add')">
         <a ui-sref="home.surveys.new({formTemplateId: ctrl.formTemplate.id, projectId: ctrl.project.id})"><i class="fa fa-plus-square"></i> Add record</a>

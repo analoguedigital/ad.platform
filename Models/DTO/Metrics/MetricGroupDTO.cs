@@ -50,13 +50,9 @@ namespace LightMethods.Survey.Models.DTO
             if (IsRepeater)
             {
                 if (IsDataListRepeater)
-                {
                     entity.NumberOfRows = null;
-                }
                 else
-                {
                     entity.DataListId = null;
-                }
             }
             else
             {
@@ -66,6 +62,7 @@ namespace LightMethods.Survey.Models.DTO
             }
 
             entity.UpdateDataList(uow, org, IsAdHoc, newAdHocItems, deletedAdHocItems, DataListId, oldDataList);
+
             return entity;
         }
 

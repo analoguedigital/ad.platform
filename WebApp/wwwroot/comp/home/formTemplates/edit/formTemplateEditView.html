@@ -57,8 +57,7 @@
             <h5>Thread Assignments</h5>
         </div>
         <div class="box-content">
-            <h3 ng-if="!ctrl.assignments.length"><i class="fa fa-info-circle"></i> No thread assignments were found</h3>
-            <div class="table-responsive" ng-if="ctrl.assignments.length">
+            <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
                         <tr>
@@ -71,7 +70,7 @@
                             <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
                         </tr>
                     </thead>
-                    <tbody ng-if="ctrl.assignments.length">
+                    <tbody>
                         <tr ng-repeat="user in ctrl.assignments">
                             <td class="text-center">
                                 <span ng-if="user.accountType === 0">
@@ -103,6 +102,9 @@
                                 <i class="fa fa-check" ng-if="user.canDelete"></i>
                                 <i class="fa fa-times" ng-if="!user.canDelete"></i>
                             </td>
+                        </tr>
+                        <tr ng-if="!ctrl.assignments.length">
+                            <td colspan="7">No thread assignments were found</td>
                         </tr>
                     </tbody>
                 </table>

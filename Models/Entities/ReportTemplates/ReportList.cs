@@ -1,10 +1,9 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DAL;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DAL;
 using System.Data.Entity;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -18,7 +17,6 @@ namespace LightMethods.Survey.Models.Entities
 
         public IEnumerable<Commentary> GetCommetaries(Project CurrentProject, DateTime sDate, DateTime eDate)
         {
-
             using (var uow = new UnitOfWork(new SurveyContext()))
             {
                 return uow.CommentariesRepository

@@ -11,7 +11,9 @@ namespace AppHelper
             builder.MergeAttribute("src", imageUrl);
             builder.MergeAttribute("alt", altText);
             builder.MergeAttribute("title", titleText);
+
             var link = helper.ActionLink("[replaceme]", actionName, routeValues, ajaxOptions);
+
             return link.ToString().Replace("[replaceme]", builder.ToString(TagRenderMode.SelfClosing));
         }
     }

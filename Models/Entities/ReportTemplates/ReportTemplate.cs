@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class ReportTemplate : Entity
     {
         public Guid OrganisationId { set; get; }
+
         public Organisation Organisation { set; get; }
 
         [MaxLength(100)]
@@ -21,6 +21,7 @@ namespace LightMethods.Survey.Models.Entities
 
         [Required(ErrorMessage = "The report category is required.")]
         public Guid CategoryId { set; get; }
+
         public ReportTemplateCategory Category { set; get; }
 
         [Required]
@@ -55,6 +56,5 @@ namespace LightMethods.Survey.Models.Entities
         {
             IsPublished = true;
         }
-
     }
 }

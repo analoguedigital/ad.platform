@@ -1,19 +1,12 @@
 ﻿using LightMethods.Survey.Models.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.DAL
 {
-    public class CalendarsRepository: Repository<Calendar>
+    public class CalendarsRepository : Repository<Calendar>
     {
-        public CalendarsRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        public CalendarsRepository(UnitOfWork uow) : base(uow) { }
 
         public override IQueryable<Calendar> All
         {

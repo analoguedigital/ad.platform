@@ -1,19 +1,15 @@
-﻿using System;
+﻿using AppHelper;
+using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
-using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DTO;
-using AppHelper;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class OrganisationRepository : Repository<Organisation>
     {
-        internal OrganisationRepository(UnitOfWork uow)
-            : base(uow)
-        { }
+        internal OrganisationRepository(UnitOfWork uow) : base(uow) { }
 
         public Organisation CreateOrganisation(CreateOrganisation dto)
         {
@@ -38,7 +34,7 @@ namespace LightMethods.Survey.Models.DAL
                 IsWebUser = true,
                 IsMobileUser = false,
                 UserName = dto.RootUserEmail,
-                Email =  dto.RootUserEmail,
+                Email = dto.RootUserEmail,
                 FirstName = dto.RootUserFirstName,
                 Surname = dto.RootUserSurname,
                 TypeId = OrgUserTypesRepository.Administrator.Id,
@@ -68,7 +64,6 @@ namespace LightMethods.Survey.Models.DAL
             }
 
             return org;
-
         }
 
         public void ChangeStatus(Guid id)

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Data.Entity;
+﻿using LightMethods.Survey.Models.DAL;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DAL;
-using AppHelper;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -26,7 +24,7 @@ namespace LightMethods.Survey.Models.Entities
         [ScaffoldColumn(false)]
         [ReadOnly(true)]
         public bool IsRootUser { set; get; }
-        
+
         public Guid? CurrentProjectId { set; get; }
         public virtual Project CurrentProject { set; get; }
 
@@ -72,6 +70,6 @@ namespace LightMethods.Survey.Models.Entities
 
             return base.ToString();
         }
-     
+
     }
 }

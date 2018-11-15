@@ -1,9 +1,6 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using LightMethods.Survey.Models.Entities;
-using Newtonsoft.Json;
 using static LightMethods.Survey.Models.Entities.User;
 
 namespace LightMethods.Survey.Models.DTO

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
+﻿using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services.Identity;
+using System;
 using System.Data.Entity;
 
 namespace LightMethods.Survey.Models.DAL
@@ -11,6 +8,7 @@ namespace LightMethods.Survey.Models.DAL
     public partial class UnitOfWork : IDisposable
     {
         public SurveyContext Context { internal set; get; }
+
         public UnitOfWork(SurveyContext context)
         {
             Context = context;
@@ -31,10 +29,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._UserManager == null)
-                {
-                    this._UserManager = new ApplicationUserManager(new ApplicationUserStore(Context));
-                }
+                if (_UserManager == null)
+                    _UserManager = new ApplicationUserManager(new ApplicationUserStore(Context));
+
                 return _UserManager;
             }
         }
@@ -44,10 +41,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._UsersRepository == null)
-                {
-                    this._UsersRepository = new UsersRepository(this);
-                }
+                if (_UsersRepository == null)
+                    _UsersRepository = new UsersRepository(this);
+
                 return _UsersRepository;
             }
         }
@@ -57,10 +53,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._RolesRepository == null)
-                {
-                    this._RolesRepository = new RolesRepository(this);
-                }
+                if (_RolesRepository == null)
+                    _RolesRepository = new RolesRepository(this);
+
                 return _RolesRepository;
             }
         }
@@ -70,10 +65,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._SuperUsersRepository == null)
-                {
-                    this._SuperUsersRepository = new SuperUsersRepository(this);
-                }
+                if (_SuperUsersRepository == null)
+                    _SuperUsersRepository = new SuperUsersRepository(this);
+
                 return _SuperUsersRepository;
             }
         }
@@ -95,10 +89,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrgUsersRepository == null)
-                {
-                    this._OrgUsersRepository = new OrgUsersRepository(this);
-                }
+                if (_OrgUsersRepository == null)
+                    _OrgUsersRepository = new OrgUsersRepository(this);
+
                 return _OrgUsersRepository;
             }
         }
@@ -108,10 +101,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrgUserTypesRepository == null)
-                {
-                    this._OrgUserTypesRepository = new OrgUserTypesRepository(this);
-                }
+                if (_OrgUserTypesRepository == null)
+                    _OrgUserTypesRepository = new OrgUserTypesRepository(this);
+
                 return _OrgUserTypesRepository;
             }
         }
@@ -121,10 +113,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrganisationRepository == null)
-                {
-                    this._OrganisationRepository = new OrganisationRepository(this);
-                }
+                if (_OrganisationRepository == null)
+                    _OrganisationRepository = new OrganisationRepository(this);
+
                 return _OrganisationRepository;
             }
         }
@@ -134,8 +125,8 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrganisationTeamsRepository == null)
-                    this._OrganisationTeamsRepository = new OrganisationTeamsRepository(this);
+                if (_OrganisationTeamsRepository == null)
+                    _OrganisationTeamsRepository = new OrganisationTeamsRepository(this);
 
                 return _OrganisationTeamsRepository;
             }
@@ -146,8 +137,8 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrgTeamUsersRepository == null)
-                    this._OrgTeamUsersRepository = new OrgTeamUsersRepository(this);
+                if (_OrgTeamUsersRepository == null)
+                    _OrgTeamUsersRepository = new OrgTeamUsersRepository(this);
 
                 return _OrgTeamUsersRepository;
             }
@@ -158,10 +149,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrgInvitationsRepository == null)
-                    this._OrgInvitationsRepository = new OrgInvitationsRepository(this);
+                if (_OrgInvitationsRepository == null)
+                    _OrgInvitationsRepository = new OrgInvitationsRepository(this);
 
-                return this._OrgInvitationsRepository;
+                return _OrgInvitationsRepository;
             }
         }
 
@@ -170,10 +161,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrgConnectionRequestsRepository == null)
-                    this._OrgConnectionRequestsRepository = new OrgConnectionRequestsRepository(this);
+                if (_OrgConnectionRequestsRepository == null)
+                    _OrgConnectionRequestsRepository = new OrgConnectionRequestsRepository(this);
 
-                return this._OrgConnectionRequestsRepository;
+                return _OrgConnectionRequestsRepository;
             }
         }
 
@@ -194,10 +185,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._AssignmentsRepository == null)
-                {
-                    this._AssignmentsRepository = new AssignmentsRepository(this);
-                }
+                if (_AssignmentsRepository == null)
+                    _AssignmentsRepository = new AssignmentsRepository(this);
+
                 return _AssignmentsRepository;
             }
         }
@@ -207,10 +197,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._AdultContactNumbersRepository == null)
-                {
-                    this._AdultContactNumbersRepository = new AdultContactNumbersRepository(this);
-                }
+                if (_AdultContactNumbersRepository == null)
+                    _AdultContactNumbersRepository = new AdultContactNumbersRepository(this);
+
                 return _AdultContactNumbersRepository;
             }
         }
@@ -220,10 +209,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._ExternalOrgContactNumbersRepository == null)
-                {
-                    this._ExternalOrgContactNumbersRepository = new ExternalOrgContactNumbersRepository(this);
-                }
+                if (_ExternalOrgContactNumbersRepository == null)
+                    _ExternalOrgContactNumbersRepository = new ExternalOrgContactNumbersRepository(this);
+
                 return _ExternalOrgContactNumbersRepository;
             }
         }
@@ -233,10 +221,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._ContactNumberTypesRepository == null)
-                {
-                    this._ContactNumberTypesRepository = new ContactNumberTypesRepository(this);
-                }
+                if (_ContactNumberTypesRepository == null)
+                    _ContactNumberTypesRepository = new ContactNumberTypesRepository(this);
+
                 return _ContactNumberTypesRepository;
             }
         }
@@ -246,10 +233,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._AddressTypesRepository == null)
-                {
-                    this._AddressTypesRepository = new AddressTypesRepository(this);
-                }
+                if (_AddressTypesRepository == null)
+                    _AddressTypesRepository = new AddressTypesRepository(this);
+
                 return _AddressTypesRepository;
             }
         }
@@ -259,10 +245,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._AddressesRepository == null)
-                {
-                    this._AddressesRepository = new AddressesRepository(this);
-                }
+                if (_AddressesRepository == null)
+                    _AddressesRepository = new AddressesRepository(this);
+
                 return _AddressesRepository;
             }
         }
@@ -272,10 +257,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._AdultAddressesRepository == null)
-                {
-                    this._AdultAddressesRepository = new AdultAddressesRepository(this);
-                }
+                if (_AdultAddressesRepository == null)
+                    _AdultAddressesRepository = new AdultAddressesRepository(this);
+
                 return _AdultAddressesRepository;
             }
         }
@@ -285,10 +269,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._ProjectsRepository == null)
-                {
-                    this._ProjectsRepository = new ProjectsRepository(this);
-                }
+                if (_ProjectsRepository == null)
+                    _ProjectsRepository = new ProjectsRepository(this);
+
                 return _ProjectsRepository;
             }
         }
@@ -298,10 +281,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._AdultsRepository == null)
-                {
-                    this._AdultsRepository = new AdultsRepository(this);
-                }
+                if (_AdultsRepository == null)
+                    _AdultsRepository = new AdultsRepository(this);
+
                 return _AdultsRepository;
             }
         }
@@ -311,10 +293,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._AdultTitlesRepository == null)
-                {
-                    this._AdultTitlesRepository = new AdultTitlesRepository(this);
-                }
+                if (_AdultTitlesRepository == null)
+                    _AdultTitlesRepository = new AdultTitlesRepository(this);
+
                 return _AdultTitlesRepository;
             }
         }
@@ -324,10 +305,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._KeyLocationsRepository == null)
-                {
-                    this._KeyLocationsRepository = new KeyLocationsRepository(this);
-                }
+                if (_KeyLocationsRepository == null)
+                    _KeyLocationsRepository = new KeyLocationsRepository(this);
+
                 return _KeyLocationsRepository;
             }
         }
@@ -337,10 +317,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._ExternalOrganisationsRepository == null)
-                {
-                    this._ExternalOrganisationsRepository = new ExternalOrganisationsRepository(this);
-                }
+                if (_ExternalOrganisationsRepository == null)
+                    _ExternalOrganisationsRepository = new ExternalOrganisationsRepository(this);
+
                 return _ExternalOrganisationsRepository;
             }
         }
@@ -350,10 +329,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._OrganisationWorkersRepository == null)
-                {
-                    this._OrganisationWorkersRepository = new OrganisationWorkersRepository(this);
-                }
+                if (_OrganisationWorkersRepository == null)
+                    _OrganisationWorkersRepository = new OrganisationWorkersRepository(this);
+
                 return _OrganisationWorkersRepository;
             }
         }
@@ -363,10 +341,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._CommentariesRepository == null)
-                {
-                    this._CommentariesRepository = new CommentariesRepository(this);
-                }
+                if (_CommentariesRepository == null)
+                    _CommentariesRepository = new CommentariesRepository(this);
+
                 return _CommentariesRepository;
             }
         }
@@ -376,10 +353,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._DocumentsRepository == null)
-                {
-                    this._DocumentsRepository = new DocumentsRepository(this);
-                }
+                if (_DocumentsRepository == null)
+                    _DocumentsRepository = new DocumentsRepository(this);
+
                 return _DocumentsRepository;
             }
         }
@@ -390,10 +366,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._FilesRepository == null)
-                {
-                    this._FilesRepository = new FilesRepository(this);
-                }
+                if (_FilesRepository == null)
+                    _FilesRepository = new FilesRepository(this);
+
                 return _FilesRepository;
             }
         }
@@ -403,10 +378,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._GuidanceRepository == null)
-                {
-                    this._GuidanceRepository = new GuidanceRepository(this);
-                }
+                if (_GuidanceRepository == null)
+                    _GuidanceRepository = new GuidanceRepository(this);
+
                 return _GuidanceRepository;
             }
         }
@@ -416,10 +390,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._SettingsRepository == null)
-                {
-                    this._SettingsRepository = new SettingsRepository(this);
-                }
+                if (_SettingsRepository == null)
+                    _SettingsRepository = new SettingsRepository(this);
+
                 return _SettingsRepository;
             }
         }
@@ -430,10 +403,9 @@ namespace LightMethods.Survey.Models.DAL
             get
             {
 
-                if (this._SeverityLevelRepository == null)
-                {
-                    this._SeverityLevelRepository = new SeverityLevelRepository(this);
-                }
+                if (_SeverityLevelRepository == null)
+                    _SeverityLevelRepository = new SeverityLevelRepository(this);
+
                 return _SeverityLevelRepository;
             }
         }
@@ -443,10 +415,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._DataListsRepository == null)
-                {
-                    this._DataListsRepository = new DataListsRepository(this);
-                }
+                if (_DataListsRepository == null)
+                    _DataListsRepository = new DataListsRepository(this);
+
                 return _DataListsRepository;
             }
         }
@@ -456,10 +427,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._DataListItemsRepository == null)
-                {
-                    this._DataListItemsRepository = new DataListItemsRepository(this);
-                }
+                if (_DataListItemsRepository == null)
+                    _DataListItemsRepository = new DataListItemsRepository(this);
+
                 return _DataListItemsRepository;
             }
         }
@@ -469,10 +439,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._DataListRelationshipsRepository == null)
-                {
-                    this._DataListRelationshipsRepository = new DataListRelationshipsRepository(this);
-                }
+                if (_DataListRelationshipsRepository == null)
+                    _DataListRelationshipsRepository = new DataListRelationshipsRepository(this);
+
                 return _DataListRelationshipsRepository;
             }
         }
@@ -482,10 +451,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._LanguagesRepository == null)
-                {
-                    this._LanguagesRepository = new LanguagesRepository(this);
-                }
+                if (_LanguagesRepository == null)
+                    _LanguagesRepository = new LanguagesRepository(this);
+
                 return _LanguagesRepository;
             }
         }
@@ -495,10 +463,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._CalendarsRepository == null)
-                {
-                    this._CalendarsRepository = new CalendarsRepository(this);
-                }
+                if (_CalendarsRepository == null)
+                    _CalendarsRepository = new CalendarsRepository(this);
+
                 return _CalendarsRepository;
             }
         }
@@ -508,10 +475,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._PaymentsRepository == null)
-                    this._PaymentsRepository = new PaymentsRepository(this);
+                if (_PaymentsRepository == null)
+                    _PaymentsRepository = new PaymentsRepository(this);
 
-                return this._PaymentsRepository;
+                return _PaymentsRepository;
             }
         }
 
@@ -520,10 +487,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._VouchersRepository == null)
-                    this._VouchersRepository = new VouchersRepository(this);
+                if (_VouchersRepository == null)
+                    _VouchersRepository = new VouchersRepository(this);
 
-                return this._VouchersRepository;
+                return _VouchersRepository;
             }
         }
 
@@ -532,10 +499,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._SubscriptionPlansRepository == null)
-                    this._SubscriptionPlansRepository = new SubscriptionPlansRepository(this);
+                if (_SubscriptionPlansRepository == null)
+                    _SubscriptionPlansRepository = new SubscriptionPlansRepository(this);
 
-                return this._SubscriptionPlansRepository;
+                return _SubscriptionPlansRepository;
             }
         }
 
@@ -544,10 +511,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._SubscriptionsRepository == null)
-                    this._SubscriptionsRepository = new SubscriptionsRepository(this);
+                if (_SubscriptionsRepository == null)
+                    _SubscriptionsRepository = new SubscriptionsRepository(this);
 
-                return this._SubscriptionsRepository;
+                return _SubscriptionsRepository;
             }
         }
 
@@ -556,10 +523,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._FeedbacksRepository == null)
-                    this._FeedbacksRepository = new FeedbacksRepository(this);
+                if (_FeedbacksRepository == null)
+                    _FeedbacksRepository = new FeedbacksRepository(this);
 
-                return this._FeedbacksRepository;
+                return _FeedbacksRepository;
             }
         }
 
@@ -568,10 +535,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._EmailsRepository == null)
-                    this._EmailsRepository = new EmailsRepository(this);
+                if (_EmailsRepository == null)
+                    _EmailsRepository = new EmailsRepository(this);
 
-                return this._EmailsRepository;
+                return _EmailsRepository;
             }
         }
 
@@ -580,10 +547,10 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-                if (this._EmailRecipientsRepository == null)
-                    this._EmailRecipientsRepository = new EmailRecipientsRepository(this);
+                if (_EmailRecipientsRepository == null)
+                    _EmailRecipientsRepository = new EmailRecipientsRepository(this);
 
-                return this._EmailRecipientsRepository;
+                return _EmailRecipientsRepository;
             }
         }
 
@@ -599,14 +566,13 @@ namespace LightMethods.Survey.Models.DAL
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!disposed)
             {
                 if (disposing)
-                {
                     Context.SaveChanges();
-                }
             }
-            this.disposed = true;
+
+            disposed = true;
         }
 
         public void Dispose()

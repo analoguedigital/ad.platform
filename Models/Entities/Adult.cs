@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel;
-using AppHelper;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LightMethods.Survey.Models.Entities
@@ -21,6 +17,7 @@ namespace LightMethods.Survey.Models.Entities
         public Project Project { get; set; }
 
         public virtual AdultTitle Title { get; set; }
+
         public Guid? TitleId { set; get; }
 
         [Required]

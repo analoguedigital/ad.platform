@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
@@ -46,19 +45,24 @@ namespace LightMethods.Survey.Models.Entities
 
         [Display(Name = "Default language")]
         public virtual Language DefaultLanguage { set; get; }
+
         public Guid DefaultLanguageId { set; get; }
 
         [Display(Name = "Default calendar")]
         public virtual Calendar DefaultCalendar { set; get; }
+
         public Guid DefaultCalendarId { set; get; }
 
         public virtual ICollection<OrgUser> OrgUsers { get; set; }
+
         public virtual ICollection<Project> Projects { get; set; }
 
         public virtual ICollection<FormTemplate> FormTemplates { get; set; }
+
         public virtual ICollection<FormTemplateCategory> FormTemplateCategories { get; set; }
 
         public virtual ICollection<ReportTemplate> ReportTemplates { get; set; }
+
         public virtual ICollection<ReportTemplateCategory> ReportTemplateCategories { get; set; }
 
         public virtual ICollection<DataList> DataLists { set; get; }

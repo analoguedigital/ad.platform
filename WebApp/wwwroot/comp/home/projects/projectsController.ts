@@ -35,7 +35,7 @@
             private $uibModal: ng.ui.bootstrap.IModalService,
             private projectResource: Resources.IProjectResource) {
 
-            $scope.title = "Cases";
+            $scope.title = "Staff and Clients";
             $scope.delete = (id) => { this.delete(id); };
 
             this.activate();

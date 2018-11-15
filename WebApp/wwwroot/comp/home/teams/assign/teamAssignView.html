@@ -5,11 +5,13 @@
             <h5>Assign Users</h5>
             <div class="box-tools">
                 <a ng-bootbox-confirm="Are you sure you want to do this?" ng-bootbox-confirm-action="ctrl.submit()" style="color: inherit">
-                    <i class="fa fa-check"></i><span class="hidden-xs"> Assign users</span>
+                    <i class="fa fa-check"></i><span class="hidden-xs"> Click here to confirm your selection</span>
                 </a>
             </div>
         </div>
         <div class="box-content">
+            <h3>Who of these in the list below do you want to assign to this team?</h3>
+
             <div class="well">
                 <h3>
                     <span ng-if="team.colour" class="color-block" ng-style="{'background-color': team.colour}"></span> {{team.name}}
@@ -21,7 +23,7 @@
                 <div>
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
-                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                            <input st-search type="text" id="search" name="search" placeholder="Username or Email" ng-model="searchTerm" />
                         </lm-form-group>
                     </form>
                 </div>
@@ -32,7 +34,7 @@
                             <tr>
                                 <th>User name</th>
                                 <th>Email</th>
-                                <th class="text-center" width="100"></th>
+                                <!--<th class="text-center" width="100"></th>-->
                                 <th class="text-center" width="100"></th>
                             </tr>
                         </thead>
@@ -43,16 +45,16 @@
                                     <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.userName}}
                                 </td>
                                 <td>{{user.email}}</td>
-                                <td class="text-center">
+                                <!--<td class="text-center">
                                     <div class="checkbox checkbox-circle checkbox-primary no-margins">
                                         <input type="checkbox" id="manager-{{user.userId}}" ng-model="user.isManager" ng-change="user.isMember = user.isManager" />
                                         <label for="manager-{{user.userId}}">Manager</label>
                                     </div>
-                                </td>
+                                </td>-->
                                 <td class="text-center">
                                     <div class="checkbox checkbox-circle checkbox-primary no-margins">
                                         <input type="checkbox" id="member-{{user.userId}}" ng-model="user.isMember" />
-                                        <label for="member-{{user.userId}}">Member</label>
+                                        <label for="member-{{user.userId}}">Assign</label>
                                     </div>
                                 </td>
                             </tr>

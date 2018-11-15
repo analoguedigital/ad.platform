@@ -3,7 +3,8 @@
     <div class="box">
         <div class="box-title">
             <div class="pull-left">
-                <h5>Form Template: {{ctrl.formTemplate.title}}</h5>
+                <!--<h5>Form Template: {{ctrl.formTemplate.title}}</h5>-->
+                <h5>Thread Assignments and Permissions</h5>
             </div>
 
             <div class="pull-right">
@@ -11,11 +12,11 @@
 
                 <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
                     <input type="radio" id="mobile-accounts-radio" name="list-type" value="0" ng-model="ctrl.listType" ng-change="ctrl.updateListType(0)" />
-                    <label for="mobile-accounts-radio">Mobile</label>
+                    <label for="mobile-accounts-radio">Clients</label>
                 </div>
                 <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
                     <input type="radio" id="web-accounts-radio" name="list-type" value="1" ng-model="ctrl.listType" ng-change="ctrl.updateListType(1)" />
-                    <label for="web-accounts-radio">Web</label>
+                    <label for="web-accounts-radio">Staff</label>
                 </div>
                 <div class="radio radio-primary no-margins" style="display: inline-block">
                     <input type="radio" id="all-accounts-radio" name="list-type" value="2" ng-model="ctrl.listType" ng-change="ctrl.updateListType(2)" />

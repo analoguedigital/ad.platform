@@ -23,10 +23,7 @@ namespace LightMethods.Survey.Models.Entities
         [NotMapped]
         public double? Value { set; get; }
 
-        public NumericMetric()
-        {
-
-        }
+        public NumericMetric() { }
 
         public override IEnumerable<ValidationResult> ValidateValue(FormValue value)
         {

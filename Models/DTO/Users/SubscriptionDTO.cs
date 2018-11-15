@@ -1,6 +1,5 @@
-﻿using LightMethods.Survey.Models.Entities;
+﻿using LightMethods.Survey.Models.Enums;
 using System;
-using System.Net.PeerToPeer.Collaboration;
 
 namespace LightMethods.Survey.Models.DTO
 {

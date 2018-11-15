@@ -1,23 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class Document : Entity
     {
         public string Title { set; get; }
+
         public string FileName { set; get; }
+
         public string FileExt { set; get; }
 
         public virtual File File { set; get; }
+
         public Guid FileId { set; get; }
     }
 
     public class CommentaryDocument : Document
     {
         public Guid CommentaryId { set; get; }
+        
         public virtual Commentary Commentary { set; get; }
     }
 

@@ -4,45 +4,81 @@ using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Text;
-using System.Web.Hosting;
 using System.Web.Http;
+using System.Web.Http.Description;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
     [RoutePrefix("api/orgConnectionRequests")]
+    [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
     public class OrgConnectionRequestsController : BaseApiController
     {
 
+        #region Properties
+
+        private const string CACHE_KEY = "CONNECTION_REQUESTS";
+
+        #endregion Properties
+
+        #region CRUD
+
         // GET api/orgConnectionRequests
+        [ResponseType(typeof(IEnumerable<OrgConnectionRequestDTO>))]
         public IHttpActionResult Get(Guid? organisationId = null)
         {
-            var result = new List<OrgConnectionRequestDTO>();
-
-            if (CurrentUser is SuperUser)
+            if (CurrentUser is OrgUser)
             {
-                var connectionRequests = UnitOfWork.OrgConnectionRequestsRepository.AllAsNoTracking;
+                var cacheKey = $"{CACHE_KEY}_{CurrentOrgUser.OrganisationId}";
+                var cacheEntry = MemoryCacher.GetValue(cacheKey);
+
+                if (cacheEntry == null)
+                {
+                    var connectionRequests = UnitOfWork.OrgConnectionRequestsRepository
+                        .AllAsNoTracking
+                        .Where(x => x.OrganisationId == CurrentOrgUser.Organisation.Id)
+                        .ToList()
+                        .Select(x => Mapper.Map<OrgConnectionRequestDTO>(x))
+                        .ToList();
+
+                    MemoryCacher.Add(cacheKey, connectionRequests, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                    return Ok(connectionRequests);
+                }
+                else
+                {
+                    var result = (List<OrgConnectionRequestDTO>)cacheEntry;
+                    return new CachedResult<List<OrgConnectionRequestDTO>>(result, TimeSpan.FromMinutes(1), this);
+                }
+            }
+
+            // else if current user is super user
+            var _cacheKey = organisationId.HasValue ? $"{CACHE_KEY}_{organisationId.Value}" : CACHE_KEY;
+            var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
+
+            if (_cacheEntry == null)
+            {
+                var connRequests = UnitOfWork.OrgConnectionRequestsRepository.AllAsNoTracking;
 
                 if (organisationId.HasValue)
-                    connectionRequests = connectionRequests.Where(x => x.OrganisationId == organisationId.Value);
+                    connRequests = connRequests.Where(x => x.OrganisationId == organisationId.Value);
 
-                result = connectionRequests.ToList()
+                var retVal = connRequests
+                    .ToList()
                     .Select(x => Mapper.Map<OrgConnectionRequestDTO>(x))
                     .ToList();
+
+                MemoryCacher.Add(_cacheKey, retVal, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(retVal);
             }
-            else if (CurrentUser is OrgUser)
+            else
             {
-                var connectionRequests = UnitOfWork.OrgConnectionRequestsRepository.AllAsNoTracking
-                    .Where(x => x.OrganisationId == this.CurrentOrgUser.Organisation.Id);
-
-                result = connectionRequests.ToList()
-                    .Select(x => Mapper.Map<OrgConnectionRequestDTO>(x))
-                    .ToList();
+                var retVal = (List<OrgConnectionRequestDTO>)_cacheEntry;
+                return new CachedResult<List<OrgConnectionRequestDTO>>(retVal, TimeSpan.FromMinutes(1), this);
             }
-
-            return Ok(result);
         }
 
         // GET api/orgConnectionRequests/{id}
@@ -50,125 +86,76 @@ namespace WebApi.Controllers
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
-                return NotFound();
+                return BadRequest("id is empty");
 
-            var connectionRequest = UnitOfWork.OrgConnectionRequestsRepository.Find(id);
-            if (connectionRequest == null)
-                return NotFound();
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            return Ok(Mapper.Map<OrgConnectionRequestDTO>(connectionRequest));
+            if (cacheEntry == null)
+            {
+                var connectionRequest = UnitOfWork.OrgConnectionRequestsRepository.Find(id);
+                if (connectionRequest == null)
+                    return NotFound();
+
+                var result = Mapper.Map<OrgConnectionRequestDTO>(connectionRequest);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = (OrgConnectionRequestDTO)cacheEntry;
+                return new CachedResult<OrgConnectionRequestDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/orgConnectionRequests
         [HttpPost]
         [Route("{organisationId:guid}")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "Organisation user")]
         public IHttpActionResult Post(Guid organisationId)
         {
-            if (organisationId == null || organisationId == Guid.Empty)
-                return BadRequest();
+            if (CurrentOrgUser.AccountType != AccountType.MobileAccount)
+                return BadRequest("connection requests can only be made by mobile users");
 
-            if (this.CurrentUser is SuperUser)
-                return BadRequest("Connection requests can only be made by Organisation Users");
+            if (organisationId == Guid.Empty)
+                return BadRequest("organisation id is empty");
 
-            if (this.CurrentOrgUser.AccountType != AccountType.MobileAccount)
-                return BadRequest("Connection requests can only be made by Mobile Users");
+            if (CurrentOrgUser.Organisation.Id == organisationId)
+                return BadRequest("you are already connected to this organisation");
 
-            if (this.CurrentOrgUser.Organisation.Id == organisationId)
-                return BadRequest("You are already connected to this organisation");
+            var requestCount = UnitOfWork.OrgConnectionRequestsRepository
+                .AllAsNoTracking
+                .Count(x => x.OrgUserId == CurrentOrgUser.Id && x.OrganisationId == organisationId);
 
-            if (UnitOfWork.OrgConnectionRequestsRepository.AllAsNoTracking
-                .Count(x => x.OrgUserId == this.CurrentOrgUser.Id && x.OrganisationId == organisationId) > 0)
+            if (requestCount > 0)
+                return BadRequest("you have already requested to connect to this organisation");
+
+            var organisation = UnitOfWork.OrganisationRepository.Find(organisationId);
+
+            var connectionRequest = new OrgConnectionRequest
             {
-                return BadRequest("You have already made a request to connect to this organisation");
-            }
+                OrgUserId = CurrentOrgUser.Id,
+                OrganisationId = organisationId
+            };
+
+            UnitOfWork.OrgConnectionRequestsRepository.InsertOrUpdate(connectionRequest);
+
+            NotifyOnRecordAboutNewRequest(organisation.Name);
+            NotifyOrgAdminAboutNewRequest(organisation);
+            NotifyEmailRecipientsAboutNewRequest(organisation.Name);
 
             try
             {
-                var organisation = UnitOfWork.OrganisationRepository.Find(organisationId);
-
-                var connectionRequest = new OrgConnectionRequest
-                {
-                    OrgUserId = this.CurrentOrgUser.Id,
-                    OrganisationId = organisationId
-                };
-
-                UnitOfWork.OrgConnectionRequestsRepository.InsertOrUpdate(connectionRequest);
-
-                var onRecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
-                    .Where(x => x.Name == "OnRecord").SingleOrDefault();
-
-                var rootIndex = WebHelpers.GetRootIndexPath();
-                var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
-
-                if (onRecord.RootUserId.HasValue)
-                {
-                    var onRecordAdmin = UnitOfWork.OrgUsersRepository.AllAsNoTracking
-                        .Where(x => x.Id == onRecord.RootUserId.Value)
-                        .SingleOrDefault();
-
-                    var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
-                            <p>Organisation: <b>" + organisation.Name + @"</b></p>
-                            <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
-
-                    var email = new Email
-                    {
-                        To = onRecordAdmin.Email,
-                        Subject = $"A user has requested to join an organization",
-                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested to join an organization")
-                    };
-
-                    UnitOfWork.EmailsRepository.InsertOrUpdate(email);
-                }
-
-                if (organisation.RootUser != null)
-                {
-                    var orgAdmin = this.UnitOfWork.OrgUsersRepository.AllAsNoTracking
-                        .Where(x => x.Id == organisation.RootUser.Id)
-                        .SingleOrDefault();
-
-                    var content = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
-                            <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
-
-                    var orgAdminEmail = new Email
-                    {
-                        To = orgAdmin.Email,
-                        Subject = $"A user has requested to join your organization",
-                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has request to join your organization")
-                    };
-
-                    UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
-                }
-
-                // find email recipients
-                var recipients = UnitOfWork.EmailRecipientsRepository.AllAsNoTracking
-                    .Where(x => x.OrgConnectionRequests == true)
-                    .ToList();
-
-                var emailContent = @"<p>User name: <b>" + this.CurrentOrgUser.UserName + @"</b></p>
-                            <p>Organisation: <b>" + organisation.Name + @"</b></p>
-                            <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
-                foreach (var recipient in recipients)
-                {
-                    var recipientEmail = new Email
-                    {
-                        To = recipient.OrgUser.Email,
-                        Subject = $"A user has request to join an organization",
-                        Content = WebHelpers.GenerateEmailTemplate(emailContent, "A user has requested to join an organization")
-                    };
-
-                    UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
-                }
-
                 UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 
@@ -177,16 +164,21 @@ namespace WebApi.Controllers
         [Route("{id:guid}")]
         public IHttpActionResult Delete(Guid id)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             try
             {
                 UnitOfWork.OrgConnectionRequestsRepository.Delete(id);
                 UnitOfWork.OrgConnectionRequestsRepository.Save();
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
 
@@ -196,7 +188,7 @@ namespace WebApi.Controllers
         public IHttpActionResult Approve(Guid id)
         {
             if (id == Guid.Empty)
-                return BadRequest();
+                return BadRequest("id is empty");
 
             var connectionRequest = UnitOfWork.OrgConnectionRequestsRepository.Find(id);
             if (connectionRequest == null)
@@ -205,167 +197,171 @@ namespace WebApi.Controllers
             var organisation = UnitOfWork.OrganisationRepository.Find(connectionRequest.Organisation.Id);
             var orgUser = UnitOfWork.OrgUsersRepository.Find(connectionRequest.OrgUser.Id);
 
+            var subscriptionService = new SubscriptionService(UnitOfWork);
+
             // update the connection request.
             connectionRequest.IsApproved = true;
             connectionRequest.ApprovalDate = DateTimeService.UtcNow;
-
             UnitOfWork.OrgConnectionRequestsRepository.InsertOrUpdate(connectionRequest);
 
-            var subscription = new Subscription
-            {
-                IsActive = true,
-                Type = UserSubscriptionType.Organisation,
-                StartDate = DateTimeService.UtcNow,
-                EndDate = null,
-                Note = $"Joined organisation - {organisation.Name}",
-                OrgUserId = orgUser.Id
-            };
+            // move the user to this organization
+            subscriptionService.MoveUserToOrganization(organisation, orgUser);
 
-            UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
-
-            // remove this user from any teams in current organisation.
-            var records = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
-                .Where(x => x.OrgUserId == orgUser.Id && x.OrganisationTeam.OrganisationId == organisation.Id)
-                .ToList();
-
-            foreach (var item in records)
-                UnitOfWork.OrgTeamUsersRepository.Delete(item);
-
-            orgUser.OrganisationId = organisation.Id;    // update user's organisation
-
-            if (orgUser.CurrentProject != null) // update user's current project, if exists
-            {
-                if (orgUser.CurrentProject.CreatedById == orgUser.Id)
-                {
-                    var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
-                    project.OrganisationId = organisation.Id;    // update project's organisation
-                    UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
-
-                    // update threads under this project
-                    var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
-                        .Where(t => t.ProjectId == project.Id)
-                        .ToList();
-
-                    // update form templates' organisation
-                    foreach (var form in threads)
-                    {
-                        form.OrganisationId = organisation.Id;
-                        UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
-                    }
-
-                    var rootAdminAssignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
-                        .Where(x => x.OrgUserId == organisation.RootUserId.Value && x.ProjectId == orgUser.CurrentProjectId.Value)
-                        .SingleOrDefault();
-
-                    if (rootAdminAssignment == null)
-                    {
-                        // assign Org root user to the project
-                        UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
-                        {
-                            ProjectId = orgUser.CurrentProjectId.Value,
-                            OrgUserId = organisation.RootUserId.Value,
-                            CanAdd = true,
-                            CanEdit = true,
-                            CanDelete = true,
-                            CanView = true,
-                            CanExportPdf = true,
-                            CanExportZip = true
-                        });
-                    }
-                }
-            }
-
-            // cancel last subscription, if any.
-            var lastSubscription = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking
-               .Where(x => x.OrgUserId == orgUser.Id && x.IsActive)
-               .OrderByDescending(x => x.DateCreated)
-               .FirstOrDefault();
-
-            if (lastSubscription != null)
-            {
-                if (lastSubscription.Type == UserSubscriptionType.Organisation)
-                {
-                    lastSubscription.EndDate = DateTimeService.UtcNow;
-                    lastSubscription.IsActive = false;
-
-                    this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(lastSubscription);
-                }
-                else
-                {
-                    var paymentRecord = this.UnitOfWork.PaymentsRepository.Find(lastSubscription.PaymentRecord.Id);
-                    foreach (var record in paymentRecord.Subscriptions)
-                    {
-                        record.IsActive = false;
-                    }
-
-                    this.UnitOfWork.PaymentsRepository.InsertOrUpdate(paymentRecord);
-                }
-            }
-
-            // grant export access to the user
-            if (orgUser.CurrentProjectId.HasValue)
-            {
-                var orgUserAssignment = orgUser.Assignments.Where(x => x.ProjectId == orgUser.CurrentProject.Id).SingleOrDefault();
-                if (orgUserAssignment != null)
-                {
-                    orgUserAssignment.CanExportPdf = true;
-                    orgUserAssignment.CanExportZip = true;
-
-                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
-                }
-            }
+            // insert notification emails
+            NotifyUserAboutApprovedRequest(organisation.Name, orgUser.Email);
+            NotifyOrgAdminAboutApprovedRequest(organisation, orgUser);
 
             try
             {
-                orgUser.IsSubscribed = true;
-
-                var content = @"<p>You have joined the <strong>" + organisation.Name + @"</strong> organization.</p>
-                            <p>Your personal case and its threads are now filed under this organization.</p>
-                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
-
-                var email = new Email
-                {
-                    To = orgUser.Email,
-                    Subject = $"Joined organization - {organisation.Name}",
-                    Content = WebHelpers.GenerateEmailTemplate(content, "You have joined an organization")
-                };
-
-                UnitOfWork.EmailsRepository.InsertOrUpdate(email);
-
-                if (organisation.RootUserId.HasValue)
-                {
-                    var orgAdmin = this.UnitOfWork.OrgUsersRepository.AllAsNoTracking
-                        .Where(x => x.Id == organisation.RootUserId.Value)
-                        .SingleOrDefault();
-
-                    var rootIndex = WebHelpers.GetRootIndexPath();
-                    var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
-
-                    var emailBody = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
-                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
-                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
-                            <p><br></p>
-                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
-
-                    var orgAdminEmail = new Email
-                    {
-                        To = orgAdmin.Email,
-                        Subject = $"User joined organization - {orgUser.UserName}",
-                        Content = WebHelpers.GenerateEmailTemplate(emailBody, "A user has joined your organization")
-                    };
-
-                    UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
-                }
-
                 UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
+
+        #endregion CRUD
+
+        #region Helpers
+
+        private void NotifyOnRecordAboutNewRequest(string organisationName)
+        {
+            var onRecord = UnitOfWork.OrganisationRepository
+                  .AllAsNoTracking
+                  .Where(x => x.Name == "OnRecord")
+                  .SingleOrDefault();
+
+            if (onRecord.RootUserId.HasValue)
+            {
+                var onRecordAdmin = UnitOfWork.OrgUsersRepository
+                    .AllAsNoTracking
+                    .Where(x => x.Id == onRecord.RootUserId.Value)
+                    .SingleOrDefault();
+
+                var rootIndex = WebHelpers.GetRootIndexPath();
+                var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
+
+                var content = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
+                            <p>Organisation: <b>" + organisationName + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+
+                var email = new Email
+                {
+                    To = onRecordAdmin.Email,
+                    Subject = $"A user has requested to join an organization",
+                    Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested to join an organization")
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+            }
+        }
+
+        private void NotifyOrgAdminAboutNewRequest(Organisation organisation)
+        {
+            if (organisation.RootUser != null)
+            {
+                var orgAdmin = UnitOfWork.OrgUsersRepository
+                    .AllAsNoTracking
+                    .Where(x => x.Id == organisation.RootUser.Id)
+                    .SingleOrDefault();
+
+                var rootIndex = WebHelpers.GetRootIndexPath();
+                var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
+
+                var content = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+
+                var orgAdminEmail = new Email
+                {
+                    To = orgAdmin.Email,
+                    Subject = $"A user has requested to join your organization",
+                    Content = WebHelpers.GenerateEmailTemplate(content, "A user has request to join your organization")
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
+            }
+        }
+
+        private void NotifyEmailRecipientsAboutNewRequest(string organisationName)
+        {
+            var recipients = UnitOfWork.EmailRecipientsRepository
+                .AllAsNoTracking
+                .Where(x => x.OrgConnectionRequests == true)
+                .ToList();
+
+            var rootIndex = WebHelpers.GetRootIndexPath();
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
+
+            var emailContent = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
+                            <p>Organisation: <b>" + organisationName + @"</b></p>
+                            <p><br></p>
+                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+
+            foreach (var recipient in recipients)
+            {
+                var recipientEmail = new Email
+                {
+                    To = recipient.OrgUser.Email,
+                    Subject = $"A user has request to join an organization",
+                    Content = WebHelpers.GenerateEmailTemplate(emailContent, "A user has requested to join an organization")
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
+            }
+        }
+
+        private void NotifyUserAboutApprovedRequest(string organisationName, string userEmail)
+        {
+            var content = @"<p>You have joined the <strong>" + organisationName + @"</strong> organization.</p>
+                            <p>Your personal case and its threads are now filed under this organization.</p>
+                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
+
+            var email = new Email
+            {
+                To = userEmail,
+                Subject = $"Joined organization - {organisationName}",
+                Content = WebHelpers.GenerateEmailTemplate(content, "You have joined an organization")
+            };
+
+            UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+        }
+
+        private void NotifyOrgAdminAboutApprovedRequest(Organisation organisation, OrgUser orgUser)
+        {
+            if (organisation.RootUserId.HasValue)
+            {
+                var orgAdmin = UnitOfWork.OrgUsersRepository
+                    .AllAsNoTracking
+                    .Where(x => x.Id == organisation.RootUserId.Value)
+                    .SingleOrDefault();
+
+                var rootIndex = WebHelpers.GetRootIndexPath();
+                var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
+
+                var emailBody = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
+                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
+                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
+                            <p><br></p>
+                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
+
+                var orgAdminEmail = new Email
+                {
+                    To = orgAdmin.Email,
+                    Subject = $"User joined organization - {orgUser.UserName}",
+                    Content = WebHelpers.GenerateEmailTemplate(emailBody, "A user has joined your organization")
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
+            }
+        }
+
+        #endregion Helpers
 
     }
 }

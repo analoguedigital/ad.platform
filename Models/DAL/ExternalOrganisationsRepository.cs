@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class ExternalOrganisationsRepository : Repository<ExternalOrganisation>
     {
-        internal ExternalOrganisationsRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        internal ExternalOrganisationsRepository(UnitOfWork uow) : base(uow) { }
 
         public override void InsertOrUpdate(ExternalOrganisation entity)
         {
@@ -50,7 +44,7 @@ namespace LightMethods.Survey.Models.DAL
 
         protected ExternalOrganisation UpdateCore(UnitOfWork uow, ExternalOrganisation dest, ExternalOrganisation src, Project project)
         {
-            
+
             Context.Entry(dest).CurrentValues.SetValues(src);
             dest.ProjectId = project.Id;
             InsertOrUpdate(dest);
@@ -58,7 +52,7 @@ namespace LightMethods.Survey.Models.DAL
             if (src.ContactNumbers != null)
                 src.ContactNumbers.ToList().ForEach(a => a.Organisation = dest);
             uow.ExternalOrgContactNumbersRepository.Update(dest.ContactNumbers, src.ContactNumbers);
-            
+
             return dest;
         }
 

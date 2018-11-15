@@ -10,11 +10,22 @@ namespace LightMethods.Survey.Models.Services
 {
     public class SurveyProvider
     {
+
+        #region Properties
+
         public OrgUser User { set; get; }
+
         private UnitOfWork UOW { set; get; }
+
         private bool OnlyPublished { set; get; }
+
         private ICollection<OrgUserType> UserTypesWithFullAccess { set; get; }
+
         private ICollection<OrgUserType> UserTypesWithLimitedAccess { set; get; }
+
+        #endregion Properties
+
+        #region C-tor
 
         public SurveyProvider(OrgUser user, UnitOfWork uow, bool onlyPublished = true)
         {
@@ -24,6 +35,8 @@ namespace LightMethods.Survey.Models.Services
             this.UserTypesWithFullAccess = new List<OrgUserType>(new[] { OrgUserTypesRepository.Administrator, OrgUserTypesRepository.Manager });
             this.UserTypesWithLimitedAccess = new List<OrgUserType>(new[] { OrgUserTypesRepository.TeamUser, OrgUserTypesRepository.ExternalUser });
         }
+
+        #endregion C-tor
 
         public IEnumerable<FormTemplate> GetAllFormTemplates()
         {

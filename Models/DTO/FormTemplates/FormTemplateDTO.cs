@@ -52,9 +52,7 @@ namespace LightMethods.Survey.Models.DTO
 
         public override bool Equals(object obj)
         {
-            var item = obj as FormTemplateDTO;
-
-            if (item == null)
+            if (!(obj is FormTemplateDTO item))
                 return false;
 
             return this.Id.Equals(item.Id);

@@ -40,17 +40,15 @@ namespace LightMethods.Survey.Models.DTO
 
         public override bool Equals(object obj)
         {
-            var item = obj as ProjectDTO;
-
-            if (item == null)
+            if (!(obj is ProjectDTO item))
                 return false;
 
-            return this.Id.Equals(item.Id);
+            return Id.Equals(item.Id);
         }
 
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
     }
 }

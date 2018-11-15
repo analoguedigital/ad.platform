@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using LightMethods.Survey.Models.DAL;
+using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.DAL;
 
 public class ModelUpdater
 {
@@ -22,7 +19,6 @@ public class ModelUpdater
 
     public static void UpdateModel<T>(T obj, ICollection<KeyValuePair<string, string>> values, SurveyContext dbContext) where T : IEntity, new()
     {
-
         values.Remove(values.SingleOrDefault(v => v.Key == "__RequestVerificationToken"));
 
         var ImmediateProperties = values.Where(v => !v.Key.Contains('.')).ToList();
@@ -31,7 +27,6 @@ public class ModelUpdater
             UpdateProperty(obj, item.Key, item.Value);
             values.Remove(item);
         }
-
 
         var nestedCollectionValuesIndexes = values.Where(v => v.Key.EndsWith(".index")).ToList();
         foreach (var index in nestedCollectionValuesIndexes)
@@ -51,7 +46,6 @@ public class ModelUpdater
             values.Remove(index);
         }
 
-
         var associations = values.ToList();
         foreach (var item in associations)
         {
@@ -64,8 +58,7 @@ public class ModelUpdater
     }
 
     private static void UpdateCollectionItem(object obj, string collectionName, Guid itemId, IEnumerable<KeyValuePair<string, string>> values, SurveyContext dbContext)
-    {
-        
+    {  
         var collectionProperty = obj.GetType().GetProperty(collectionName);
         var collection = collectionProperty.GetValue(obj);
 

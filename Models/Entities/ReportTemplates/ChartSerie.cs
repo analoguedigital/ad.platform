@@ -1,35 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.DAL;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
+﻿using LightMethods.Survey.Models.DAL;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class ChartSerie:Entity
     {
         public virtual ReportChart Chart { get; set; }
+
         public Guid ChartId { get; set; }
 
-
         public virtual ChartSerieType Type { set; get; }
+
         public Guid TypeId { set; get; }
 
-
         public virtual Metric Metric { set; get; }
+
         public Guid MetricId { set; get; }
 
         public Guid? MetricRowId { set; get; }
+
         public Guid? MetricColumnId { set; get; }
 
         public virtual Metric Label { set; get; }
+
         public Guid? LabelId { set; get; }
 
         public Guid? LabelRowId { set; get; }
+
         public Guid? LabelColumnId { set; get; }
 
         public IEnumerable<ChartPoint> GetPoints(DateTime? sDate, DateTime? eDate)
@@ -59,12 +60,11 @@ namespace LightMethods.Survey.Models.Entities
 
     public class ChartPoint
     {
-
         [JsonConverter(typeof(JavaScriptDateTimeConverter))]
         public DateTime x { set; get; }
+
         public double y { get; set; }
+
         public string name { get; set; }
     }
-
-    
 }

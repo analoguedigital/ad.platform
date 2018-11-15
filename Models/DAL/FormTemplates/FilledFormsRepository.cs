@@ -1,29 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using AutoMapper;
 using LightMethods.Survey.Models.Entities;
-using LightMethods.Survey.Models.MetricFilters;
-using AutoMapper;
 using LightMethods.Survey.Models.FilterValues;
+using LightMethods.Survey.Models.MetricFilters;
+using System;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class FilledFormsRepository : Repository<FilledForm>
     {
-        public FilledFormsRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        public FilledFormsRepository(UnitOfWork uow) : base(uow) { }
 
         public FilledForm GetFullFilledFormAndTemplate(Guid id)
         {
-            return FindIncluding(id
-                , f => f.FormValues
-                , f => f.FormTemplate.MetricGroups.Select(g => g.Metrics));
-
+            return FindIncluding(id, f => f.FormValues, f => f.FormTemplate.MetricGroups.Select(g => g.Metrics));
         }
 
         //private static object _lock;
@@ -37,7 +29,6 @@ namespace LightMethods.Survey.Models.DAL
         //            .Max(f => f == null ? 0 : f.Serial) + 1;
         //    }
         //}
-
 
         public FilledForm InsertOrUpdate(FilledForm filledForm, Project project)
         {
@@ -59,13 +50,12 @@ namespace LightMethods.Survey.Models.DAL
                     result = dbEntity;
                 }
             }
+
             return result;
         }
 
         protected FilledForm UpdateCore(UnitOfWork uow, FilledForm dest, FilledForm src, Project project)
         {
-
-
             // Context.Entry(dest).CurrentValues.SetValues(src);
 
             // dest.ProjectId = project.Id;
@@ -80,21 +70,26 @@ namespace LightMethods.Survey.Models.DAL
 
         public IEnumerable<FilledForm> Search(SearchDTO model)
         {
-            var templates = this.CurrentUOW.FormTemplatesRepository.AllAsNoTracking
-                .Where(t => model.FormTemplateIds.Contains(t.Id)).ToList();
+            var templates = this.CurrentUOW.FormTemplatesRepository
+                .AllAsNoTracking
+                .Where(t => model.FormTemplateIds.Contains(t.Id))
+                .ToList();
 
             IQueryable<FilledForm> query = Enumerable.Empty<FilledForm>().AsQueryable();
             List<FilledForm> foundSurveys = new List<FilledForm>();
 
             foreach (var template in templates)
             {
-                var safeSurveys = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
+                var safeSurveys = this.CurrentUOW.FilledFormsRepository
+                    .AllAsNoTracking
                     .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id);
 
                 var surveys = safeSurveys;
 
-                var surveyCount = this.CurrentUOW.FilledFormsRepository.AllAsNoTracking
-                    .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id).Count();
+                var surveyCount = this.CurrentUOW.FilledFormsRepository
+                    .AllAsNoTracking
+                    .Where(s => s.ProjectId == model.ProjectId && s.FormTemplateId == template.Id)
+                    .Count();
 
                 // apply generic date range
                 if (model.StartDate.HasValue || model.EndDate.HasValue)
@@ -152,9 +147,7 @@ namespace LightMethods.Survey.Models.DAL
         public override void Delete(FilledForm entity)
         {
             entity.FormValues.ToList().ForEach(v => CurrentUOW.FormValuesRepository.Delete(v));
-
             base.Delete(entity);
-
         }
 
         #region Helpers

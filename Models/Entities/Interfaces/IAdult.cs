@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public interface IAdult : IPerson, ICaseItem
     {
-        
         AdultTitle Title { set; get; }
 
         string EmailAddress { get; set; }
@@ -15,6 +11,5 @@ namespace LightMethods.Survey.Models.Entities
         ICollection<AdultContactNumber> ContactNumbers { get; set; }
 
         ICollection<AdultAddress> Addresses { get; set; }
-
     }
 }

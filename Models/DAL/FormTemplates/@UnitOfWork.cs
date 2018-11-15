@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace LightMethods.Survey.Models.DAL
+﻿namespace LightMethods.Survey.Models.DAL
 {
     public partial class UnitOfWork
     {
@@ -12,11 +7,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_FormTemplateCategoriesRepository == null)
+                    _FormTemplateCategoriesRepository = new FormTemplateCategoriesRepository(this);
 
-                if (this._FormTemplateCategoriesRepository == null)
-                {
-                    this._FormTemplateCategoriesRepository = new FormTemplateCategoriesRepository(this);
-                }
                 return _FormTemplateCategoriesRepository;
             }
         }
@@ -26,11 +19,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_FormTemplatesRepository == null)
+                    _FormTemplatesRepository = new FormTemplatesRepository(this);
 
-                if (this._FormTemplatesRepository == null)
-                {
-                    this._FormTemplatesRepository = new FormTemplatesRepository(this);
-                }
                 return _FormTemplatesRepository;
             }
         }
@@ -40,11 +31,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_MetricGroupsRepository == null)
+                    _MetricGroupsRepository = new MetricGroupsRepository(this);
 
-                if (this._MetricGroupsRepository == null)
-                {
-                    this._MetricGroupsRepository = new MetricGroupsRepository(this);
-                }
                 return _MetricGroupsRepository;
             }
         }
@@ -54,11 +43,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_MetricsRepository == null)
+                    _MetricsRepository = new MetricsRepository(this);
 
-                if (this._MetricsRepository == null)
-                {
-                    this._MetricsRepository = new MetricsRepository(this);
-                }
                 return _MetricsRepository;
             }
         }
@@ -68,11 +55,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_AttachmentTypesRepository == null)
+                    _AttachmentTypesRepository = new AttachmentTypesRepository(this);
 
-                if (this._AttachmentTypesRepository == null)
-                {
-                    this._AttachmentTypesRepository = new AttachmentTypesRepository(this);
-                }
                 return _AttachmentTypesRepository;
             }
         }
@@ -82,11 +67,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_AttachmentMetricsRepository == null)
+                    _AttachmentMetricsRepository = new AttachmentMetricsRepository(this);
 
-                if (this._AttachmentMetricsRepository == null)
-                {
-                    this._AttachmentMetricsRepository = new AttachmentMetricsRepository(this);
-                }
                 return _AttachmentMetricsRepository;
             }
         }
@@ -96,11 +79,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_AttachmentsRepository == null)
+                    _AttachmentsRepository = new AttachmentsRepository(this);
 
-                if (this._AttachmentsRepository == null)
-                {
-                    this._AttachmentsRepository = new AttachmentsRepository(this);
-                }
                 return _AttachmentsRepository;
             }
         }
@@ -109,11 +90,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_FreeTextMetricsRepository == null)
+                    _FreeTextMetricsRepository = new FreeTextMetricsRepository(this);
 
-                if (this._FreeTextMetricsRepository == null)
-                {
-                    this._FreeTextMetricsRepository = new FreeTextMetricsRepository(this);
-                }
                 return _FreeTextMetricsRepository;
             }
         }
@@ -123,11 +102,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_RateMetricsRepository == null)
+                    _RateMetricsRepository = new RateMetricsRepository(this);
 
-                if (this._RateMetricsRepository == null)
-                {
-                    this._RateMetricsRepository = new RateMetricsRepository(this);
-                }
                 return _RateMetricsRepository;
             }
         }
@@ -137,11 +114,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_DateMetricsRepository == null)
+                    _DateMetricsRepository = new DateMetricsRepository(this);
 
-                if (this._DateMetricsRepository == null)
-                {
-                    this._DateMetricsRepository = new DateMetricsRepository(this);
-                }
                 return _DateMetricsRepository;
             }
         }
@@ -151,11 +126,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_TimeMetricsRepository == null)
+                    _TimeMetricsRepository = new TimeMetricsRepository(this);
 
-                if (this._TimeMetricsRepository == null)
-                {
-                    this._TimeMetricsRepository = new TimeMetricsRepository(this);
-                }
                 return _TimeMetricsRepository;
             }
         }
@@ -165,11 +138,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_DichotomousMetricsRepository == null)
+                    _DichotomousMetricsRepository = new DichotomousMetricsRepository(this);
 
-                if (this._DichotomousMetricsRepository == null)
-                {
-                    this._DichotomousMetricsRepository = new DichotomousMetricsRepository(this);
-                }
                 return _DichotomousMetricsRepository;
             }
         }
@@ -179,11 +150,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_NumericMetricsRepository == null)
+                    _NumericMetricsRepository = new NumericMetricsRepository(this);
 
-                if (this._NumericMetricsRepository == null)
-                {
-                    this._NumericMetricsRepository = new NumericMetricsRepository(this);
-                }
                 return _NumericMetricsRepository;
             }
         }
@@ -193,11 +162,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_MultipleChoiceMetricsRepository == null)
+                    _MultipleChoiceMetricsRepository = new MultipleChoiceMetricsRepository(this);
 
-                if (this._MultipleChoiceMetricsRepository == null)
-                {
-                    this._MultipleChoiceMetricsRepository = new MultipleChoiceMetricsRepository(this);
-                }
                 return _MultipleChoiceMetricsRepository;
             }
         }
@@ -207,11 +174,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_FilledFormsRepository == null)
+                    _FilledFormsRepository = new FilledFormsRepository(this);
 
-                if (this._FilledFormsRepository == null)
-                {
-                    this._FilledFormsRepository = new FilledFormsRepository(this);
-                }
                 return _FilledFormsRepository;
             }
         }
@@ -221,11 +186,9 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
+                if (_FormValuesRepository == null)
+                    _FormValuesRepository = new FormValuesRepository(this);
 
-                if (this._FormValuesRepository == null)
-                {
-                    this._FormValuesRepository = new FormValuesRepository(this);
-                }
                 return _FormValuesRepository;
             }
         }
@@ -235,9 +198,8 @@ namespace LightMethods.Survey.Models.DAL
         {
             get
             {
-
-                if (this._ThreadAssignmentsRepository == null)
-                    this._ThreadAssignmentsRepository = new ThreadAssignmentsRepository(this);
+                if (_ThreadAssignmentsRepository == null)
+                    _ThreadAssignmentsRepository = new ThreadAssignmentsRepository(this);
 
                 return _ThreadAssignmentsRepository;
             }

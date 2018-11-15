@@ -1,28 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using LightMethods.Survey.Models.Entities;
+using System;
 using System.IO;
 
 namespace LightMethods.Survey.Models.DAL
 {
     public class AttachmentsRepository : Repository<Attachment>
     {
-
         public static string RootFolderPath { set; get; }
 
-        public AttachmentsRepository(UnitOfWork uow)
-            : base(uow)
-        {
-
-        }
+        public AttachmentsRepository(UnitOfWork uow) : base(uow) { }
 
         public override void Delete(Attachment entity)
         {
-            
-            var fileInfo = new FileInfo (Path.Combine(RootFolderPath, entity.RelativeFolder, entity.NameOnDisk));
+            var fileInfo = new FileInfo(Path.Combine(RootFolderPath, entity.RelativeFolder, entity.NameOnDisk));
             if (fileInfo.Exists)
                 fileInfo.Delete();
 
@@ -31,11 +21,14 @@ namespace LightMethods.Survey.Models.DAL
 
         public Attachment CreateAttachment(FileInfo fileInfo, FormValue formValue)
         {
-            var attachment = new Attachment();
-            attachment.FormValue = formValue;
-            attachment.FileName = fileInfo.FullName;
-            attachment.TypeId = AttachmentTypesRepository.FromExtension(fileInfo.Extension).Id;
-            attachment.FileSize = -1; // not yet copied to the file repository
+            var attachment = new Attachment
+            {
+                FormValue = formValue,
+                FileName = fileInfo.FullName,
+                TypeId = AttachmentTypesRepository.FromExtension(fileInfo.Extension).Id,
+                FileSize = -1 // not yet copied to the file repository
+            };
+
             return attachment;
         }
 
@@ -54,8 +47,6 @@ namespace LightMethods.Survey.Models.DAL
 
             attachment.FileName = fileName;
             attachment.FileSize = Convert.ToInt32(tempFileInfo.Length);
-
-
         }
     }
 }

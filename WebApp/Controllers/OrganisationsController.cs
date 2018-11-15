@@ -7,14 +7,20 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "System administrator,Platform administrator")]
     public class OrganisationsController : BaseApiController
     {
+
+        private const string CACHE_KEY = "ORGANISATIONS";
 
         #region Properties
 
@@ -30,55 +36,99 @@ namespace WebApi.Controllers
 
         #endregion
 
+        #region CRUD
+
         // GET api/organisations
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
-        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult Get()
         {
-            var orgs = Organisations.AllIncluding(u => u.RootUser)
-                .OrderBy(u => u.Name)
-                .ToList()
-                .Select(u => Mapper.Map<OrganisationDTO>(u)).ToList();
+            var cacheEntry = MemoryCacher.GetValue(CACHE_KEY);
+            if (cacheEntry == null)
+            {
+                var organisations = Organisations.AllIncluding(u => u.RootUser)
+                    .OrderBy(u => u.Name)
+                    .ToList()
+                    .Select(u => Mapper.Map<OrganisationDTO>(u))
+                    .ToList();
 
-            return Ok(orgs);
+                MemoryCacher.Add(CACHE_KEY, organisations, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(organisations);
+            }
+            else
+            {
+                var result = (List<OrganisationDTO>)cacheEntry;
+                return new CachedResult<List<OrganisationDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/organisations/getList
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
         [Route("api/organisations/getlist")]
+        [OverrideAuthorization()]
+        [Authorize(Roles = "Organisation user")]
         public IHttpActionResult GetList()
         {
-            var orgs = Organisations.AllAsNoTracking
-                .Where(x => !x.Name.Equals("OnRecord"))
-                .OrderBy(x => x.Name)
-                .ToList()
-                .Select(x => Mapper.Map<OrganisationDTO>(x))
-                .ToList();
+            //var isOrgAdmin = await ServiceContext.UserManager.IsInRoleAsync(CurrentOrgUser.Id, "Organisation administrator");
+            if (CurrentOrgUser.AccountType != AccountType.MobileAccount)
+                return BadRequest("organisations list is only available to mobile users");
 
-            return Ok(orgs);
+            var cacheKey = $"{CACHE_KEY}_LIST";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
+
+            if (cacheEntry == null)
+            {
+                var organisations = Organisations
+                    .AllAsNoTracking
+                    .Where(x => !x.Name.Equals("OnRecord"))
+                    .OrderBy(x => x.Name)
+                    .ToList()
+                    .Select(x => Mapper.Map<OrganisationDTO>(x))
+                    .ToList();
+
+                MemoryCacher.Add(cacheKey, organisations, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(organisations);
+            }
+            else
+            {
+                var result = (List<OrganisationDTO>)cacheEntry;
+                return new CachedResult<List<OrganisationDTO>>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/organisations/{id}
         [DeflateCompression]
         [ResponseType(typeof(OrganisationDTO))]
-        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
                 return Ok(Mapper.Map<OrganisationDTO>(new Organisation()));
 
-            var org = Mapper.Map<OrganisationDTO>(Organisations.Find(id));
+            var cacheKey = $"{CACHE_KEY}_{id}";
+            var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            if (org == null)
-                return NotFound();
+            if (cacheEntry == null)
+            {
+                var organisation = Organisations.Find(id);
+                if (organisation == null)
+                    return NotFound();
 
-            return Ok(org);
+                var result = Mapper.Map<OrganisationDTO>(organisation);
+                MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
+            }
+            else
+            {
+                var result = (OrganisationDTO)cacheEntry;
+                return new CachedResult<OrganisationDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // POST api/organisations
-        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Post([FromBody]OrganisationDTO value)
         {
             var createOrganisation = new CreateOrganisation();
@@ -98,176 +148,130 @@ namespace WebApi.Controllers
             createOrganisation.DefaultLanguageId = LanguagesRepository.English.Id;
 
             Organisations.CreateOrganisation(createOrganisation);
-            UnitOfWork.Save();
 
-            return Ok();
+            try
+            {
+                UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // PUT api/organisations/{id}
-        [Authorize(Roles = "System administrator,Platform administrator")]
-        public void Put(Guid id, [FromBody]OrganisationDTO value)
+        public IHttpActionResult Put(Guid id, [FromBody]OrganisationDTO value)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
 
-            var org = Organisations.Find(id);
-            if (org == null) return;
+            var organisation = Organisations.Find(id);
+            if (organisation == null)
+                return NotFound();
 
-            Mapper.Map(value, org);
+            organisation.Name = value.Name;
+            organisation.SubscriptionEnabled = value.SubscriptionEnabled;
+            organisation.SubscriptionMonthlyRate = value.SubscriptionMonthlyRate;
+            organisation.AddressLine1 = value.AddressLine1;
+            organisation.AddressLine2 = value.AddressLine2;
+            organisation.Town = value.Town;
+            organisation.County = value.County;
+            organisation.Postcode = value.Postcode;
+            organisation.TelNumber = value.TelNumber;
 
-            Organisations.InsertOrUpdate(org);
-            UnitOfWork.Save();
+            try
+            {
+                Organisations.InsertOrUpdate(organisation);
+                UnitOfWork.Save();
+
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DEL api/organisations/{id}
-        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult Delete(Guid id)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             try
             {
                 Organisations.Delete(id);
                 UnitOfWork.Save();
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
             catch (DbUpdateException)
             {
-                return BadRequest("This organisation cannot be deleted!");
+                return BadRequest("this organisation cannot be deleted");
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
+
+        #endregion CRUD
+
+        #region User Management
 
         // POST api/organisations/{id}/assign
         [HttpPost]
         [Route("api/organisations/{id:guid}/assign")]
-        [Authorize(Roles = "System administrator,Platform administrator")]
         public IHttpActionResult AssignUsers(Guid id, OrganisationAssignmentDTO model)
         {
             if (id == Guid.Empty)
-                return NotFound();
+                return BadRequest("id is empty");
 
-            var org = this.Organisations.Find(id);
+            var org = Organisations.Find(id);
             if (org == null)
                 return NotFound();
 
-            foreach (var userId in model.OrgUsers)
+            var subscriptionService = new SubscriptionService(UnitOfWork);
+            subscriptionService.MoveUsersToOrganisation(org, model.OrgUsers);
+
+            try
             {
-                var orgUser = this.OrgUsers.Find(userId);
-
-                // remove this user from any teams in current organisation.
-                var records = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
-                    .Where(x => x.OrgUserId == orgUser.Id && x.OrganisationTeam.OrganisationId == orgUser.OrganisationId)
-                    .ToList();
-
-                foreach (var item in records)
-                    UnitOfWork.OrgTeamUsersRepository.Delete(item);
-
-                orgUser.OrganisationId = id;    // update user's organisation
-
-                if (orgUser.CurrentProject != null) // update user's current project, if exists
-                {
-                    if (orgUser.CurrentProject.CreatedById == orgUser.Id)
-                    {
-                        var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
-                        project.OrganisationId = org.Id;    // update project's organisation
-
-                        // update threads under this project
-                        var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
-                            .Where(t => t.ProjectId == project.Id)
-                            .ToList();
-
-                        // update form templates' organisation
-                        foreach (var form in threads)
-                        {
-                            form.OrganisationId = org.Id;
-                            UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
-                        }
-
-                        // assign Org root user to the project
-                        UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
-                        {
-                            ProjectId = orgUser.CurrentProjectId.Value,
-                            OrgUserId = org.RootUserId.Value,
-                            CanAdd = true,
-                            CanEdit = true,
-                            CanDelete = true,
-                            CanView = true,
-                            CanExportPdf = true,
-                            CanExportZip = true
-                        });
-                    }
-                }
-
-                // cancel last subscription, if any.
-                var lastSubscription = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking
-                   .Where(x => x.OrgUserId == userId && x.IsActive)
-                   .OrderByDescending(x => x.DateCreated)
-                   .FirstOrDefault();
-
-                if (lastSubscription != null)
-                {
-                    if (lastSubscription.Type == UserSubscriptionType.Organisation)
-                    {
-                        lastSubscription.EndDate = DateTimeService.UtcNow;
-                        lastSubscription.IsActive = false;
-
-                        this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(lastSubscription);
-                    }
-                    else
-                    {
-                        var paymentRecord = this.UnitOfWork.PaymentsRepository.Find(lastSubscription.PaymentRecord.Id);
-                        foreach (var record in paymentRecord.Subscriptions)
-                        {
-                            record.IsActive = false;
-                        }
-
-                        this.UnitOfWork.PaymentsRepository.InsertOrUpdate(paymentRecord);
-                    }
-                }
-
-                // grant export access to the user
-                if (orgUser.CurrentProjectId.HasValue)
-                {
-                    var orgUserAssignment = orgUser.Assignments.Where(x => x.ProjectId == orgUser.CurrentProject.Id).SingleOrDefault();
-                    if (orgUserAssignment != null)
-                    {
-                        orgUserAssignment.CanExportPdf = true;
-                        orgUserAssignment.CanExportZip = true;
-
-                        UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
-                    }
-                }
-
-                var subscription = new Subscription
-                {
-                    IsActive = true,
-                    Type = UserSubscriptionType.Organisation,
-                    StartDate = DateTimeService.UtcNow,
-                    EndDate = null,
-                    Note = $"Joined organisation - {org.Name}",
-                    OrgUserId = userId,
-                    OrganisationId = org.Id
-                };
-
-                UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
-
                 // TODO: notify the user by email.
+                // notify orgUser about joining organisation
+                // notify orgAdmin about new user
+
+                UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
             }
-
-            UnitOfWork.Save();
-
-            return Ok();
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DEL api/organisations/{id}/revoke/{userId}
         [HttpDelete]
         [Route("api/organisations/{id:guid}/revoke/{userId:guid}")]
+        [OverrideAuthorization()]
         [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult RevokeUser(Guid id, Guid userId)
         {
-            // IMPORTANT NOTE:
-            // when removing a user from an organisation,
-            // we need to deactivate the subscription record and,
-            // create a case assignment for the OnRecord root admin again.
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
 
-            var org = this.Organisations.Find(id);
+            if (userId == Guid.Empty)
+                return BadRequest("user id is empty");
+
+            var org = Organisations.Find(id);
             if (org == null)
                 return NotFound();
 
@@ -275,134 +279,65 @@ namespace WebApi.Controllers
             if (orgUser == null)
                 return NotFound();
 
-            // we need a better way of getting the default seed organization.
-            // OnRecord ID: cfa81eb0-9fc7-4932-a3e8-1c822370d034
-            var onrecord = UnitOfWork.OrganisationRepository.AllAsNoTracking
-                .Where(x => x.Name == "OnRecord").FirstOrDefault();
-
-            // remove this user from any teams in current organisation.
-            var records = UnitOfWork.OrgTeamUsersRepository.AllAsNoTracking
-                .Where(x => x.OrgUserId == userId && x.OrganisationTeam.OrganisationId == orgUser.OrganisationId)
-                .ToList();
-
-            foreach (var item in records)
-                UnitOfWork.OrgTeamUsersRepository.Delete(item);
-
-            orgUser.OrganisationId = onrecord.Id;   // update user's organisation
-
-            if (orgUser.CurrentProject != null)
-            {
-                if (orgUser.CurrentProject.CreatedById == orgUser.Id)
-                {
-                    var project = UnitOfWork.ProjectsRepository.Find(orgUser.CurrentProject.Id);
-                    project.OrganisationId = onrecord.Id;    // update project's organisation
-
-                    var threads = UnitOfWork.FormTemplatesRepository.AllAsNoTracking
-                           .Where(t => t.ProjectId == project.Id)
-                           .ToList();
-
-                    foreach (var form in threads)   // update form templates' organisation
-                    {
-                        form.OrganisationId = onrecord.Id;
-                        UnitOfWork.FormTemplatesRepository.InsertOrUpdate(form);
-                    }
-
-                    // remove the assignment for current organisation's root user
-                    var rootUserAssignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
-                        .Where(x => x.OrgUserId == org.RootUserId && x.ProjectId == project.Id).FirstOrDefault();
-
-                    UnitOfWork.AssignmentsRepository.Delete(rootUserAssignment);
-
-                    // assign OnRecord root admin to this project again.
-                    if (onrecord.RootUser != null)
-                    {
-                        var onrecordRootAssignment = UnitOfWork.AssignmentsRepository.AllAsNoTracking
-                            .Where(x => x.OrgUserId == onrecord.RootUserId && x.ProjectId == project.Id).FirstOrDefault();
-                        if (onrecordRootAssignment == null)
-                        {
-                            var onRecordAdminAssignment = new Assignment
-                            {
-                                ProjectId = project.Id,
-                                OrgUserId = onrecord.RootUser.Id,
-                                CanView = true,
-                                CanAdd = true,
-                                CanEdit = true,
-                                CanDelete = true,
-                                CanExportPdf = true,
-                                CanExportZip = true
-                            };
-
-                            UnitOfWork.AssignmentsRepository.InsertOrUpdate(onRecordAdminAssignment);
-                        }
-                    }
-                }
-            }
-
-            // update the subscription record.
-            var subscription = this.UnitOfWork.SubscriptionsRepository.AllAsNoTracking
-                .Where(x => x.OrgUserId == orgUser.Id && x.Type == UserSubscriptionType.Organisation && x.IsActive)
-                .OrderByDescending(x => x.DateCreated)
-                .FirstOrDefault();
-
-            if (subscription != null)
-            {
-                subscription.EndDate = DateTimeService.UtcNow;
-                subscription.IsActive = false;
-
-                this.UnitOfWork.SubscriptionsRepository.InsertOrUpdate(subscription);
-            }
-
-            // subscribe this user to OnRecord again.
-            var onRecordSubscription = new Subscription
-            {
-                IsActive = true,
-                Type = UserSubscriptionType.Organisation,
-                StartDate = DateTimeService.UtcNow,
-                EndDate = null,
-                Note = $"Joined organisation - OnRecord",
-                OrgUserId = orgUser.Id
-            };
-
-            UnitOfWork.SubscriptionsRepository.InsertOrUpdate(onRecordSubscription);
+            var subscriptionService = new SubscriptionService(UnitOfWork);
+            subscriptionService.RemoveUserFromOrganization(org, orgUser);
 
             try
             {
-                var content = @"<p>You have left the <strong>" + org.Name + @"</strong> organization.</p>
-                            <p>Your personal case has been moved back to OnRecord. And they don't have access to your files anymore, except for any assignments you might have created.</p>";
-
-                var email = new Email
-                {
-                    To = orgUser.Email,
-                    Subject = $"Left organization - {org.Name}",
-                    Content = WebHelpers.GenerateEmailTemplate(content, "You have left an organization")
-                };
-
-                UnitOfWork.EmailsRepository.InsertOrUpdate(email);
-
-                if (org.RootUser != null)
-                {
-                    var emailBody = @"<p>A user has left your organization: <strong>" + orgUser.UserName + @"</strong>.</p>
-                            <p>And their personal case has been moved back to OnRecord.</p>";
-
-                    var adminEmail = new Email
-                    {
-                        To = org.RootUser.Email,
-                        Subject = $"User left organization - {orgUser.UserName}",
-                        Content = WebHelpers.GenerateEmailTemplate(emailBody, "A user has left your organization")
-                    };
-
-                    UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
-                }
+                // send email notifications
+                NotifyUserAboutLeavingOrganisation(org.Name, orgUser.Email);
+                NotifyOrgAdminAboutUserLeaving(org, orgUser.UserName);
 
                 UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+                MemoryCacher.DeleteStartingWith("ORG_USERS");
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return InternalServerError(ex);
             }
         }
+
+        #endregion User Management
+
+        #region Helpers
+
+        private void NotifyUserAboutLeavingOrganisation(string organisationName, string userEmail)
+        {
+            var userEmailContent = @"<p>You have left the <strong>" + organisationName + @"</strong> organization.</p>
+                            <p>Your personal case has been moved back to OnRecord. And they don't have access to your files anymore, except for any assignments you might have created.</p>";
+
+            var email = new Email
+            {
+                To = userEmail,
+                Subject = $"Left organization - {organisationName}",
+                Content = WebHelpers.GenerateEmailTemplate(userEmailContent, "You have left an organization")
+            };
+
+            UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+        }
+
+        private void NotifyOrgAdminAboutUserLeaving(Organisation organisation, string userName)
+        {
+            if (organisation.RootUser != null)
+            {
+                var adminEmailContent = @"<p>A user has left your organization: <strong>" + userName + @"</strong>.</p>
+                            <p>And their personal case has been moved back to OnRecord.</p>";
+
+                var adminEmail = new Email
+                {
+                    To = organisation.RootUser.Email,
+                    Subject = $"User left organization - {userName}",
+                    Content = WebHelpers.GenerateEmailTemplate(adminEmailContent, "A user has left your organization")
+                };
+
+                UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);
+            }
+        }
+
+        #endregion Helpers
 
     }
 }

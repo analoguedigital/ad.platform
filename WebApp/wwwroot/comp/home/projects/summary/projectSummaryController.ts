@@ -453,8 +453,6 @@ module App {
         }
 
         onTourStart() {
-            console.log('onTourStart');
-
             var tour = this.uiTourService.getTour();
 
             tour.createStep({

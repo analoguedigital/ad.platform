@@ -246,7 +246,6 @@
                                     var timelineBarFormValue = _.filter(survey.formValues, { 'metricId': template.timelineBarMetricId })[0];
                                     if (timelineBarFormValue) {
                                         var value = timelineBarFormValue.numericValue;
-
                                         if (typeof value === 'string') {
                                             impactSum += parseInt(value);
                                         } else {

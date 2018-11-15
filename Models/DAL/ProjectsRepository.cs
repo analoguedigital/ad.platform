@@ -1,11 +1,8 @@
-﻿using System;
+﻿using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using LightMethods.Survey.Models.Entities;
-using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DTO;
-using Microsoft.AspNet.Identity;
 
 namespace LightMethods.Survey.Models.DAL
 {

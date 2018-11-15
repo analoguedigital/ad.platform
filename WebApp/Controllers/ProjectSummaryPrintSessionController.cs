@@ -1,6 +1,6 @@
-﻿using LightMethods.Survey.Models.Services;
+﻿using LightMethods.Survey.Models.Entities;
+using LightMethods.Survey.Models.Services;
 using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -20,12 +20,13 @@ namespace WebApi.Controllers
     [NeedsActiveSubscription]
     public class ProjectSummaryPrintSessionController : BaseApiController
     {
-
         // GET api/projectSummaryPrintSession/{id}
         public IHttpActionResult Get(Guid id)
         {
-            var session = ProjectSummaryPrintSessionService.GetSession(id);
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
 
+            var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
                 return NotFound();
 
@@ -44,14 +45,17 @@ namespace WebApi.Controllers
         [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
         public HttpResponseMessage DownloadZip(Guid id, bool timeline, bool locations, bool piechart)
         {
+            if (id == Guid.Empty)
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+
             var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
-                return null;
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
 
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
             {
-                var subscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
-                if (!subscriptionService.HasAccessToExportZip(this.CurrentOrgUser, session.ProjectId))
+                var subscriptionService = new SubscriptionService(UnitOfWork);
+                if (!subscriptionService.HasAccessToExportZip(CurrentOrgUser, session.ProjectId))
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
             }
 
@@ -63,14 +67,17 @@ namespace WebApi.Controllers
         [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
         public HttpResponseMessage DownloadPdf(Guid id, bool timeline, bool locations, bool piechart)
         {
+            if (id == Guid.Empty)
+                return new HttpResponseMessage(HttpStatusCode.BadRequest);
+
             var session = ProjectSummaryPrintSessionService.GetSession(id);
             if (session == null)
-                return null;
+                return new HttpResponseMessage(HttpStatusCode.NotFound);
 
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
             {
-                var subscriptionService = new SubscriptionService(this.CurrentOrgUser, this.UnitOfWork);
-                if (!subscriptionService.HasAccessToExportPdf(this.CurrentOrgUser, session.ProjectId))
+                var subscriptionService = new SubscriptionService(UnitOfWork);
+                if (!subscriptionService.HasAccessToExportPdf(CurrentOrgUser, session.ProjectId))
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
             }
 
@@ -89,10 +96,10 @@ namespace WebApi.Controllers
 
         private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
         {
-            if (this.CurrentOrgUser != null)
+            if (CurrentOrgUser != null)
             {
                 var project = UnitOfWork.ProjectsRepository.Find(session.ProjectId);
-                var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == this.CurrentOrgUser.Id);
+                var assignment = project.Assignments.SingleOrDefault(a => a.OrgUserId == CurrentOrgUser.Id);
                 if (assignment == null || !assignment.CanExportZip)
                     return new HttpResponseMessage(HttpStatusCode.Forbidden);
             }
@@ -101,7 +108,7 @@ namespace WebApi.Controllers
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
 
-            var surveys = this.UnitOfWork.FilledFormsRepository.AllAsNoTracking
+            var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => session.SurveyIds.Contains(s.Id)).ToList();
 
             var rootFolder = HostingEnvironment.MapPath("/ExportTemp");
@@ -111,7 +118,7 @@ namespace WebApi.Controllers
 
             foreach (var survey in surveys)
             {
-                var attachments = this.UnitOfWork.AttachmentsRepository.AllAsNoTracking
+                var attachments = UnitOfWork.AttachmentsRepository.AllAsNoTracking
                     .Where(a => a.FormValue.FilledFormId == survey.Id).ToList();
 
                 foreach (var attch in attachments)

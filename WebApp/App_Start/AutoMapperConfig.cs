@@ -162,7 +162,11 @@ namespace WebApi
             Mapper.CreateMap<User, UserDTO>().ReverseMap();
             Mapper.CreateMap<SuperUser, UserDTO>().ReverseMap();
 
-            Mapper.CreateMap<Organisation, OrganisationDTO>().ReverseMap();
+            Mapper.CreateMap<Organisation, OrganisationDTO>()
+                .ForMember(x => x.RootUserEmail, opt => opt.MapFrom(x => x.RootUser.Email))
+                .ForMember(x => x.RootUser, opt => opt.Ignore())
+                .ReverseMap();
+
             Mapper.CreateMap<OrgUser, OrgUserDTO>();
             Mapper.CreateMap<OrgUserDTO, OrgUser>()
                 .ForMember(dest => dest.Type, opts => opts.Ignore())

@@ -21,7 +21,8 @@ module App {
         subscriptions: Models.ISubscriptionEntry[];
         latestSubscription?: Date;
         isRestricted: boolean;
-        isSuperUser: boolean;
+        isAdmin: boolean;
+        accountType: number;
 
         activate: () => void;
         redeemCode: () => void;
@@ -31,7 +32,8 @@ module App {
         subscriptions: Models.ISubscriptionEntry[];
         latestSubscription?: Date;
         isRestricted: boolean;
-        isSuperUser: boolean;
+        isAdmin: boolean;
+        accountType: number;
 
         static $inject: string[] = ["$scope", "$uibModal", "paymentResource", "userContextService",
             "subscriptionResource", "subscriptionPlanResource", "userContextService"];
@@ -50,14 +52,15 @@ module App {
 
         activate() {
             var roles = ["System administrator", "Platform administrator", "Organisation administrator"];
-            this.isSuperUser = this.userContextService.userIsInAnyRoles(roles);
+            this.isAdmin = this.userContextService.userIsInAnyRoles(roles);
             this.isRestricted = this.userContext.userIsRestricted();
+            this.accountType = this.userContext.current.orgUser.accountType;
 
             this.load();
         }
 
         load() {
-            if (!this.isSuperUser) {
+            if (!this.isAdmin && this.accountType === 0) {
                 let userId = this.userContext.current.user.id;
 
                 this.subscriptionResource.getLatest(

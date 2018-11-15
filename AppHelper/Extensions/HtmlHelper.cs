@@ -22,6 +22,7 @@ namespace AppHelper
             tableTag.AddCssClass("radio-main");
 
             var trTag = new TagBuilder("tr");
+
             foreach (var item in items)
             {
                 var tdTag = new TagBuilder("td");
@@ -38,6 +39,7 @@ namespace AppHelper
 
                 trTag.InnerHtml += tdTag.ToString();
             }
+
             tableTag.InnerHtml = trTag.ToString();
 
             return new MvcHtmlString(tableTag.ToString());
@@ -77,6 +79,5 @@ namespace AppHelper
 
             return MvcHtmlString.Create(sb.ToString());
         }
-
     }
 }

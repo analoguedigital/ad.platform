@@ -17,6 +17,7 @@ namespace LightMethods.Survey.Models.Entities
 
         [Index]
         public Guid FormTemplateId { set; get; }
+
         public virtual FormTemplate FormTemplate { set; get; }
 
         [Display(Name = "Short title")]
@@ -30,6 +31,7 @@ namespace LightMethods.Survey.Models.Entities
 
         [Index]
         public Guid MetricGroupId { set; get; }
+
         public virtual MetricGroup MetricGroup { set; get; }
 
         [UIHint("YesNo")]
@@ -38,7 +40,6 @@ namespace LightMethods.Survey.Models.Entities
         [StringLength(100)]
         [Display(Name = "Section title")]
         public string SectionTitle { set; get; }
-
 
         public int Order { set; get; }
 

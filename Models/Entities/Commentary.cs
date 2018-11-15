@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel.DataAnnotations;
-using LightMethods.Survey.Models.DTO;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Services;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LightMethods.Survey.Models.Entities
 {
     public class Commentary : Entity
     {
         public Project Project { set; get; }
+
         public Guid ProjectId { set; get; }
 
         [Required]
@@ -27,6 +26,7 @@ namespace LightMethods.Survey.Models.Entities
 
         [Display(Name="Severity level")]
         public SeverityLevel SeverityLevel { set; get; }
+
         public Guid? SeverityLevelId { set; get; }
 
         public virtual ICollection<CommentaryDocument> Documents { set; get; }

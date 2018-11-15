@@ -11,16 +11,13 @@ namespace LightMethods.Survey.Models.Entities
 {
     public class DichotomousMetric : Metric
     {
-
         /// <summary>
         /// Just for UI usage
         /// </summary>
         [NotMapped]
         public bool? Value { set; get; }
 
-        public DichotomousMetric()
-        {
-        }
+        public DichotomousMetric() { }
 
         public override IEnumerable<ValidationResult> ValidateValue(FormValue value)
         {
@@ -70,6 +67,5 @@ namespace LightMethods.Survey.Models.Entities
 
             return result;
         }
-
     }
 }

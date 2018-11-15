@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace LightMethods.Survey.Models.DTO
 {
@@ -24,9 +20,7 @@ namespace LightMethods.Survey.Models.DTO
 
         public override bool Equals(object obj)
         {
-            var item = obj as OrganisationTeamDTO;
-
-            if (item == null)
+            if (!(obj is OrganisationTeamDTO item))
                 return false;
 
             return this.Id.Equals(item.Id);

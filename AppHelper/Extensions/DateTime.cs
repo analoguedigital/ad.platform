@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppHelper
 {
@@ -18,13 +14,12 @@ namespace AppHelper
 
             return date.ToString(format);
         }
+
         private static string DateToPersian(DateTime date, string format)
         {
             var abbreviatedDayNames = new string[] { "ي", "د", "س", "چ", "پ", "ج", "ش" };
             var dayNames = new string[] { "يكشنبه", "دوشنبه", "سه شنبه", "چهار شنبه", "پنجشنبه", "جمعه", "شنبه" };
             var monthNames = new string[] { "فروردين", "ارديبهشت", "خرداد", "تير", "مرداد", "شهريور", "مهر", "آبان", "آذر", "دي", "بهمن", "اسفند", "" };
-            var amDesignator = "ق.ظ";
-            var pmDesignator = "ب.ظ";
 
             var pc = new PersianCalendar();
 

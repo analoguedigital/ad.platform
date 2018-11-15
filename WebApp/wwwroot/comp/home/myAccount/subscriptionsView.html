@@ -1,6 +1,6 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
 <div class="wrapper wrapper-content animated fadeInRight">
-    <div class="box" ng-if="ctrl.isSuperUser">
+    <div class="box" ng-if="ctrl.isAdmin">
         <div class="box-title">
             <h5>Admin Subscriptions</h5>
         </div>
@@ -11,7 +11,18 @@
         </div>
     </div>
 
-    <div class="box" ng-if="lastSubscription && !ctrl.isSuperUser">
+    <div class="box" ng-if="ctrl.accountType === 1">
+        <div class="box-title">
+            <h5>Web Account Subscriptions</h5>
+        </div>
+        <div class="box-content">
+            <p>Web Accounts do not need an active subscription. Your account is managed by your organization.</p>
+            <p>You have access to our platform as determined by your security and access permissions.</p>
+            <p>If you need help regarding your subscriptions please contact your administrator or OnRecord at <a href="mailto:admin@analogue.digital" style="text-decoration: underline">admin@analogue.digital</a>.</p>
+        </div>
+    </div>
+
+    <div class="box" ng-if="lastSubscription && !ctrl.isAdmin">
         <div class="box-title">
             <h5>Active Subscription</h5>
         </div>
@@ -87,7 +98,7 @@
         </div>
     </div>
 
-    <div class="box" ng-if="!ctrl.isSuperUser">
+    <div class="box" ng-if="!ctrl.isAdmin && ctrl.accountType === 0">
         <div class="box-title">
             <h5>Subscriptions</h5>
         </div>

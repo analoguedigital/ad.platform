@@ -13,8 +13,8 @@ namespace AppHelper
         {
             if (!index.HasValue || index == Guid.Empty)
                 index = Guid.NewGuid();
-                
-            
+
+
             var idsToReuse = GetIdsToReuse(html.ViewContext.HttpContext, collectionName);
             string itemIndex = idsToReuse.Count > 0 ? idsToReuse.Dequeue() : index.ToString();
 
@@ -54,6 +54,7 @@ namespace AppHelper
                     foreach (string previouslyUsedId in previouslyUsedIds.Split(','))
                         queue.Enqueue(previouslyUsedId);
             }
+
             return queue;
         }
 

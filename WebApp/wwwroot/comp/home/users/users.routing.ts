@@ -27,7 +27,7 @@
                 templateUrl: "comp/home/users/mobile/mobileUsersView.html",
                 controller: "mobileUsersController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Mobile Users' },
+                ncyBreadcrumb: { label: 'Clients' },
                 module: 'private'
             })
             .state("home.users.edit", <App.Models.IAppRoute>{

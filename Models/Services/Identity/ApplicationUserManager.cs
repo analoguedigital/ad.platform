@@ -151,7 +151,7 @@ namespace LightMethods.Survey.Models.Services.Identity
             var orgUser = this.FindById(userId) as OrgUser;
             if (orgUser != null && orgUser.AccountType == AccountType.MobileAccount)
             {
-                var subscriptionService = new SubscriptionService(orgUser, new UnitOfWork(new SurveyContext()));
+                var subscriptionService = new SubscriptionService(new UnitOfWork(new SurveyContext()));
                 if (!subscriptionService.HasValidSubscription(userId))
                     return Task.FromResult<IList<string>>(new List<string>(new string[] { Role.RESTRICTED_USER }));
             }

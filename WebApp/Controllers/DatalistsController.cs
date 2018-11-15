@@ -6,106 +6,209 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using WebApi.Filters;
+using WebApi.Results;
+using WebApi.Services;
 
 namespace WebApi.Controllers
 {
+    [Authorize(Roles = "System administrator")]
     public class DataListsController : BaseApiController
     {
 
+        private const string CACHE_KEY = "DATA_LISTS";
+
         // GET api/dataLists
         [ResponseType(typeof(IEnumerable<GetDataListsResDTO>))]
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Organisation user")]
         public IHttpActionResult Get()
         {
-            var result = new List<GetDataListsResItemDTO>();
-
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
             {
-                var datalists = UnitOfWork.DataListsRepository.AllAsNoTracking
-                    .Where(d => d.OrganisationId == CurrentOrgUser.OrganisationId)
+                var cacheKey = $"{CACHE_KEY}_{CurrentOrgUser.OrganisationId}";
+                var cacheEntry = MemoryCacher.GetValue(cacheKey);
+
+                if (cacheEntry == null)
+                {
+                    var dataLists = UnitOfWork.DataListsRepository
+                        .AllAsNoTracking
+                        .Where(d => d.OrganisationId == CurrentOrgUser.OrganisationId)
+                        .OrderBy(d => d.Name)
+                        .ToList();
+
+                    var values = dataLists
+                        .Where(d => !d.IsAdHoc)
+                        .Select(d => Mapper.Map<GetDataListsResItemDTO>(d))
+                        .ToList();
+
+                    var result = new GetDataListsResDTO { Items = values.ToList() };
+
+                    MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                    return Ok(result);
+                }
+                else
+                {
+                    var result = (GetDataListsResDTO)cacheEntry;
+                    return new CachedResult<GetDataListsResDTO>(result, TimeSpan.FromMinutes(1), this);
+                }
+            }
+
+            // else if current user is super user
+            var _cacheEntry = MemoryCacher.GetValue(CACHE_KEY);
+            if (_cacheEntry == null)
+            {
+                var dataLists = UnitOfWork.DataListsRepository
+                    .AllAsNoTracking
                     .OrderBy(d => d.Name)
                     .ToList();
 
-                result = datalists
+                var values = dataLists
                     .Where(d => !d.IsAdHoc)
                     .Select(d => Mapper.Map<GetDataListsResItemDTO>(d))
                     .ToList();
+
+                var result = new GetDataListsResDTO { Items = values.ToList() };
+
+                MemoryCacher.Add(CACHE_KEY, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
             }
             else
             {
-                var datalists = UnitOfWork.DataListsRepository.AllAsNoTracking
-                    .OrderBy(d => d.Name)
-                    .ToList();
-
-                result = datalists
-                    .Where(d => !d.IsAdHoc)
-                    .Select(d => Mapper.Map<GetDataListsResItemDTO>(d))
-                    .ToList();
+                var result = (GetDataListsResDTO)_cacheEntry;
+                return new CachedResult<GetDataListsResDTO>(result, TimeSpan.FromMinutes(1), this);
             }
-
-            return Ok(new GetDataListsResDTO() { Items = result.ToList() });
         }
 
         // GET api/dataLists/{id}
         [DeflateCompression]
         [ResponseType(typeof(DataListDTO))]
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Organisation user")]
         public IHttpActionResult Get(Guid id)
         {
             if (id == Guid.Empty)
                 return Ok(Mapper.Map<DataListDTO>(new DataList()));
 
-            DataList dataList = null;
+            if (CurrentUser is OrgUser)
+            {
+                var cacheKey = $"{CACHE_KEY}_{CurrentOrgUser.OrganisationId}_{id}";
+                var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-            if (this.CurrentOrgUser != null)
-            {
-                dataList = UnitOfWork.DataListsRepository
-                    .AllIncludingNoTracking(d => d.AllItems)
-                    .Where(d => d.Id == id && d.OrganisationId == CurrentOrgUser.OrganisationId)
-                    .SingleOrDefault();
+                if (cacheEntry == null)
+                {
+                    var _dataList = UnitOfWork.DataListsRepository
+                        .AllIncludingNoTracking(d => d.AllItems)
+                        .Where(d => d.Id == id && d.OrganisationId == CurrentOrgUser.OrganisationId)
+                        .SingleOrDefault();
+
+                    if (_dataList == null)
+                        return NotFound();
+
+                    var retVal = Mapper.Map<DataListDTO>(_dataList);
+                    MemoryCacher.Add(cacheKey, retVal, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                    return Ok(retVal);
+                }
+                else
+                {
+                    var retVal = (DataListDTO)cacheEntry;
+                    return new CachedResult<DataListDTO>(retVal, TimeSpan.FromMinutes(1), this);
+                }
             }
-            else
+
+            // else if current user is super user
+            var _cacheKey = $"{CACHE_KEY}_{id}";
+            var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
+
+            if (_cacheEntry == null)
             {
-                dataList = UnitOfWork.DataListsRepository
+                var dataList = UnitOfWork.DataListsRepository
                     .AllIncludingNoTracking(d => d.AllItems)
                     .Where(d => d.Id == id)
                     .SingleOrDefault();
+
+                if (dataList == null)
+                    return NotFound();
+
+                var result = Mapper.Map<DataListDTO>(dataList);
+                MemoryCacher.Add(_cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                return Ok(result);
             }
-
-            if (dataList == null)
-                return NotFound();
-
-            return Ok(Mapper.Map<DataListDTO>(dataList));
+            else
+            {
+                var result = (DataListDTO)_cacheEntry;
+                return new CachedResult<DataListDTO>(result, TimeSpan.FromMinutes(1), this);
+            }
         }
 
         // GET api/dataLists/{id}/items
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<DataListItemDTO>))]
         [Route("api/datalists/{datalistId}/items")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Organisation user")]
         public IHttpActionResult GetDataListItems(Guid datalistId)
         {
-            DataList dataList = null;
-
-            if (this.CurrentOrgUser != null)
+            if (CurrentUser is OrgUser)
             {
-                dataList = UnitOfWork.DataListsRepository
-                    .AllIncludingNoTracking(d => d.AllItems)
-                    .Where(d => d.Id == datalistId && d.OrganisationId == CurrentOrgUser.OrganisationId)
-                    .SingleOrDefault();
+                var cacheKey = $"{CACHE_KEY}_{CurrentOrgUser.OrganisationId}_ITEMS_{datalistId}";
+                var cacheEntry = MemoryCacher.GetValue(cacheKey);
+
+                if (cacheEntry == null)
+                {
+                    var dataList = UnitOfWork.DataListsRepository
+                        .AllIncludingNoTracking(d => d.AllItems)
+                        .Where(d => d.Id == datalistId && d.OrganisationId == CurrentOrgUser.OrganisationId)
+                        .SingleOrDefault();
+
+                    if (dataList == null)
+                        return NotFound();
+
+                    var result = dataList.AllItems
+                        .Select(i => Mapper.Map<DataListItemDTO>(i))
+                        .ToList();
+
+                    return Ok(result);
+                }
+                else
+                {
+                    var result = (List<DataListItemDTO>)cacheEntry;
+                    return new CachedResult<List<DataListItemDTO>>(result, TimeSpan.FromMinutes(1), this);
+                }
+            }
+
+            // else if current user is super user
+            var _cacheKey = $"{CACHE_KEY}_ITEMS_{datalistId}";
+            var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
+
+            if (_cacheEntry == null)
+            {
+                var _dataList = UnitOfWork.DataListsRepository
+                                    .AllIncludingNoTracking(d => d.AllItems)
+                                    .Where(d => d.Id == datalistId)
+                                    .SingleOrDefault();
+
+                if (_dataList == null)
+                    return NotFound();
+
+                var retVal = _dataList.AllItems
+                    .Select(i => Mapper.Map<DataListItemDTO>(i))
+                    .ToList();
+
+                return Ok(retVal);
             }
             else
             {
-                dataList = UnitOfWork.DataListsRepository
-                    .AllIncludingNoTracking(d => d.AllItems)
-                    .Where(d => d.Id == datalistId)
-                    .SingleOrDefault();
+                var result = (List<DataListItemDTO>)_cacheEntry;
+                return new CachedResult<List<DataListItemDTO>>(result, TimeSpan.FromMinutes(1), this);
             }
-
-            if (dataList == null)
-                return NotFound();
-
-            return Ok(dataList.AllItems.Select(i => Mapper.Map<DataListItemDTO>(i)));
         }
 
         // POST api/dataLists
@@ -118,7 +221,7 @@ namespace WebApi.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (this.CurrentUser is SuperUser)
+            if (CurrentUser is SuperUser)
             {
                 dataList.OrganisationId = Guid.Parse(dataListDTO.Organisation.Id);
                 dataList.Organisation = null;
@@ -133,15 +236,27 @@ namespace WebApi.Controllers
             foreach (var item in dataList.AllItems)
                 item.Order = order++;
 
-            UnitOfWork.DataListsRepository.InsertOrUpdate(dataList);
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.DataListsRepository.InsertOrUpdate(dataList);
+                UnitOfWork.Save();
 
-            return Ok();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // PUT api/dataLists/{id}
         public IHttpActionResult Put(Guid id, [FromBody]DataListDTO dataListDTO)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             var dataList = Mapper.Map<DataList>(dataListDTO);
             ModelState.Clear();
             Validate(dataList);
@@ -193,36 +308,56 @@ namespace WebApi.Controllers
                 }
             }
 
-            UnitOfWork.Save();
+            try
+            {
+                UnitOfWork.Save();
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // DEL api/dataLists/{id}
         public IHttpActionResult Delete(Guid id)
         {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
             try
             {
                 UnitOfWork.DataListsRepository.Delete(id);
                 UnitOfWork.Save();
 
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
                 return Ok();
             }
             catch (DbUpdateException)
             {
-                return BadRequest("This Data List cannot be deleted!");
+                return BadRequest("this data list cannot be deleted");
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
             }
         }
 
         // GET api/dataLists/{dataListId}/references
         [ResponseType(typeof(GetDataListReferencesResDTO))]
         [Route("api/datalists/{datalistId}/references")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Organisation administrator,Organisation user")]
         public IHttpActionResult GetReferences(Guid datalistId)
         {
             if (datalistId == Guid.Empty)
                 return Ok(new GetDataListReferencesResDTO { Items = new List<GetDataListReferencesResItemDTO>() });
 
             var datalist = UnitOfWork.DataListsRepository.Find(datalistId);
+            // TODO: refactor this method to account for SuperUsers
             if (datalist == null || datalist.OrganisationId != CurrentOrganisationId)
             {
                 var result = new GetDataListReferencesResDTO
@@ -272,6 +407,8 @@ namespace WebApi.Controllers
             {
                 UnitOfWork.DataListRelationshipsRepository.InsertOrUpdate(relationship);
                 UnitOfWork.Save();
+
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
             }
             catch (Exception ex)
             {
@@ -281,7 +418,6 @@ namespace WebApi.Controllers
             var result = (Mapper.Map<DataListRelationshipDTO>(relationship));
 
             return Ok(result);
-
         }
 
         // PUT api/dataLists/{dataListId}/relationships/{id}
@@ -303,6 +439,8 @@ namespace WebApi.Controllers
             {
                 UnitOfWork.DataListRelationshipsRepository.InsertOrUpdate(relationship);
                 UnitOfWork.Save();
+
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                 return Ok();
             }
@@ -329,6 +467,8 @@ namespace WebApi.Controllers
             {
                 UnitOfWork.DataListRelationshipsRepository.Delete(relationship);
                 UnitOfWork.Save();
+
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                 return Ok();
             }

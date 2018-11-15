@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 
 namespace System.Collections.Generic
@@ -33,7 +31,6 @@ namespace System.Collections.Generic
                    from temp in tempItems.DefaultIfEmpty()
                    where ReferenceEquals(null, temp) || temp.Equals(default(T))
                    select item;
-
         }
     }
 }
