@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="col-md-3 pull-right" style="direction: rtl">
-            <button type="button" class="btn btn-primary" ng-click="ctrl.search()">
+            <button type="button" class="btn btn-primary" ng-click="ctrl.search()" ng-disabled="!ctrl.surveys.length">
                 <i class="fa fa-search"></i> Search
             </button>
 

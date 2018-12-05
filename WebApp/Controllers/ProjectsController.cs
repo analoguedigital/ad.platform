@@ -350,6 +350,8 @@ namespace WebApi.Controllers
             var assignment = UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
             var result = Mapper.Map<ProjectAssignmentDTO>(assignment);
 
+            MemoryCacher.DeleteStartingWith("ORG_TEAMS_ASSIGNMENTS");
+
             return Ok(result);
         }
 
@@ -376,6 +378,8 @@ namespace WebApi.Controllers
             var updatedAssignment = UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: false);
             if (updatedAssignment != null)
                 return Ok(Mapper.Map<ProjectAssignmentDTO>(updatedAssignment));
+
+            MemoryCacher.DeleteStartingWith("ORG_TEAMS_ASSIGNMENTS");
 
             return Ok(new ProjectAssignmentDTO());
         }
@@ -460,6 +464,31 @@ namespace WebApi.Controllers
         }
 
         #endregion Advice Threads
+
+        [Route("api/projects/user/{orgUserId:guid}")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator,Organisation team manager")]
+        public IHttpActionResult GetProjectByUserId(Guid orgUserId)
+        {
+            if (orgUserId == Guid.Empty)
+                return BadRequest();
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(orgUserId);
+            if (orgUser == null)
+                return NotFound();
+
+            ProjectDTO result = new ProjectDTO();
+
+            if (orgUser.CurrentProjectId.HasValue)
+                result = ProjectService.GetDirect(orgUser, orgUser.CurrentProjectId.Value);
+            else
+            {
+                if (orgUser.Assignments.Count == 1)
+                    result = ProjectService.GetDirect(orgUser, orgUser.Assignments.First().ProjectId);
+            }
+
+            return Ok(result);
+        }
 
     }
 

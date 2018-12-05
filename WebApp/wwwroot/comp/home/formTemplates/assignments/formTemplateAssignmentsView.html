@@ -29,7 +29,7 @@
                 <div>
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
-                            <input st-search type="text" id="search" name="search" ng-model="ctrl.searchTerm" />
+                            <input st-search type="text" id="search" name="search" ng-model="ctrl.searchTerm" placeholder="User name or email" />
                         </lm-form-group>
                     </form>
                 </div>
@@ -43,10 +43,10 @@
                                 <th st-sort="email">Email address</th>
                                 <th class="text-center" width="100">Web User</th>
                                 <th class="text-center" width="100">Mobile User</th>
-                                <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="View records" tooltip-append-to-body="true"><i class="fa fa-eye"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Add records" tooltip-append-to-body="true"><i class="fa fa-plus-square-o"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Edit records" tooltip-append-to-body="true"><i class="fa fa-edit"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Delete records" tooltip-append-to-body="true"><i class="fa fa-trash-o"></i></th>
                             </tr>
                         </thead>
                         <tbody>

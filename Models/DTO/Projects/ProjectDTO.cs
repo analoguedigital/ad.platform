@@ -30,7 +30,7 @@ namespace LightMethods.Survey.Models.DTO
         
         public bool AllowExportZip { get; set; }
 
-        public UserDTO CreatedBy { get; set; }
+        public OrgUserDTO CreatedBy { get; set; }
 
         public DateTime? LastEntry { get; set; }
 

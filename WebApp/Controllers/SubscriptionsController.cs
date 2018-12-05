@@ -177,6 +177,9 @@ namespace WebApi.Controllers
                 if (subscription == null)
                     return NotFound();
 
+                if (!subscription.IsActive)
+                    return BadRequest("Subscription entry already closed");
+
                 subscription.EndDate = DateTimeService.UtcNow;
                 subscription.IsActive = false;
 
@@ -187,6 +190,9 @@ namespace WebApi.Controllers
                 var payment = UnitOfWork.PaymentsRepository.Find(value.RecordId);
                 if (payment == null)
                     return NotFound();
+
+                if (!payment.Subscriptions.Any(x => x.IsActive == true))
+                    return BadRequest("Subscription entry already closed");
 
                 foreach (var subscription in payment.Subscriptions)
                     subscription.IsActive = false;

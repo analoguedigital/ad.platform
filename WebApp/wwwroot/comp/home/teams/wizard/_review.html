@@ -1,0 +1,82 @@
+﻿<p><br /><br /></p>
+<p class="lead"><i class="fa fa-check-circle"></i> Step 4: Review and confirm your choices of permitted access by staff to client records</p>
+
+<table class="table table-hover">
+    <tbody>
+        <tr ng-repeat="project in teamProjects track by $index">
+            <td>
+                <h2><i class="fa fa-folder-o"></i> {{project.name}}</h2>
+                <h4 class="text-muted">
+                    Number:
+                    <span ng-if="project.number">{{project.number}}</span>
+                    <span ng-if="!project.number">NA</span>
+                </h4>
+                <h4 class="text-muted">
+                    <span ng-if="project.notes">{{project.notes}}</span>
+                    <span ng-if="!project.notes">Notes: NA</span>
+                </h4>
+            </td>
+            <td>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <td>Staff name</td>
+                            <td>Email</td>
+                            <th class="text-center" width="40" uib-tooltip="View records" tooltip-append-to-body="true"><i class="fa fa-eye"></i></th>
+                            <th class="text-center" width="40" uib-tooltip="Add records" tooltip-append-to-body="true"><i class="fa fa-plus-square-o"></i></th>
+                            <th class="text-center" width="40" uib-tooltip="Edit records" tooltip-append-to-body="true"><i class="fa fa-edit"></i></th>
+                            <th class="text-center" width="40" uib-tooltip="Delete records" tooltip-append-to-body="true"><i class="fa fa-trash-o"></i></th>
+                            <th class="text-center" width="40" uib-tooltip="Export Pdf" tooltip-append-to-body="true"><i class="fa fa-file-pdf-o"></i></th>
+                            <th class="text-center" width="40" uib-tooltip="Export Zip" tooltip-append-to-body="true"><i class="fa fa-file-zip-o"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="assignment in project.assignments track by $index">
+                            <td>
+                                <span ng-if="assignment.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
+                                    <i class="fa fa-phone-square"></i>
+                                </span>
+                                <span ng-if="assignment.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
+                                    <i class="fa fa-laptop"></i>
+                                </span>
+                                &nbsp;{{assignment.name}}
+                            </td>
+                            <td>
+                                <i class="fa fa-user-md" ng-if="assignment.isManager" uib-tooltip="Manager" tooltip-append-to-body="true"></i>
+                                <i class="fa fa-user-o" ng-if="!assignment.isManager" uib-tooltip="Member" tooltip-append-to-body="true"></i>
+                                &nbsp;{{assignment.email}}
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="assignment.canView"><i class="fa fa-check"></i></span>
+                                <span ng-if="!assignment.canView"><i class="fa fa-times"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="assignment.canAdd"><i class="fa fa-check"></i></span>
+                                <span ng-if="!assignment.canAdd"><i class="fa fa-times"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="assignment.canEdit"><i class="fa fa-check"></i></span>
+                                <span ng-if="!assignment.canEdit"><i class="fa fa-times"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="assignment.canDelete"><i class="fa fa-check"></i></span>
+                                <span ng-if="!assignment.canDelete"><i class="fa fa-times"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="assignment.canExportPdf"><i class="fa fa-check"></i></span>
+                                <span ng-if="!assignment.canExportPdf"><i class="fa fa-times"></i></span>
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="assignment.canExportZip"><i class="fa fa-check"></i></span>
+                                <span ng-if="!assignment.canExportZip"><i class="fa fa-times"></i></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<button class="btn btn-default" wz-previous><i class="fa fa-arrow-left"></i> Previous</button>
+<button class="btn btn-default" wz-next><i class="fa fa-check"></i> Confirm</button>

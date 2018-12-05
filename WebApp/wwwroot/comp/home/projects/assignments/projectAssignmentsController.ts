@@ -4,16 +4,19 @@ module App {
 
     interface IProjectAssignmentsControllerScope extends ng.IScope {
         title: string;
+        accountTypeFilter: string;
     }
 
     interface IProjectAssignmentsController {
         project: Models.IProject;
         errors: string;
+        safeUserAssignments: IAssignmentUser[];
         userAssignments: IAssignmentUser[];
         displayedAssignments: IAssignmentUser[];
         searchTerm: string;
         clearErrors: () => void;
     }
+
     interface IAssignmentUser {
         userId: string;
         name: string;
@@ -35,11 +38,11 @@ module App {
         project: Models.IProject;
         users: Models.IOrgUser[];
         assignments: Models.IProjectAssignment[];
+        safeUserAssignments: IAssignmentUser[];
         userAssignments: IAssignmentUser[];
         displayedAssignments: IAssignmentUser[];
         searchTerm: string;
         errors: string;
-        listType: string;
 
         static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
         constructor(
@@ -56,7 +59,7 @@ module App {
 
         activate() {
             this.$scope.title = "Case Assignments"
-            this.listType = '2'; // all accounts
+            this.$scope.accountTypeFilter = 'all';
 
             this.projectId = this.$stateParams['id'];
             var projectPromise = this.projectResource.get({ id: this.projectId }, (project) => {
@@ -64,14 +67,15 @@ module App {
 
                 this.projectResource.assignments({ id: this.projectId }, (assignments) => {
                     this.assignments = assignments;
-                    this.load(+this.listType);
+                    this.load();
                 });
             });
         }
 
-        load(listType: number) {
-            this.orgUserResource.query({ listType: listType, organisationId: this.project.organisation.id }, (users) => {
+        load() {
+            this.orgUserResource.query({ listType: 2, organisationId: this.project.organisation.id }, (users) => {
                 this.users = users;
+                this.safeUserAssignments = [];
                 this.userAssignments = [];
 
                 _.forEach(this.users, (user) => {
@@ -98,9 +102,10 @@ module App {
                         canExportZip: userAssignment ? userAssignment.canExportZip : false
                     };
 
-                    this.userAssignments.push(record);
+                    this.safeUserAssignments.push(record);
                 });
 
+                this.userAssignments = this.safeUserAssignments;
                 this.displayedAssignments = [].concat(this.userAssignments);
             });
         }
@@ -164,10 +169,19 @@ module App {
             this.errors = undefined;
         }
 
-        updateListType(type: string) {
-            this.load(+type);
-        }
+        filterAccounts(type: string) {
+            this.$scope.accountTypeFilter = type;
 
+            if (type === 'clients') {
+                this.userAssignments = _.filter(this.safeUserAssignments, (a) => { return a.accountType === 0; });
+            } else if (type === 'staff') {
+                this.userAssignments = _.filter(this.safeUserAssignments, (a) => { return a.accountType === 1; });
+            } else if (type === 'all') {
+                this.userAssignments = this.safeUserAssignments;
+            }
+
+            this.displayedAssignments = [].concat(this.userAssignments);
+        }
     }
 
     angular.module("app").controller("projectAssignmentsController", ProjectAssignmentsController);

@@ -33,12 +33,11 @@ namespace WebApi.Providers
                 return;
             }
 
-            // temporarily disabled. but we need this in production!
-            //if (user is OrgUser && !user.EmailConfirmed)
-            //{
-            //    context.SetError("email_not_verified", "You haven't confirmed your email address yet.");
-            //    return;
-            //}
+            if (user is OrgUser && !user.EmailConfirmed)
+            {
+                context.SetError("email_not_verified", "You haven't confirmed your email address yet.");
+                return;
+            }
 
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType);
             

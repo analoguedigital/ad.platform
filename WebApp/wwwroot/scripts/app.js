@@ -37,7 +37,8 @@ var App;
         "angular-loading-bar",
         "ui.select",
         "mwl.calendar",
-        "bm.uiTour"
+        "bm.uiTour",
+        "mgo-angular-wizard"
     ]);
 })(App || (App = {}));
 

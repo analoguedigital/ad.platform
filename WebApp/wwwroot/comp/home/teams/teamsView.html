@@ -3,7 +3,7 @@
     <div class="box">
         <div class="box-title">
             <h5>Directory of Teams</h5>
-            <div class="box-tools">
+            <div class="box-tools" lm-access="System administrator,Platform administrator,Organisation administrator">
                 <a ui-sref="home.teams.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
             </div>
         </div>
@@ -11,7 +11,7 @@
             <div st-table="displayedTeams" st-safe-src="teams">
                 <form name="search-form" class="form-inline">
                     <lm-form-group label="Search: ">
-                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" placeholder="Name, description or organisation" style="min-width: 250px" />
                     </lm-form-group>
                 </form>
 
@@ -25,6 +25,7 @@
                                 <th st-sort="isActive" class="text-center">IsActive</th>
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="100"></th>
+                                <!--<th class="text-center" width="100"></th>-->
                                 <th class="text-center" width="100"></th>
                             </tr>
                         </thead>
@@ -46,19 +47,27 @@
                                         <i class="fa fa-link"></i> assign
                                     </a>
                                 </td>
-                                <td>
+                                <!--<td>
                                     <a ui-sref="home.teams.manage({id:team.id})">
+                                        <i class="fa fa-magic"></i> manage
+                                    </a>
+                                </td>-->
+                                <td>
+                                    <a ui-sref="home.teams.wizard({id:team.id})">
                                         <i class="fa fa-magic"></i> manage
                                     </a>
                                 </td>
                                 <td>
-                                    <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(team.id)">
-                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
-                                    </a>
+                                    <div lm-access="System administrator,Platform administrator,Organisation administrator">
+                                        <a ng-bootbox-confirm="Are you sure you want to delete this?"
+                                           ng-bootbox-confirm-action="delete(team.id)">
+                                            <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             <tr ng-if="!displayedTeams.length">
-                                <td colspan="7">No teams were found</td>
+                                <td colspan="7">No teams are present</td>
                             </tr>
                         </tbody>
                     </table>

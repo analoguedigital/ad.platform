@@ -1,4 +1,5 @@
-﻿using LightMethods.Survey.Models.DAL;
+﻿using AppHelper;
+using LightMethods.Survey.Models.DAL;
 using LightMethods.Survey.Models.Entities;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
@@ -6,19 +7,14 @@ using Microsoft.Owin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using AppHelper;
 
 namespace LightMethods.Survey.Models.Services.Identity
 {
 
     public class ApplicationUserManager : UserManager<User, Guid>
     {
-        public ApplicationUserManager(IUserStore<User, Guid> store)
-            : base(store)
-        {
-        }
+        public ApplicationUserManager(IUserStore<User, Guid> store) : base(store) { }
 
         public void AddOrUpdateUser(User user, string password)
         {

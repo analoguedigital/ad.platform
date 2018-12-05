@@ -45,12 +45,6 @@ module App {
             this.formTemplateResource.query({ discriminator: 1, projectId: projectId }).$promise
                 .then((templates) => {
                     this.formTemplates = templates;
-
-                    if (templates.length < 1) {
-                        this.toastr.info('No advice threads were found');
-                    } else {
-                        this.toastr.clear();
-                    }
                 }, (err) => {
                     this.toastr.error(err.data);
                     console.log(err)

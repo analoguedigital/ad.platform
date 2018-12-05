@@ -10,6 +10,7 @@
         updateStatus(params: Object, success: Function, error?: Function);
         getProjects(params: Object, success: Function, error?: Function): Models.IProject[];
         getUserTeams(params: Object, success: Function, error?: Function): Models.IProject[];
+        updatePermissions(params: Object, success: Function, error?: Function);
     }
 
     OrgTeamResource.$inject = ["$resource"];
@@ -23,7 +24,8 @@
             'removeUser': { method: 'DELETE', url: '/api/orgteams/:id/removeuser/:userId', params: { id: '@id', userId: '@userId' } },
             'updateStatus': { method: 'POST', url: '/api/orgteams/:id/updatestatus/:userId/:flag', params: { id: '@id', userId: '@userId', flag: '@flag' } },
             'getProjects': { method: 'GET', url: '/api/orgteams/:id/projects', params: { id: '@id' }, isArray: true },
-            'getUserTeams': { method: 'GET', url: '/api/orgteams/getuserteams/:userId', params: { userId: '@userId' }, isArray: true }
+            'getUserTeams': { method: 'GET', url: '/api/orgteams/getuserteams/:userId', params: { userId: '@userId' }, isArray: true },
+            'updatePermissions': { method: 'POST', url: '/api/orgteams/:id/updatePermissions/', params: { id: '@id' } }
         });
     }
 

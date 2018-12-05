@@ -11,7 +11,7 @@
             <div st-table="displayedUsers" st-safe-src="users">
                 <form name="search-form" class="form-inline">
                     <lm-form-group label="Search: ">
-                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" placeholder="Email, first name or surname" style="width: 250px" />
                     </lm-form-group>
                 </form>
 
@@ -22,7 +22,7 @@
                                 <th st-sort="email">Email address</th>
                                 <th width="150" st-sort="firstName">First name</th>
                                 <th width="150" st-sort="surname">Surname</th>
-                                <th class="text-center" width="150" st-sort="organisation.name">Organisation</th>
+                                <th class="text-center" st-sort="organisation.name">Organisation</th>
                                 <th class="text-center" width="150" st-sort="type.name">Type</th>
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="150" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
@@ -33,9 +33,7 @@
                         <tbody>
                             <tr ng-repeat="user in displayedUsers">
                                 <td>
-                                    <i class="fa fa-user-secret" ng-if="user.type.name == 'Administrator'"></i>
-                                    <i class="fa fa-user-o" ng-if="user.type.name !== 'Administrator'"></i>
-                                    &nbsp;
+                                    <i class="fa fa-phone-square" uib-tooltip="Client" tooltip-append-to-body="true"></i>&nbsp;
                                     <a ui-sref="home.users.edit({ id: user.id, accountType: 'mobile-account' })">{{user.email}}</a>
                                 </td>
                                 <td>{{user.firstName}}</td>
@@ -60,10 +58,13 @@
                                         <i class="fa fa-remove"></i><span class="hidden-sm hidden-xs"> delete</span>
                                     </a>
                                 </td>
-                                <td class="text-center" ng-if="user.organisation.name !== 'OnRecord' && !user.isRootUser" lm-access="System administrator,Platform administrator,Organisation administrator">
-                                    <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="revoke(user)">
-                                        <i class="fa fa-unlink"></i><span class="hidden-sm hidden-xs"> remove</span>
-                                    </a>
+                                <td class="text-center">
+                                    <div lm-access="System administrator,Platform administrator,Organisation administrator">
+                                        <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="revoke(user)"
+                                           ng-if="user.organisation.name !== 'OnRecord' && !user.isRootUser">
+                                            <i class="fa fa-unlink"></i><span class="hidden-sm hidden-xs"> remove</span>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             <tr ng-if="!displayedUsers.length">

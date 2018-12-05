@@ -6,6 +6,7 @@ using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -15,8 +16,6 @@ using WebApi.Services;
 
 namespace WebApi.Controllers
 {
-    // TODO: Team Managers shouldn't have full access to teams under their organization.
-    // they should have access only to the teams that have been assigned to!
 
     [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator,Organisation team manager")]
     public class OrgTeamsController : BaseApiController
@@ -36,19 +35,31 @@ namespace WebApi.Controllers
         // GET api/orgTeams/{organisationId?}
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrganisationTeamDTO>))]
-        public IHttpActionResult Get(Guid? organisationId = null)
+        public async Task<IHttpActionResult> Get(Guid? organisationId = null)
         {
             if (CurrentUser is OrgUser)
             {
-                var cacheKey = $"{CACHE_KEY}_{CurrentOrgUser.OrganisationId}";
+                var isTeamManager = await ServiceContext.UserManager.IsInRoleAsync(CurrentOrgUser.Id, Role.ORG_TEAM_MANAGER);
+
+                var cacheKey = isTeamManager ? $"{CACHE_KEY}_MANAGER_{CurrentOrgUser.Id}" : $"{CACHE_KEY}_{CurrentOrgUser.OrganisationId}";
                 var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
                 if (cacheEntry == null)
                 {
-                    var teams = TeamService.Get(CurrentOrgUser.OrganisationId);
-                    MemoryCacher.Add(cacheKey, teams, DateTimeOffset.UtcNow.AddMinutes(1));
+                    if (isTeamManager)
+                    {
+                        var managerTeams = TeamService.GetManagerTeams(CurrentOrgUser.Id);
+                        MemoryCacher.Add(cacheKey, managerTeams, DateTimeOffset.UtcNow.AddMinutes(1));
 
-                    return Ok(teams);
+                        return Ok(managerTeams);
+                    }
+                    else
+                    {
+                        var teams = TeamService.Get(CurrentOrgUser.OrganisationId);
+                        MemoryCacher.Add(cacheKey, teams, DateTimeOffset.UtcNow.AddMinutes(1));
+
+                        return Ok(teams);
+                    }
                 }
                 else
                 {
@@ -208,24 +219,29 @@ namespace WebApi.Controllers
             if (team == null)
                 return NotFound();
 
-            var cacheKey = $"{CACHE_KEY}_ASSIGNMENTS_{id}";
-            var cacheEntry = MemoryCacher.GetValue(cacheKey);
+            var assignments = TeamService.GetAssignments(model);
+            return Ok(assignments);
 
-            if (cacheEntry == null)
-            {
-                var assignments = TeamService.GetAssignments(model);
-                MemoryCacher.Add(cacheKey, assignments, DateTimeOffset.UtcNow.AddMinutes(1));
+            //var cacheKey = $"{CACHE_KEY}_ASSIGNMENTS_{id}";
+            //var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
-                return Ok(assignments);
-            }
-            else
-            {
-                var result = (List<ProjectAssignmentDTO>)cacheEntry;
-                return new CachedResult<List<ProjectAssignmentDTO>>(result, TimeSpan.FromMinutes(1), this);
-            }
+            //if (cacheEntry == null)
+            //{
+            //    var assignments = TeamService.GetAssignments(model);
+            //    MemoryCacher.Add(cacheKey, assignments, DateTimeOffset.UtcNow.AddMinutes(1));
+
+            //    return Ok(assignments);
+            //}
+            //else
+            //{
+            //    var result = (List<ProjectAssignmentDTO>)cacheEntry;
+            //    return new CachedResult<List<ProjectAssignmentDTO>>(result, TimeSpan.FromMinutes(1), this);
+            //}
         }
 
         // POST api/orgTeams
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult Post([FromBody]OrganisationTeamDTO value)
         {
             var orgTeam = new OrganisationTeam
@@ -302,6 +318,8 @@ namespace WebApi.Controllers
         }
 
         // DEL api/orgTeams/{id}
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult Delete(Guid id)
         {
             if (id == Guid.Empty)
@@ -443,6 +461,9 @@ namespace WebApi.Controllers
             if (teamUser == null)
                 return NotFound();
 
+            if (teamUser.OrgUser.AccountType == AccountType.MobileAccount)
+                return BadRequest("Mobile users cannot become team managers!");
+
             teamUser.IsManager = flag;
 
             if (flag)
@@ -455,6 +476,75 @@ namespace WebApi.Controllers
                 UnitOfWork.Save();
                 MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/orgteams/{id:guid}/updatePermissions")]
+        public IHttpActionResult UpdatePermissions(Guid id, UpdatePermissionsDTO model)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("team id is empty");
+
+            var team = UnitOfWork.OrganisationTeamsRepository.Find(id);
+            if (team == null)
+                return NotFound();
+
+            foreach (var record in model.Permissions)
+            {
+                var project = UnitOfWork.ProjectsRepository.Find(record.ProjectId);
+                if (project != null)
+                {
+                    foreach (var item in record.Assignments)
+                    {
+                        var assignment = project.Assignments.SingleOrDefault(x => x.OrgUserId == item.UserId);
+                        if (assignment != null)
+                        {
+                            // update assignment
+                            assignment.CanView = item.CanView;
+                            assignment.CanAdd = item.CanAdd;
+                            assignment.CanEdit = item.CanEdit;
+                            assignment.CanDelete = item.CanDelete;
+                            assignment.CanExportPdf = item.CanExportPdf;
+                            assignment.CanExportZip = item.CanExportZip;
+
+                            if (item.CanAdd || item.CanEdit || item.CanDelete || item.CanExportPdf || item.CanExportZip)
+                                assignment.CanView = true;
+
+                            UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
+                        }
+                        else
+                        {
+                            // create assignment
+                            var newAssignment = new Assignment
+                            {
+                                ProjectId = project.Id,
+                                OrgUserId = item.UserId,
+                                CanView = item.CanView,
+                                CanAdd = item.CanAdd,
+                                CanEdit = item.CanEdit,
+                                CanDelete = item.CanDelete,
+                                CanExportPdf = item.CanExportPdf,
+                                CanExportZip = item.CanExportZip
+                            };
+
+                            if (item.CanAdd || item.CanEdit || item.CanDelete || item.CanExportPdf || item.CanExportZip)
+                                newAssignment.CanView = true;
+
+                            UnitOfWork.AssignmentsRepository.InsertOrUpdate(newAssignment);
+                        }
+                    }
+                }
+            }
+
+            try
+            {
+                UnitOfWork.Save();
                 return Ok();
             }
             catch (Exception ex)
@@ -497,6 +587,49 @@ namespace WebApi.Controllers
 
         #endregion Helpers
 
+    }
+
+    public class UpdatePermissionsDTO
+    {
+        public List<ProjectPermissionsDTO> Permissions { get; set; }
+
+        public UpdatePermissionsDTO()
+        {
+            Permissions = new List<ProjectPermissionsDTO>();
+        }
+    }
+
+    public class ProjectPermissionsDTO
+    {
+        public Guid ProjectId { get; set; }
+
+        public string ProjectName { get; set; }
+
+        public List<UserPermissionDTO> Assignments { get; set; }
+
+        public ProjectPermissionsDTO()
+        {
+            Assignments = new List<UserPermissionDTO>();
+        }
+    }
+
+    public class UserPermissionDTO
+    {
+        public Guid UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public bool CanView { get; set; }
+
+        public bool CanAdd { get; set; }
+
+        public bool CanEdit { get; set; }
+
+        public bool CanDelete { get; set; }
+
+        public bool CanExportPdf { get; set; }
+
+        public bool CanExportZip { get; set; }
     }
 
 }

@@ -51,7 +51,7 @@
                                 </td>
                             </tr>
                             <tr ng-if="!ctrl.surveys.length">
-                                <td colspan="8">No records were found</td>
+                                <td colspan="8">No records</td>
                             </tr>
                         </tbody>
                     </table>
@@ -66,3 +66,5 @@
         </p>
     </div>
 </div>
+
+<div ng-if="!ctrl.formTemplates.length" class="alert alert-info">No threads to show</div>

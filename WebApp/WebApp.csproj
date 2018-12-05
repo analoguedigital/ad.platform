@@ -302,7 +302,14 @@
     <Content Include="wwwroot\comp\home\teams\assign\teamAssignView.html" />
     <Content Include="wwwroot\comp\home\teams\edit\teamEditView.html" />
     <Content Include="wwwroot\comp\home\teams\manage\teamManageView.html" />
+    <Content Include="wwwroot\comp\home\teams\permissions\teamPermissionsView.html" />
     <Content Include="wwwroot\comp\home\teams\teamsView.html" />
+    <Content Include="wwwroot\comp\home\teams\wizard\teamWizardView.html" />
+    <Content Include="wwwroot\comp\home\teams\wizard\_clients.html" />
+    <Content Include="wwwroot\comp\home\teams\wizard\_finish.html" />
+    <Content Include="wwwroot\comp\home\teams\wizard\_permissions.html" />
+    <Content Include="wwwroot\comp\home\teams\wizard\_review.html" />
+    <Content Include="wwwroot\comp\home\teams\wizard\_staff.html" />
     <Content Include="wwwroot\comp\home\users\composeEmail\composeEmailView.html" />
     <Content Include="wwwroot\comp\home\administrators\editSuperUser\superUserEditView.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
@@ -320,7 +327,9 @@
     <Content Include="wwwroot\css\index.min.css">
       <DependentUpon>index.css</DependentUpon>
     </Content>
+    <Content Include="wwwroot\css\ionicons.min.css" />
     <Content Include="wwwroot\favicon.png" />
+    <Content Include="wwwroot\fonts\ionicons.svg" />
     <Content Include="wwwroot\img\01_Analogue_digital_victoria_semykina_01.jpeg" />
     <Content Include="wwwroot\img\03image_03.jpeg" />
     <Content Include="wwwroot\img\2_image_professions_01.jpeg" />
@@ -500,6 +509,12 @@
     <Content Include="wwwroot\comp\home\sharedThreads\summary\_summary.scss" />
     <Content Include="wwwroot\comp\home\administrators\editPlatformUser\_platformUserEditView.scss" />
     <Content Include="wwwroot\comp\home\calendar\_calendar.scss" />
+    <Content Include="wwwroot\comp\home\teams\permissions\_teamPermissionsView.scss" />
+    <Content Include="wwwroot\fonts\ionicons.eot" />
+    <Content Include="wwwroot\fonts\ionicons.ttf" />
+    <Content Include="wwwroot\fonts\ionicons.woff" />
+    <Content Include="wwwroot\comp\home\teams\wizard\_teamWizardView.scss" />
+    <Content Include="wwwroot\comp\home\surveys\all\_allSurveysView.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -625,8 +640,10 @@
     <TypeScriptCompile Include="wwwroot\comp\home\teams\assign\teamAssignController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\edit\teamEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\manage\teamManageController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\teams\permissions\teamPermissionsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\teams.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\teams\TeamsController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\teams\wizard\teamWizardController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\composeEmail\composeEmailController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\administrators\editSuperUser\superUserEditController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\users\edit\userEditController.ts" />

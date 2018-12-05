@@ -20,7 +20,11 @@
             .state("home.dashboard.layout", <App.Models.IAppRoute>{
                 url: "/",
                 views: {
-                    "students": { templateUrl: "comp/home/dashboard/students/studentsView.html", controller: "studentsController" },
+                    "students": {
+                        templateUrl: "comp/home/dashboard/students/studentsView.html",
+                        controller: "studentsController",
+                        controllerAs: 'ctrl'
+                    },
                     "updates": {
                         templateUrl: "comp/home/dashboard/updates/updatesView.html",
                         controller: "updatesController",

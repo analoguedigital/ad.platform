@@ -160,8 +160,11 @@ namespace WebApi.Controllers
         [Authorize(Roles = "System administrator,Organisation user,Restricted user")]
         public async Task<IHttpActionResult> Get(Guid id)
         {
-            if (id == Guid.Empty)
-                return BadRequest("id is empty");
+            // not necessary to validate empty IDs,
+            // because the FormTemplateService method
+            // returns an empty FormTemplateDTO.
+            //if (id == Guid.Empty)
+            //    return BadRequest("id is empty");
 
             if (CurrentUser is OrgUser)
             {

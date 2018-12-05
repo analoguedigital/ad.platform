@@ -18,6 +18,8 @@
         organisationTeam: IOrgTeam;
         orgUser: IOrgUser;
         isManager: boolean;
+
+        isSelected: boolean;
     }
 
     export interface IOrgTeamMember {

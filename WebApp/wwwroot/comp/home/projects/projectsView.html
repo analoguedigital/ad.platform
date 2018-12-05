@@ -2,16 +2,25 @@
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="box">
         <div class="box-title">
-            <h5>Directory of Staff and Clients</h5>
-            <div class="box-tools">
-                <a ui-sref="home.projects.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
+            <h5 class="pull-left">Directory of Staff and Clients</h5>
+            <div class="pull-right">
+                <div class="btn-group" role="group" aria-label="account filters">
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterProjects('clients')"><i class="fa fa-phone-square"></i> Clients</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterProjects('staff')"><i class="fa fa-laptop"></i> Staff</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterProjects('all')"><i class="fa fa-user-circle"></i> All</button>
+                </div>
+
+                <button class="btn btn-default btn-sm" ng-click="ctrl.addNewProject()">
+                    <i class="fa fa-plus-square"></i> Add new
+                </button>
             </div>
+            <div class="clearfix"></div>
         </div>
         <div class="box-content">
             <div st-table="displayedProjects" st-safe-src="projects">
                 <form name="search-form" class="form-inline">
                     <lm-form-group label="Search: ">
-                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" placeholder="Name, note or created by" style="min-width: 200px" />
                     </lm-form-group>
                 </form>
 
@@ -20,6 +29,7 @@
                         <thead>
                             <tr>
                                 <th st-sort="name">Name</th>
+                                <th st-sort="notes">Note</th>
                                 <th st-sort="createdBy" width="200">Created by</th>
                                 <th width="100" class="text-center">Teams</th>
                                 <th width="100" class="text-center">Assignments</th>
@@ -32,7 +42,18 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat="project in displayedProjects">
-                                <td><a ui-sref="home.projects.edit({id:project.id})">{{project.name}}</a></td>
+                                <td>
+                                    <a ui-sref="home.projects.edit({id:project.id})">
+                                        <span ng-if="project.createdBy.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
+                                            <i class="fa fa-phone-square"></i>
+                                        </span>
+                                        <span ng-if="project.createdBy === null || project.createdBy.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
+                                            <i class="fa fa-laptop"></i>
+                                        </span>
+                                        &nbsp;{{project.name}}
+                                    </a>
+                                </td>
+                                <td>{{project.notes}}</td>
                                 <td>
                                     <span ng-if="project.createdBy">{{project.createdBy.email}}</span>
                                     <span ng-if="!project.createdBy">NA</span>

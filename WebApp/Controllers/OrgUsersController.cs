@@ -146,13 +146,14 @@ namespace WebApi.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Post([FromBody]OrgUserDTO value)
         {
-            if (string.IsNullOrEmpty(value.Password))
-                //ModelState.AddModelError("Password", "Please provide password.");
-                return BadRequest("password is required");
+            // not necessary to validate password, 
+            // because we generate a random password and
+            // send it as part of the account confirmation email.
+            //if (string.IsNullOrEmpty(value.Password))
+            //    ModelState.AddModelError("Password", "Please provide password.");
 
-            if (value.Password != value.ConfirmPassword)
-                //ModelState.AddModelError("ConfirmPassword", "'Password' and 'Confirm password' must be the same.");
-                return BadRequest("password and confirm password do not match");
+            //if (value.Password != value.ConfirmPassword)
+            //    ModelState.AddModelError("ConfirmPassword", "'Password' and 'Confirm password' must be the same.");
 
             if (value.AccountType == AccountType.MobileAccount)
             {

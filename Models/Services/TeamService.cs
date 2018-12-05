@@ -37,6 +37,19 @@ namespace LightMethods.Survey.Models.Services
             return result;
         }
 
+        public List<OrganisationTeamDTO> GetManagerTeams(Guid userId)
+        {
+            var teams = UnitOfWork.OrgTeamUsersRepository
+                .AllAsNoTracking
+                .Where(x => x.OrgUserId == userId && x.IsManager == true)
+                .Select(t => t.OrganisationTeam)
+                .ToList()
+                .Select(x => Mapper.Map<OrganisationTeamDTO>(x))
+                .ToList();
+
+            return teams;
+        }
+
         public List<OrganisationTeamDTO> GetUserTeams(Guid userId)
         {
             var teams = UnitOfWork.OrgTeamUsersRepository
@@ -82,7 +95,22 @@ namespace LightMethods.Survey.Models.Services
                 projects.AddRange(userProjects);
             }
 
-            return projects.Distinct().ToList();
+            var result = projects.Distinct().ToList();
+
+            foreach(var p in result)
+            {
+                var lastEntry = UnitOfWork.FilledFormsRepository
+                    .AllAsNoTracking
+                    .Where(x => x.ProjectId == p.Id)
+                    .OrderByDescending(x => x.SurveyDate)
+                    .Take(1)
+                    .FirstOrDefault();
+
+                if (lastEntry != null)
+                    p.LastEntry = lastEntry.SurveyDate;
+            }
+
+            return result;
         }
 
         public List<ProjectAssignmentDTO> GetAssignments(OrgTeamAssignmentsDTO model)

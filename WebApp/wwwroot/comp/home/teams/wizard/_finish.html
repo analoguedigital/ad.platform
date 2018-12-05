@@ -1,0 +1,28 @@
+﻿<p><br /><br /></p>
+<p class="lead"><i class="fa fa-cloud-upload"></i> Final step: If you are happy with your choices, click 'Finish' to save</p>
+
+<div class="well" ng-repeat="project in teamProjects">
+    <h2 style="margin-top: 0">{{project.name}}</h2>
+
+    <div ng-repeat="staff in project.assignments">
+        <div>
+            <h4><i class="fa fa-laptop"></i> {{staff.name}}</h4>
+
+            <ul ng-if="staff.canView || staff.canAdd || staff.canEdit || staff.canDelete || staff.canExportPdf || staff.canExportZip">
+                <li ng-if="staff.canView">Has <b>view access</b> to this case</li>
+                <li ng-if="staff.canAdd">Can <b>add records</b> to this case</li>
+                <li ng-if="staff.canEdit">Can <b>edit records</b> for this case</li>
+                <li ng-if="staff.canDelete">Can <b>delete records</b> for this case</li>
+                <li ng-if="staff.canExportPdf">Can <b>export PDFs</b> from this case</li>
+                <li ng-if="staff.canExportZip">Can <b>export Zip</b> files from this case</li>
+            </ul>
+
+            <p ng-if="!staff.canView && !staff.canAdd && !staff.canEdit && !staff.canDelete && !staff.canExportPdf && !staff.canExportZip">
+                Has no access to this case
+            </p>
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-default" wz-previous><i class="fa fa-arrow-left"></i> Previous</button>
+<button class="btn btn-default" wz-finish><i class="fa fa-upload"></i> Finish</button>

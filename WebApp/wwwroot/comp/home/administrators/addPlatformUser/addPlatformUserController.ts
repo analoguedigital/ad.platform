@@ -48,7 +48,7 @@
 
             this.platformUserResource.create(this.model, (res) => {
                 this.toastr.success('Platform user created successfully');
-                this.close();
+                this.$uibModalInstance.close(res);
             }, (err) => {
                 console.error(err);
             });

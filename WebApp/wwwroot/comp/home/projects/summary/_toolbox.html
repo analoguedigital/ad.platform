@@ -61,6 +61,8 @@
                         <span class="color-block" ng-style="{'background-color': ctrl.getTemplateColour(template.id)}"></span> {{template.title}}
                     </label>
                 </div>
+
+                <p ng-if="!ctrl.formTemplates.length">No threads are present</p>
             </div>
 
             <!-- advanced search -->
@@ -73,7 +75,7 @@
             <div class="toolbox-buttons">
                 <div class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group">
-                        <button class="btn btn-primary" ng-click="ctrl.search()">
+                        <button class="btn btn-primary" ng-click="ctrl.search()" ng-disabled="!ctrl.surveys.length">
                             <i class="fa fa-search-plus"></i> <span class="hidden-xs">Search</span>
                         </button>
                     </div>
@@ -85,7 +87,7 @@
                     </div>
 
                     <div class="btn-group" role="group" ng-if="ctrl.project.allowExportPdf || ctrl.project.allowExportZip">
-                        <button class="btn btn-default" ng-click="ctrl.print()">
+                        <button class="btn btn-default" ng-click="ctrl.print()" ng-disabled="!ctrl.surveys.length">
                             <i class="fa fa-print"></i> <span class="hidden-xs">Export</span>
                         </button>
                     </div>
