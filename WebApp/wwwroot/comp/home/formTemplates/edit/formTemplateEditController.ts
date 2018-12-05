@@ -76,7 +76,7 @@ module App {
             this.categories = this.formTemplateCategoryResource.query();
             this.projects = this.projectResource.query();
 
-            var roles = ["System administrator", "Platform administrator"];
+            var roles = ["System administrator"];
             this.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
 
             if (this.currentUserIsSuperUser) {

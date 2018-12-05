@@ -6,6 +6,8 @@ namespace LightMethods.Survey.Models.DTO
     {
         public Guid Id { get; set; }
 
+        public int AccountType { get; set; }
+
         public string Email { get; set; }
 
         public bool EmailConfirmed { get; set; }

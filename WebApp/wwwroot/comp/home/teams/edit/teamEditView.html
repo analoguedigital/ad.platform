@@ -58,6 +58,7 @@
                                 <th st-sort="isManager" class="text-center">Is Manager</th>
                                 <th st-sort="orgUser.isWebUser" class="text-center" width="110">Web User</th>
                                 <th st-sort="orgUser.isMobileUser" class="text-center" width="110">Mobile User</th>
+                                <!--<th class="text-center" width="120"></th>-->
                                 <th class="text-center" width="80"></th>
                             </tr>
                         </thead>
@@ -72,18 +73,22 @@
                                         <i class="fa fa-laptop"></i>
                                     </span>
                                 </td>
+                                <td>{{member.orgUser.firstName}} {{member.orgUser.surname}}</td>
                                 <td>
                                     <i class="fa fa-user-o" ng-if="!member.isManager"></i>
                                     <i class="fa fa-user-md" ng-if="member.isManager"></i>
-
-                                    {{member.orgUser.firstName}} {{member.orgUser.surname}}
+                                    &nbsp;
+                                    {{member.orgUser.email}}
                                 </td>
-                                <td>{{member.orgUser.email}}</td>
                                 <td class="text-center">
-                                    <div class="checkbox checkbox-primary no-margins">
-                                        <input type="checkbox" id="chk-{{member.orgUser.id}}" ng-model="member.isManager" ng-change="updateStatus(member.id, member.isManager)" />
+                                    <div class="checkbox checkbox-primary no-margins" ng-if="member.orgUser.accountType === 1">
+                                        <input type="checkbox" id="chk-{{member.orgUser.id}}"
+                                               ng-model="member.isManager"
+                                               ng-disabled="member.orgUser.id === currentOrgUserId"
+                                               ng-change="updateStatus(member.id, member.isManager)" />
                                         <label for="chk-{{member.orgUser.id}}"></label>
                                     </div>
+                                    <span ng-if="member.orgUser.accountType === 0">NA</span>
                                 </td>
                                 <td class="text-center">
                                     <i class="fa fa-check" ng-if="member.orgUser.isWebUser"></i>
@@ -93,6 +98,11 @@
                                     <i class="fa fa-check" ng-if="member.orgUser.isMobileUser"></i>
                                     <i class="fa fa-times" ng-if="!member.orgUser.isMobileUser"></i>
                                 </td>
+                                <!--<td>
+                                    <a ui-sref="home.teams.permissions({ id: team.id, userId: member.orgUser.id })">
+                                        <i class="fa fa-list"></i> permissions
+                                    </a>
+                                </td>-->
                                 <td>
                                     <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(member)">
                                         <i class="fa fa-unlink"></i> <span class="hidden-xs"> remove</span>

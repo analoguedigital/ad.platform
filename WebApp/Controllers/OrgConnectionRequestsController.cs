@@ -113,7 +113,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("{organisationId:guid}")]
         [OverrideAuthorization]
-        [Authorize(Roles = "Organisation user")]
+        [Authorize(Roles = "Organisation user,Restricted user")]
         public IHttpActionResult Post(Guid organisationId)
         {
             if (CurrentOrgUser.AccountType != AccountType.MobileAccount)

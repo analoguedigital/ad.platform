@@ -1,0 +1,18 @@
+﻿#adv-search {
+    position: relative;
+    height: auto;
+    -webkit-transition: all linear 0.3s;
+    transition: all linear 0.3s;
+    top: 0;
+    opacity: 1;
+}
+
+#adv-search.ng-hide {
+    /*top: -70px;*/
+    opacity: 0;
+}
+
+#adv-search.ng-hide-add,
+#adv-search.ng-hide-remove {
+    display: block !important;
+}

@@ -81,8 +81,6 @@
             });
 
             modalInstance.result.then((res) => {
-                console.log(res);
-
                 this.loadPlatformUsers();
             }, (err) => {
                 console.warn(err);

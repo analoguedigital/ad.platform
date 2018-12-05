@@ -51,11 +51,11 @@
                     </lm-form-group>
                     <lm-form-group label="First Name: ">
                         <input type="text" id="firstName" name="firstName" ng-model="organisation.rootUser.firstName"
-                               placeholder="First name"/>
+                               placeholder="First name" />
                     </lm-form-group>
                     <lm-form-group label="Surname: ">
                         <input type="text" id="surname" name="surname" ng-model="organisation.rootUser.surname"
-                               placeholder="Surname"/>
+                               placeholder="Surname" />
                     </lm-form-group>
                 </div>
 
@@ -65,28 +65,28 @@
                 <div class="hr-line-dashed"></div>
                 <lm-form-group label="Address Line 1: ">
                     <input type="text" id="addressLine1" name="addressLine1" ng-model="organisation.addressLine1"
-                           placeholder="Address line 1"/>
+                           placeholder="Address line 1" />
                 </lm-form-group>
                 <lm-form-group label="Address Line 2: ">
                     <input type="text" id="addressLine2" name="addressLine2" ng-model="organisation.addressLine2"
-                           placeholder="Address line 2"/>
+                           placeholder="Address line 2" />
                 </lm-form-group>
                 <lm-form-group label="Town ">
                     <input type="text" id="town" name="town" ng-model="organisation.town"
-                           placeholder="Town/City"/>
+                           placeholder="Town/City" />
                 </lm-form-group>
                 <lm-form-group label="County ">
                     <input type="text" id="county" name="county" ng-model="organisation.county"
-                           placeholder="County/Province"/>
+                           placeholder="County/Province" />
                 </lm-form-group>
                 <lm-form-group label="Postcode: ">
                     <input type="text" id="postcode" name="postcode" ng-model="organisation.postcode"
-                           placeholder="Postcode/Zip"/>
+                           placeholder="Postcode/Zip" />
                 </lm-form-group>
 
                 <lm-form-group label="Telephone number ">
                     <input type="text" id="telNumber" name="telNumber" ng-model="organisation.telNumber"
-                           placeholder="telephone number"/>
+                           placeholder="telephone number" />
                 </lm-form-group>
 
                 <lm-form-group ng-if="errors !== undefined" class="">
@@ -134,17 +134,18 @@
                                     <span ng-if="user.accountType === 0">
                                         <i class="fa fa-phone-square"></i>
                                     </span>
-                                    
+
                                     <span ng-if="user.accountType === 1">
                                         <i class="fa fa-laptop"></i>
                                     </span>
                                 </td>
+                                <td>{{user.firstName}} {{user.surname}}</td>
                                 <td>
                                     <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
                                     <i class="fa fa-user-o" ng-if="!user.isRootUser"></i>
-                                    {{user.firstName}} {{user.surname}}
+                                    &nbsp;
+                                    {{user.email}}
                                 </td>
-                                <td>{{user.email}}</td>
                                 <td class="text-center">
                                     <i class="fa fa-check" ng-if="user.isWebUser"></i>
                                     <i class="fa fa-times" ng-if="!user.isWebUser"></i>
@@ -154,7 +155,7 @@
                                     <i class="fa fa-times" ng-if="!user.isMobileUser"></i>
                                 </td>
                                 <td class="text-center">
-                                    <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(user)">
+                                    <a ng-if="!user.isRootUser" ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(user)">
                                         <i class="fa fa-unlink"></i> <span class="hidden-xs"> remove</span>
                                     </a>
                                 </td>

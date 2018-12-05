@@ -4,11 +4,13 @@
     interface IStudentsControllerScope extends ng.IScope {
         title: string;
         searchTerm: string;
+        safeProjects: Models.IProject[];
         projects: Models.IProject[];
         displayedProjects: Models.IProject[];
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
+        accountTypeFilter: string;
     }
 
     interface IStudentsController {
@@ -30,6 +32,7 @@
         }
 
         activate() {
+            this.$scope.accountTypeFilter = 'all';
             this.load();
         }
 
@@ -39,6 +42,7 @@
 
             if (userRoles.indexOf(platformAdminRole, 0) === -1) {
                 this.projectResource.query().$promise.then((projects) => {
+                    this.$scope.safeProjects = projects;
                     this.$scope.projects = projects;
                     this.$scope.displayedProjects = [].concat(this.$scope.projects);
 
@@ -47,6 +51,20 @@
                     }
                 });
             }
+        }
+
+        filterProjects(type: string) {
+            this.$scope.accountTypeFilter = type;
+
+            if (type === 'clients') {
+                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; });
+            } else if (type === 'staff') {
+                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy === null || p.createdBy.accountType === 1; });
+            } else if (type === 'all') {
+                this.$scope.projects = this.$scope.safeProjects;
+            }
+
+            this.$scope.displayedProjects = [].concat(this.$scope.projects);
         }
 
     }

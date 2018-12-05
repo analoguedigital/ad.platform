@@ -68,7 +68,7 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<OrganisationDTO>))]
         [Route("api/organisations/getlist")]
         [OverrideAuthorization()]
-        [Authorize(Roles = "Organisation user")]
+        [Authorize(Roles = "Organisation user,Restricted user")]
         public IHttpActionResult GetList()
         {
             //var isOrgAdmin = await ServiceContext.UserManager.IsInRoleAsync(CurrentOrgUser.Id, "Organisation administrator");
@@ -278,6 +278,10 @@ namespace WebApi.Controllers
             var orgUser = UnitOfWork.OrgUsersRepository.Find(userId);
             if (orgUser == null)
                 return NotFound();
+
+            // root users cannot be removed from an organization!
+            if (orgUser.IsRootUser)
+                return BadRequest("Root users cannot be removed from organizations!");
 
             var subscriptionService = new SubscriptionService(UnitOfWork);
             subscriptionService.RemoveUserFromOrganization(org, orgUser);

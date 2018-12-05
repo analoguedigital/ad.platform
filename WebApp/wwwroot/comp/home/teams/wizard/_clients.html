@@ -1,0 +1,51 @@
+﻿<p><br /><br /></p>
+<p class="lead"><i class="fa fa-phone-square"></i> Step 1: Choose the client(s) you want to allocate to this team's staff</p>
+
+<div st-table="displayedClients" st-safe-src="clients">
+    <form name="search-form" class="form-inline">
+        <lm-form-group label="Search: ">
+            <input st-search type="text" id="client-search" name="client-search" ng-model="clientSearchTerm" placeholder="name, email, number or note" style="min-width: 250px" />
+        </lm-form-group>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-mail">
+            <thead>
+                <tr>
+                    <th st-sort="name">Client name</th>
+                    <th st-sort="lastEntry" class="text-center">Last entry</th>
+                    <th st-sort="number" class="text-center">Number</th>
+                    <th st-sort="notes">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="client in displayedClients track by client.id">
+                    <td>
+                        <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                            <input type="checkbox" id="client-{{client.id}}" ng-model="client.isSelected" />
+                            <label for="client-{{client.id}}">{{client.name}}</label>
+                        </div>
+                    </td>
+                    <td class="text-center">{{client.lastEntry | amDateFormat: 'L'}}</td>
+                    <td class="text-center">
+                        <span ng-if="client.number">{{client.number}}</span>
+                        <span ng-if="!client.number">NA</span>
+                    </td>
+                    <td>
+                        <span ng-if="client.notes">{{client.notes}}</span>
+                        <span ng-if="!client.notes">NA</span>
+                    </td>
+                </tr>
+                <tr ng-if="!displayedClients.length">
+                    <td colspan="4">No clients</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+</div>
+
+<button class="btn btn-default" type="submit" wz-next>
+    <i class="fa fa-arrow-right"></i> Continue
+</button>

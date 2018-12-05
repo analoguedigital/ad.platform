@@ -2,9 +2,23 @@
 <div class="wrapper wrapper-content animated fadeInRight team-manage-view">
     <div class="box">
         <div class="box-title">
-            <h5>Case Assignments</h5>
-            <div class="box-tools">
+            <h5 class="pull-left">Case Assignments</h5>
 
+            <div class="pull-right">
+                <span>Account Type:&nbsp;&nbsp;</span>
+
+                <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
+                    <input type="radio" id="mobile-accounts-radio" name="list-type" value="0" ng-model="ctrl.listType" ng-change="ctrl.updateListType(0)" />
+                    <label for="mobile-accounts-radio">Client</label>
+                </div>
+                <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
+                    <input type="radio" id="web-accounts-radio" name="list-type" value="1" ng-model="ctrl.listType" ng-change="ctrl.updateListType(1)" />
+                    <label for="web-accounts-radio">Staff</label>
+                </div>
+                <div class="radio radio-primary no-margins" style="display: inline-block">
+                    <input type="radio" id="all-accounts-radio" name="list-type" value="2" ng-model="ctrl.listType" ng-change="ctrl.updateListType(2)" />
+                    <label for="all-accounts-radio">All</label>
+                </div>
             </div>
         </div>
         <div class="box-content">
@@ -20,8 +34,15 @@
                     <tr ng-repeat="project in teamProjects track by $index">
                         <td>
                             <h2><i class="fa fa-folder-o"></i> {{project.name}}</h2>
-                            <h4 class="text-muted" ng-if="project.number">Number: {{project.number}}</h4>
-                            <h4 class="text-muted" ng-if="project.notes">{{project.notes}}</h4>
+                            <h4 class="text-muted">
+                                Number:
+                                <span ng-if="project.number">{{project.number}}</span>
+                                <span ng-if="!project.number">NA</span>
+                            </h4>
+                            <h4 class="text-muted">
+                                <span ng-if="project.notes">{{project.notes}}</span>
+                                <span ng-if="!project.notes">Notes: NA</span>
+                            </h4>
                         </td>
                         <td>
                             <table class="table table-hover">
@@ -29,54 +50,71 @@
                                     <tr>
                                         <td>User name</td>
                                         <td>Email</td>
-                                        <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
-                                        <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
-                                        <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
-                                        <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
-                                        <th class="text-center" width="40"><i class="fa fa-file-pdf-o"></i></th>
-                                        <th class="text-center" width="40"><i class="fa fa-file-zip-o"></i></th>
+                                        <th class="text-center" width="40" uib-tooltip="View records" tooltip-append-to-body="true"><i class="fa fa-eye"></i></th>
+                                        <th class="text-center" width="40" uib-tooltip="Add records" tooltip-append-to-body="true"><i class="fa fa-plus-square-o"></i></th>
+                                        <th class="text-center" width="40" uib-tooltip="Edit records" tooltip-append-to-body="true"><i class="fa fa-edit"></i></th>
+                                        <th class="text-center" width="40" uib-tooltip="Delete records" tooltip-append-to-body="true"><i class="fa fa-trash-o"></i></th>
+                                        <th class="text-center" width="40" uib-tooltip="Export Pdf" tooltip-append-to-body="true"><i class="fa fa-file-pdf-o"></i></th>
+                                        <th class="text-center" width="40" uib-tooltip="Export Zip" tooltip-append-to-body="true"><i class="fa fa-file-zip-o"></i></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="assignment in project.assignments track by $index">
                                         <td>
-                                            <i class="fa fa-user-md" ng-if="assignment.isManager"></i>
-                                            <i class="fa fa-user-o" ng-if="!assignment.isManager"></i> {{assignment.name}}
+                                            <span ng-if="assignment.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
+                                                <i class="fa fa-phone-square"></i>
+                                            </span>
+                                            <span ng-if="assignment.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
+                                                <i class="fa fa-laptop"></i>
+                                            </span>
+                                            &nbsp;
+                                            {{assignment.name}}
                                         </td>
-                                        <td>{{assignment.email}}</td>
+                                        <td>
+                                            <i class="fa fa-user-md" ng-if="assignment.isManager" uib-tooltip="Manager" tooltip-append-to-body="true"></i>
+                                            <i class="fa fa-user-o" ng-if="!assignment.isManager" uib-tooltip="Member" tooltip-append-to-body="true"></i>
+                                            &nbsp;
+                                            {{assignment.email}}
+                                        </td>
                                         <td class="text-center">
                                             <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                                <input type="checkbox" id="{{project.projectId}}-can-view-{{assignment.userId}}" ng-model="assignment.canView" ng-change="ctrl.updateAssignment(assignment, 'allowView')" />
+                                                <input type="checkbox" id="{{project.projectId}}-can-view-{{assignment.userId}}" ng-model="assignment.canView" ng-change="ctrl.updateAssignment(assignment, 'allowView')"
+                                                       ng-disabled="assignment.currentProjectId === project.projectId" />
                                                 <label for="{{project.projectId}}-can-view-{{assignment.userId}}"></label>
                                             </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                                <input type="checkbox" id="{{project.projectId}}-can-add-{{assignment.userId}}" ng-model="assignment.canAdd" ng-change="ctrl.updateAssignment(assignment, 'allowAdd')" />
+                                                <input type="checkbox" id="{{project.projectId}}-can-add-{{assignment.userId}}" ng-model="assignment.canAdd" ng-change="ctrl.updateAssignment(assignment, 'allowAdd')"
+                                                       ng-disabled="assignment.currentProjectId === project.projectId" />
                                                 <label for="{{project.projectId}}-can-add-{{assignment.userId}}"></label>
                                             </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                                <input type="checkbox" id="{{project.projectId}}-can-edit-{{assignment.userId}}" ng-model="assignment.canEdit" ng-change="ctrl.updateAssignment(assignment, 'allowEdit')" />
+                                                <input type="checkbox" id="{{project.projectId}}-can-edit-{{assignment.userId}}" ng-model="assignment.canEdit" ng-change="ctrl.updateAssignment(assignment, 'allowEdit')"
+                                                       ng-disabled="assignment.currentProjectId === project.projectId" />
                                                 <label for="{{project.projectId}}-can-edit-{{assignment.userId}}"></label>
                                             </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                                <input type="checkbox" id="{{project.projectId}}-can-del-{{assignment.userId}}" ng-model="assignment.canDelete" ng-change="ctrl.updateAssignment(assignment, 'allowDelete')" />
+                                                <input type="checkbox" id="{{project.projectId}}-can-del-{{assignment.userId}}" ng-model="assignment.canDelete" ng-change="ctrl.updateAssignment(assignment, 'allowDelete')"
+                                                       ng-disabled="assignment.currentProjectId === project.projectId" />
                                                 <label for="{{project.projectId}}-can-del-{{assignment.userId}}"></label>
                                             </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                                <input type="checkbox" id="can-edit-{{assignment.userId}}" ng-model="assignment.canExportPdf" ng-change="ctrl.updateAssignment(assignment, 'allowExportPdf')" />
+                                                <input type="checkbox" id="can-edit-{{assignment.userId}}" ng-model="assignment.canExportPdf" ng-change="ctrl.updateAssignment(assignment, 'allowExportPdf')"
+                                                       ng-disabled="assignment.currentProjectId === project.projectId" />
                                                 <label for="{{project.projectId}}-can-pdf-{{assignment.userId}}"></label>
                                             </div>
                                         </td>
                                         <td class="text-center">
                                             <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                                <input type="checkbox" id="can-edit-{{assignment.userId}}" ng-model="assignment.canExportZip" ng-change="ctrl.updateAssignment(user, 'allowExportZip')" />
+                                                <input type="checkbox" id="can-edit-{{assignment.userId}}" ng-model="assignment.canExportZip" ng-change="ctrl.updateAssignment(assignment, 'allowExportZip')"
+                                                       ng-disabled="assignment.currentProjectId === project.projectId" />
                                                 <label for="{{project.projectId}}-can-zip-{{assignment.userId}}"></label>
                                             </div>
                                         </td>

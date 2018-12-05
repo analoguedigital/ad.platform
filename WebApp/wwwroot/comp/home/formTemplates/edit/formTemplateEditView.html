@@ -7,7 +7,9 @@
         <div class="box-content">
             <form name="formTemplateForm" class="form-horizontal" novalidate>
                 <lm-form-group label="Organisation: *" ng-if="ctrl.currentUserIsSuperUser">
-                    <select id="organisation" name="organisation" ng-model="ctrl.formTemplate.organisation" ng-change="ctrl.organisationChanged()"
+                    <select id="organisation" name="organisation"
+                            ng-model="ctrl.formTemplate.organisation"
+                            ng-change="ctrl.organisationChanged()"
                             ng-options="organisation as organisation.name for organisation in ctrl.organisations track by organisation.id" required></select>
                 </lm-form-group>
                 <lm-form-group label="Category: *">

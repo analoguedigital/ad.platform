@@ -20,6 +20,8 @@
         lastEntry?: Date;
         assignmentsCount: number;
         teamsCount: number;
+
+        isSelected: boolean;
     }
 
     export interface IProjectAssignment {

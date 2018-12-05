@@ -15,11 +15,15 @@
     function lmAccess(userContext: Services.IUserContextService): IlmAccess {
         return {
             restrict: "A",
+            scope: {
+                accountType: '@'
+            },
             link: link,
         };
 
 
-        function link(scope: IlmAccessScope,
+        function link(
+            scope: IlmAccessScope,
             element: ng.IAugmentedJQuery,
             attrs: IlmAccessAttributes,
             ctrl: any,
@@ -34,10 +38,7 @@
             };
 
             var determineVisibility = function (roles: string[]) {
-                var result;
-
-                result = userContext.userIsInAnyRoles(roles);
-
+                var result = userContext.userIsInAnyRoles(roles);
                 if (result) {
                     makeVisible();
                 } else {
@@ -45,10 +46,35 @@
                 }
             };
 
-            var roles = attrs.lmAccess.split(',');
+            var checkAccountType = function (type: string) {
+                var accountTypes = ['mobile', 'web'];
+                if (accountTypes.indexOf(type, 0) === -1)
+                    makeHidden();
+                else {
+                    var accountType;
+                    if (scope.accountType === 'mobile')
+                        accountType = 0;
+                    else if (scope.accountType === 'web')
+                        accountType = 1;
 
-            if (roles.length > 0) {
-                determineVisibility(roles);
+                    if (userContext.current.orgUser === null) {
+                        makeHidden();
+                    } else {
+                        if (userContext.current.orgUser.accountType === accountType && !userContext.userIsRestricted())
+                            makeVisible();
+                        else
+                            makeHidden();
+                    }
+                }
+            }
+
+            if (scope.accountType !== undefined) {
+                checkAccountType(scope.accountType);
+            } else {
+                var roles = attrs.lmAccess.split(',');
+                if (roles.length > 0) {
+                    determineVisibility(roles);
+                }
             }
         }
     }

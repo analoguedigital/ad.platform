@@ -1,0 +1,76 @@
+﻿<p><br /><br /></p>
+<p class="lead"><i class="fa fa-laptop"></i> Step 2: Choose the staff members you want to assign to the clients you have selected</p>
+
+<div class="well well-sm">
+    <div class="table-responsive">
+        <table class="table table-hover table-mail" style="margin-bottom: 0">
+            <thead>
+                <tr>
+                    <th>Client name</th>
+                    <th class="text-center">Last entry</th>
+                    <th class="text-center">Number</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="client in clients | filter: { isSelected: true }">
+                    <td><i class="fa fa-check"></i> {{client.name}}</td>
+                    <td class="text-center">{{client.lastEntry | amDateFormat: 'L'}}</td>
+                    <td class="text-center">
+                        <span ng-if="client.number">{{client.number}}</span>
+                        <span ng-if="!client.number">NA</span>
+                    </td>
+                    <td>
+                        <span ng-if="client.notes">{{client.notes}}</span>
+                        <span ng-if="!client.notes">NA</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div st-table="displayedStaffMembers" st-safe-src="staffMembers">
+    <form name="search-form" class="form-inline">
+        <lm-form-group label="Search: ">
+            <input st-search type="text" id="staff-search" name="staff-search" ng-model="staffSearchTerm" placeholder="name or email" style="min-width: 250px" />
+        </lm-form-group>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-mail">
+            <thead>
+                <tr>
+                    <th st-sort="name">Staff name</th>
+                    <th st-sort="email">Email</th>
+                    <th class="text-center">Manager</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="staff in displayedStaffMembers track by staff.id">
+                    <td>
+                        <div class="checkbox checkbox-circle checkbox-primary no-margins">
+                            <input type="checkbox" id="staff-{{staff.id}}" ng-model="staff.isSelected" />
+                            <label for="staff-{{staff.id}}">{{staff.orgUser.firstName}} {{staff.orgUser.surname}}</label>
+                        </div>
+                    </td>
+                    <td>
+                        <i class="fa fa-laptop"></i> {{staff.orgUser.email}}
+                    </td>
+                    <td class="text-center">
+                        <span ng-if="staff.isManager"><i class="fa fa-check"></i></span>
+                        <span ng-if="!staff.isManager"><i class="fa fa-times"></i></span>
+                    </td>
+                </tr>
+                <tr ng-if="!displayedStaffMembers.length">
+                    <td colspan="3">No staff members</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+</div>
+
+<button class="btn btn-default" wz-previous><i class="fa fa-arrow-left"></i> Previous</button>
+<button class="btn btn-default" wz-next><i class="fa fa-arrow-right"></i> Continue</button>

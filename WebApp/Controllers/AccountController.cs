@@ -255,9 +255,11 @@ namespace WebApi.Models
             //var baseUrl = Request.RequestUri.GetLeftPart(UriPartial.Authority);
             //var redirectLink = baseUrl + "/wwwroot/dist/index.html#!/set-password?email=" + model.Email + "&token=" + encodedToken;
 
-            var content = @"<p>Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.</p><br>
-                    <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
-                    <p style='color: gray; font-weight: italic'>" + encodedToken + @"</p>";
+            //var content = @"<p>Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.</p><br>
+            //        <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
+            //        <p style='color: gray; font-weight: italic'>" + encodedToken + @"</p>";
+
+            var content = @"<p>Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.</p>";
 
             var emailBody = WebHelpers.GenerateEmailTemplate(content, "Reset your password");
 
@@ -590,9 +592,15 @@ namespace WebApi.Models
                 UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
             }
 
-            UnitOfWork.Save();
-
-            return Ok();
+            try
+            {
+                UnitOfWork.Save();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         // POST api/Account/RegisterExternal

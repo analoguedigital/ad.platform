@@ -2,33 +2,23 @@
 <div class="wrapper wrapper-content animated fadeInRight project-assignments-view">
     <div class="box">
         <div class="box-title">
-            <div class="pull-left">
-                <h5>Case: {{ctrl.project.name}}</h5>
-            </div>
+            <h5 class="pull-left">Case: {{ctrl.project.name}}</h5>
 
             <div class="pull-right">
-                <span>Account Type:&nbsp;&nbsp;</span>
-
-                <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
-                    <input type="radio" id="mobile-accounts-radio" name="list-type" value="0" ng-model="ctrl.listType" ng-change="ctrl.updateListType(0)" />
-                    <label for="mobile-accounts-radio">Client</label>
-                </div>
-                <div class="radio radio-primary no-margins" style="display: inline-block; margin-right: 10px !important">
-                    <input type="radio" id="web-accounts-radio" name="list-type" value="1" ng-model="ctrl.listType" ng-change="ctrl.updateListType(1)" />
-                    <label for="web-accounts-radio">Staff</label>
-                </div>
-                <div class="radio radio-primary no-margins" style="display: inline-block">
-                    <input type="radio" id="all-accounts-radio" name="list-type" value="2" ng-model="ctrl.listType" ng-change="ctrl.updateListType(2)" />
-                    <label for="all-accounts-radio">All</label>
+                <div class="btn-group" role="group" aria-label="account filters">
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterAccounts('clients')"><i class="fa fa-phone-square"></i> Clients</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterAccounts('staff')"><i class="fa fa-laptop"></i> Staff</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterAccounts('all')"><i class="fa fa-user-circle"></i> All</button>
                 </div>
             </div>
+            <div class="clearfix"></div>
         </div>
         <div class="box-content">
             <div st-table="ctrl.displayedAssignments" st-safe-src="ctrl.userAssignments">
                 <div>
                     <form name="search-form" class="form-inline">
                         <lm-form-group label="Search: ">
-                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                            <input st-search type="text" id="search" name="search" ng-model="searchTerm" placeholder="User name or email" />
                         </lm-form-group>
                     </form>
                 </div>
@@ -42,22 +32,22 @@
                                 <th st-sort="email">Email address</th>
                                 <th class="text-center" width="100">Web User</th>
                                 <th class="text-center" width="100">Mobile User</th>
-                                <th class="text-center" width="40"><i class="fa fa-eye"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-plus-square-o"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-edit"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-trash-o"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-file-pdf-o"></i></th>
-                                <th class="text-center" width="40"><i class="fa fa-file-zip-o"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="View records" tooltip-append-to-body="true"><i class="fa fa-eye"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Add records" tooltip-append-to-body="true"><i class="fa fa-plus-square-o"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Edit records" tooltip-append-to-body="true"><i class="fa fa-edit"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Delete records" tooltip-append-to-body="true"><i class="fa fa-trash-o"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Export Pdf" tooltip-append-to-body="true"><i class="fa fa-file-pdf-o"></i></th>
+                                <th class="text-center" width="40" uib-tooltip="Export Zip" tooltip-append-to-body="true"><i class="fa fa-file-zip-o"></i></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="user in ctrl.displayedAssignments">
                                 <td class="text-center">
-                                    <span ng-if="user.accountType === 0">
+                                    <span ng-if="user.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
                                         <i class="fa fa-phone-square"></i>
                                     </span>
 
-                                    <span ng-if="user.accountType === 1">
+                                    <span ng-if="user.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
                                         <i class="fa fa-laptop"></i>
                                     </span>
                                 </td>

@@ -81,6 +81,7 @@ WebApp/typings/
 WebApp/Uploads/
 WebApp/Attachments/
 WebApp/wwwroot/lib/
-WebApp/wwwroot/css/
+WebApp/wwwroot/css/index.css
+WebApp/wwwroot/css/index.min.css
 WebApp/wwwroot/js/
 WebApp/wwwroot/dist/

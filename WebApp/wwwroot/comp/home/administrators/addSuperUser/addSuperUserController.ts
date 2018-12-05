@@ -48,7 +48,7 @@
 
             this.userResource.createSuperUser(this.model, (res) => {
                 this.toastr.success('Super user created successfully');
-                this.close();
+                this.$uibModalInstance.close(res);
             }, (err) => {
                 console.error(err);
             });

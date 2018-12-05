@@ -195,7 +195,13 @@ module App {
             else params.recordId = entry.paymentRecordId;
 
             this.subscriptionResource.closeSubscription(params, (res) => {
-                location.reload(true);
+                //location.reload(true);
+                var userId = this.$stateParams['id'];
+                this.subscriptionResource.getUserSubscriptions({ id: userId }, (data) => {
+                    this.subscriptions = data;
+                }, (err) => {
+                    console.error(err);
+                });
             }, (err) => {
                 console.error(err);
                 if (err.data.message)
@@ -213,7 +219,13 @@ module App {
             else params.recordId = entry.paymentRecordId;
 
             this.subscriptionResource.removeSubscription(params, (res) => {
-                location.reload(true);
+                //location.reload(true);
+                var userId = this.$stateParams['id'];
+                this.subscriptionResource.getUserSubscriptions({ id: userId }, (data) => {
+                    this.subscriptions = data;
+                }, (err) => {
+                    console.error(err);
+                });
             }, (err) => {
                 if (err.data.message)
                     this.toastr.error(err.data.message);

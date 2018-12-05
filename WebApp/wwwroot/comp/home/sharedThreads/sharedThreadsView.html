@@ -5,17 +5,15 @@
     </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight advice-threads-view">
-    <div class="box" ng-if="ctrl.projects.length > 1">
-        <div class="box-content">
-            <ui-select append-to-body="true" ng-model="ctrl.selectedProject" on-select="ctrl.selectedProjectChanged()">
-                <ui-select-match placeholder="Select a case">
-                    <span ng-bind="$select.selected.name"></span>
-                </ui-select-match>
-                <ui-select-choices repeat="project in (ctrl.projects | filter: $select.search) track by project.id">
-                    <span ng-bind="project.name"></span>
-                </ui-select-choices>
-            </ui-select>
-        </div>
-    </div>
+    <ui-select ng-if="ctrl.projects.length > 1" append-to-body="true" ng-model="ctrl.selectedProject" on-select="ctrl.selectedProjectChanged()">
+        <ui-select-match placeholder="Select a case">
+            <span ng-bind="$select.selected.name"></span>
+        </ui-select-match>
+        <ui-select-choices repeat="project in (ctrl.projects | filter: $select.search) track by project.id">
+            <span ng-bind="project.name"></span>
+        </ui-select-choices>
+    </ui-select>
     <ui-view />
+
+    <div ng-if="!ctrl.projects.length" class="alert alert-info">No shared threads to show</div>
 </div>

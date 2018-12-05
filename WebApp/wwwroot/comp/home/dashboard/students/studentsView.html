@@ -1,12 +1,21 @@
 ﻿<div class="box">
     <div class="box-title">
-        <h5>Directory of Staff and Clients</h5>
+        <h5 class="pull-left">Directory of Staff and Clients</h5>
+
+        <div class="pull-right">
+            <div class="btn-group" role="group" aria-label="account filters">
+                <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterProjects('clients')"><i class="fa fa-phone-square"></i> Clients</button>
+                <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterProjects('staff')"><i class="fa fa-laptop"></i> Staff</button>
+                <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterProjects('all')"><i class="fa fa-user-circle"></i> All</button>
+            </div>
+        </div>
+        <div class="clearfix"></div>
     </div>
     <div class="box-content">
         <div st-table="displayedProjects" st-safe-src="projects">
             <form name="search-form" class="form-inline">
                 <lm-form-group label="Search: ">
-                    <input st-search type="text" id="search" name="search" ng-model="searchTerm" />
+                    <input st-search type="text" id="search" name="search" ng-model="searchTerm" placeholder="Case name, number or note" style="width: 250px" />
                 </lm-form-group>
             </form>
 
@@ -15,18 +24,34 @@
                     <thead>
                         <tr>
                             <th st-sort="name">Name</th>
+                            <th st-sort="notes">Note</th>
+                            <th st-sort="lastEntry" width="100" class="text-center">Last entry</th>
+                            <th st-sort="number" width="100" class="text-center">Number</th>
                             <th class="text-center" width="140"></th>
                             <td class="text-center" width="100"></td>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="project in displayedProjects">
-                            <td><a ui-sref="home.surveys.list.summary({projectId: project.id})">{{project.name}}</a></td>
+                            <td>
+                                <a ui-sref="home.surveys.list.summary({projectId: project.id})">
+                                    <span ng-if="project.createdBy.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
+                                        <i class="fa fa-phone-square"></i>
+                                    </span>
+                                    <span ng-if="project.createdBy === null || project.createdBy.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
+                                        <i class="fa fa-laptop"></i>
+                                    </span>
+                                    &nbsp;{{project.name}}
+                                </a>
+                            </td>
+                            <td>{{project.notes}}</td>
+                            <td class="text-center">{{project.lastEntry | amDateFormat: 'L'}}</td>
+                            <td class="text-center">{{project.number}}</td>
                             <td><a ui-sref="home.adviceThreads.list.summary({projectId: project.id})"><i class="fa fa-medkit"></i><span class="hidden-xs"> advice threads</span></a></td>
                             <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
                         </tr>
                         <tr ng-if="!displayedProjects.length">
-                            <td colspan="3">No records were found</td>
+                            <td colspan="3">No records</td>
                         </tr>
                     </tbody>
                 </table>

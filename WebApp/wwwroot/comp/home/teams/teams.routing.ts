@@ -44,6 +44,22 @@
                 controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Manage', parent: 'home.teams.list' },
                 module: 'private'
+            })
+            .state('home.teams.permissions', <App.Models.IAppRoute>{
+                url: '/:id/permissions/:userId',
+                templateUrl: 'comp/home/teams/permissions/teamPermissionsView.html',
+                controller: 'teamPermissionsController',
+                controllerAs: 'ctrl',
+                ncyBreadcrumb: { label: 'Permissions', parent: 'home.teams.list' },
+                module: 'private'
+            })
+            .state('home.teams.wizard', <App.Models.IAppRoute>{
+                url: '/:id/wizard',
+                templateUrl: 'comp/home/teams/wizard/teamWizardView.html',
+                controller: 'teamWizardController',
+                controllerAs: 'ctrl',
+                ncyBreadcrumb: { label: 'Team Wizard', parent: 'home.teams.list' },
+                module: 'private'
             });
     }
 })();

@@ -8,6 +8,7 @@
         remove: (user: Models.IOrgTeamUser) => void;
         clearErrors: () => void;
         currentUserIsSuperUser: boolean;
+        currentOrgUserId: string;
         organisations: Models.IOrganisation[];
         teamMembers: Models.IOrgTeamUser[];
         displayedMembers: Models.IOrgTeamUser[];
@@ -57,6 +58,9 @@
                     this.$scope.organisations = organisations;
                 });
             }
+
+            if (this.userContextService.current.orgUser !== null)
+                this.$scope.currentOrgUserId = this.userContextService.current.orgUser.id;
 
             this.load();
         }
