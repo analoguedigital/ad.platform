@@ -42,6 +42,13 @@ namespace WebApi.Models
             private set { _userManager = value; }
         }
 
+        private ApplicationSignInManager _signInManager;
+        public ApplicationSignInManager SignInManager
+        {
+            get { return _signInManager ?? Request.GetOwinContext().Get<ApplicationSignInManager>(); }
+            private set { _signInManager = value; }
+        }
+
         public ISecureDataFormat<AuthenticationTicket> AccessTokenFormat { get; private set; }
 
         #endregion
@@ -55,8 +62,8 @@ namespace WebApi.Models
         }
 
         // GET api/Account/UserInfo
-        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         [Route("UserInfo")]
+        [HostAuthentication(DefaultAuthenticationTypes.ExternalBearer)]
         public async Task<IHttpActionResult> GetUserInfo()
         {
             ExternalLoginData externalLogin = ExternalLoginData.FromIdentity(User.Identity as ClaimsIdentity);
@@ -376,7 +383,7 @@ namespace WebApi.Models
                 Authentication.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 
                 ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(UserManager, OAuthDefaults.AuthenticationType);
-                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user.UserName);
+                AuthenticationProperties properties = ApplicationOAuthProvider.CreateProperties(user);
 
                 Authentication.SignIn(properties, oAuthIdentity);
             }
@@ -853,6 +860,29 @@ namespace WebApi.Models
             return BadRequest("Invalid security code");
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("VerifySecurityCode")]
+        public async Task<IHttpActionResult> VerifySecurityCode(VerifySecurityCodeModel model)
+        {
+            try
+            {
+                var user = await UserManager.FindAsync(model.UserName, model.Password);
+                if (user == null)
+                    return BadRequest("username or password is invalid");
+
+                var isTokenValid = await UserManager.VerifyTwoFactorTokenAsync(user.Id, "Email Code", model.Token);
+                if (!isTokenValid)
+                    return BadRequest("Invalid token. try again");
+
+                return Ok("security token verified successfully");
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && _userManager != null)
@@ -974,6 +1004,15 @@ namespace WebApi.Models
 
         #endregion
 
+    }
+
+    public class VerifySecurityCodeModel
+    {
+        public string UserName { get; set; }
+
+        public string Password { get; set; }
+
+        public string Token { get; set; }
     }
 
 }

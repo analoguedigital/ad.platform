@@ -42,9 +42,7 @@
                 },
                 (err) => {
                     console.error(err);
-                    if (err.status === 400) {
-                        this.toastr.error('Seriously? For real?', 'Bad Request');
-                    }
+                    this.toastr.error(err);
                 });
         }
     }

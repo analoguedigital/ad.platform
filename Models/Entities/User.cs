@@ -52,7 +52,7 @@ namespace LightMethods.Survey.Models.Entities
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User, Guid> manager)
         {
-            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
+            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ExternalBearer);
             // Add custom user claims here
             return userIdentity;
         }

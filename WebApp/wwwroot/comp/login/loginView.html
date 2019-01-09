@@ -11,7 +11,8 @@
                 You have requested a file download.<br />Log in with your credentials to continue.
             </p>
 
-            <div ng-include="'comp/login/_loginForm.html'"></div>
+            <div ng-include="'comp/login/_loginForm.html'" ng-if="!requiresVerification"></div>
+            <div ng-include="'comp/login/_verificationForm.html'"  ng-if="requiresVerification"></div>
         </div>
     </div>
     <div class="row">
