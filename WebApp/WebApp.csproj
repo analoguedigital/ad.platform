@@ -322,6 +322,7 @@
     <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
     <Content Include="wwwroot\comp\login\loginView.html" />
     <Content Include="wwwroot\comp\login\_loginForm.html" />
+    <Content Include="wwwroot\comp\login\_verificationForm.html" />
     <Content Include="wwwroot\comp\setPassword\setPasswordView.html" />
     <Content Include="wwwroot\css\index.css" />
     <Content Include="wwwroot\css\index.min.css">

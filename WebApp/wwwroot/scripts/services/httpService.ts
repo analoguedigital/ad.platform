@@ -8,7 +8,10 @@ module App.Services {
 
     export interface IHttpService {
         getAuthenticationToken(loginData: ILoginData): ng.IPromise<any>;
+        getTwoFactorAuthToken(loginData: ILoginData, token: string): ng.IPromise<any>;
+
         getUserInfo(): ng.IPromise<any>;
+        getServiceBase(): string;
     }
 
     class HttpService implements IHttpService {
@@ -24,6 +27,25 @@ module App.Services {
             var data = "grant_type=password&username=" + loginData.email + "&password=" + loginData.password;
 
             this.$http.post(this.serviceBase + 'token', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+                .then((value) => {
+                    deferred.resolve(value.data);
+                }, (err) => {
+                    deferred.reject(this.onError(err));
+                });
+
+            return deferred.promise;
+        }
+
+        getTwoFactorAuthToken(loginData: ILoginData, token: string): ng.IPromise<any> {
+            var deferred = this.$q.defer();
+            var data = "grant_type=password&username=" + loginData.email + "&password=" + loginData.password;
+
+            this.$http.post(this.serviceBase + 'token', data, {
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-2FA-Token': token
+                }
+            })
                 .then((value) => {
                     deferred.resolve(value.data);
                 }, (err) => {
@@ -57,6 +79,11 @@ module App.Services {
                 return err.status + ': Server connection failed!';
             }
         }
+
+        getServiceBase() {
+            return this.serviceBase;
+        }
+
     }
 
     angular.module('app').service("httpService", HttpService);

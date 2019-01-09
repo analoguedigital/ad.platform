@@ -9,10 +9,13 @@
     export interface IUserContextService {
         current: IUserContext;
         login(loginData: ILoginData): ng.IPromise<void>;
+        twoFactorLogin(loginData: ILoginData, token: string): ng.IPromise<void>;
         logout(): void;
         userIsInAnyRoles(role: string[]): boolean;
         userIsRestricted(): boolean;
         initialize(): ng.IPromise<IUserContext>;
+
+        setCurrentUser(authenticationData: AuthData): ng.IPromise<void>;
     }
 
     export class UserContextService implements IUserContextService {
@@ -23,9 +26,10 @@
         public role_system_admin = 'System administrator';
         public role_org_admin = 'Organisation administrator';
 
-        static $inject: string[] = ['$q', 'httpService', 'authService', 'orgUserResource', 'toastr'];
+        static $inject: string[] = ['$q', '$http', 'httpService', 'authService', 'orgUserResource', 'toastr'];
         constructor(
             private $q: ng.IQService,
+            private $http: ng.IHttpService,
             private httpService: IHttpService,
             private authService: IAuthService,
             private orgUserResource: Resources.IOrgUserResource,
@@ -58,6 +62,30 @@
             var defer = this.$q.defer<void>();
 
             this.httpService.getAuthenticationToken(loginData)
+                .then((response) => {
+                    // user is authenicated 
+                    var authenticationData = new App.Services.AuthData(response.access_token, loginData.email);
+                    this.authService.loginUser(authenticationData);
+                    this.setCurrentUser(authenticationData)
+                        .then(() => {
+                            defer.resolve();
+                        }, (err) => {
+                            defer.reject(err);
+                        });
+                }, (err) => {
+                    // user is not authenicated 
+                    this.authService.logOutUser();
+                    this.logout();
+                    defer.reject(err);
+                });
+
+            return defer.promise;
+        }
+
+        twoFactorLogin(loginData: ILoginData, token: string): ng.IPromise<void> {
+            var defer = this.$q.defer<void>();
+
+            this.httpService.getTwoFactorAuthToken(loginData, token)
                 .then((response) => {
                     // user is authenicated 
                     var authenticationData = new App.Services.AuthData(response.access_token, loginData.email);

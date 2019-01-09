@@ -338,7 +338,7 @@ namespace WebApi.Controllers
 
                 return Ok();
             }
-            catch (DbUpdateException dbEx)
+            catch (DbUpdateException)
             {
                 return BadRequest("active teams cannot be deleted");
             }

@@ -1,5 +1,7 @@
 ﻿using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Services.Identity;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.OAuth;
@@ -16,10 +18,7 @@ namespace WebApi.Providers
 
         public ApplicationOAuthProvider(string publicClientId)
         {
-            if (publicClientId == null)
-                throw new ArgumentNullException("publicClientId");
-
-            _publicClientId = publicClientId;
+            _publicClientId = publicClientId ?? throw new ArgumentNullException("publicClientId");
         }
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
@@ -40,8 +39,8 @@ namespace WebApi.Providers
             }
 
             ClaimsIdentity oAuthIdentity = await user.GenerateUserIdentityAsync(userManager, OAuthDefaults.AuthenticationType);
-            
-            AuthenticationProperties properties = CreateProperties(user.UserName);
+
+            AuthenticationProperties properties = CreateProperties(user);
             AuthenticationTicket ticket = new AuthenticationTicket(oAuthIdentity, properties);
 
             context.Validated(ticket);
@@ -77,11 +76,13 @@ namespace WebApi.Providers
             return Task.FromResult<object>(null);
         }
 
-        public static AuthenticationProperties CreateProperties(string userName)
+        public static AuthenticationProperties CreateProperties(User user)
         {
             IDictionary<string, string> data = new Dictionary<string, string>
             {
-                { "userName", userName }
+                { "userId", user.Id.ToString() },
+                { "userName", user.UserName },
+                { "twoFactorAuthEnabled", user.TwoFactorEnabled.ToString() }
             };
 
             return new AuthenticationProperties(data);
