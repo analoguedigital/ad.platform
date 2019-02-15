@@ -8,7 +8,9 @@
     <div class="col-lg-9">
         <div class="box">
             <div class="box-title">
-                {{ctrl.formTemplate.title}} <span ng-show="ctrl.survey.serial !== null"> (#{{ctrl.survey.serial}})</span>
+                <span class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></span>
+                <span style="vertical-align: middle">{{ctrl.formTemplate.title}}</span>
+                <span style="vertical-align: middle" ng-show="ctrl.survey.serial !== null"> (#{{ctrl.survey.serial}})</span>
             </div>
             <div class="box-content">
                 <div class="steps">

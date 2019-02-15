@@ -1,8 +1,17 @@
-﻿
-$break-medium: 991px;
+﻿$break-medium: 991px;
 $break-small: 360px;
 
 .summary-print {
+    .content {
+        color: black !important;
+        font-family: "Times New Roman", sans-serif;
+    }
+
+    a {
+        color: blue;
+        text-decoration: underline;
+    }
+
     .delete-icon {
         display: none;
         position: absolute;
@@ -39,7 +48,7 @@ $break-small: 360px;
     }
 
     .angular-google-map-container {
-        height: 350px;
+        height: 400px;
     }
 
     .chart-center {
@@ -57,12 +66,27 @@ $break-small: 360px;
     .mr-15 {
         margin-right: 15px !important;
     }
-
+    
     .color-block {
-        width: 22px;
-        height: 22px;
+        width: 14px;
+        height: 14px;
         border-radius: 2px;
         display: inline-block;
-        margin-top: 2px;
+        vertical-align: middle;
     }
+
+    #attachments-table tr td .btn_remove_attachment {
+        opacity: 0;
+        transition: opacity ease-in .3s;
+    }
+
+    #attachments-table tr:hover td .btn_remove_attachment {
+        opacity: 1;
+    }
+}
+
+.survey-print .metrics .metric {
+    background: inherit !important;
+    padding-top: 0;
+    padding-bottom: 0;
 }

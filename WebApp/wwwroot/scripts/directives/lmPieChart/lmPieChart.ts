@@ -15,6 +15,8 @@
         options: any;
         animation: string;
         showLegend: string;
+        chartWidth: number;
+        chartHeight: number;
     }
 
     interface IlmPieChartAttributes extends ng.IAttributes {
@@ -34,7 +36,9 @@
                 formTemplates: '=',
                 surveys: '=',
                 animation: '@',
-                showLegend: '@'
+                showLegend: '@',
+                chartWidth: '@',
+                chartHeight: '@'
             }
         };
 

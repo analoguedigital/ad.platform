@@ -89,11 +89,18 @@
                 templateUrl: "comp/home/projects/summary/print/projectSummaryPrintView.html",
                 controller: "projectSummaryPrintController",
                 controllerAs: "ctrl",
+                params: {
+                    'mapCenter': {},
+                    'mapZoomLevel': 0,
+                    'mapType': ''
+                },
                 resolve: {
                     session: ['$stateParams','projectSummaryPrintSessionResource',
                         ($stateParams, projectSummaryPrintSessionResource: App.Resources.IProjectSummaryPrintSessionResource) => {
                             return projectSummaryPrintSessionResource.get({ id: $stateParams['sessionId'] }).$promise.then((data) => {
                                 return data;
+                            }, (err) => {
+                                return null;    // session timed out, this results in a redirection to home.
                             });
                         }]
                 },

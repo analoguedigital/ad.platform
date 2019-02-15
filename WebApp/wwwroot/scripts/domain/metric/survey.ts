@@ -24,8 +24,17 @@
         latitude: number;
         longitude: number;
         accuracy: number;
+        address: string;
         error: string;
         event: string;
+    }
+
+    export interface ISurveyLocation extends App.Models.IPosition {
+        id: string;
+        color: string;
+        description: string;
+        serial: number;
+        date: Date;
     }
 
     export interface IFormValue {

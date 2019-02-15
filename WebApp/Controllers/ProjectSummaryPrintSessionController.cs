@@ -42,8 +42,8 @@ namespace WebApi.Controllers
 
         // GET api/projectSummaryPrintSession/downloadZip/{id}/{timeline}/{locations}/{piechart}
         [HttpGet]
-        [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
-        public HttpResponseMessage DownloadZip(Guid id, bool timeline, bool locations, bool piechart)
+        [Route("api/ProjectSummaryPrintSession/DownloadZip/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}/{latitude:double}/{longitude:double}/{zoomLevel:int}/{mapType}")]
+        public HttpResponseMessage DownloadZip(Guid id, bool timeline, bool locations, bool piechart, double latitude, double longitude, int zoomLevel, string mapType)
         {
             if (id == Guid.Empty)
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
@@ -59,13 +59,13 @@ namespace WebApi.Controllers
                     return new HttpResponseMessage(HttpStatusCode.Unauthorized);
             }
 
-            return ExportZipFile(session, id, timeline, locations, piechart);
+            return ExportZipFile(session, id, timeline, locations, piechart, latitude, longitude, zoomLevel, mapType);
         }
 
         // GET api/projectSummaryPrintSession/downloadPdf/{id}/{timeline}/{locations}/{piechart}
         [HttpGet]
-        [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}")]
-        public HttpResponseMessage DownloadPdf(Guid id, bool timeline, bool locations, bool piechart)
+        [Route("api/ProjectSummaryPrintSession/DownloadPdf/{id:guid}/{timeline:bool}/{locations:bool}/{piechart:bool}/{latitude:double}/{longitude:double}/{zoomLevel:int}/{mapType}")]
+        public HttpResponseMessage DownloadPdf(Guid id, bool timeline, bool locations, bool piechart, double latitude, double longitude, int zoomLevel, string mapType)
         {
             if (id == Guid.Empty)
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
@@ -83,7 +83,7 @@ namespace WebApi.Controllers
 
             var rootIndex = WebHelpers.GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}&lat={latitude}&lng={longitude}&zoomLevel={zoomLevel}&mapType={mapType}";
 
             var projectName = UnitOfWork.ProjectsRepository.Find(session.ProjectId).Name;
             var pdfFileName = $"{projectName}.pdf";
@@ -94,7 +94,7 @@ namespace WebApi.Controllers
 
         #region helpers
 
-        private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart)
+        private HttpResponseMessage ExportZipFile(ProjectSummaryPrintSessionDTO session, Guid id, bool timeline, bool locations, bool piechart, double latitude, double longitude, int zoomLevel, string mapType)
         {
             if (CurrentOrgUser != null)
             {
@@ -106,7 +106,7 @@ namespace WebApi.Controllers
 
             var rootIndex = WebHelpers.GetRootIndexPath();
             var authData = $"{{\"token\":\"{HttpContext.Current.Request.Headers["Authorization"].Substring(7)}\",\"email\":\"{CurrentUser.Email}\"}}";
-            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}";
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}?authData={authData}#!/projects/summary/print/{id.ToString()}?timeline={timeline}&locations={locations}&piechart={piechart}&lat={latitude}&lng={longitude}&zoomLevel={zoomLevel}&mapType={mapType}";
 
             var surveys = UnitOfWork.FilledFormsRepository.AllAsNoTracking
                 .Where(s => session.SurveyIds.Contains(s.Id)).ToList();
@@ -192,13 +192,23 @@ namespace WebApi.Controllers
         private byte[] ConvertHtmlToPdf(string url)
         {
             var htmlToPdfConverter = new Winnovative.HtmlToPdfConverter();
-            htmlToPdfConverter.ConversionDelay = 3;
+            htmlToPdfConverter.TriggeringMode = Winnovative.TriggeringMode.ConversionDelay;
+            htmlToPdfConverter.ConversionDelay = 5;
             htmlToPdfConverter.RenderedHtmlElementSelector = ".content";
             htmlToPdfConverter.PdfDocumentOptions.PdfPageSize = Winnovative.PdfPageSize.A4;
-            htmlToPdfConverter.PdfDocumentOptions.TopMargin = 60;
-            htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 60;
-            htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 30;
-            htmlToPdfConverter.PdfDocumentOptions.RightMargin = 30;
+            htmlToPdfConverter.DownloadAllResources = true;
+            htmlToPdfConverter.EnableAccelerated2DCanvas = true;
+            htmlToPdfConverter.EnablePersistentStorage = true;
+            htmlToPdfConverter.PdfDocumentOptions.JpegCompressionEnabled = false;
+            htmlToPdfConverter.PdfDocumentOptions.PdfCompressionLevel = Winnovative.PdfCompressionLevel.NoCompression;
+            //htmlToPdfConverter.PdfDocumentOptions.TopMargin = 60;
+            //htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 60;
+            //htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 30;
+            //htmlToPdfConverter.PdfDocumentOptions.RightMargin = 30;
+            htmlToPdfConverter.PdfDocumentOptions.TopMargin = 20;
+            htmlToPdfConverter.PdfDocumentOptions.BottomMargin = 20;
+            htmlToPdfConverter.PdfDocumentOptions.LeftMargin = 20;
+            htmlToPdfConverter.PdfDocumentOptions.RightMargin = 20;
             return htmlToPdfConverter.ConvertUrl(url);
         }
 

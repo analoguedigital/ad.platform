@@ -1,5 +1,5 @@
 ﻿<div id="{{id}}">
-    <ui-gmap-google-map center="map.center" zoom="map.zoom" options="map.options" draggable="false" ng-if="locations.length">
+    <ui-gmap-google-map bounds="bd" center="map.center" zoom="map.zoom" options="map.options" draggable="true" events="map.events" ng-if="locations.length">
         <ui-gmap-marker ng-repeat="marker in markers"
                         coords="marker.coords"
                         options="marker.options"

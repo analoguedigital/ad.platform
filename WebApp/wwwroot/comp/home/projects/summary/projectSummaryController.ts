@@ -61,8 +61,12 @@ module App {
         timelineSnapshotView: boolean = true;
         metricFilters: Models.IMetricFilter[];
 
+        mapCenter: any;
+        mapZoomLevel: number;
+        mapType: string = 'roadmap';
+
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
-            "projectSummaryPrintSessionResource", "projectResource", "$timeout", 
+            "projectSummaryPrintSessionResource", "projectResource", "$timeout",
             "formTemplateResource", "surveyResource", "project", "toastr", "uiTourService"];
 
         constructor(
@@ -87,7 +91,7 @@ module App {
             this.$scope.title = this.project.name;
             this.$scope.today = new Date();
             this.$scope.months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            this.startDate = moment().add('-1', 'month').toDate();
+            //this.startDate = moment().add('-1', 'month').toDate();
 
             this.metricFilters = [];
             this.$scope.filterValues = [];
@@ -127,6 +131,10 @@ module App {
                 this.displayedSurveys = this.surveys;
                 this.selectedTemplates = this.formTemplates;
                 this.$scope.displayedSurveys = this.displayedSurveys;
+
+                this.$timeout(() => {
+                    this.$rootScope.$broadcast('update_locations_map_bounds');
+                }, 500);
 
                 //this.uiTourService.getTour().start();
             });
@@ -194,7 +202,12 @@ module App {
             printSession.surveyIds = _.map(surveys, (survey) => { return survey.id; });
 
             this.projectSummaryPrintSessionResource.save(printSession).$promise.then((session) => {
-                this.$state.go("home.projects.summaryPrint", { sessionId: session.id });
+                this.$state.go("home.projects.summaryPrint", {
+                    sessionId: session.id,
+                    mapCenter: this.mapCenter,
+                    mapZoomLevel: this.mapZoomLevel,
+                    mapType: this.mapType
+                });
             });
         }
 
@@ -386,6 +399,10 @@ module App {
                     this.selectedTemplates = [];
                 else
                     this.getMetricFilters(templateIds); // reload advanced search UI
+
+                this.$timeout(() => {
+                    this.$rootScope.$broadcast('update_locations_map_bounds');
+                }, 500);
             }, (error) => {
                 console.error(error);
             });

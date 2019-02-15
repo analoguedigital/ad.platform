@@ -16,6 +16,10 @@
             <lm-form-group label="Date updated: ">
                 {{ctrl.survey.dateUpdated | amDateFormat:'lll'}}
             </lm-form-group>
+            <lm-form-group label="Address: " uib-tooltip="The address assigned to this record" append-to-body="true">
+                <span ng-if="ctrl.survey.locations[0].address.length">{{ctrl.survey.locations[0].address}}</span>
+                <span ng-if="!ctrl.survey.locations[0].address.length">Not available</span>
+            </lm-form-group>
         </form>
     </div>
 </div>

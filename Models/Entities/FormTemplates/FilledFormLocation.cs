@@ -12,6 +12,9 @@ namespace LightMethods.Survey.Models.Entities
 
         public double Longitude { set; get; }
 
+        // formatted address coming from Geocoding API
+        public string Address { get; set; }
+
         public double Accuracy { set; get; }
 
         public string Error { set; get; }
