@@ -1,13 +1,20 @@
 ﻿<div class="row wrapper border-bottom white-bg page-heading">
     <div class="col-lg-12">
-        <h2>{{ctrl.title}}<a class="btn pull-right" ng-click="ctrl.previousState()"><i class="fa fa-chevron-left "></i> back</a></h2>
+        <h2>
+            {{ctrl.title}}
+            <a class="btn pull-right" ng-click="ctrl.previousState()">
+                <i class="fa fa-chevron-left "></i> back
+            </a>
+        </h2>
         <div ncy-breadcrumb></div>
     </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight survey-form">
     <div class="box">
         <div class="box-title">
-            {{ctrl.formTemplate.title}} <span ng-show="ctrl.survey.serial !== null"> (#{{ctrl.survey.serial}})</span>
+            <span class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></span>
+            <span style="vertical-align: middle">{{ctrl.formTemplate.title}}</span>
+            <span style="vertical-align: middle" ng-show="ctrl.survey.serial !== null"> (#{{ctrl.survey.serial}})</span>
         </div>
         <div class="box-content">
             <div class="steps">
@@ -28,6 +35,41 @@
                             </div>
                         </uib-tab>
                     </uib-tabset>
+
+                    <div id="location-content">
+                        <h2 style="margin-top: 0">Location</h2>
+
+                        <input type="text" class="form-control" placeholder="Address or post/zip code"
+                               ng-model="geocoding.address"
+                               ng-disabled="geocoderWorking || geolocationWorking"
+                               style="max-width: 400px; display: inline-block; vertical-align: middle" /> &nbsp;
+
+                        <button type="button" class="btn btn-info" ng-click="ctrl.getAddress()" ng-disabled="geocoderWorking || geolocationWorking">
+                            <span ng-if="!geocoderWorking">
+                                <i class="fa fa-map-o"></i> Input Address
+                            </span>
+                            <span ng-if="geocoderWorking">
+                                <i class="fa fa-cog fa-spin"></i> Geocoding
+                            </span>
+                        </button>
+
+                        <button type="button" class="btn btn-info" ng-click="ctrl.getMyLocation()" ng-disabled="geolocationWorking || geocoderWorking">
+                            <span ng-if="!geolocationWorking">
+                                <i class="fa fa-location-arrow"></i> Get My Location
+                            </span>
+                            <span ng-if="geolocationWorking">
+                                <i class="fa fa-cog fa-spin"></i> Geocoding
+                            </span>
+                        </button>
+
+                        <button type="button" class="btn btn-default" ng-click="ctrl.clearAddress()">
+                            <i class="fa fa-eraser"></i> Clear
+                        </button>
+
+                        <br /><br />
+                        <div id="map_canvas" ng-show="geocoding.hasLocation" style="width: 100%; height: 400px"></div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
 
                     <div class="actions">
                         <ul>

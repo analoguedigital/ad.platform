@@ -36,25 +36,30 @@
         </div>
 
         <div ng-if="isExportMode" class="row attachment-metric" ng-controller="attachmentMetricController">
-            <table class="table table-hover table-bordered table-mail" ng-if="formValue.attachments.length">
-                <thead>
+            <table id="attachments-table" class="table table-hover" ng-if="formValue.attachments.length" style="margin-bottom: 0">
+                <!--<thead>
                     <tr>
-                        <th>FileName</th>
-                        <th class="text-center" width="120">Type</th>
+                        <th>Filename</th>
+                        <th class="text-center" width="100">Type</th>
                         <th class="text-center" width="120">Size (bytes)</th>
                     </tr>
-                </thead>
+                </thead>-->
                 <tbody>
                     <tr ng-repeat='attachment in formValue.attachments | filter: {isDeleted: false} track by $index'>
                         <td class='file-name'>
                             <a href="{{baseUrl}}#!/downloads/{{attachment.id}}">{{attachment.fileName}}</a>
                         </td>
-                        <td class="info text-center">
+                        <td class="text-center" width="100">
                             {{attachment.typeString}}
                         </td>
-                        <td class="text-center">
-                            {{attachment.fileSize}}
+                        <td class="text-center" width="30">
+                            <button class="btn btn-danger btn-xs btn_remove_attachment" ng-click="deleteAttachment($event, attachment)">
+                                <i class="fa fa-trash"></i>
+                            </button>
                         </td>
+                        <!--<td class="text-center">
+                            {{attachment.fileSize}}
+                        </td>-->
                     </tr>
                 </tbody>
             </table>

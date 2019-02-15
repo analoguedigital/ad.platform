@@ -1,10 +1,13 @@
 ﻿<div class="box">
     <div class="box-title">Locations</div>
     <div class="box-content">
-        <div class="map-wrap" ng-repeat="location in ctrl.locations track by $index">
+        <div class="map-wrap" ng-repeat="location in ctrl.locations track by $index" ng-if="ctrl.locations.length">
             <ui-gmap-google-map center="location.center" zoom="location.zoom" options="location.options" draggable="false">
                 <ui-gmap-marker coords="location.marker.coords" options="location.marker.options" events="location.marker.events" idKey="location.marker.id"></ui-gmap-marker>
             </ui-gmap-google-map>
+        </div>
+        <div ng-if="!ctrl.locations.length">
+            <p>Location data not present</p>
         </div>
     </div>
 </div>

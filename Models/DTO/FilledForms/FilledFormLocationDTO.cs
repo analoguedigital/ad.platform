@@ -10,6 +10,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public double Longitude { set; get; }
 
+        public string Address { get; set; }
+
         public double Accuracy { set; get; }
 
         public string Error { set; get; }

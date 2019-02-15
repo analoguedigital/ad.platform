@@ -614,6 +614,10 @@
     <Compile Include="Migrations\201809120636338_Add_email_recipients.Designer.cs">
       <DependentUpon>201809120636338_Add_email_recipients.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901160238037_Add_address_to_locations.cs" />
+    <Compile Include="Migrations\201901160238037_Add_address_to_locations.Designer.cs">
+      <DependentUpon>201901160238037_Add_address_to_locations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -810,6 +814,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809120636338_Add_email_recipients.resx">
       <DependentUpon>201809120636338_Add_email_recipients.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901160238037_Add_address_to_locations.resx">
+      <DependentUpon>201901160238037_Add_address_to_locations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

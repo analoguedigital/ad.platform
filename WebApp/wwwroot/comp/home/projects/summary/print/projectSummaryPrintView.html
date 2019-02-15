@@ -7,72 +7,96 @@
                 <hr />
             </div>
         </div>
-        <div class="row">
+        <div class="row" ng-if="ctrl.showTimeline">
             <div class="col-md-12">
-                <h2 class="inline mr-15">
+                <!--<h2 class="inline mr-15">
                     <i class="fa fa-folder-o"></i> Threads: {{ctrl.totalFormTemplates}}
                 </h2>
                 <h2 class="inline">
                     <i class="fa fa-wpforms"></i> Records: {{ctrl.totalSurveys}}
+                </h2>-->
+                <h2 class="inline pull-left">
+                    <button class="btn btn-default" ng-if="!ctrl.enableSnapshotView && ctrl.showTimeline" title="Previous Month" ng-click="ctrl.timelinePreviousMonth()">{{months[(today.getMonth()+11)%12]}} <i class="fa fa-arrow-left"></i></button>
                 </h2>
                 <h2 class="inline pull-right">
-                    <a ng-if="!ctrl.enableSnapshotView && ctrl.showTimeline" title="Previous Month" ng-click="ctrl.timelinePreviousMonth()">{{months[(today.getMonth()+11)%12]}} <i class="fa fa-arrow-left"></i></a>
-                    <a ng-if="!ctrl.enableSnapshotView && ctrl.showTimeline" title="Next Month" ng-click="ctrl.timelineNextMonth()"><i class="fa fa-arrow-right"></i> {{months[((today.getMonth()+1)%12)]}}</a>
+                    <button class="btn btn-default" ng-if="!ctrl.enableSnapshotView && ctrl.showTimeline" title="Next Month" ng-click="ctrl.timelineNextMonth()"><i class="fa fa-arrow-right"></i> {{months[((today.getMonth()+1)%12)]}}</button>
                 </h2>
             </div>
         </div>
-        <div class="row timeline-row">
-            <div class="col-md-12" ng-if="ctrl.showTimeline">
+        <div class="row timeline-row" ng-if="ctrl.showTimeline">
+            <div class="col-md-12">
                 <lm-timeline form-templates="ctrl.formTemplates" surveys="ctrl.surveys" height="250" render-mode="web" enable-snapshot-view="ctrl.enableSnapshotView"></lm-timeline>
             </div>
         </div>
-        <div class="row charts-row">
+        <div class="row charts-row" ng-style="!ctrl.showTimeline && { 'margin-top': '0' }">
             <div ng-class="{ 'col-md-6': ctrl.showMap && ctrl.showPieChart, 'col-md-12': ctrl.showMap && !ctrl.showPieChart }" ng-if="ctrl.showMap">
-                <lm-locations form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" location-count="ctrl.locationCount"></lm-locations>
+                <lm-locations form-templates="ctrl.uniqFormTemplates"
+                              surveys="ctrl.surveys"
+                              location-count="ctrl.locationCount"
+                              center="ctrl.mapCenterValue"
+                              zoom-level="ctrl.mapZoomValue"
+                              map-type="ctrl.mapTypeValue"></lm-locations>
             </div>
             <div ng-class="{ 'col-md-6': ctrl.showPieChart && ctrl.showMap, 'col-md-12': ctrl.showPieChart && !ctrl.showMap }" ng-if="ctrl.showPieChart">
-                <lm-pie-chart form-templates="ctrl.uniqFormTemplates" surveys="ctrl.surveys" show-legend="true"></lm-pie-chart>
+                <lm-pie-chart form-templates="ctrl.uniqFormTemplates" animation="false" surveys="ctrl.surveys" show-legend="true" chart-width="400" chart-height="400"></lm-pie-chart>
             </div>
         </div>
-
+        <br />
         <div ng-repeat="survey in ctrl.surveys track by $index" ng-init="formTemplate = ctrl.getFormTemplate(survey.formTemplateId)">
-            <h1>
+            <!--<h1>
                 <span class="color-block" ng-style="{'background-color': formTemplate.colour}"></span> {{formTemplate.title}}
-            </h1>
+            </h1>-->
 
             <div class="table-responsive">
-                <table class="table table-hover table-mail">
+                <table class="table table-bordered table-hover" style="margin-bottom: 0">
                     <thead>
                         <tr>
-                            <th class="text-center" width="120"><i class="fa fa-hashtag"></i></th>
-                            <th class="text-center" width="150">Date</th>
-                            <th width="200">Completed by</th>
-                            <th class="text-center" width="100">Impact</th>
-                            <th>Record</th>
+                            <th class="text-center" width="170">Date/Time</th>
+                            <th class="text-center" width="80"><i class="fa fa-hashtag"></i></th>
+                            <th>Thread</th>
+                            <!--<th width="200">Completed by</th>-->
+                            <th class="text-center" width="80">Impact</th>
+                            <!--<th>Record</th>-->
+                            <th width="700">Attachments</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="text-center"> {{survey.serial}}</td>
                             <td class="text-center">
-                                <lm-date-time value="survey.date"></lm-date-time>
+                                <p class="lead"><lm-date-time value="survey.date"></lm-date-time></p>
                             </td>
-                            <td>{{survey.filledBy}}</td>
+                            <td class="text-center">{{survey.serial}}</td>
+                            <td>
+                                <span class="color-block" ng-style="{'background-color': formTemplate.colour}"></span> <span style="vertical-align: middle">{{formTemplate.title}}</span>
+                            </td>
+                            <!--<td>{{survey.filledBy}}</td>-->
                             <td class="text-center">{{ctrl.getSurveyImpact(survey)}}</td>
-                            <td>{{survey.description}}</td>
+                            <!--<td>{{survey.description}}</td>-->
+                            <td style="padding-top: 0">
+                                <table style="width: 100%">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
+                                                    <div class="metric-groups">
+                                                        <div class="content" ng-repeat="metricGroup in formTemplate.metricGroups | filter: {isDeleted: false} track by $index ">
+                                                            <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroup.html'"></div>
+                                                            <div ng-if="metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroupRepeater.html'"></div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <form name="surveyForm" class="wizard-big wizard clearfix" novalidate>
-                <div class="metric-groups">
-                    <div class="content" ng-repeat="metricGroup in formTemplate.metricGroups | filter: {isDeleted: false} track by $index ">
-                        <div ng-if="!metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroup.html'"></div>
-                        <div ng-if="metricGroup.isRepeater" ng-include="'comp/home/projects/summary/print/_metricGroupRepeater.html'"></div>
-                    </div>
+                <div>
+                    <p class="lead" style="padding: 15px 10px;">{{survey.description}}</p>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>

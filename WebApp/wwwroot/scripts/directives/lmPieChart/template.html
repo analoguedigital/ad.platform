@@ -3,7 +3,10 @@
             chart-data="data"
             chart-labels="labels"
             chart-options="options"
-            chart-colors="colors"></canvas>
+            chart-colors="colors"
+            width="{{chartWidth}}"
+            height="{{chartHeight}}">
+    </canvas>
     <div ng-if="data.length == 0">
         <p>Chart data not present</p>
     </div>
