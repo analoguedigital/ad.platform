@@ -43,6 +43,10 @@
             <li lm-access="System administrator,Platform administrator,Organisation user" ng-class="{'active':$state.includes('home.dashboard.layout')}">
                 <a ui-sref="home.dashboard.layout" ui-sref-opts="{reload: true}"><i class="fa fa-dashboard"></i> <span class="nav-label">Dashboard</span> </a>
             </li>
+            <!-- Statistics -->
+            <li lm-access="System administrator,Platform administrator" ng-class="{'active':$state.includes('home.stats')}">
+                <a ui-sref="home.stats" ui-sref-opts="{reload: true}"><i class="fa fa-area-chart"></i> <span class="nav-label">Statistics</span> </a>
+            </li>
             <!-- Administrators -->
             <li lm-access="System administrator" ng-class="{'active':$state.includes('home.administrators.list')}">
                 <a ui-sref="home.administrators.list" ui-sref-opts="{reload: true}"><i class="fa fa-address-book"></i> <span class="nav-label">Administrators</span> </a>

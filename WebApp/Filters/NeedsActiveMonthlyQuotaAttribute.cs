@@ -1,6 +1,7 @@
 ﻿using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.Enums;
 using LightMethods.Survey.Models.Services;
+using System;
 using System.Configuration;
 using System.Linq;
 using System.Net;
@@ -24,9 +25,11 @@ namespace WebApi.Filters
                 var expiryDate = subscriptionService.GetLatest(currentUser.Id);
 
                 var fixedQuota = GetFixedMonthlyQuota();
-                var lastMonth = DateTimeService.UtcNow.AddMonths(-1);
-                var lastMonthRecords = unitOfWork.FilledFormsRepository.AllAsNoTracking
-                            .Count(x => x.FilledById == currentUser.Id && x.DateCreated >= lastMonth);
+                //var lastMonth = DateTimeService.UtcNow.AddMonths(-1);
+                var startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                var lastMonthRecords = unitOfWork.FilledFormsRepository
+                    .AllAsNoTracking
+                    .Count(x => x.FilledById == currentUser.Id && x.DateCreated >= startDate);
 
                 if (expiryDate == null)
                 {
@@ -62,7 +65,7 @@ namespace WebApi.Filters
             if (!string.IsNullOrEmpty(quota))
                 return int.Parse(quota);
 
-            return 10;  // default hard-coded value
+            return 150;  // default hard-coded value
         }
     }
 }

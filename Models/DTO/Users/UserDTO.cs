@@ -25,5 +25,7 @@ namespace LightMethods.Survey.Models.DTO
         public string PhoneNumber { get; set; }
 
         public bool PhoneNumberConfirmed { get; set; }
+
+        public DateTime? RegistrationDate { get; set; }
     }
 }

@@ -34,5 +34,6 @@
         isMember: boolean;
         isManager: boolean;
         isSelected: boolean;
+        quota: IMonthlyQuota;
     }
 }

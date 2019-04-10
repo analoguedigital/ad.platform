@@ -16,6 +16,7 @@
         </div>
     </div>
 
+    <!-- project selection -->
     <div class="box">
         <div class="box-content">
             <form class="form-inline">
@@ -41,9 +42,10 @@
         </div>
     </div>
 
+    <!-- threads -->
     <div class="box">
         <div class="box-title">
-            <h5>All your form templates <span ng-if="selectedProject != null">- {{selectedProject.name}}</span></h5>
+            <h5>Form Templates <span ng-if="selectedProject != null">- {{selectedProject.name}}</span></h5>
             <div class="box-tools">
                 <a ui-sref="home.formtemplates.edit" style="color: inherit"><i class="fa fa-plus-square"></i> Add new</a>
             </div>
@@ -98,6 +100,78 @@
                             </tr>
                             <tr ng-if="!displayedForms.length">
                                 <td colspan="8">No form templates were found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- advice threads -->
+    <div class="box">
+        <div class="box-title">
+            <h5>Advice Form Templates <span ng-if="selectedProject != null">- {{selectedProject.name}}</span></h5>
+        </div>
+        <div class="box-content">
+            <div st-table="displayedAdviceThreads" st-safe-src="adviceThreads">
+                <form name="search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="search" name="search" placeholder="Case, title or code" />
+                    </lm-form-group>
+                </form>
+                <hr />
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th st-sort="projectName">Case</th>
+                                <th st-sort="startDate">Title</th>
+                                <th st-sort="isPublished">Status</th>
+                                <th class="hidden-xs" st-sort="name">Category</th>
+                                <th class="sorting" st-sort="code">Code</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="form in displayedAdviceThreads">
+                                <td ng-if="!form.projectName"><i class="fa fa-windows"></i> Shared</td>
+                                <td ng-if="form.projectName">{{form.projectName}}</td>
+                                <td>
+                                    <a ui-sref="home.formtemplates.edit({id:form.id})">
+                                        <span class="color-block" ng-style="{'background-color': form.colour}"></span> {{form.title}}
+                                    </a>
+                                </td>
+                                <td ng-if="form.isPublished">Published (<a ng-bootbox-confirm="Are you sure you want to archive this?" ng-bootbox-confirm-action="archive(form)">archive</a>)</td>
+                                <td ng-if="!form.isPublished">Archived (<a ng-bootbox-confirm="Are you sure you want to publish this?" ng-bootbox-confirm-action="publish(form)">publish</a>)</td>
+                                <td class="hidden-xs">{{form.formTemplateCategory.title}}</td>
+                                <td>{{form.code}}</td>
+                                <td><a ui-sref="home.formtemplates.design({id: form.id})"><i class="fa fa-paint-brush"></i><span class="hidden-xs"> design</span></a></td>
+                                <td>
+                                    <a ui-sref="home.formtemplates.assignments({id:form.id})">
+                                        <i class="fa fa-link"></i> <span class="hidden-xs"> assign</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <!--<a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="delete(form.id)">
+                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                    </a>-->
+
+                                    <a ng-click="ctrl.selectedFormTemplateChanged(form)"
+                                       ng-bootbox-title="Are you sure you want to do this?"
+                                       ng-bootbox-custom-dialog="Deleting a form template tries to remove it from the system. If there are related records in the database you'll get an error. Force-deleting the form template tries to remove everything from the database. I hope you know what you're doing!"
+                                       ng-bootbox-buttons="customDialogButtons">
+                                        <i class="fa fa-remove"></i><span class="hidden-sm hidden-xs"> delete</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-if="!displayedForms.length">
+                                <td colspan="8">No adivce threads were found</td>
                             </tr>
                         </tbody>
                     </table>

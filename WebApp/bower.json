@@ -1,5 +1,5 @@
 {
-  "name": "Light Surveys",
+  "name": "light-surveys",
   "private": true,
   "dependencies": {
     "jquery": "2.2.0",
@@ -45,7 +45,8 @@
     "angular-ui-select": "0.19.8",
     "angular-bootstrap-calendar": "^1.0.0",
     "font-awesome": "Font-Awesome#v4.7.0",
-    "angular-ui-tour": "^0.9.2"
+    "angular-ui-tour": "^0.9.2",
+    "AngularHammer": "ryanmullins-angular-hammer#^2.2.0"
   },
   "resolutions": {
     "bootstrap": "3.3.7",

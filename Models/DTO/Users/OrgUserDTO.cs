@@ -53,6 +53,10 @@ namespace LightMethods.Survey.Models.DTO
 
         public AccountType AccountType { get; set; }
 
+        public DateTime? LastLogin { get; set; }
+
+        public DateTime? RegistrationDate { get; set; }
+
         public OrgUserDTO()
         {
             this.Assignments = new List<ProjectAssignmentDTO>();

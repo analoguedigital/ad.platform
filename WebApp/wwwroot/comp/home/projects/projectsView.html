@@ -29,7 +29,7 @@
                         <thead>
                             <tr>
                                 <th st-sort="name">Name</th>
-                                <th st-sort="notes">Note</th>
+                                <!--<th st-sort="notes">Note</th>-->
                                 <th st-sort="createdBy" width="200">Created by</th>
                                 <th width="100" class="text-center">Teams</th>
                                 <th width="100" class="text-center">Assignments</th>
@@ -37,7 +37,8 @@
                                 <th width="100"></th>
                                 <th width="140"></th>
                                 <th width="160"></th>
-                                <th width="100"></th>
+                                <th width="140"></th>
+                                <th width="150"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -53,7 +54,7 @@
                                         &nbsp;{{project.name}}
                                     </a>
                                 </td>
-                                <td>{{project.notes}}</td>
+                                <!--<td>{{project.notes}}</td>-->
                                 <td>
                                     <span ng-if="project.createdBy">{{project.createdBy.email}}</span>
                                     <span ng-if="!project.createdBy">NA</span>
@@ -85,7 +86,8 @@
                                         <i class="fa fa-plus-square"></i> <span class="hidden-xs"> add advice thread</span>
                                     </a>
                                 </td>
-                                <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
+                                <td><a ui-sref="home.projects.summary({id: project.id, discriminator: 1})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> advice summary</span></a></td>
+                                <td><a ui-sref="home.projects.summary({id: project.id, discriminator: 0})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> records summary</span></a></td>
                             </tr>
                             <tr ng-if="!displayedProjects.length">
                                 <td colspan="9">No cases were found</td>

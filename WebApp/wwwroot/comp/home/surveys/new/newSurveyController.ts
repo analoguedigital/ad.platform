@@ -37,7 +37,8 @@ module App {
         //survey: Models.ISurvey;
         activeTabIndex: number = 0;
 
-        static $inject: string[] = ["$scope", "$q", "$rootScope", "$state", "$timeout", "toastr", "surveyResource", "formTemplate", "project", "survey"];
+        static $inject: string[] = ["$scope", "$q", "$rootScope", "$state", "$timeout",
+            "toastr", "surveyResource", "formTemplate", "project", "survey", "localStorageService"];
 
         constructor(
             private $scope: INewSurveyScope,
@@ -49,7 +50,8 @@ module App {
             private surveyResource: Resources.ISurveyResource,
             public formTemplate: Models.IFormTemplate,
             public project: Models.IProject,
-            public survey: Models.ISurvey) {
+            public survey: Models.ISurvey,
+            public localStorageService: ng.local.storage.ILocalStorageService) {
 
             if (survey == null) {
                 this.survey = <Models.ISurvey>{};
@@ -82,8 +84,16 @@ module App {
             this.$scope.$on('$viewContentLoaded', () => {
                 this.$timeout(() => {
                     this.$scope.$broadcast('rzSliderForceRender');
-                }, 250);
+                }, 500);
             });
+
+            var prevState = this.$rootScope.previousState;
+            var prevParams = this.$rootScope.previousStateParams;
+
+            if (prevState && prevState.name.length && prevParams) {
+                this.localStorageService.set('survey.prevState', prevState);
+                this.localStorageService.set('survey.prevParams', prevParams);
+            }
 
             this.getLocations();
         }
@@ -172,7 +182,16 @@ module App {
         previousState() {
             var prevState = this.$rootScope.previousState;
             var prevParams = this.$rootScope.previousStateParams;
-            this.$state.go(prevState.name, prevParams);
+
+            if (prevState && prevState.name.length && prevParams) {
+                this.$state.go(prevState.name, prevParams);
+            } else {
+                var lsPrevState: any = this.localStorageService.get('survey.prevState');
+                var lsPrevParams: any = this.localStorageService.get('survey.prevParams');
+                if (lsPrevState && lsPrevState.name.length && lsPrevParams) {
+                    this.$state.go(lsPrevState.name, lsPrevParams);
+                }
+            }
         }
 
         getAddress() {
@@ -382,8 +401,12 @@ module App {
                             }
                         },
                         (err) => {
-                            console.log(err);
-                            this.toastr.error(err.data);
+                            console.error(err);
+                            if (err.status == 400) {
+                                this.toastr.error(err.data.message);
+                            } else {
+                                this.toastr.error('An error has occured, sorry');
+                            }
                         });
                 }
                 else {

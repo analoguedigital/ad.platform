@@ -1,6 +1,6 @@
 ﻿<div class="box">
     <div class="box-title">
-        <h5 ng-if="!ctrl.timelineSnapshotView">Timeline ({{months[today.getMonth()]}})</h5>
+        <h5 ng-if="!ctrl.timelineSnapshotView">Timeline ({{today | amDateFormat: 'MMMM YYYY'}})</h5>
         <h5 ng-if="ctrl.timelineSnapshotView">Timeline (compressed view)</h5>
 
         <div class="box-tools">
@@ -12,20 +12,31 @@
             </a>
             <ul class="dropdown-menu dropdown-user">
                 <li>
-                    <a href="" ng-click="ctrl.timelineSnapshotView = true">
+                    <a href="" ng-click="ctrl.toggleTimelineView(true)">
                         <i class="fa fa-check" ng-if="ctrl.timelineSnapshotView"></i> Compressed view
                     </a>
                 </li>
                 <li>
-                    <a href="" ng-click="ctrl.timelineSnapshotView = false">
+                    <a href="" ng-click="ctrl.toggleTimelineView(false)">
                         <i class="fa fa-check" ng-if="!ctrl.timelineSnapshotView"></i> Monthly view
+                    </a>
+                </li>
+                <li class="divider"></li>
+                <li>
+                    <a href="" ng-click="ctrl.changeTimelineDate()">
+                        <i class="fa fa-calendar-check-o"></i> Change date
+                    </a>
+                </li>
+                <li>
+                    <a href="" ng-click="ctrl.resetTimelineDate()">
+                        <i class="fa fa-refresh"></i> Reset date
                     </a>
                 </li>
             </ul>
         </div>
     </div>
     <div class="box-content timeline-box">
-        <lm-timeline ng-if="ctrl.surveys.length" form-templates="ctrl.selectedTemplates" surveys="ctrl.surveys" height="250" render-mode="web" enable-snapshot-view="ctrl.timelineSnapshotView"></lm-timeline>
+        <lm-timeline ng-show="ctrl.surveys.length" form-templates="ctrl.selectedTemplates" surveys="ctrl.surveys" height="250" render-mode="web" enable-snapshot-view="ctrl.timelineSnapshotView"></lm-timeline>
         <p ng-if="!ctrl.surveys.length">Timeline data not present</p>
     </div>
 </div>

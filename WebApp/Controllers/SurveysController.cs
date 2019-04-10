@@ -6,6 +6,7 @@ using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
@@ -261,6 +262,7 @@ namespace WebApi.Controllers
         [HttpPost]
         [Route("api/surveys")]
         [NeedsActiveMonthlyQuota]
+        //[CheckUsedSpace]
         public IHttpActionResult Post(FilledFormDTO survey)
         {
             if (CurrentUser is OrgUser)
@@ -271,6 +273,11 @@ namespace WebApi.Controllers
 
             var filledForm = Mapper.Map<FilledForm>(survey);
             filledForm.FilledById = CurrentUser.Id;
+
+            if (!HasAvailableDiskSpace(filledForm))
+            {
+                return BadRequest("You have exceeded your disk space allowance");
+            }
 
             foreach (var val in filledForm.FormValues.Where(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is DateMetric))
             {
@@ -326,6 +333,39 @@ namespace WebApi.Controllers
 
                 throw dbEx;
             }
+        }
+
+        private bool HasAvailableDiskSpace(FilledForm survey)
+        {
+            long totalAttachmentsSize = 0;
+
+            var attachmentMetrics = survey.FormValues.Where(x => UnitOfWork.MetricsRepository.Find(x.MetricId.Value) is AttachmentMetric);
+            foreach (var metric in attachmentMetrics)
+            {
+                if (string.IsNullOrEmpty(metric.TextValue)) continue;
+
+                var fileInfos = metric.TextValue.Split(',')
+                    .Select(i => HttpContext.Current.Server.MapPath("~/Uploads/" + i))
+                    .Select(path => new DirectoryInfo(path).GetFiles().FirstOrDefault());
+
+                totalAttachmentsSize += fileInfos.Sum(x => x.Length);
+            }
+
+            var statsService = new StatisticsService(UnitOfWork);
+            var usedSpace = statsService.GetUsedSpace(CurrentOrgUser.Id);
+
+            var subscriptionService = new SubscriptionService(UnitOfWork);
+            var monthlyQuota = subscriptionService.GetMonthlyQuota(CurrentOrgUser.Id);
+
+            if (monthlyQuota.MaxDiskSpace.HasValue)
+            {
+                var availableDiskSpace = monthlyQuota.MaxDiskSpace.Value - (int)usedSpace.TotalSizeInKiloBytes;
+                var totalAttachmentsInKB = (int)totalAttachmentsSize / 1024;
+
+                return (totalAttachmentsInKB < availableDiskSpace);
+            }
+
+            return true;
         }
 
         // PUT api/surveys/{id}

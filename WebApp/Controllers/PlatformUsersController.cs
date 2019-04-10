@@ -84,7 +84,8 @@ namespace WebApi.Controllers
                 UserName = model.Email,
                 Email = model.Email,
                 FirstName = model.FirstName,
-                Surname = model.Surname
+                Surname = model.Surname,
+                RegistrationDate = DateTime.UtcNow
             };
 
             try

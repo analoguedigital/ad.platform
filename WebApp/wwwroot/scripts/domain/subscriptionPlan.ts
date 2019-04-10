@@ -37,6 +37,7 @@
         length: number;
         isLimited: boolean;
         monthlyQuota?: number;
+        monthlyDiskSpace?: number;
         pdfExport: boolean;
         zipExport: boolean;
         dateCreated: number;

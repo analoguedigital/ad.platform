@@ -331,6 +331,28 @@ namespace WebApi.Controllers
             return Ok();
         }
 
+        // DEL api/formTemplates/force-delete/{id}
+        [HttpPost]
+        [Route("api/formtemplates/{id:guid}/force-delete")]
+        public IHttpActionResult ForceDelete(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
+            var response = FormTemplatesService.ForceDelete(id);
+            if (!response.Success)
+            {
+                if (response.Message.ToLower() == "not found")
+                    return NotFound();
+
+                return BadRequest(response.Message);
+            }
+
+            MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+            return Ok();
+        }
+
         // PUT api/formTemplates/{id}/details
         [HttpPut]
         [DeflateCompression]

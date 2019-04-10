@@ -1,4 +1,6 @@
+// https://github.com/danialfarid/ng-file-upload
 // https://jsfiddle.net/58oL5g4c/10/
+
 module App {
     "use strict";
 
@@ -28,10 +30,12 @@ module App {
         uploadInstance: any;
         uploadIndex: number;
 
-        static $inject: string[] = ['$scope', 'Upload'];
+        static $inject: string[] = ['$scope', 'Upload', 'toastr', 'userContextService'];
 
         constructor(private $scope: IAttachmentMetricControllerScope,
-            private Upload: any) {
+            private Upload: any,
+            private toastr: any,
+            private userContextService: Services.IUserContextService) {
 
             this.uploadIndex = 0;
             $scope.uploadFiles = () => {
@@ -59,8 +63,7 @@ module App {
                 if (ctrl.session) {
                     angular.forEach(this.$scope.formValue.attachments,
                         (att) => {
-                            if (ctrl.session.removedItemIds.indexOf(att.id) !== -1)
-                            {
+                            if (ctrl.session.removedItemIds.indexOf(att.id) !== -1) {
                                 att.isDeleted = true;
                             }
                         });
@@ -92,6 +95,10 @@ module App {
                     file.guid = response;
 
                 }).error((response) => {
+                    if (response.message && response.message.length) {
+                        this.toastr.error(response.message);
+                    }
+
                     if (response.status > 0)
                         this.$scope.errorMsg = response.status + ': ' + response.data;
                 });
@@ -118,7 +125,18 @@ module App {
         }
 
         validateFile($file) {
-            $file.$error = "eelo";
+            var quota = this.userContextService.current.orgUser.quota;
+            if (quota.maxDiskSpace !== null && quota.maxDiskSpace > 0) {
+                var availableSpace = quota.maxDiskSpace - quota.usedDiskSpace;
+                var fileSize = $file.size / 1024;
+
+                if (fileSize > availableSpace) {
+                    $file.$error = "disk space allowance exceeded";
+                    this.toastr.error('Selected file is larger than your available disk space!');
+                }
+            }
+
+            //$file.$error = "eelo";
         }
 
         deleteAttachment($event: ng.IAngularEvent, attachment: Models.IAttachment) {

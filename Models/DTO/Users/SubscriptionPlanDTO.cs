@@ -18,6 +18,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public int? MonthlyQuota { get; set; }
 
+        public int? MonthlyDiskSpace { get; set; }
+
         public bool PdfExport { get; set; }
 
         public bool ZipExport { get; set; }

@@ -82,8 +82,9 @@ namespace WebApi.Models
                 EmailConfirmed = user.EmailConfirmed,
                 PhoneNumber = phoneNumber,
                 PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                RegistrationDate = user.RegistrationDate,
                 HasRegistered = externalLogin == null,
-                LoginProvider = externalLogin != null ? externalLogin.LoginProvider : null,
+                LoginProvider = externalLogin?.LoginProvider,
                 Language = CurrentOrganisation?.DefaultLanguage?.Calture,
                 Calendar = CurrentOrganisation?.DefaultCalendar?.SystemName,
                 Roles = ServiceContext.UserManager.GetRoles(CurrentUser.Id),
@@ -704,11 +705,20 @@ namespace WebApi.Models
 
                     UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
                     orgUser.IsSubscribed = true;
-
-                    UnitOfWork.Save();
                 }
 
-                return Ok();
+                // notify the user that their account has been confirmed
+                NotifyUserAboutConfirmedAccount(orgUser.Email);
+
+                try
+                {
+                    UnitOfWork.Save();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
             }
 
             var errorString = new StringBuilder();
@@ -1003,6 +1013,21 @@ namespace WebApi.Models
         //}
 
         #endregion
+
+        private void NotifyUserAboutConfirmedAccount(string userEmail)
+        {
+            var content = @"<p>Thank you, your account has been verified and you can now sign in.</p>
+                            <p>If you need help or want to learn more, please contact your administrator.</p>";
+
+            var email = new Email
+            {
+                To = userEmail,
+                Subject = $"Account confirmed",
+                Content = WebHelpers.GenerateEmailTemplate(content, "Account confirmed")
+            };
+
+            UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+        }
 
     }
 

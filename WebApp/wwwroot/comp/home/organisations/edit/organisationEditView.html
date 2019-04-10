@@ -123,6 +123,7 @@
                                 <th st-sort="accountType" class="text-center" width="40">Type</th>
                                 <th st-sort="[firstName,surname]">Name</th>
                                 <th st-sort="email">Email</th>
+                                <th st-sort="lastLogin" width="120" class="text-center">Last Login</th>
                                 <th class="text-center" st-sort="isWebUser" width="120">Web User</th>
                                 <th class="text-center" st-sort="isMobileUser" width="120">Mobile User</th>
                                 <th class="text-center" width="100"></th>
@@ -145,6 +146,10 @@
                                     <i class="fa fa-user-o" ng-if="!user.isRootUser"></i>
                                     &nbsp;
                                     {{user.email}}
+                                </td>
+                                <td class="text-center">
+                                    <span ng-if="!user.lastLogin">NA</span>
+                                    <span ng-if="user.lastLogin">{{user.lastLogin | amDateFormat:'MMM DD YYYY'}}</span>
                                 </td>
                                 <td class="text-center">
                                     <i class="fa fa-check" ng-if="user.isWebUser"></i>

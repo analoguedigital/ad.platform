@@ -38,7 +38,8 @@ var App;
         "ui.select",
         "mwl.calendar",
         "bm.uiTour",
-        "mgo-angular-wizard"
+        "mgo-angular-wizard",
+        "hmTouchEvents"
     ]);
 })(App || (App = {}));
 

@@ -1,0 +1,225 @@
+﻿<div ng-include="'comp/common/pageHeader.html'"></div>
+<div class="wrapper wrapper-content animated fadeInRight statistics_view">
+    <div class="box">
+        <div class="box-title">
+            <div class="pull-left">
+                <h5>Unconfirmed Accounts</h5>
+            </div>
+
+            <div class="pull-right">
+                <div class="btn-group" role="group" aria-label="account filters">
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterUnconfirmedAccounts('clients')"><i class="fa fa-phone-square"></i> Clients</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterUnconfirmedAccounts('staff')"><i class="fa fa-laptop"></i> Staff</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'admins' }" ng-click="ctrl.filterUnconfirmedAccounts('admins')"><i class="fa fa-user-secret"></i> Admins</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterUnconfirmedAccounts('all')"><i class="fa fa-user-circle"></i> All</button>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="box-content">
+            <div st-table="ctrl.displayedUnconfirmedAccounts" st-safe-src="ctrl.unconfirmedAccounts">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="unconfirmedAccountsSearchTerm" placeholder="Email, first name and surname" style="min-width: 300px" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th st-sort="email">Email address</th>
+                                <th st-sort="firstName">First Name</th>
+                                <th st-sort="surname">Surname</th>
+                                <th st-sort="isActive" class="text-center" width="100">Is Active</th>
+                                <th st-sort="lastLogin" class="text-center" width="150">Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in ctrl.displayedUnconfirmedAccounts">
+                                <td>
+                                    <i ng-if="user.accountType === 0" class="fa fa-phone-square"></i>
+                                    <i ng-if="user.accountType === 1 && !user.isRootUser" class="fa fa-laptop"></i>
+                                    <i ng-if="user.accountType === 1 && user.isRootUser" class="fa fa-user-secret"></i>
+
+                                    <a ng-if="user.accountType === 0" ui-sref="home.users.edit({ id: user.id, accountType: 'mobile-account' })">{{user.email}}</a>
+                                    <a ng-if="user.accountType === 1" ui-sref="home.users.edit({ id: user.id, accountType: 'web-account' })">{{user.email}}</a>
+                                </td>
+                                <td>{{user.firstName}}</td>
+                                <td>{{user.surname}}</td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="user.isActive"></i>
+                                    <i class="fa fa-times" ng-if="!user.isActive"></i>
+                                </td>
+                                <td class="text-center">
+                                    <span ng-if="user.lastLogin">{{user.lastLogin}}</span>
+                                    <span ng-if="!user.lastLogin">NA</span>
+                                </td>
+                            </tr>
+                            <tr ng-if="!ctrl.displayedUnconfirmedAccounts.length">
+                                <td colspan="5">No unconfirmed accounts were found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-title">
+            <h5>Platform Statistics</h5>
+        </div>
+        <div class="box-content">
+            <div class="row">
+                <div class="col-md-3">
+                    <h2 class="chart-header">USERS ({{stats.totalAccounts}})</h2>
+                    <canvas id="users-chart" class="chart chart-pie chart-center"
+                            chart-data="usersChartData"
+                            chart-labels="usersChartLabels"
+                            chart-options="usersChartOpts"
+                            chart-colors="usersChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="chart-header">ADMINS ({{stats.totalAdmins}})</h2>
+                    <canvas id="admins-chart" class="chart chart-pie chart-center"
+                            chart-data="adminsChartData"
+                            chart-labels="adminsChartLabels"
+                            chart-options="adminsChartOpts"
+                            chart-colors="adminsChartColors"></canvas>
+
+                    <!--<h2 class="chart-header">TEAMS ({{stats.totalTeams}})</h2>
+                    <canvas id="teams-chart" class="chart chart-pie chart-center"
+                            chart-data="teamsChartData"
+                            chart-labels="teamsChartLabels"
+                            chart-options="teamsChartOpts"
+                            chart-colors="teamsChartColors"></canvas>-->
+                </div>
+                <div class="col-md-3">
+                    <h2 class="chart-header">THREADS ({{stats.totalThreads + stats.totalAdviceThreads}})</h2>
+                    <canvas id="threads-chart" class="chart chart-pie chart-center"
+                            chart-data="threadsChartData"
+                            chart-labels="threadsChartLabels"
+                            chart-options="threadsChartOpts"
+                            chart-colors="threadsChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="chart-header">TOTAL RECORDS</h2>
+                    <canvas id="records-chart" class="chart chart-pie chart-center"
+                            chart-data="recordsChartData"
+                            chart-labels="recordsChartLabels"
+                            chart-options="recordsChartOpts"
+                            chart-colors="recordsChartColors"></canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <h2 class="chart-header">THREAD RECORDS</h2>
+                    <canvas id="thread-records-chart" class="chart chart-pie chart-center"
+                            chart-data="threadRecordsChartData"
+                            chart-labels="threadRecordsChartLabels"
+                            chart-options="threadRecordsChartOpts"
+                            chart-colors="threadRecordsChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="chart-header">ADVICE RECORDS</h2>
+                    <canvas id="advice-records-chart" class="chart chart-pie chart-center"
+                            chart-data="adviceRecordsChartData"
+                            chart-labels="adviceRecordsChartLabels"
+                            chart-options="adviceRecordsChartOpts"
+                            chart-colors="adviceRecordsChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="chart-header">ATTACHMENTS ({{stats.totalAttachments}})</h2>
+                    <canvas id="attachments-chart" class="chart chart-pie chart-center"
+                            chart-data="attachmentsChartData"
+                            chart-labels="attachmentsChartLabels"
+                            chart-options="attachmentsChartOpts"
+                            chart-colors="attachmentsChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="chart-header">DISK SPACE ({{stats.attachmentStats.totalSizeInMB.toFixed(2)}} MB)</h2>
+                    <canvas id="attachments-size-chart" class="chart chart-pie chart-center"
+                            chart-data="attachmentsSizeChartData"
+                            chart-labels="attachmentsSizeChartLabels"
+                            chart-options="attachmentsSizeChartOpts"
+                            chart-colors="attachmentsSizeChartColors"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-title">
+            <h5>System Stats</h5>
+        </div>
+        <div class="box-content">
+            <p>
+                <span class="badge badge-primary badge-large">
+                    <i class="fa fa-sitemap"></i> {{stats.totalOrganizations}} Organizations
+                </span>
+
+                <span class="badge badge-primary badge-large">
+                    <i class="fa fa-briefcase"></i> {{stats.totalCases}} Cases
+                </span>
+            </p>
+
+            <p>
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-newspaper-o"></i> {{stats.totalThreads}} Threads
+                </span>
+
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-medkit"></i> {{stats.totalAdviceThreads}} Advice Threads
+                </span>
+            </p>
+
+            <p>
+                <span class="badge badge-success badge-large">
+                    <i class="fa fa-files-o"></i> {{stats.totalRecords}} Records
+                </span>
+
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-files-o"></i> {{stats.totalThreadRecords}} Thread Records
+                </span>
+
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-files-o"></i> {{stats.totalAdviceRecords}} Advice Records
+                </span>
+            </p>
+
+            <p>
+                <span class="badge badge-success badge-large">
+                    <i class="fa fa-phone"></i> {{stats.totalAccounts}} Accounts
+                </span>
+
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-phone"></i> {{stats.totalMobileAccounts}} Mobile Accounts
+                </span>
+
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-laptop"></i> {{stats.totalWebAccounts}} Web Accounts
+                </span>
+            </p>
+
+            <p>
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-user-secret"></i> {{stats.totalAdmins}} Admins
+                </span>
+
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-user-md"></i> {{stats.totalSystemAdmins}} Sys Admins
+                </span>
+
+                <span class="badge badge-info badge-large">
+                    <i class="fa fa-user-md"></i> {{stats.totalPlatformAdmins}} Platform Admins
+                </span>
+            </p>
+        </div>
+    </div>
+
+</div>

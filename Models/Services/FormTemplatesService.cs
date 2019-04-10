@@ -382,6 +382,76 @@ namespace LightMethods.Survey.Models.Services
             return result;
         }
 
+        public OperationResult ForceDelete(Guid id)
+        {
+            var result = new OperationResult();
+
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, false);
+            var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
+            if (form == null)
+            {
+                result.Success = false;
+                result.Message = "Not found";
+
+                return result;
+            }
+
+            try
+            {
+                // delete filled forms
+                var surveys = UnitOfWork.FilledFormsRepository
+                    .AllAsNoTracking
+                    .Where(x => x.FormTemplateId == id)
+                    .ToList();
+
+                var attachments = new List<Attachment>();
+
+                foreach (var survey in surveys)
+                {
+                    foreach (var fv in survey.FormValues)
+                    {
+                        if (fv.Attachments.Any())
+                        {
+                            attachments.AddRange(fv.Attachments.ToList());
+                        }
+                    }
+                }
+
+                UnitOfWork.AttachmentsRepository.Delete(attachments);
+                UnitOfWork.FilledFormsRepository.Delete(surveys);
+                UnitOfWork.Save();
+
+                // delete metrics & metric groups
+                var metrics = UnitOfWork.MetricsRepository
+                    .All
+                    .Where(x => x.FormTemplateId == id)
+                    .ToList();
+
+                var metricGroups = UnitOfWork.MetricGroupsRepository
+                    .All
+                    .Where(x => x.FormTemplateId == id)
+                    .ToList();
+
+                UnitOfWork.MetricsRepository.Delete(metrics);
+                UnitOfWork.MetricGroupsRepository.Delete(metricGroups);
+                UnitOfWork.Save();
+
+                // delete the form template itself
+                UnitOfWork.FormTemplatesRepository.Delete(id);
+                UnitOfWork.Save();
+
+                result.Success = true;
+                result.Message = "Form Template deleted";
+            }
+            catch (DbUpdateException)
+            {
+                result.Success = false;
+                result.Message = "This Form cannot be deleted!";
+            }
+
+            return result;
+        }
+
         public OperationResult Clone(Guid id, CloneReqDTO request)
         {
             var result = new OperationResult();

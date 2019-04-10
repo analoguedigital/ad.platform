@@ -8,20 +8,27 @@
             <form name="formTemplateForm" class="form-horizontal" novalidate>
                 <lm-form-group label="Organisation: *" ng-if="ctrl.currentUserIsSuperUser">
                     <select id="organisation" name="organisation"
+                            ng-disabled="!ctrl.insertMode"
                             ng-model="ctrl.formTemplate.organisation"
                             ng-change="ctrl.organisationChanged()"
                             ng-options="organisation as organisation.name for organisation in ctrl.organisations track by organisation.id" required></select>
                 </lm-form-group>
                 <lm-form-group label="Category: *">
                     <div class="input-group">
-                        <select id="category" name="category" ng-model="ctrl.formTemplate.formTemplateCategory" ng-options="category as category.title for category in ctrl.categories track by category.id" required></select>
+                        <select id="category" name="category"
+                                ng-disabled="!ctrl.insertMode"
+                                ng-model="ctrl.formTemplate.formTemplateCategory"
+                                ng-options="category as category.title for category in ctrl.categories track by category.id" required></select>
                         <span class="input-group-btn">
                             <button class="btn btn-info" type="button" ng-click="ctrl.addCategory()"><i class="fa fa-plus"></i> Add new</button>
                         </span>
                     </div>
                 </lm-form-group>
                 <lm-form-group label="Project: *">
-                    <select id="project" name="project" ng-model="ctrl.formTemplate.project" ng-options="project as project.name for project in ctrl.projects track by project.id" required></select>
+                    <select id="project" name="project"
+                            ng-disabled="!ctrl.insertMode"
+                            ng-model="ctrl.formTemplate.project"
+                            ng-options="project as project.name for project in ctrl.projects track by project.id" required></select>
                 </lm-form-group>
                 <lm-form-group label="Code: *" form-group-class="has-feedback" feedback-value="{{ctrl.formTemplate.code.length}}">
                     <input type="text" id="code" name="code" ng-model="ctrl.formTemplate.code" required />

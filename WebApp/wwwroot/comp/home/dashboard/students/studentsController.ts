@@ -18,13 +18,14 @@
     }
 
     class StudentsController implements IStudentsController {
-        static $inject: string[] = ["$scope", "$state", "$timeout", "projectResource", "userContextService"];
+        static $inject: string[] = ["$scope", "$state", "$timeout", "projectResource", "userContextService", "localStorageService"];
         constructor(
             private $scope: IStudentsControllerScope,
             private $state: ng.ui.IStateService,
             private $timeout: ng.ITimeoutService,
             private projectResource: Resources.IProjectResource,
-            private userContextService: Services.IUserContextService) {
+            private userContextService: Services.IUserContextService,
+            private localStorageService: ng.local.storage.ILocalStorageService) {
 
             $scope.title = "Projects";
 
@@ -46,6 +47,11 @@
                     this.$scope.projects = projects;
                     this.$scope.displayedProjects = [].concat(this.$scope.projects);
 
+                    var accountTypeFilter = <string>this.localStorageService.get('dashboard_account_type_filter');
+                    if (accountTypeFilter && accountTypeFilter.length) {
+                        this.filterProjects(accountTypeFilter);
+                    }
+
                     if (projects.length === 1) {
                         this.$state.go('home.projects.summary', { id: projects[0].id });
                     }
@@ -55,6 +61,7 @@
 
         filterProjects(type: string) {
             this.$scope.accountTypeFilter = type;
+            this.localStorageService.set('dashboard_account_type_filter', type);
 
             if (type === 'clients') {
                 this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; });

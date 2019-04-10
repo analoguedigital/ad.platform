@@ -123,18 +123,10 @@ module App {
                     },
                     events: {
                         'zoom_changed': function (map, eventName, args) {
-                            //scope.$apply(() => {
-                                
-                            //});
-
                             scope.zoomLevel = map.getZoom();
                             localStorageService.set('export_map_zoom_level', scope.zoomLevel);
                         },
                         'maptypeid_changed': function (map, eventName, args) {
-                            //scope.$apply(() => {
-                                
-                            //});
-
                             scope.mapType = map.getMapTypeId();
                             localStorageService.set('export_map_type', scope.mapType);
                         },

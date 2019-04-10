@@ -38,6 +38,8 @@
     export interface IMonthlyQuota extends ng.resource.IResource<IMonthlyQuota> {
         quota?: number;
         used: number;
+        maxDiskSpace?: number;
+        usedDiskSpace: number;
     }
 
     export interface ISubscriptionEntry extends ng.resource.IResource<ISubscriptionEntry> {

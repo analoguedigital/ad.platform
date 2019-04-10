@@ -167,11 +167,22 @@ namespace WebApi.Controllers
             if (id == Guid.Empty)
                 return BadRequest("id is empty");
 
+            var request = UnitOfWork.OrgConnectionRequestsRepository.Find(id);
+            if (request == null)
+                return NotFound();
+
+            // Repo.FindIncluding() doesn't seem to work, params return null.
+            // this isn't ideal at all, we should be able to fetch our data
+            // in one go, one db-hit. investigate the base repository implementation.
+            var organization = UnitOfWork.OrganisationRepository.Find(request.OrganisationId);
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(request.OrgUserId);
+
+            UnitOfWork.OrgConnectionRequestsRepository.Delete(id);
+            NotifyUserAboutDeclinedRequest(organization.Name, orgUser.Email);
+
             try
             {
-                UnitOfWork.OrgConnectionRequestsRepository.Delete(id);
-                UnitOfWork.OrgConnectionRequestsRepository.Save();
-
+                UnitOfWork.Save();
                 MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
                 return Ok();
@@ -359,6 +370,21 @@ namespace WebApi.Controllers
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
             }
+        }
+
+        private void NotifyUserAboutDeclinedRequest(string organisationName, string userEmail)
+        {
+            var content = @"<p>Your request to join the <strong>" + organisationName + @"</strong> organization has been declined.</p>
+                            <p>If you need help or want to learn more, please contact your administrator.</p>";
+
+            var email = new Email
+            {
+                To = userEmail,
+                Subject = $"Connection request declined - {organisationName}",
+                Content = WebHelpers.GenerateEmailTemplate(content, "Your connection request has been declined")
+            };
+
+            UnitOfWork.EmailsRepository.InsertOrUpdate(email);
         }
 
         #endregion Helpers
