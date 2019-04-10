@@ -50,6 +50,8 @@ namespace WebApi.Models
 
         public bool PhoneNumberConfirmed { get; set; }
 
+        public DateTime? RegistrationDate { get; set; }
+
         public IList<string> Roles { set; get; }
 
         public UserProfileDTO Profile { get; set; }

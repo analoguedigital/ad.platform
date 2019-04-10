@@ -42,6 +42,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public string Address { set; get; }
 
+        public DateTime? RegistrationDate { get; set; }
+
         [ReadOnly(true)]
         public bool IsActive { set; get; }
 

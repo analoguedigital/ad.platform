@@ -27,8 +27,9 @@
                             <th st-sort="notes">Note</th>
                             <th st-sort="lastEntry" width="100" class="text-center">Last entry</th>
                             <th st-sort="number" width="100" class="text-center">Number</th>
+                            <!--<th class="text-center" width="140"></th>-->
                             <th class="text-center" width="140"></th>
-                            <td class="text-center" width="100"></td>
+                            <td class="text-center" width="150"></td>
                         </tr>
                     </thead>
                     <tbody>
@@ -47,8 +48,9 @@
                             <td>{{project.notes}}</td>
                             <td class="text-center">{{project.lastEntry | amDateFormat: 'L'}}</td>
                             <td class="text-center">{{project.number}}</td>
-                            <td><a ui-sref="home.adviceThreads.list.summary({projectId: project.id})"><i class="fa fa-medkit"></i><span class="hidden-xs"> advice threads</span></a></td>
-                            <td><a ui-sref="home.projects.summary({id: project.id})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> summary</span></a></td>
+                            <!--<td><a ui-sref="home.adviceThreads.list.summary({projectId: project.id})"><i class="fa fa-medkit"></i><span class="hidden-xs"> advice threads</span></a></td>-->
+                            <td><a ui-sref="home.projects.summary({id: project.id, discriminator: 1})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> advice summary</span></a></td>
+                            <td><a ui-sref="home.projects.summary({id: project.id, discriminator: 0})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> records summary</span></a></td>
                         </tr>
                         <tr ng-if="!displayedProjects.length">
                             <td colspan="3">No records</td>

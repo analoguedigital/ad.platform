@@ -24,7 +24,6 @@
 
     lmTimeline.$inject = ['$rootScope', '$timeout'];
     function lmTimeline($rootScope: ng.IRootScopeService, $timeout: ng.ITimeoutService): IlmTimeline {
-
         return {
             restrict: "E",
             replace: true,
@@ -396,12 +395,6 @@
                 var parent = element.closest('.box-content');
                 var ctx = canvas.getContext('2d');
 
-                // set timeline height
-                if (scope.height && scope.height > 0)
-                    ctx.canvas.height = scope.height;
-                else
-                    ctx.canvas.height = parent.height();
-
                 // compute yAxis max, and add a little padding
                 var dailyImpact = [];
                 _.forEach(scope.chartLabels, function (tick, index) {
@@ -447,7 +440,8 @@
                             ticks: {
                                 autoSkip: true,
                                 callback: function (value) {
-                                    return moment(value).format('MMM D');
+                                    //return moment(value).format('MMM D');
+                                    return moment(value).format('MMM.D.YY');
                                 }
                             }
                         }],
@@ -490,6 +484,21 @@
                 if (scope.timelineChart)
                     scope.timelineChart.destroy();
 
+                // set timeline height
+                //if (scope.height && scope.height > 0)
+                //    ctx.canvas.height = scope.height;
+                //else
+                //    ctx.canvas.height = parent.height();
+
+                ctx.canvas.height = scope.height;
+                element[0].setAttribute('height', scope.height.toString());
+                element[0].setAttribute('style', 'height: ' + scope.height.toString() + 'px');
+
+                var timelineBox = document.getElementsByClassName('timeline-box').item(0);
+                if (timelineBox !== null) {
+                    timelineBox.setAttribute('style', 'height: ' + scope.height.toString() + 'px');
+                }
+
                 scope.timelineChart = new Chart(ctx, config);
             }
 
@@ -523,27 +532,29 @@
                                     var template = foundTemplate[0];
                                     var tickData = scope.tickData[index];
 
-                                    let records = _.filter(tickData.data, (record: Models.ISurvey) => {
-                                        return record.formTemplateId == template.id;
-                                    });
+                                    if (tickData && tickData.data) {
+                                        let records = _.filter(tickData.data, (record: Models.ISurvey) => {
+                                            return record.formTemplateId == template.id;
+                                        });
 
-                                    if (records.length) {
-                                        var centerX = bar._model.x;
-                                        var centerY = bar._model.y;
-                                        var radius = barSize / 2;
-                                        var fillColour = impact === 0 ? 'orange' : 'white';
-                                        var strokeColour = impact === 0 ? 'darkorange' : 'gray';
+                                        if (records.length) {
+                                            var centerX = bar._model.x;
+                                            var centerY = bar._model.y;
+                                            var radius = barSize / 2;
+                                            var fillColour = impact === 0 ? 'orange' : 'white';
+                                            var strokeColour = impact === 0 ? 'darkorange' : 'gray';
 
-                                        ctx.beginPath();
-                                        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-                                        ctx.fillStyle = fillColour;
-                                        ctx.fill();
-                                        ctx.lineWidth = 1;
-                                        ctx.strokeStyle = strokeColour;
-                                        ctx.stroke();
+                                            ctx.beginPath();
+                                            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                                            ctx.fillStyle = fillColour;
+                                            ctx.fill();
+                                            ctx.lineWidth = 1;
+                                            ctx.strokeStyle = strokeColour;
+                                            ctx.stroke();
 
-                                        ctx.fillStyle = '#1D2331';
-                                        ctx.fillText(records.length, bar._model.x, bar._model.y + 7);
+                                            ctx.fillStyle = '#1D2331';
+                                            ctx.fillText(records.length, bar._model.x, bar._model.y + 7);
+                                        }
                                     }
                                 }
                             });
@@ -598,7 +609,11 @@
                 } else {
                     scope.tickData = [];
                     scope.chartDatasets = [];
-                    renderTimelineChart();
+
+                    if (scope.timelineChart)
+                        scope.timelineChart.destroy();
+
+                    document.getElementsByClassName('timeline-box').item(0).removeAttribute('style');
                 }
             });
 
@@ -618,6 +633,10 @@
 
             $rootScope.$on('timeline-previous-month', () => {
                 scope.timelinePreviousMonth();
+            });
+
+            $rootScope.$on('timeline-change-date', (event, args) => {
+                scope.currentDate = args;
             });
 
             window.onresize = function () {

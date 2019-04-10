@@ -18,6 +18,8 @@ namespace WebApi.Controllers
         private const string CACHE_KEY = "SUBSCRIPTION_PLANS";
 
         // GET api/subscriptionPlans
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation user,Restricted user")]
         public IHttpActionResult Get()
         {
             var cacheEntry = MemoryCacher.GetValue(CACHE_KEY);
@@ -108,6 +110,7 @@ namespace WebApi.Controllers
                 plan.Length = value.Length;
                 plan.IsLimited = value.IsLimited;
                 plan.MonthlyQuota = value.MonthlyQuota;
+                plan.MonthlyDiskSpace = value.MonthlyDiskSpace;
                 plan.PdfExport = value.PdfExport;
                 plan.ZipExport = value.ZipExport;
 

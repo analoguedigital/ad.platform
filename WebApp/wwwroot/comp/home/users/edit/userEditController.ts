@@ -6,12 +6,63 @@ module App {
         label: string;
     }
 
+    interface IUserStatistics {
+        hasProject: boolean;
+
+        totalThreads: number;
+        totalAdviceThreads: number;
+        totalThreadRecords: number;
+        totalAdviceRecords: number;
+        totalRecords: number;
+        totalLocations: number;
+        totalAttachments: number;
+        totalAttachmentsSize: number;
+        totalAttachmentsSizeInKB: number;
+        totalAttachmentsSizeInMB: number;
+
+        currentMonthThreadRecords: number;
+        currentMonthAdviceRecords: number;
+        currentMonthRecords: number;
+        currentMonthLocations: number;
+        currentMonthAttachments: number;
+        currentMonthAttachmentsSize: number;
+        currentMonthAttachmentsSizeInKB: number;
+        currentMonthAttachmentsSizeInMB: number;
+
+        threadStats: IThreadStat[];
+        attachmentStats: IAttachmentStats;
+    }
+
+    interface IThreadStat {
+        title: string;
+        color: string;
+        discriminator: number;
+        records: number;
+    }
+
+    interface IAttachmentStats {
+        totalSize: number;
+        totalSizeInKB: number;
+        totalSizeInMB: number;
+        types: IAttachmentStatItem[];
+    }
+
+    interface IAttachmentStatItem {
+        name: string;
+        count: number;
+        totalSize: number;
+        totalSizeInKB: number;
+        totalSizeInMB: number;
+    }
+
     interface IUserEditControllerScope extends ng.IScope {
         title: string;
         emailConfirmed: boolean;
         phoneNumberConfirmed: boolean;
         accountType: string;
         parentBreadcrumb: string;
+
+        userStats: IUserStatistics;
     }
 
     interface IUserEditController {
@@ -45,7 +96,7 @@ module App {
         subscriptions: Models.ISubscriptionEntry[];
 
         static $inject: string[] = ["$scope", "orgUserResource", "orgUserTypeResource", "$state", "$stateParams", "organisationResource",
-            "orgTeamResource", "userContextService", "projectResource", "toastr", "userResource", "subscriptionResource"];
+            "orgTeamResource", "userContextService", "projectResource", "toastr", "userResource", "subscriptionResource", "$resource"];
         constructor(
             private $scope: IUserEditControllerScope,
             private orgUserResource: Resources.IOrgUserResource,
@@ -58,7 +109,8 @@ module App {
             private projectResource: Resources.IProjectResource,
             private toastr: any,
             private userResource: Resources.IUserResource,
-            private subscriptionResource: Resources.ISubscriptionResource
+            private subscriptionResource: Resources.ISubscriptionResource,
+            private $resource: ng.resource.IResourceService
         ) {
             this.$scope.title = "Users";
 
@@ -105,6 +157,17 @@ module App {
                     this.orgTeamResource.getUserTeams({ userId: user.id }, (teams) => {
                         this.teams = teams;
                     });
+
+                    if (user.currentProject !== null) {
+                        // get user statistics
+                        this.$resource("/api/stats/user/" + userId, null).get().$promise.then((data: any) => {
+                            console.log('stats', data);
+                            this.$scope.userStats = data;
+                            this.loadCharts();
+                        }, (err) => {
+                            console.error(err);
+                        });
+                    }
                 });
             }
 
@@ -125,13 +188,101 @@ module App {
 
             var adminRoles = ["System administrator", "Platform administrator", "Organisation administrator"];
             var isAdmin = this.userContextService.userIsInAnyRoles(adminRoles);
-            if (isAdmin && !this.isInsertMode) {
+            if (isAdmin && !this.isInsertMode && accountType === 'mobile-account') {
                 this.subscriptionResource.getUserSubscriptions({ id: userId }, (data) => {
                     this.subscriptions = data;
                 }, (err) => {
                     console.error(err);
                 });
             }
+        }
+
+        loadCharts() {
+            var stats = this.$scope.userStats;
+
+            var chartOpts = {
+                type: 'pie',
+                responsive: true,
+                maintainAspectRatio: true,
+                showTooltips: true,
+                hover: {
+                    mode: false
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            };
+
+            this.$scope.threadsChartOpts = chartOpts;
+            this.$scope.threadsChartData = [];
+            this.$scope.threadsChartLabels = [];
+            this.$scope.threadsChartColors = [];
+
+            this.$scope.adviceThreadsChartOpts = chartOpts;
+            this.$scope.adviceThreadsChartData = [];
+            this.$scope.adviceThreadsChartLabels = [];
+            this.$scope.adviceThreadsChartColors = [];
+
+            var threads = _.filter(stats.threadStats, (item) => { return item.discriminator === 0 });
+            var adviceThreads = _.filter(stats.threadStats, (item) => { return item.discriminator === 1 });
+
+            _.forEach(threads, (item) => {
+                this.$scope.threadsChartData.push(item.records);
+                this.$scope.threadsChartLabels.push(item.title);
+                this.$scope.threadsChartColors.push(item.color);
+            });
+
+            _.forEach(adviceThreads, (item) => {
+                this.$scope.adviceThreadsChartData.push(item.records);
+                this.$scope.adviceThreadsChartLabels.push(item.title);
+                this.$scope.adviceThreadsChartColors.push(item.color);
+            });
+
+            // attachments charts
+            this.$scope.attachmentsChartOpts = chartOpts;
+            this.$scope.attachmentsChartData = [];
+            this.$scope.attachmentsChartLabels = [];
+            this.$scope.attachmentsChartColors = [];
+
+            var attachmentTypes = stats.attachmentStats.types;
+            _.forEach(attachmentTypes, (type) => {
+                this.$scope.attachmentsChartLabels.push(type.name);
+                this.$scope.attachmentsChartData.push(type.count);
+            });
+
+            this.$scope.attachmentsSizeChartOpts = {
+                type: 'pie',
+                responsive: true,
+                maintainAspectRatio: true,
+                showTooltips: true,
+                hover: {
+                    mode: false
+                },
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var label = data.labels[tooltipItem.index];
+                            var totalSize = data.datasets[0].data[tooltipItem.index];
+
+                            return ' ' + label + ': ' + totalSize + ' MB';
+                        }
+                    }
+                }
+            };
+
+            this.$scope.attachmentsSizeChartData = [];
+            this.$scope.attachmentsSizeChartLabels = [];
+            this.$scope.attachmentsSizeChartColors = [];
+
+            _.forEach(attachmentTypes, (type) => {
+                this.$scope.attachmentsSizeChartLabels.push(type.name);
+                this.$scope.attachmentsSizeChartData.push(type.totalSizeInMB.toFixed(2));
+            });
         }
 
         submit(form: ng.IFormController) {

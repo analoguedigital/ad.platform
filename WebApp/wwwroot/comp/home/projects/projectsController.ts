@@ -29,19 +29,25 @@
     }
 
     class ProjectsController implements IProjectsController {
-        static $inject: string[] = ["$scope", "$state", "$stateParams", "$uibModal", "projectResource"];
+        static $inject: string[] = ["$scope", "$state", "$stateParams", "$uibModal", "projectResource", "userContextService"];
 
         constructor(
             private $scope: IProjectsControllerScope,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
             private $uibModal: ng.ui.bootstrap.IModalService,
-            private projectResource: Resources.IProjectResource) {
+            private projectResource: Resources.IProjectResource,
+            private userContextService: Services.IUserContextService) {
 
             $scope.title = "Staff and Clients";
             $scope.accountTypeFilter = 'all';
 
             $scope.delete = (id) => { this.delete(id); };
+
+            var orgUser = this.userContextService.current.orgUser;
+            if (orgUser !== null && orgUser.accountType === 0) {
+                this.$state.go("home.dashboard.layout");
+            }
 
             this.activate();
         }

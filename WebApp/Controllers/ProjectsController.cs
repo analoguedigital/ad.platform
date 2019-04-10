@@ -73,18 +73,18 @@ namespace WebApi.Controllers
                 $"{CACHE_KEY}_{ADMIN_KEY}";
 
             var cacheEntry = MemoryCacher.GetValue(cacheKey);
-
             if (cacheEntry == null)
             {
-                var values = ProjectService.Get(CurrentUser, organisationId);
+                //var values = ProjectService.Get(CurrentUser, organisationId);
+                var values = ProjectService.GetProjectsForAdmin(organisationId);
                 MemoryCacher.Add(cacheKey, values, DateTimeOffset.UtcNow.AddMinutes(1));
 
                 return Ok(values);
             }
             else
             {
-                var values = (List<ProjectDTO>)cacheEntry;
-                return new CachedResult<List<ProjectDTO>>(values, TimeSpan.FromMinutes(1), this);
+                var values = (List<ProjectFlatDTO>)cacheEntry;
+                return new CachedResult<List<ProjectFlatDTO>>(values, TimeSpan.FromMinutes(1), this);
             }
         }
 

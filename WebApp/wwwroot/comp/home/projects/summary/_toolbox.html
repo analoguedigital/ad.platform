@@ -75,7 +75,7 @@
             <div class="toolbox-buttons">
                 <div class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group">
-                        <button class="btn btn-primary" ng-click="ctrl.search()" ng-disabled="!ctrl.surveys.length">
+                        <button class="btn btn-primary" ng-click="ctrl.search()">
                             <i class="fa fa-search-plus"></i> <span class="hidden-xs">Search</span>
                         </button>
                     </div>
@@ -87,11 +87,14 @@
                     </div>
 
                     <div class="btn-group" role="group" ng-if="ctrl.project.allowExportPdf || ctrl.project.allowExportZip">
-                        <button class="btn btn-default" ng-click="ctrl.print()" ng-disabled="!ctrl.surveys.length">
+                        <button class="btn btn-default" ng-click="ctrl.print()">
                             <i class="fa fa-print"></i> <span class="hidden-xs">Export</span>
                         </button>
                     </div>
-                </div>
+                </div><br />
+                <button class="btn btn-default btn-block" ng-click="ctrl.openSlideshow()">
+                    <i class="fa fa-play-circle"></i> <span class="hidden-xs">Open in thumbnail slides</span>
+                </button>
             </div>
         </form>
     </div>

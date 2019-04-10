@@ -224,5 +224,84 @@
             </div>
         </div>
     </div>
+
+    <div class="box" ng-if="userStats.hasProject">
+        <div class="box-title">
+            <h5>Statistics</h5>
+        </div>
+        <div class="box-content">
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Overall Stats.</h3>
+                    <p>
+                        <i class="badge badge-success">{{userStats.totalThreads + userStats.totalAdviceThreads}} Total Threads</i>
+                        <i class="badge badge-success">{{userStats.totalRecords}} Total Records</i>
+                        <i class="badge badge-success">{{userStats.totalLocations}} Locations</i>
+                    </p>
+                    <p>
+                        <i class="badge badge-primary">{{userStats.totalThreads}} Threads</i>
+                        <i class="badge badge-info">{{userStats.totalThreadRecords}} Records</i>
+
+                        <i class="badge badge-primary">{{userStats.totalAdviceThreads}} Advice Threads</i>
+                        <i class="badge badge-info">{{userStats.totalAdviceRecords}} Records</i> 
+                    </p>
+                    <p>
+                        <i class="badge badge-primary">{{userStats.totalAttachments}} Attachments</i>
+                        <i class="badge badge-inverse">{{userStats.totalAttachmentsSizeInMB.toFixed(2)}} MB</i>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Current Month Stats.</h3>
+                    <p>
+                        <i class="badge badge-success">{{userStats.currentMonthRecords}} Total Records</i>
+                        <i class="badge badge-success">{{userStats.currentMonthLocations}} Locations</i>
+                    </p>
+                    <p>
+                        <i class="badge badge-info">{{userStats.currentMonthThreadRecords}} Thread Records</i>
+                        <i class="badge badge-info">{{userStats.currentMonthAdviceRecords}} Advice Records</i>
+                    </p>
+                    <p>
+                        <i class="badge badge-primary">{{userStats.currentMonthAttachments}} Attachments</i>
+                        <i class="badge badge-inverse">{{userStats.currentMonthAttachmentsSizeInMB.toFixed(2)}} MB</i>
+                    </p>
+                </div>
+            </div>
+            <div class="row" ng-if="userStats.totalThreads > 0 || userStats.totalAdviceThreads > 0">
+                <hr />
+                <div class="col-md-3">
+                    <h2 class="text-center">THREADS ({{userStats.totalThreadRecords}})</h2>
+                    <canvas id="threads-chart" class="chart chart-pie chart-center"
+                            chart-data="threadsChartData"
+                            chart-labels="threadsChartLabels"
+                            chart-options="threadsChartOpts"
+                            chart-colors="threadsChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="text-center">ADVICE THREADS ({{userStats.totalAdviceRecords}})</h2>
+                    <canvas id="advice-threads-chart" class="chart chart-pie chart-center"
+                            chart-data="adviceThreadsChartData"
+                            chart-labels="adviceThreadsChartLabels"
+                            chart-options="adviceThreadsChartOpts"
+                            chart-colors="adviceThreadsChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="text-center">ATTACHMENTS ({{userStats.totalAttachments}})</h2>
+                    <canvas id="attachments-chart" class="chart chart-pie chart-center"
+                            chart-data="attachmentsChartData"
+                            chart-labels="attachmentsChartLabels"
+                            chart-options="attachmentsChartOpts"
+                            chart-colors="attachmentsChartColors"></canvas>
+                </div>
+                <div class="col-md-3">
+                    <h2 class="text-center">DISK SPACE ({{userStats.totalAttachmentsSizeInMB.toFixed(2)}} MB)</h2>
+                    <canvas id="attachments-size-chart" class="chart chart-pie chart-center"
+                            chart-data="attachmentsSizeChartData"
+                            chart-labels="attachmentsSizeChartLabels"
+                            chart-options="attachmentsSizeChartOpts"
+                            chart-colors="attachmentsSizeChartColors"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 

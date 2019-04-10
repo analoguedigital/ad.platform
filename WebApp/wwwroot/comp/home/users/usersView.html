@@ -22,6 +22,7 @@
                                 <th st-sort="email">Email address</th>
                                 <th width="150" st-sort="firstName">First name</th>
                                 <th width="150" st-sort="surname">Surname</th>
+                                <th width="120" st-sort="lastLogin" class="text-center">Last Login</th>
                                 <th class="text-center" st-sort="organisation.name">Organisation</th>
                                 <th class="text-center" width="150" st-sort="type.name">Type</th>
                                 <th class="text-center" width="100"></th>
@@ -39,6 +40,10 @@
                                 </td>
                                 <td>{{user.firstName}}</td>
                                 <td>{{user.surname}}</td>
+                                <td class="text-center">
+                                    <span ng-if="!user.lastLogin">NA</span>
+                                    <span ng-if="user.lastLogin">{{user.lastLogin | amDateFormat:'MMM DD YYYY'}}</span>
+                                </td>
                                 <td class="text-center">{{user.organisation.name}}</td>
                                 <td class="text-center">{{user.type.name}}</td>
                                 <td class="text-center">

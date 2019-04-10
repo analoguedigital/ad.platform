@@ -181,6 +181,18 @@
             }
         }
 
+        private FilledFormLocationsRepository _FilledFormLocationsRepository;
+        public FilledFormLocationsRepository FilledFormLocationsRepository
+        {
+            get
+            {
+                if (_FilledFormLocationsRepository == null)
+                    _FilledFormLocationsRepository = new FilledFormLocationsRepository(this);
+
+                return _FilledFormLocationsRepository;
+            }
+        }
+
         private FormValuesRepository _FormValuesRepository;
         public FormValuesRepository FormValuesRepository
         {

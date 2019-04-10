@@ -17,6 +17,8 @@ module App {
     }
 
     class FormTemplateEditController implements IFormTemplateEditController {
+        insertMode: boolean;
+
         title: string = "Form template details";
         formTemplateId: string;
         formTemplate: Models.IFormTemplate;
@@ -57,12 +59,14 @@ module App {
 
         activate() {
             if (this.formTemplateId === '') {
+                this.insertMode = true;
                 this.formTemplateId = '00000000-0000-0000-0000-000000000000';
                 this.formTemplateResource.get({ id: this.formTemplateId }).$promise
                     .then((form) => {
                         this.formTemplate = form;
                     });
             } else {
+                this.insertMode = false;
                 this.formTemplateResource.get({ id: this.formTemplateId })
                     .$promise.then((form) => {
                         this.formTemplate = form;

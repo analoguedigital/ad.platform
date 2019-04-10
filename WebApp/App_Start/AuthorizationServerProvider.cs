@@ -3,7 +3,6 @@ using LightMethods.Survey.Models.Services.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OAuth;
 using System;
 using System.Collections.Generic;
@@ -154,6 +153,10 @@ namespace WebApi
             identity.AddClaim(new Claim("role", "user"));
 
             context.Validated(identity);
+
+            var dbUser = ServiceContext.UnitOfWork.UsersRepository.Find(user.Id);
+            dbUser.LastLogin = DateTime.UtcNow;
+            ServiceContext.UnitOfWork.UsersRepository.Save();
         }
 
         private bool OrgUserHasAccess(OrgUser user)

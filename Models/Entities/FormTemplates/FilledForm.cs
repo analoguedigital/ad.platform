@@ -34,6 +34,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual Project Project { set; get; }
 
+        public bool? IsRead { get; set; }
+
         public virtual ICollection<FilledFormLocation> Locations { set; get; }
 
         public virtual ICollection<FormValue> FormValues { set; get; }

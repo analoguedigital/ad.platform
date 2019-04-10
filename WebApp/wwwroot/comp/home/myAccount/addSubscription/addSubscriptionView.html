@@ -7,12 +7,13 @@
     </p>
 
     <p>
-        <strong>Length</strong> {{ctrl.subscriptionPlan.length}} month(s)
+        <strong>Length</strong> {{ctrl.subscriptionPlan.length}} month<span ng-if="ctrl.subscriptionPlan.length > 1">(s)</span>
     </p>
 
-    <p ng-if="ctrl.subscriptionPlan.isLimited">
-        <strong>Limited</strong> to <strong>{{ctrl.subscriptionPlan.monthlyQuota}}</strong> records per month
-    </p>
+    <div ng-if="ctrl.subscriptionPlan.isLimited">
+        <p><strong>Limited</strong> to <strong>{{ctrl.subscriptionPlan.monthlyQuota}}</strong> records per month</p>
+        <p><strong>Limited</strong> to <strong>{{ctrl.subscriptionPlan.monthlyDiskSpace / 1024}}MB</strong> disk space per month</p>
+    </div>
 
     <p>
         <strong>PDF Export</strong>

@@ -15,9 +15,13 @@ module App {
         months: string[];
 
         filterValues: Models.IFilterValue[];
+
+        summaryStateLabel: string;
     }
 
     interface IProjectSummaryController {
+        discriminator: number;
+
         searchTerm: string;
         startDate: Date;
         endDate: Date;
@@ -47,6 +51,8 @@ module App {
     }
 
     class ProjectSummaryController implements IProjectSummaryController {
+        discriminator: number;
+
         searchTerm: string;
         startDate: Date;
         endDate: Date;
@@ -66,8 +72,8 @@ module App {
         mapType: string = 'roadmap';
 
         static $inject: string[] = ["$scope", "$rootScope", "$state", "$q", "$stateParams",
-            "projectSummaryPrintSessionResource", "projectResource", "$timeout",
-            "formTemplateResource", "surveyResource", "project", "toastr", "uiTourService"];
+            "projectSummaryPrintSessionResource", "projectResource", "$timeout", "$uibModal",
+            "formTemplateResource", "surveyResource", "project", "toastr", "uiTourService", "localStorageService"];
 
         constructor(
             private $scope: IProjectSummaryControllerScope,
@@ -78,11 +84,13 @@ module App {
             private projectSummaryPrintSessionResource: Resources.IProjectSummaryPrintSessionResource,
             private projectResource: Resources.IProjectResource,
             private $timeout: ng.ITimeoutService,
+            private $uibModal: ng.ui.bootstrap.IModalService,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
             public project: Models.IProject,
             private toastr: any,
-            private uiTourService: any) {
+            private uiTourService: any,
+            private localStorageService: ng.local.storage.ILocalStorageService) {
 
             this.activate();
         }
@@ -106,13 +114,27 @@ module App {
 
             this.$scope.onTourStart = () => { this.onTourStart(); };
 
+            var snapshotToggle = this.localStorageService.get('timeline_snapshot_view');
+            if (snapshotToggle !== null) {
+                this.timelineSnapshotView = <boolean>snapshotToggle;
+            }
+
+            if (this.$stateParams.discriminator) {
+                this.discriminator = this.$stateParams.discriminator;
+                this.$scope.summaryStateLabel = this.$stateParams.discriminator === '0' ? 'Records Summary' : 'Advice Summary';
+            }
+            else {
+                this.discriminator = 0;
+                this.$scope.summaryStateLabel = 'Records Summary';
+            }
+
             this.load();
         }
 
         load() {
             this.$q.all([
-                this.formTemplateResource.query({ discriminator: 0, projectId: this.project.id }).$promise,
-                this.surveyResource.query({ discriminator: 0, projectId: this.project.id }).$promise
+                this.formTemplateResource.query({ discriminator: this.discriminator, projectId: this.project.id }).$promise,
+                this.surveyResource.query({ discriminator: this.discriminator, projectId: this.project.id }).$promise
             ]).then((data) => {
                 this.formTemplates = data[0];
                 this.surveys = data[1];
@@ -135,6 +157,12 @@ module App {
                 this.$timeout(() => {
                     this.$rootScope.$broadcast('update_locations_map_bounds');
                 }, 500);
+
+                var currentDate = this.localStorageService.get('timeline-current-date');
+                if (currentDate !== null) {
+                    this.$scope.today = moment(<Date>currentDate).toDate();
+                    this.$rootScope.$broadcast('timeline-change-date', this.$scope.today);
+                }
 
                 //this.uiTourService.getTour().start();
             });
@@ -302,11 +330,13 @@ module App {
         timelineNextMonth() {
             this.$scope.today = moment(this.$scope.today).add(1, 'months').toDate();
             this.$rootScope.$broadcast('timeline-next-month');
+            this.localStorageService.set('timeline-current-date', this.$scope.today);
         }
 
         timelinePreviousMonth() {
             this.$scope.today = moment(this.$scope.today).subtract(1, 'months').toDate();
             this.$rootScope.$broadcast('timeline-previous-month');
+            this.localStorageService.set('timeline-current-date', this.$scope.today);
         }
 
         delete(id: string) {
@@ -542,6 +572,80 @@ module App {
                 title: 'Select Threads',
                 content: 'Select the threads you want and click the search button to filter records'
             });
+        }
+
+        toggleTimelineView(toggle: boolean) {
+            this.timelineSnapshotView = toggle;
+            this.localStorageService.set('timeline_snapshot_view', toggle);
+        }
+
+        changeTimelineDate() {
+            var modalInstance = this.$uibModal.open({
+                animation: true,
+                templateUrl: 'comp/home/projects/summary/timeline-datepicker/timeline-datepicker-view.html',
+                controller: 'timelineDatepickerController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    currentTimelineDate: () => {
+                        return this.$scope.today;
+                    }
+                }
+            }).result.then(
+                (res) => {
+                    var month = res.month;
+                    var year = res.year;
+
+                    this.timelineSnapshotView = false;
+                    this.$scope.today = moment(new Date(year, month, 1)).toDate();;
+                    this.$rootScope.$broadcast('timeline-change-date', this.$scope.today);
+                    this.localStorageService.set('timeline-current-date', this.$scope.today);
+                },
+                (err) => {
+                    //console.error(err);
+                });
+        }
+
+        resetTimelineDate() {
+            this.$scope.today = moment(new Date()).toDate();
+            this.$rootScope.$broadcast('timeline-change-date', this.$scope.today);
+            this.localStorageService.set('timeline-current-date', this.$scope.today);
+        }
+
+        openSlideshow() {
+            let selectedSurveys = _.filter(this.surveys, (r) => { return r.isChecked });
+            if (selectedSurveys.length < 1) {
+                this.toastr.info('Select desired records first', 'Slideshow');
+                return false;
+            }
+
+            var modalInstance = this.$uibModal.open({
+                size: 'lg',
+                animation: true,
+                templateUrl: 'comp/home/projects/summary/slideshow/slideshow-view.html',
+                controller: 'slideshowController',
+                controllerAs: 'ctrl',
+                resolve: {
+                    surveys: () => {
+                        return selectedSurveys;
+                    },
+                    formTemplates: () => {
+                        var threads = [];
+
+                        _.forEach(selectedSurveys, (survey) => {
+                            var thread = _.find(this.formTemplates, (t) => { return t.id == survey.formTemplateId; });
+                            threads.push(thread);
+                        });
+
+                        return threads;
+                    }
+                }
+            }).result.then(
+                (res) => {
+                    console.log(res);
+                },
+                (err) => {
+                    //console.error(err);
+                });
         }
 
     }

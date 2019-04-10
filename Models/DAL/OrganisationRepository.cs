@@ -38,7 +38,8 @@ namespace LightMethods.Survey.Models.DAL
                 FirstName = dto.RootUserFirstName,
                 Surname = dto.RootUserSurname,
                 TypeId = OrgUserTypesRepository.Administrator.Id,
-                AccountType = AccountType.WebAccount
+                AccountType = AccountType.WebAccount,
+                RegistrationDate = DateTime.UtcNow
             };
 
             CurrentUOW.OrganisationRepository.InsertOrUpdate(org);

@@ -82,6 +82,64 @@ namespace LightMethods.Survey.Models.Services
             return result;
         }
 
+        public List<ProjectFlatDTO> GetProjectsForAdmin(Guid? organisationId)
+        {
+            var projects = new List<Project>();
+            var result = new List<ProjectFlatDTO>();
+
+            if (organisationId.HasValue)
+            {
+                projects = UnitOfWork.ProjectsRepository
+                    .AllAsNoTracking
+                    .Where(x => x.OrganisationId == organisationId.Value)
+                    .OrderByDescending(x => x.DateCreated)
+                    .ToList();
+            }
+            else
+            {
+                projects = UnitOfWork.ProjectsRepository
+                    .AllAsNoTracking
+                    .OrderByDescending(x => x.DateCreated)
+                    .ToList();
+            }
+
+            foreach(var p in projects)
+            {
+                var flat = new ProjectFlatDTO
+                {
+                    Id = p.Id,
+                    Number = p.Number,
+                    Name = p.Name,
+                    Notes = p.Notes,
+                    StartDate = p.StartDate,
+                    EndDate = p.EndDate,
+                    OrganizationId = p.Organisation.Id,
+                    OrganizationName = p.Organisation.Name,
+                    LastEntry = GetLastEntry(p.Id)?.SurveyDate,
+                    AssignmentsCount = p.Assignments.Count,
+                    TeamsCount = GetTeamsCount(p)
+                };
+
+                if (p.CreatedById.HasValue)
+                {
+                    var creator = (OrgUser)p.CreatedBy;
+                    if (creator != null)
+                    {
+                        flat.CreatedBy = new ProjectCreatorFlatDTO
+                        {
+                            Id = creator.Id,
+                            Email = creator.Email,
+                            AccountType = creator.AccountType
+                        };
+                    }
+                }
+
+                result.Add(flat);
+            }
+
+            return result;
+        }
+
         public ProjectDTO Get(User user, Guid id)
         {
             var project = UnitOfWork.ProjectsRepository.GetProjects(user)
@@ -185,7 +243,7 @@ namespace LightMethods.Survey.Models.Services
                         teams.Add(Mapper.Map<OrganisationTeamDTO>(team));
                 }
             }
-            
+
             return teams.Distinct().ToList();
         }
 
@@ -247,5 +305,8 @@ namespace LightMethods.Survey.Models.Services
 
         #endregion Helpers
 
+
     }
+
+    
 }

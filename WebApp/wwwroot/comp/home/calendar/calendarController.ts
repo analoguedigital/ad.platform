@@ -48,7 +48,7 @@
             this.$scope.today = new Date();
             this.$scope.calendarView = 'month';
             this.$scope.viewDate = this.$scope.today;
-            this.$scope.calendarTitle = "My Calendar Title";
+            this.$scope.calendarTitle = "Records Calendar";
 
             var roles = ["System administrator", "Platform administrator", "Organisation administrator"];
             this.isCurrentUserAnAdmin = this.userContextService.userIsInAnyRoles(roles);
@@ -92,7 +92,6 @@
                                 label: '<i class=\'fa fa-eye\'></i>',
                                 cssClass: 'view-action',
                                 onClick: function (args) {
-                                    console.log(args.calendarEvent);
                                     var surveyId = args.calendarEvent.surveyId;
                                     self.$state.go('home.surveys.view', { surveyId: surveyId });
                                 },
@@ -100,7 +99,6 @@
                                 label: '<i class=\'fa fa-pencil\'></i>',
                                 cssClass: 'edit-action',
                                 onClick: function (args) {
-                                    console.log(args.calendarEvent);
                                     var surveyId = args.calendarEvent.surveyId;
                                     self.$state.go('home.surveys.edit', { surveyId: surveyId });
                                 }
@@ -174,6 +172,15 @@
             this.$scope.viewDate = this.$scope.today;
         }
 
+        onViewChangeClick(calendarDate: any, calendarNextView: any) {
+            console.log('selected date', calendarDate);
+            console.log('next view', calendarNextView);
+
+            this.$scope.today = moment(calendarDate).toDate();
+            this.$scope.viewDate = this.$scope.today;
+            this.$scope.calendarView = calendarNextView;
+        }
+
         timespanClicked(calendarDate: any) {
             this.$scope.today = calendarDate;
             this.$scope.viewDate = calendarDate;
@@ -183,6 +190,11 @@
             this.$scope.today = calendarEvent.startsAt;
             this.$scope.viewDate = calendarEvent.startsAt;
         }
+
+        changeCalendarView(mode: string) {
+            this.$scope.calendarView = mode;
+        }
+
     }
 
     angular.module("app").controller("calendarController", CalendarController);

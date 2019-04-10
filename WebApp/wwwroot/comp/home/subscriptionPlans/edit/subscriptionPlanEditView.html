@@ -44,6 +44,9 @@
                 <lm-form-group label="Monthly Quota: " ng-if="model.isLimited">
                     <input type="number" id="quota" name="quota" ng-model="model.monthlyQuota" required placeholder="Max number of records per month" />
                 </lm-form-group>
+                <lm-form-group label="Monthly Disk Space: " ng-if="model.isLimited">
+                    <input type="number" id="disk-space" name="disk-space" ng-model="model.monthlyDiskSpace" required placeholder="Monthly disk space in kilobytes" />
+                </lm-form-group>
                 <lm-form-group label="Pdf Export: ">
                     <div class="checkbox checkbox-default">
                         <input type="checkbox" name="pdfExport" ng-model="model.pdfExport" />

@@ -171,6 +171,7 @@ namespace WebApi.Controllers
 
             var orguser = Mapper.Map<OrgUser>(value);
             orguser.UserName = orguser.Email;
+            orguser.RegistrationDate = DateTime.UtcNow;
 
             if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
             {

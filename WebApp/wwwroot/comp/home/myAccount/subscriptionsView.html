@@ -83,17 +83,35 @@
                 <p>Unsubscribed users have a fixed monthly quota. If you need more space please subscribe to continue.</p>
             </div>
 
-            <div>
-                <hr />
-                <p><strong>Monthly quota</strong></p>
-                <uib-progressbar class="progress-striped active" max="quota.quota" type="info"
-                                 ng-if="quota.quota && quota.used === 0"><i>0 / {{quota.quota}}</i></uib-progressbar>
+            <hr />
 
-                <uib-progressbar class="progress-striped active" max="quota.quota" value="quota.used" type="info"
-                                 ng-if="quota.quota && quota.used > 0"><i>{{quota.used}} / {{quota.quota}}</i></uib-progressbar>
+            <div class="row">
+                <div class="col-md-6">
+                    <div>
+                        <p><strong>Monthly quota</strong></p>
+                        <uib-progressbar class="progress-striped active" max="quota.quota" type="info"
+                                         ng-if="quota.quota && quota.used === 0"><i>0 / {{quota.quota}}</i></uib-progressbar>
 
-                <uib-progressbar class="progress-striped active" max="quota.quota" value="quota.used" type="success"
-                                 ng-if="!quota.quota"><i>{{quota.used}} records this month</i></uib-progressbar>
+                        <uib-progressbar class="progress-striped active" max="quota.quota" value="quota.used" type="info"
+                                         ng-if="quota.quota && quota.used > 0"><i>{{quota.used}} / {{quota.quota}}</i></uib-progressbar>
+
+                        <uib-progressbar class="progress-striped active" max="quota.quota" value="quota.used" type="info"
+                                         ng-if="!quota.quota"><i>{{quota.used}} records this month</i></uib-progressbar>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div>
+                        <p><strong>Monthly disk space</strong></p>
+                        <uib-progressbar class="progress-striped active" max="quota.quota" type="success"
+                                         ng-if="quota.maxDiskSpace && quota.usedDiskSpace === 0"><i>0 / {{quota.maxDiskSpace}}</i></uib-progressbar>
+
+                        <uib-progressbar class="progress-striped active" max="quota.maxDiskSpace" value="quota.usedDiskSpace" type="success"
+                                         ng-if="quota.maxDiskSpace && quota.usedDiskSpace > 0"><i>{{quota.usedDiskSpace}} / {{quota.maxDiskSpace}}</i></uib-progressbar>
+
+                        <uib-progressbar class="progress-striped active" max="quota.maxDiskSpace" value="quota.usedDiskSpace" type="success"
+                                         ng-if="!quota.maxDiskSpace"><i>{{quota.usedDiskSpace}} KBs this month</i></uib-progressbar>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

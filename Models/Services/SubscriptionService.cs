@@ -127,10 +127,15 @@ namespace LightMethods.Survey.Models.Services
             var expiryDate = GetLatest(userId);
             var fixedQuota = Convert.ToInt32(ConfigurationManager.AppSettings["FixedMonthlyQuota"]);
 
+            var fixedDiskSpace = GetFixedMonthlyDiskSpace();
+            var statsService = new StatisticsService(UnitOfWork);
+            var usedSpace = statsService.GetUsedSpace(userId);
+
             if (expiryDate == null)
             {
                 // unsubscribed users have a fixed quota.
                 result.Quota = fixedQuota;
+                result.MaxDiskSpace = fixedDiskSpace;
             }
             else
             {
@@ -139,23 +144,29 @@ namespace LightMethods.Survey.Models.Services
                 {
                     case UserSubscriptionType.Paid:
                         result.Quota = lastSubscription.SubscriptionPlan.IsLimited ? lastSubscription.SubscriptionPlan.MonthlyQuota : null;
+                        result.MaxDiskSpace = lastSubscription.SubscriptionPlan.IsLimited ? lastSubscription.SubscriptionPlan.MonthlyDiskSpace : null;
                         break;
                     case UserSubscriptionType.Organisation:
                         result.Quota = null;
+                        result.MaxDiskSpace = null;
                         break;
                     case UserSubscriptionType.Voucher:
                         result.Quota = fixedQuota;
+                        result.MaxDiskSpace = fixedDiskSpace;
                         break;
                     default:
                         break;
                 }
             }
 
-            var lastMonth = DateTimeService.UtcNow.AddMonths(-1);
-            var lastMonthRecords = UnitOfWork.FilledFormsRepository.AllAsNoTracking
-                        .Count(x => x.FilledById == userId && x.DateCreated >= lastMonth);
+            //var lastMonth = DateTimeService.UtcNow.AddMonths(-1);
+            var startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            var lastMonthRecords = UnitOfWork.FilledFormsRepository
+                .AllAsNoTracking
+                .Count(x => x.FilledById == userId && x.DateCreated >= startDate);
 
             result.Used = lastMonthRecords;
+            result.UsedDiskSpace = (int)usedSpace.TotalSizeInKiloBytes;
 
             return result;
         }
@@ -568,6 +579,15 @@ namespace LightMethods.Survey.Models.Services
         }
 
         #endregion Helpers
+
+        private int GetFixedMonthlyDiskSpace()
+        {
+            var quota = ConfigurationManager.AppSettings["FixedMonthlyDiskSpace"];
+            if (!string.IsNullOrEmpty(quota))
+                return int.Parse(quota);
+
+            return 1024;  // default hard-coded value
+        }
 
     }
 

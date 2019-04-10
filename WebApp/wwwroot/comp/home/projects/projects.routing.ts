@@ -61,7 +61,7 @@
                 module: "private"
             })
             .state("home.projects.summary", <App.Models.IAppRoute>{
-                url: "/summary/:id",
+                url: "/summary/:id?:discriminator",
                 templateUrl: "comp/home/projects/summary/projectSummaryView.html",
                 controller: "projectSummaryController",
                 controllerAs: "ctrl",
@@ -73,7 +73,7 @@
                             });
                         }]
                 },
-                ncyBreadcrumb: { label: 'Summary', parent: 'home.projects.list' },
+                ncyBreadcrumb: { label: '{{summaryStateLabel}}', parent: 'home.projects.list' },
                 module: "private"
             })
 

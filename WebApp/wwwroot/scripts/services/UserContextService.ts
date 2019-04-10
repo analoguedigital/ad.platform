@@ -133,6 +133,8 @@
                         this.orgUserResource.get({ id: this.current.user.id }).$promise
                             .then((orguser: Models.IOrgUser) => {
                                 this.current.orgUser = orguser;
+                                this.current.orgUser.quota = userinfo.profile.monthlyQuota;
+
                                 deferred.resolve();
                             }, (err) => {
                                 deferred.reject(err);

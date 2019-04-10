@@ -11,8 +11,8 @@ module App {
     interface IlmMinimalizeSideBarAttributes extends ng.IAttributes {
     }
 
-    lmMinimalizeSideBar.$inject = ["$timeout"];
-    function lmMinimalizeSideBar($timeout: ng.ITimeoutService): IlmMinimalizeSideBar {
+    lmMinimalizeSideBar.$inject = ["$timeout", "localStorageService"];
+    function lmMinimalizeSideBar($timeout: ng.ITimeoutService, localStorageService: ng.local.storage.ILocalStorageService): IlmMinimalizeSideBar {
         return {
             restrict: "A",
             template: '<a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="" ng-click="minimalize()">'
@@ -27,9 +27,12 @@ module App {
                         $timeout(function () {
                             angular.element('#side-menu').fadeIn(500);
                         }, 100);
+
+                        localStorageService.set('sidenav_toggle', true);
                     } else {
                         // Remove all inline style from jquery fadeIn function to reset menu state
                         angular.element('#side-menu').removeAttr('style');
+                        localStorageService.set('sidenav_toggle', false);
                     }
                 };
             },
@@ -37,7 +40,10 @@ module App {
         };
 
         function link(scope: IlmMinimalizeSideBarScope, element: ng.IAugmentedJQuery, attrs: IlmMinimalizeSideBarAttributes) {
-            //
+            var toggle = localStorageService.get('sidenav_toggle');
+            if (toggle !== null && !toggle) {
+                angular.element('body').toggleClass('mini-navbar');
+            }
         }
     }
 

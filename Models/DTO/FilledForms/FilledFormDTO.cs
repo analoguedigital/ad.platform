@@ -23,6 +23,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public Guid ProjectId { set; get; }
 
+        public bool? IsRead { get; set; }
+
         public IEnumerable<FormValueDTO> FormValues { set; get; }
 
         public IEnumerable<FilledFormLocationDTO> Locations { set; get; }
