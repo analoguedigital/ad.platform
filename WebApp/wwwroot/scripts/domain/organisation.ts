@@ -11,6 +11,11 @@
         town: string;
         county: string;
         postcode: string;
+        description: string;
+        website: string;
+        logoUrl: string;
+        termsAndConditions: string;
+        requiresAgreement: boolean;
         defaultLanguageId: string;
         defaultCalendarId: string;
         subscriptionEnabled: boolean;

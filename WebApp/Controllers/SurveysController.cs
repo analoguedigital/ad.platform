@@ -6,7 +6,6 @@ using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
@@ -180,9 +179,12 @@ namespace WebApi.Controllers
             if (project == null)
                 return NotFound();
 
-            var assignment = CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
-            if (assignment == null || !assignment.CanView)
-                return Unauthorized();
+            if (CurrentUser is OrgUser)
+            {
+                var assignment = CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
+                if (assignment == null || !assignment.CanView)
+                    return Unauthorized();
+            }
 
             // we want records from advice threads too, so can't filter by FilledById.
             // this might need a refactoring but works for now.
@@ -191,7 +193,8 @@ namespace WebApi.Controllers
             //    .Where(s => s.ProjectId == projectId && s.FilledById == CurrentOrgUser.Id)
             //    .OrderByDescending(s => s.DateCreated);
 
-            var cacheKey = $"{CACHE_KEY}_{projectId}_{CurrentOrgUser.Id}";
+            //var cacheKey = $"{CACHE_KEY}_{projectId}_{CurrentOrgUser.Id}";
+            var cacheKey = $"{CACHE_KEY}_{projectId}_{CurrentUser.Id}";
             var cacheEntry = MemoryCacher.GetValue(cacheKey);
 
             if (cacheEntry == null)
@@ -263,20 +266,18 @@ namespace WebApi.Controllers
         [Route("api/surveys")]
         [NeedsActiveMonthlyQuota]
         //[CheckUsedSpace]
-        public IHttpActionResult Post(FilledFormDTO survey)
+        public async Task<IHttpActionResult> Post(FilledFormDTO survey)
         {
+            var filledForm = Mapper.Map<FilledForm>(survey);
+            filledForm.FilledById = CurrentUser.Id;
+
             if (CurrentUser is OrgUser)
             {
                 if (!HasAccessToAddRecords(survey.FormTemplateId, survey.ProjectId))
                     return Unauthorized();
-            }
 
-            var filledForm = Mapper.Map<FilledForm>(survey);
-            filledForm.FilledById = CurrentUser.Id;
-
-            if (!HasAvailableDiskSpace(filledForm))
-            {
-                return BadRequest("You have exceeded your disk space allowance");
+                if (!HasAvailableDiskSpace(filledForm))
+                    return BadRequest("You have exceeded your disk space allowance");
             }
 
             foreach (var val in filledForm.FormValues.Where(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is DateMetric))
@@ -303,6 +304,30 @@ namespace WebApi.Controllers
                 UnitOfWork.AttachmentsRepository.InsertOrUpdate(attachments);
 
                 val.TextValue = string.Empty;
+            }
+
+            // check for advice threads
+            var thread = UnitOfWork.FormTemplatesRepository.Find(filledForm.FormTemplateId);
+            if (thread.Discriminator == FormTemplateDiscriminators.AdviceThread)
+            {
+                bool isAdviceResponse = false;
+
+                if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
+                    isAdviceResponse = true;
+                else if (CurrentUser is OrgUser)
+                {
+                    if (await ServiceContext.UserManager.IsInRoleAsync(CurrentUser.Id, "Organisation administrator"))
+                        isAdviceResponse = true;
+                }
+
+                if (isAdviceResponse)
+                {
+                    var project = UnitOfWork.ProjectsRepository.Find(filledForm.ProjectId);
+                    var textValue = filledForm.FormValues.FirstOrDefault(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is FreeTextMetric);
+
+                    filledForm.IsRead = false;
+                    NotifyOrgUserAboutAdviceResponse(project.CreatedBy.Email, thread.Title, textValue.TextValue);
+                }
             }
 
             try
@@ -333,39 +358,6 @@ namespace WebApi.Controllers
 
                 throw dbEx;
             }
-        }
-
-        private bool HasAvailableDiskSpace(FilledForm survey)
-        {
-            long totalAttachmentsSize = 0;
-
-            var attachmentMetrics = survey.FormValues.Where(x => UnitOfWork.MetricsRepository.Find(x.MetricId.Value) is AttachmentMetric);
-            foreach (var metric in attachmentMetrics)
-            {
-                if (string.IsNullOrEmpty(metric.TextValue)) continue;
-
-                var fileInfos = metric.TextValue.Split(',')
-                    .Select(i => HttpContext.Current.Server.MapPath("~/Uploads/" + i))
-                    .Select(path => new DirectoryInfo(path).GetFiles().FirstOrDefault());
-
-                totalAttachmentsSize += fileInfos.Sum(x => x.Length);
-            }
-
-            var statsService = new StatisticsService(UnitOfWork);
-            var usedSpace = statsService.GetUsedSpace(CurrentOrgUser.Id);
-
-            var subscriptionService = new SubscriptionService(UnitOfWork);
-            var monthlyQuota = subscriptionService.GetMonthlyQuota(CurrentOrgUser.Id);
-
-            if (monthlyQuota.MaxDiskSpace.HasValue)
-            {
-                var availableDiskSpace = monthlyQuota.MaxDiskSpace.Value - (int)usedSpace.TotalSizeInKiloBytes;
-                var totalAttachmentsInKB = (int)totalAttachmentsSize / 1024;
-
-                return (totalAttachmentsInKB < availableDiskSpace);
-            }
-
-            return true;
         }
 
         // PUT api/surveys/{id}
@@ -515,6 +507,40 @@ namespace WebApi.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/surveys/{id:guid}/mark-as-read")]
+        public IHttpActionResult MarkAsRead(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("id is empty");
+
+            var survey = UnitOfWork.FilledFormsRepository.Find(id);
+            if (survey == null)
+                return NotFound();
+
+            if (survey.FormTemplate.Discriminator == FormTemplateDiscriminators.RegularThread)
+                return BadRequest();
+
+            if (!survey.IsRead.HasValue || survey.IsRead.Value == true)
+                return BadRequest();
+
+            // if we reach here, the survey is a valid advice response
+            try
+            {
+                survey.IsRead = true;
+                UnitOfWork.FilledFormsRepository.InsertOrUpdate(survey);
+                UnitOfWork.FilledFormsRepository.Save();
+
+                MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
         #endregion CRUD
 
         #region Obsolete Methods
@@ -578,7 +604,7 @@ namespace WebApi.Controllers
 
         #endregion Obsolete Methods
 
-        #region Assignments Helpers
+        #region Helpers
 
         private bool HasAccessToViewRecords(Guid threadId, Guid caseId)
         {
@@ -652,7 +678,62 @@ namespace WebApi.Controllers
             return isAuthorized;
         }
 
-        #endregion Assignments Helpers
+        private bool HasAvailableDiskSpace(FilledForm survey)
+        {
+            long totalAttachmentsSize = 0;
+
+            var attachmentMetrics = survey.FormValues.Where(x => UnitOfWork.MetricsRepository.Find(x.MetricId.Value) is AttachmentMetric);
+            foreach (var metric in attachmentMetrics)
+            {
+                if (string.IsNullOrEmpty(metric.TextValue)) continue;
+
+                var fileInfos = metric.TextValue.Split(',')
+                    .Select(i => HttpContext.Current.Server.MapPath("~/Uploads/" + i))
+                    .Select(path => new DirectoryInfo(path).GetFiles().FirstOrDefault());
+
+                totalAttachmentsSize += fileInfos.Sum(x => x.Length);
+            }
+
+            var statsService = new StatisticsService(UnitOfWork);
+            var usedSpace = statsService.GetUsedSpace(CurrentOrgUser.Id);
+
+            var subscriptionService = new SubscriptionService(UnitOfWork);
+            var monthlyQuota = subscriptionService.GetMonthlyQuota(CurrentOrgUser.Id);
+
+            if (monthlyQuota.MaxDiskSpace.HasValue)
+            {
+                var availableDiskSpace = monthlyQuota.MaxDiskSpace.Value - (int)usedSpace.TotalSizeInKiloBytes;
+                var totalAttachmentsInKB = (int)totalAttachmentsSize / 1024;
+
+                return (totalAttachmentsInKB < availableDiskSpace);
+            }
+
+            return true;
+        }
+
+        private void NotifyOrgUserAboutAdviceResponse(string emailAddress, string threadTitle, string description)
+        {
+            var rootIndex = WebHelpers.GetRootIndexPath();
+            var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/advice-threads/";
+
+            var content = $@"
+                    <h3>{threadTitle}</h3>
+                    <p>{description}</p>
+                    <p><br></p>
+                    <p>View <a href='{url}'>advice threads</a> on the dashboard.</p>
+                ";
+
+            var email = new Email
+            {
+                To = emailAddress,
+                Subject = $"You have an advice record - {threadTitle}",
+                Content = WebHelpers.GenerateEmailTemplate(content, "You have an advice record")
+            };
+
+            UnitOfWork.EmailsRepository.InsertOrUpdate(email);
+        }
+
+        #endregion Helpers
 
     }
 }

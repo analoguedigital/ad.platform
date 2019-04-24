@@ -18,6 +18,7 @@
         isSubmitted: boolean;
         isChecked: boolean;
         description: string;
+        isRead?: boolean;
     }
 
     export interface IPosition {

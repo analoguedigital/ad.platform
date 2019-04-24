@@ -14,6 +14,9 @@ namespace WebApi
 
             var emailService = new WebApi.Services.EmailService();
             RecurringJob.AddOrUpdate("process-emails", () => emailService.ProcessEmails(), Cron.MinuteInterval(1));
+
+            var uploadsCleanupService = new WebApi.Services.UploadsCleanupService();
+            RecurringJob.AddOrUpdate("cleanup-uploads-dir", () => uploadsCleanupService.CleanupUploadsDirectory(), Cron.HourInterval(1));
         }
     }
 }

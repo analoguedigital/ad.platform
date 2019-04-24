@@ -12,14 +12,16 @@ module App {
 
     class DashboardController implements IDashboardController {
 
-        static $inject: string[] = ['$scope'];
-        constructor(private $scope: IDashboardControllerScope) {
+        static $inject: string[] = ['$scope', 'userContextService'];
+        constructor(
+            private $scope: IDashboardControllerScope,
+            private userContextService: Services.IUserContextService) {
 
             $scope.title = "Dashboard";
             this.activate();
         }
 
-        activate() {  }
+        activate() { }
 
     }
 

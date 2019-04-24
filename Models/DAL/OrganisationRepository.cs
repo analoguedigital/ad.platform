@@ -22,6 +22,11 @@ namespace LightMethods.Survey.Models.DAL
                 Town = dto.Town,
                 County = dto.County,
                 Postcode = dto.Postcode,
+                Description = dto.Description,
+                Website = dto.Website,
+                LogoUrl = dto.LogoUrl,
+                TermsAndConditions = dto.TermsAndConditions,
+                RequiresAgreement = dto.RequiresAgreement,
                 DefaultLanguageId = dto.DefaultLanguageId,
                 DefaultCalendarId = dto.DefaultCalendarId,
                 IsActive = true

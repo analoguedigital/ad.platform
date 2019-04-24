@@ -1,5 +1,77 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
 <div class="wrapper wrapper-content animated fadeInRight statistics_view">
+    <!-- past month accounts -->
+    <div class="box">
+        <div class="box-title">
+            <div class="pull-left">
+                <h5>Past Month Accounts</h5>
+            </div>
+
+            <div class="pull-right">
+                <div class="btn-group" role="group" aria-label="account filters">
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'clients' }" ng-click="ctrl.filterPastMonthAccounts('clients')"><i class="fa fa-phone-square"></i> Clients</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'staff' }" ng-click="ctrl.filterPastMonthAccounts('staff')"><i class="fa fa-laptop"></i> Staff</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'admins' }" ng-click="ctrl.filterPastMonthAccounts('admins')"><i class="fa fa-user-secret"></i> Admins</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'all' }" ng-click="ctrl.filterPastMonthAccounts('all')"><i class="fa fa-user-circle"></i> All</button>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="box-content">
+            <div st-table="ctrl.displayedPastMonthAccounts" st-safe-src="ctrl.pastMonthAccounts">
+                <div>
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="pastMonthAccountsSearchTerm" placeholder="Email, first name and surname" style="min-width: 300px" />
+                        </lm-form-group>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-mail">
+                        <thead>
+                            <tr>
+                                <th st-sort="email">Email address</th>
+                                <th st-sort="firstName">First Name</th>
+                                <th st-sort="surname">Surname</th>
+                                <th st-sort="isActive" class="text-center" width="100">Is Active</th>
+                                <th st-sort="lastLogin" class="text-center" width="150">Last Login</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="user in ctrl.displayedPastMonthAccounts">
+                                <td>
+                                    <i ng-if="user.accountType === 0" class="fa fa-phone-square"></i>
+                                    <i ng-if="user.accountType === 1 && !user.isRootUser" class="fa fa-laptop"></i>
+                                    <i ng-if="user.accountType === 1 && user.isRootUser" class="fa fa-user-secret"></i>
+
+                                    <a ng-if="user.accountType === 0" ui-sref="home.users.edit({ id: user.id, accountType: 'mobile-account' })">{{user.email}}</a>
+                                    <a ng-if="user.accountType === 1" ui-sref="home.users.edit({ id: user.id, accountType: 'web-account' })">{{user.email}}</a>
+                                </td>
+                                <td>{{user.firstName}}</td>
+                                <td>{{user.surname}}</td>
+                                <td class="text-center">
+                                    <i class="fa fa-check" ng-if="user.isActive"></i>
+                                    <i class="fa fa-times" ng-if="!user.isActive"></i>
+                                </td>
+                                <td class="text-center">
+                                    <span ng-if="user.lastLogin"><lm-date-time value="user.lastLogin"></lm-date-time></span>
+                                    <span ng-if="!user.lastLogin">NA</span>
+                                </td>
+                            </tr>
+                            <tr ng-if="!ctrl.displayedPastMonthAccounts.length">
+                                <td colspan="5">No new accounts were found</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- unconfirmed accounts -->
     <div class="box">
         <div class="box-title">
             <div class="pull-left">
@@ -54,7 +126,7 @@
                                     <i class="fa fa-times" ng-if="!user.isActive"></i>
                                 </td>
                                 <td class="text-center">
-                                    <span ng-if="user.lastLogin">{{user.lastLogin}}</span>
+                                    <span ng-if="user.lastLogin"><lm-date-time value="user.lastLogin"></lm-date-time></span>
                                     <span ng-if="!user.lastLogin">NA</span>
                                 </td>
                             </tr>
@@ -70,6 +142,7 @@
         </div>
     </div>
 
+    <!-- platform stats charts -->
     <div class="box">
         <div class="box-title">
             <h5>Platform Statistics</h5>
@@ -153,6 +226,7 @@
         </div>
     </div>
 
+    <!-- system stats -->
     <div class="box">
         <div class="box-title">
             <h5>System Stats</h5>

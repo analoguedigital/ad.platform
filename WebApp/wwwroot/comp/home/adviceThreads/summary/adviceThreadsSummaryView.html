@@ -29,10 +29,22 @@
                     <tbody>
                         <tr ng-repeat="survey in ctrl.surveys | filter: {formTemplateId: formTemplate.id} | orderBy:'-surveyDate' | limitTo : 5"
                             ng-class="{ 'warning': ctrl.isProjectOwner(survey), 'success': !ctrl.isProjectOwner(survey) }">
-                            <td class="text-center">{{survey.date | amDateFormat: 'L'}}</td>
-                            <td class="text-center">{{survey.serial}}</td>
-                            <td>{{survey.filledBy}}</td>
-                            <td>{{survey.description}}</td>
+                            <td class="text-center">
+                                <b ng-if="survey.isRead === false">{{survey.date | amDateFormat: 'L'}}</b>
+                                <span ng-if="survey.isRead === null || survey.isRead === true">{{survey.date | amDateFormat: 'L'}}</span>
+                            </td>
+                            <td class="text-center">
+                                <b ng-if="survey.isRead === false">{{survey.serial}}</b>
+                                <span ng-if="survey.isRead === null || survey.isRead === true">{{survey.serial}}</span>
+                            </td>
+                            <td>
+                                <b ng-if="survey.isRead === false">{{survey.filledBy}}</b>
+                                <span ng-if="survey.isRead === null || survey.isRead === true">{{survey.filledBy}}</span>
+                            </td>
+                            <td>
+                                <b ng-if="survey.isRead === false">{{survey.description}}</b>
+                                <span ng-if="survey.isRead === null || survey.isRead === true">{{survey.description}}</span>
+                            </td>
                             <td class="text-center">
                                 <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
                             </td>

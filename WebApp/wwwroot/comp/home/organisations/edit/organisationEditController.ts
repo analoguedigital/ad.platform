@@ -7,9 +7,11 @@ module App {
         organisation: Models.IOrganisation;
         users: Models.IOrgUser[];
         displayedUsers: Models.IOrgUser[];
+
         searchTerm: string;
         isInsertMode: boolean;
         errors: string;
+
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
     }

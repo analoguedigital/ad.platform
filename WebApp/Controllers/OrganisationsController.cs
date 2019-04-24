@@ -144,6 +144,11 @@ namespace WebApi.Controllers
             createOrganisation.Town = value.Town;
             createOrganisation.Postcode = value.Postcode;
             createOrganisation.TelNumber = value.TelNumber;
+            createOrganisation.Description = value.Description;
+            createOrganisation.Website = value.Website;
+            createOrganisation.LogoUrl = value.LogoUrl;
+            createOrganisation.TermsAndConditions = value.TermsAndConditions;
+            createOrganisation.RequiresAgreement = value.RequiresAgreement;
             createOrganisation.DefaultCalendarId = CalendarsRepository.Gregorian.Id;
             createOrganisation.DefaultLanguageId = LanguagesRepository.English.Id;
 
@@ -181,6 +186,11 @@ namespace WebApi.Controllers
             organisation.County = value.County;
             organisation.Postcode = value.Postcode;
             organisation.TelNumber = value.TelNumber;
+            organisation.Description = value.Description;
+            organisation.Website = value.Website;
+            organisation.LogoUrl = value.LogoUrl;
+            organisation.TermsAndConditions = value.TermsAndConditions;
+            organisation.RequiresAgreement = value.RequiresAgreement;
 
             try
             {
@@ -262,7 +272,7 @@ namespace WebApi.Controllers
         [HttpDelete]
         [Route("api/organisations/{id:guid}/revoke/{userId:guid}")]
         [OverrideAuthorization()]
-        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator,Organisation user")]
         public IHttpActionResult RevokeUser(Guid id, Guid userId)
         {
             if (id == Guid.Empty)

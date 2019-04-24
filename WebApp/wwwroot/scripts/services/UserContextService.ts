@@ -126,7 +126,8 @@
                         emailConfirmed: userinfo.emailConfirmed,
                         phoneNumber: userinfo.phoneNumber,
                         phoneNumberConfirmed: userinfo.phoneNumberConfirmed,
-                        roles: userinfo.roles
+                        roles: userinfo.roles,
+                        notifications: userinfo.notifications
                     };
 
                     if (userinfo.organisationId !== null) {

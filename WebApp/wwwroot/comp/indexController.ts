@@ -17,16 +17,16 @@ module App {
     class IndexController implements IIndexController {
 
         static $inject: string[] = ["$scope", "userContextService"];
-        constructor(private $scope: IIndexControllerScope,
-            userContext: App.Services.IUserContextService) {
+        constructor(
+            private $scope: IIndexControllerScope,
+            private userContextService: Services.IUserContextService) {
 
             $scope.title = "Index";
 
-            this.activate(userContext.current.user !== null);
+            this.activate(userContextService.current.user !== null);
         }
 
         activate(isAuthenticated: boolean) {
-
             //if (isAuthenticated === undefined || !isAuthenticated) {
             //    this.$state.tra .go('login');
             //} else {

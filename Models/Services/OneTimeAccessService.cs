@@ -9,8 +9,9 @@ namespace LightMethods.Survey.Models.Services
         /// <summary>
         /// One time tokens live for a max of 60 seconds
         /// </summary>
-        private static double _timeToLive = 60.0;
-        private static object lockObject = new object();
+        //private static readonly double _timeToLive = 60.0;
+        private static readonly double _timeToLive = 600.0; // 10min
+        private static readonly object lockObject = new object();
 
         private static List<OneTimeAccessTicket> _tickets = new List<OneTimeAccessTicket>();
 
