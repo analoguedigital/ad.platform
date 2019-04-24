@@ -44,7 +44,7 @@ module App {
         searchTerm: string;
         errors: string;
 
-        static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams"];
+        static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams", "localStorageService"];
         constructor(
             private $scope: IProjectAssignmentsControllerScope,
             private projectResource: Resources.IProjectResource,
@@ -52,7 +52,8 @@ module App {
             private $q: angular.IQService,
             private toastr: any,
             private $state: ng.ui.IStateService,
-            private $stateParams: ng.ui.IStateParamsService) {
+            private $stateParams: ng.ui.IStateParamsService,
+            private localStorageService: ng.local.storage.ILocalStorageService) {
 
             this.activate();
         }

@@ -10,6 +10,13 @@
         phoneNumberConfirmed: boolean;
         confirmPassword: string;
         roles: string[];
+
+        notifications: IAdminNotifications;
+    }
+
+    interface IAdminNotifications {
+        connectionRequests?: number;
+        adviceRecords?: number;
     }
 
     export interface IUser extends IUserBase, ng.resource.IResource<IUser> { }

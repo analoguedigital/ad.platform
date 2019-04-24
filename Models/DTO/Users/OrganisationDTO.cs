@@ -24,6 +24,16 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Postcode { get; set; }
 
+        public string Description { get; set; }
+
+        public string Website { get; set; }
+
+        public string LogoUrl { get; set; }
+
+        public string TermsAndConditions { get; set; }
+
+        public bool RequiresAgreement { get; set; }
+
         public Guid DefaultLanguageId { set; get; }
 
         public Guid DefaultCalendarId { set; get; }

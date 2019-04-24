@@ -12,6 +12,24 @@
                     <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="organisation.name.length"></span>
                     <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!organisation.name.length"></span>
                 </lm-form-group>
+
+                <lm-form-group label="Requires Agreement: ">
+                    <div class="checkbox checkbox-default">
+                        <input type="checkbox" name="requires-agreement" ng-model="organisation.requiresAgreement" />
+                        <label for="requires-agreement"></label>
+                    </div>
+                </lm-form-group>
+                <lm-form-group label="Terms & conditions:" ng-if="organisation.requiresAgreement" form-group-class="has-feedback" feedback-value="{{organisation.termsAndConditions.length}}">
+                    <!--<input type="text" id="termsAndConditions" name="termsAndConditions" ng-model="organisation.termsAndConditions" required
+                        placeholder="Enter the terms and conditions here" />-->
+
+                    <div text-angular ng-model="organisation.termsAndConditions"></div>
+
+                    <span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="true" ng-if="organisation.termsAndConditions.length"></span>
+                    <span class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true" ng-if="!organisation.termsAndConditions.length"></span>
+                </lm-form-group>
+
+                <!-- subscriptions -->
                 <lm-form-group label="Subscription Enabled: ">
                     <div class="checkbox checkbox-default">
                         <input type="checkbox" name="subscription-enabled" ng-model="organisation.subscriptionEnabled" />
@@ -61,7 +79,7 @@
 
                 <br />
                 <br />
-                <h5>Contacts details</h5>
+                <h5>Contact details</h5>
                 <div class="hr-line-dashed"></div>
                 <lm-form-group label="Address Line 1: ">
                     <input type="text" id="addressLine1" name="addressLine1" ng-model="organisation.addressLine1"
@@ -83,10 +101,22 @@
                     <input type="text" id="postcode" name="postcode" ng-model="organisation.postcode"
                            placeholder="Postcode/Zip" />
                 </lm-form-group>
-
                 <lm-form-group label="Telephone number ">
                     <input type="text" id="telNumber" name="telNumber" ng-model="organisation.telNumber"
                            placeholder="telephone number" />
+                </lm-form-group>
+                <lm-form-group label="Description ">
+                    <!--<input type="text" id="description" name="description" ng-model="organisation.description"
+                           placeholder="description" />-->
+                    <div text-angular ng-model="organisation.description"></div>
+                </lm-form-group>
+                <lm-form-group label="Website ">
+                    <input type="url" id="website" name="website" ng-model="organisation.website"
+                           placeholder="website address" />
+                </lm-form-group>
+                <lm-form-group label="Logo URL ">
+                    <input type="url" id="logoUrl" name="logoUrl" ng-model="organisation.logoUrl"
+                           placeholder="Logo URL" />
                 </lm-form-group>
 
                 <lm-form-group ng-if="errors !== undefined" class="">
@@ -102,7 +132,7 @@
             </form>
         </div>
     </div>
-    <div class="box">
+    <div class="box" ng-if="!isInsertMode">
         <div class="box-title">
             <h5>Users</h5>
         </div>

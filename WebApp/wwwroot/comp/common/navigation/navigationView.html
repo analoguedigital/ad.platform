@@ -69,6 +69,7 @@
             <li lm-access="System administrator,Organisation user" ng-class="{ 'active': $state.includes('home.adviceThreads.list') }">
                 <a ui-sref="home.adviceThreads.list" ui-sref-opts="{reload:true}">
                     <i class="fa fa-medkit"></i> <span class="nav-label">Advice Threads</span>
+                    <span class="badge badge-info pull-right">{{adviceRecordsCount}}</span>
                 </a>
             </li>
             <!-- Shared Threads -->
@@ -89,15 +90,23 @@
                     <i class="fa fa-group"></i> Teams
                 </a>
             </li>
+            
+            <!-- Permissions (case assignments) -->
+            <li lm-access="Organisation administrator" ng-class="{ 'active': $state.includes('home.caseManagement.caseAssignments')}">
+                <a ui-sref="home.caseManagement.caseAssignments" ui-sref-opts="{ reload: true }">
+                    <i class="fa fa-check-square-o"></i> Permissions
+                </a>
+            </li>
+            
             <!-- Case Management -->
-            <li lm-access="System administrator,Organisation administrator" ng-class="{'active':$state.includes('home.caseManagement')}">
+            <li lm-access="System administrator" ng-class="{'active':$state.includes('home.caseManagement')}">
                 <a aria-expanded="false">
                     <i class="fa fa-suitcase"></i> <span class="nav-label">Permissions</span> <span class="fa arrow"></span>
                 </a>
                 <ul aria-expanded="false" class="nav nav-second-level" ng-class="{ 'collapse in': $state.includes('home.caseManagement') }">
                     <li ng-class="{ 'active': $state.includes('home.caseManagement.caseAssignments')}">
                         <a ui-sref="home.caseManagement.caseAssignments" ui-sref-opts="{ reload: true }">
-                            <i class="fa fa-commenting-o"></i> Staff and Clients
+                            <i class="fa fa-check-square-o"></i> Staff and Clients
                         </a>
                     </li>
                     <li ng-class="{ 'active': $state.includes('home.caseManagement.threadAssignments')}">
@@ -107,12 +116,13 @@
                     </li>
                 </ul>
             </li>
+
             <!-- Organisation Management -->
-            <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{'active':$state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') || $state.includes('home.organisations.connectionRequests') || $state.includes('home.organisations.requests')}">
+            <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{'active':$state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') || $state.includes('home.organisations.requests')}">
                 <a aria-expanded="false">
                     <i class="fa fa-cubes"></i> <span class="nav-label">Organisation Mgmt</span> <span class="fa arrow"></span>
                 </a>
-                <ul aria-expanded="false" class="nav nav-second-level" ng-class="{'collapse in': $state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') || $state.includes('home.organisations.invitations') || $state.includes('home.organisations.connectionRequests') || $state.includes('home.organisations.requests') }">
+                <ul aria-expanded="false" class="nav nav-second-level" ng-class="{'collapse in': $state.includes('home.users.list') || $state.includes('home.teams.list') || $state.includes('home.users.mobile') || $state.includes('home.organisations.invitations') || $state.includes('home.organisations.requests') }">
                     <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{'active':$state.includes('home.users.list')}">
                         <a ui-sref="home.users.list" ui-sref-opts="{reload: true}">
                             <i class="fa fa-user-circle-o"></i> Staff management
@@ -133,11 +143,6 @@
                             <i class="fa fa-hashtag"></i> Invitation Tokens
                         </a>
                     </li>
-                    <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{ 'active': $state.includes('home.organisations.connectionRequests')}">
-                        <a ui-sref="home.organisations.connectionRequests" ui-sref-opts="{reload: true}">
-                            <i class="fa fa-handshake-o"></i> Conn. Requests
-                        </a>
-                    </li>
                     <li lm-access="System administrator,Platform administrator" ng-class="{ 'active': $state.includes('home.organisations.requests')}">
                         <a ui-sref="home.organisations.requests" ui-sref-opts="{reload: true}">
                             <i class="fa fa-address-book"></i> Org. Requests
@@ -145,6 +150,16 @@
                     </li>
                 </ul>
             </li>
+
+            <!-- connection requests -->
+            <li lm-access="System administrator,Platform administrator,Organisation administrator" ng-class="{ 'active': $state.includes('home.organisations.connectionRequests')}">
+                <a ui-sref="home.organisations.connectionRequests" ui-sref-opts="{reload: true}">
+                    <i class="fa fa-handshake-o"></i> Conn. Requests
+
+                    <span class="badge badge-info pull-right">{{connectionRequestsCount}}</span>
+                </a>
+            </li>
+
             <!-- Form Templates and Data Lists -->
             <li lm-access="System administrator" ng-class="{ 'active': $state.includes('home.formtemplates.list') || $state.includes('home.datalists.list') }">
                 <a ui-sref="home.designer" aria-expanded="false"><i class="fa fa-paint-brush"></i> <span class="nav-label">Designer</span><span class="fa arrow"></span></a>

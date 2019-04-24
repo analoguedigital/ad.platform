@@ -1,4 +1,5 @@
 ﻿using LightMethods.Survey.Models.DTO;
+using LightMethods.Survey.Models.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -57,6 +58,15 @@ namespace WebApi.Models
         public UserProfileDTO Profile { get; set; }
 
         public bool TwoFactorAuthenticationEnabled { get; set; }
+
+        public AdminNotificationsDTO Notifications { get; set; }
+    }
+
+    public class AdminNotificationsDTO
+    {
+        public int? ConnectionRequests { get; set; }
+
+        public int? AdviceRecords { get; set; }
     }
 
     public class UserProfileDTO

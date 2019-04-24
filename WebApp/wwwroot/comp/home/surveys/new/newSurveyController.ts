@@ -16,6 +16,8 @@ module App {
         geocoding: GeocodeInformation;
         geocoderWorking: boolean;
         geolocationWorking: boolean;
+
+        isInsertMode: boolean;
     }
 
     interface INewSurveyController {
@@ -37,21 +39,23 @@ module App {
         //survey: Models.ISurvey;
         activeTabIndex: number = 0;
 
-        static $inject: string[] = ["$scope", "$q", "$rootScope", "$state", "$timeout",
-            "toastr", "surveyResource", "formTemplate", "project", "survey", "localStorageService"];
+        static $inject: string[] = ["$scope", "$q", "$rootScope", "$state", "$stateParams", "$timeout",
+            "toastr", "surveyResource", "formTemplate", "project", "survey", "localStorageService", "userContextService"];
 
         constructor(
             private $scope: INewSurveyScope,
             private $q: ng.IQService,
             private $rootScope: ng.IRootScopeService,
             private $state: ng.ui.IStateService,
+            private $stateParams: ng.ui.IStateParamsService,
             private $timeout: ng.ITimeoutService,
             private toastr: any,
             private surveyResource: Resources.ISurveyResource,
             public formTemplate: Models.IFormTemplate,
             public project: Models.IProject,
             public survey: Models.ISurvey,
-            public localStorageService: ng.local.storage.ILocalStorageService) {
+            public localStorageService: ng.local.storage.ILocalStorageService,
+            public userContextService: App.Services.IUserContextService) {
 
             if (survey == null) {
                 this.survey = <Models.ISurvey>{};
@@ -93,6 +97,21 @@ module App {
             if (prevState && prevState.name.length && prevParams) {
                 this.localStorageService.set('survey.prevState', prevState);
                 this.localStorageService.set('survey.prevParams', prevParams);
+            }
+
+            var surveyId = this.$stateParams["surveyId"];
+            this.$scope.isInsertMode = surveyId === undefined;
+
+            // check for advice responses
+            if (this.formTemplate.discriminator === 1 && !this.$scope.isInsertMode && this.survey.isRead === false) {
+                var orgUser = this.userContextService.current.orgUser;
+                if (orgUser !== null && this.survey.projectId === orgUser.currentProjectId) {
+                    this.surveyResource.markAsRead({ id: this.survey.id }, (res) => {
+                        console.log(res);
+                    }, (err) => {
+                        console.error(err);
+                    });
+                }
             }
 
             this.getLocations();

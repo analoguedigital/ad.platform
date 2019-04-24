@@ -22,13 +22,14 @@ module App {
     }
 
     class CaseAssignmentsController implements ICaseAssignmentsController {
-        static $inject: string[] = ["$scope", "$stateParams", "projectResource", "toastr"];
+        static $inject: string[] = ["$scope", "$stateParams", "projectResource", "toastr", "localStorageService"];
 
         constructor(
             private $scope: ICaseAssignmentsControllerScope,
             private $stateParams: ng.ui.IStateParamsService,
             private projectResource: Resources.IProjectResource,
-            private toastr: any) {
+            private toastr: any,
+            private localStorageService: ng.local.storage.ILocalStorageService) {
 
             $scope.title = "Assignments and Permissions";
             $scope.delete = (id) => { this.delete(id); };
@@ -37,23 +38,31 @@ module App {
         }
 
         activate() {
-            this.$scope.accountTypeFilter = 'all';
             this.load();
         }
 
         load() {
+            var accountTypeFilter = <string>this.localStorageService.get('case_assignments_account_type_filter');
+            if (accountTypeFilter == null || !accountTypeFilter.length) {
+                accountTypeFilter = 'staff';
+            }
+
             var organisationId = this.$stateParams["organisationId"];
             if (organisationId === '') {
                 this.projectResource.query().$promise.then((projects) => {
                     this.$scope.safeProjects = projects;
                     this.$scope.projects = projects;
                     this.$scope.displayedProjects = [].concat(this.$scope.projects);
+
+                    this.filterProjects(accountTypeFilter);
                 });
             } else {
                 this.projectResource.query({ organisationId: organisationId }).$promise.then((projects) => {
                     this.$scope.safeProjects = projects;
                     this.$scope.projects = projects;
                     this.$scope.displayedProjects = [].concat(this.$scope.projects);
+
+                    this.filterProjects(accountTypeFilter);
                 });
             }
         }
@@ -71,6 +80,7 @@ module App {
 
         filterProjects(type: string) {
             this.$scope.accountTypeFilter = type;
+            this.localStorageService.set('case_assignments_account_type_filter', type);
 
             if (type === 'clients') {
                 this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; });

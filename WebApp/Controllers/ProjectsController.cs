@@ -173,7 +173,7 @@ namespace WebApi.Controllers
         [ResponseType(typeof(ProjectDTO))]
         [Route("api/projects/direct/{id:guid}")]
         [OverrideAuthorization]
-        [Authorize(Roles = "Organisation user,Restricted user")]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation user,Restricted user")]
         public IHttpActionResult GetDirect(Guid id)
         {
             if (id == Guid.Empty)

@@ -54,7 +54,9 @@ module App {
             var roles = ["System administrator", "Platform administrator", "Organisation administrator"];
             this.isAdmin = this.userContextService.userIsInAnyRoles(roles);
             this.isRestricted = this.userContext.userIsRestricted();
-            this.accountType = this.userContext.current.orgUser.accountType;
+
+            if (this.userContext.current.orgUser !== null)
+                this.accountType = this.userContext.current.orgUser.accountType;
 
             this.load();
         }

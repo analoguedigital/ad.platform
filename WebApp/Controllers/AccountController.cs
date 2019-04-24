@@ -116,6 +116,39 @@ namespace WebApi.Models
                 };
             }
 
+            // fetch notifications
+            if (user is SuperUser || user is PlatformUser)
+            {
+                userInfo.Notifications = new AdminNotificationsDTO
+                {
+                    ConnectionRequests = UnitOfWork.OrgConnectionRequestsRepository
+                        .AllAsNoTracking
+                        .Count(x => !x.IsApproved)
+                };
+            }
+            else if (orgUser != null)
+            {
+                if (UserManager.IsInRole(orgUser.Id, "Organisation administrator"))
+                {
+                    userInfo.Notifications = new AdminNotificationsDTO
+                    {
+                        ConnectionRequests = UnitOfWork.OrgConnectionRequestsRepository
+                            .AllAsNoTracking
+                            .Count(x => !x.IsApproved && x.OrganisationId == orgUser.OrganisationId)
+                    };
+                }
+                else
+                {
+                    // get unread advice records
+                    userInfo.Notifications = new AdminNotificationsDTO
+                    {
+                        AdviceRecords = UnitOfWork.FilledFormsRepository
+                            .AllAsNoTracking
+                            .Count(x => x.ProjectId == orgUser.CurrentProjectId && x.FormTemplate.Discriminator == FormTemplateDiscriminators.AdviceThread && x.IsRead == false)
+                    };
+                }
+            }
+
             return Ok(userInfo);
         }
 

@@ -54,6 +54,19 @@ namespace LightMethods.Survey.Models.DTO
         [StringLength(7)]
         public string Postcode { get; set; }
 
+        [StringLength(500)]
+        public string Description { get; set; }
+
+        [StringLength(150)]
+        public string Website { get; set; }
+
+        [StringLength(150)]
+        public string LogoUrl { get; set; }
+
+        public string TermsAndConditions { get; set; }
+
+        public bool RequiresAgreement { get; set; }
+
         [Display(Name="Default language")]
         public Guid DefaultLanguageId { set; get; }
 

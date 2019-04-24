@@ -59,8 +59,6 @@ module App {
                         if (this.projects.length === 1) {
                             this.selectedProject = this.projects[0];
                             this.selectedProjectChanged();
-                        } else {
-
                         }
                     }
                 }

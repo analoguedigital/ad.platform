@@ -33,6 +33,19 @@ namespace LightMethods.Survey.Models.Entities
         [StringLength(8)]
         public string Postcode { get; set; }
 
+        [StringLength(500)]
+        public string Description { get; set; }
+
+        [StringLength(150)]
+        public string Website { get; set; }
+
+        [StringLength(150)]
+        public string LogoUrl { get; set; }
+
+        public string TermsAndConditions { get; set; }
+
+        public bool RequiresAgreement { get; set; }
+
         [ReadOnly(true)]
         public bool IsActive { set; get; }
 

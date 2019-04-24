@@ -27,6 +27,7 @@
         attachmentStats: IAttachmentStats;
         teamStats: ITeamStats[];
         unconfirmedAccounts: IOrgUserFlatDTO[];
+        pastMonthAccounts: IOrgUserFlatDTO[];
     }
 
     interface ITeamStats {
@@ -73,12 +74,19 @@
 
         accountTypeFilter: string;
         unconfirmedAccountsSearchTerm: string;
+
+        pastMonthAccountsFilter: string;
+        pastMonthAccountsSearchTerm: string;
     }
 
     interface IStatisticsController {
         sourceUnconfirmedAccounts: IOrgUserFlatDTO[];
         unconfirmedAccounts: IOrgUserFlatDTO[];
         displayedUnconfirmedAccounts: IOrgUserFlatDTO[];
+
+        sourcePastMonthAccounts: IOrgUserFlatDTO[];
+        pastMonthAccounts: IOrgUserFlatDTO[];
+        displayedPastMonthAccounts: IOrgUserFlatDTO[];
 
         activate: () => void;
     }
@@ -88,13 +96,17 @@
         unconfirmedAccounts: IOrgUserFlatDTO[] = [];
         displayedUnconfirmedAccounts: IOrgUserFlatDTO[] = [];
 
-        static $inject: string[] = ['$scope', "$resource"];
+        sourcePastMonthAccounts: IOrgUserFlatDTO[] = [];
+        pastMonthAccounts: IOrgUserFlatDTO[] = [];
+        displayedPastMonthAccounts: IOrgUserFlatDTO[] = [];
+
+        static $inject: string[] = ['$scope', "$resource", "localStorageService"];
         constructor(
             private $scope: IStatisticsControllerScope,
-            private $resource: ng.resource.IResourceService) {
+            private $resource: ng.resource.IResourceService,
+            private localStorageService: ng.local.storage.ILocalStorageService) {
 
             $scope.title = "Statistics";
-            $scope.accountTypeFilter = 'all';
 
             this.activate();
         }
@@ -220,6 +232,21 @@
             this.sourceUnconfirmedAccounts = stats.unconfirmedAccounts;
             this.unconfirmedAccounts = stats.unconfirmedAccounts;
             this.displayedUnconfirmedAccounts = stats.unconfirmedAccounts;
+
+            // past month accounts
+            this.sourcePastMonthAccounts = stats.pastMonthAccounts;
+            this.pastMonthAccounts = stats.pastMonthAccounts;
+            this.displayedPastMonthAccounts = stats.pastMonthAccounts;
+
+            var unconfirmedAccountsFilter = <string>this.localStorageService.get('stats_unconfirmed_accounts_filter');
+            var pastMonthAccountsFilter = <string>this.localStorageService.get('stats_recent_accounts_filter');
+            if (unconfirmedAccountsFilter == null || !unconfirmedAccountsFilter.length)
+                unconfirmedAccountsFilter = 'clients';
+            if (pastMonthAccountsFilter == null || !pastMonthAccountsFilter.length)
+                pastMonthAccountsFilter = 'clients';
+
+            this.filterUnconfirmedAccounts(unconfirmedAccountsFilter);
+            this.filterPastMonthAccounts(pastMonthAccountsFilter);
         }
 
         formatBytes(a, b) {
@@ -236,6 +263,7 @@
 
         filterUnconfirmedAccounts(filter: string) {
             this.$scope.accountTypeFilter = filter;
+            this.localStorageService.set('stats_unconfirmed_accounts_filter', filter);
 
             switch (filter) {
                 case 'clients': {
@@ -257,6 +285,32 @@
             }
 
             this.displayedUnconfirmedAccounts = [].concat(this.unconfirmedAccounts);
+        }
+
+        filterPastMonthAccounts(filter: string) {
+            this.$scope.pastMonthAccountsFilter = filter;
+            this.localStorageService.set('stats_recent_accounts_filter', filter);
+
+            switch (filter) {
+                case 'clients': {
+                    this.pastMonthAccounts = _.filter(this.sourcePastMonthAccounts, (a) => { return a.accountType === 0 });
+                    break;
+                }
+                case 'staff': {
+                    this.pastMonthAccounts = _.filter(this.sourcePastMonthAccounts, (a) => { return a.accountType === 1 && !a.isRootUser });
+                    break;
+                }
+                case 'admins': {
+                    this.pastMonthAccounts = _.filter(this.sourcePastMonthAccounts, (a) => { return a.accountType === 1 && a.isRootUser });
+                    break;
+                }
+                case 'all': {
+                    this.pastMonthAccounts = this.sourcePastMonthAccounts;
+                    break;
+                }
+            }
+
+            this.displayedPastMonthAccounts = [].concat(this.pastMonthAccounts);
         }
 
     }

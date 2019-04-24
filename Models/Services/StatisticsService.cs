@@ -328,6 +328,29 @@ namespace LightMethods.Survey.Models.Services
                 })
                 .ToList();
 
+            // past month registrations
+            var targetDate = DateTime.Now.AddMonths(-1);
+            result.PastMonthAccounts = UnitOfWork.OrgUsersRepository
+                .AllAsNoTracking
+                .Where(x => x.RegistrationDate >= targetDate)
+                .Select(x => new OrgUserFlatDTO
+                 {
+                     Id = x.Id,
+                     Email = x.Email,
+                     FirstName = x.FirstName,
+                     Surname = x.Surname,
+                     Gender = x.Gender,
+                     Birthdate = x.Birthdate,
+                     Address = x.Address,
+                     IsWebUser = x.IsWebUser,
+                     IsMobileUser = x.IsMobileUser,
+                     IsActive = x.IsActive,
+                     LastLogin = x.LastLogin,
+                     AccountType = x.AccountType,
+                     IsRootUser = x.IsRootUser,
+                 })
+                .ToList();
+
             return result;
         }
 
@@ -457,11 +480,14 @@ namespace LightMethods.Survey.Models.Services
 
         public List<OrgUserFlatDTO> UnconfirmedAccounts { get; set; }
 
+        public List<OrgUserFlatDTO> PastMonthAccounts { get; set; }
+
         public PlatformStatsDTO()
         {
             this.AttachmentStats = new AttachmentStatsDTO();
             this.TeamStats = new List<TeamStatsDTO>();
             this.UnconfirmedAccounts = new List<OrgUserFlatDTO>();
+            this.PastMonthAccounts = new List<OrgUserFlatDTO>();
         }
     }
 

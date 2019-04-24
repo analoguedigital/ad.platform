@@ -6,6 +6,10 @@ module App {
         title: string;
         user: string;
         $state: ng.ui.IStateService;
+
+        connectionRequestsCount?: number;
+        adviceRecordsCount?: number;
+
         logout: () => void;
         resetPassword: () => void;
     }
@@ -36,7 +40,13 @@ module App {
             this.activate();
         }
 
-        activate() { }
+        activate() {
+            var user = this.userContextService.current.user;
+            if (user.notifications !== null) {
+                this.$scope.connectionRequestsCount = user.notifications.connectionRequests;
+                this.$scope.adviceRecordsCount = user.notifications.adviceRecords;
+            }
+        }
 
         resetPassword() {
             var modalInstance = this.$uibModal.open({

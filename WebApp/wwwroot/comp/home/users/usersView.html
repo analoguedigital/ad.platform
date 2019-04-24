@@ -24,7 +24,7 @@
                                 <th width="150" st-sort="surname">Surname</th>
                                 <th width="120" st-sort="lastLogin" class="text-center">Last Login</th>
                                 <th class="text-center" st-sort="organisation.name">Organisation</th>
-                                <th class="text-center" width="150" st-sort="type.name">Type</th>
+                                <!--<th class="text-center" width="150" st-sort="type.name">Type</th>-->
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="150" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
                                 <th class="text-center" width="100" lm-access="System administrator,Platform administrator"></th>
@@ -45,7 +45,7 @@
                                     <span ng-if="user.lastLogin">{{user.lastLogin | amDateFormat:'MMM DD YYYY'}}</span>
                                 </td>
                                 <td class="text-center">{{user.organisation.name}}</td>
-                                <td class="text-center">{{user.type.name}}</td>
+                                <!--<td class="text-center">{{user.type.name}}</td>-->
                                 <td class="text-center">
                                     <a ng-click="ctrl.composeEmail(user)"><i class="fa fa-paper-plane"></i> Compose</a>
                                 </td>

@@ -426,6 +426,7 @@
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\MemoryCacher.cs" />
     <Compile Include="Services\ProjectSummaryPrintSessionService.cs" />
+    <Compile Include="Services\UploadsCleanupService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
