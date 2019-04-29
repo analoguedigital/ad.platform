@@ -46,6 +46,25 @@ namespace LightMethods.Survey.Models.Entities
 
         public bool RequiresAgreement { get; set; }
 
+        // social profiles
+        [StringLength(50)]
+        public string FacebookId { get; set; }
+
+        [StringLength(50)]
+        public string TwitterId { get; set; }
+
+        [StringLength(50)]
+        public string InstagramId { get; set; }
+
+        [StringLength(50)]
+        public string SkypeId { get; set; }
+
+        [StringLength(100)]
+        public string LinkedinUrl { get; set; }
+
+        [StringLength(100)]
+        public string YouTubeUrl { get; set; }
+        
         [ReadOnly(true)]
         public bool IsActive { set; get; }
 

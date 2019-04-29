@@ -578,8 +578,6 @@ namespace LightMethods.Survey.Models.Services
             return true;
         }
 
-        #endregion Helpers
-
         private int GetFixedMonthlyDiskSpace()
         {
             var quota = ConfigurationManager.AppSettings["FixedMonthlyDiskSpace"];
@@ -588,6 +586,8 @@ namespace LightMethods.Survey.Models.Services
 
             return 1024;  // default hard-coded value
         }
+
+        #endregion Helpers
 
     }
 
