@@ -21,7 +21,7 @@
                 </lm-form-group>
                 <lm-form-group label="Terms & conditions:" ng-if="organisation.requiresAgreement" form-group-class="has-feedback" feedback-value="{{organisation.termsAndConditions.length}}">
                     <!--<input type="text" id="termsAndConditions" name="termsAndConditions" ng-model="organisation.termsAndConditions" required
-                        placeholder="Enter the terms and conditions here" />-->
+        placeholder="Enter the terms and conditions here" />-->
 
                     <div text-angular ng-model="organisation.termsAndConditions"></div>
 
@@ -107,7 +107,7 @@
                 </lm-form-group>
                 <lm-form-group label="Description ">
                     <!--<input type="text" id="description" name="description" ng-model="organisation.description"
-                           placeholder="description" />-->
+                        placeholder="description" />-->
                     <div text-angular ng-model="organisation.description"></div>
                 </lm-form-group>
                 <lm-form-group label="Website ">
@@ -119,6 +119,33 @@
                            placeholder="Logo URL" />
                 </lm-form-group>
 
+                <!-- social profiles -->
+                <lm-form-group label="Facebook ID ">
+                    <input type="text" id="facebook-id" name="facebook-id" ng-model="organisation.facebookId"
+                           placeholder="Facebook ID (e.g johndoe)" />
+                </lm-form-group>
+                <lm-form-group label="Twitter ID ">
+                    <input type="text" id="twitter-id" name="twitter-id" ng-model="organisation.twitterId"
+                           placeholder="Twitter ID (e.g johndoe)" />
+                </lm-form-group>
+                <lm-form-group label="Instagram ID ">
+                    <input type="text" id="instagram-id" name="instagram-id" ng-model="organisation.instagramId"
+                           placeholder="Instagram ID (e.g johndoe)" />
+                </lm-form-group>
+                <lm-form-group label="Skype ID ">
+                    <input type="text" id="skype-id" name="skype-id" ng-model="organisation.skypeId"
+                           placeholder="Skype ID (e.g johndoe)" />
+                </lm-form-group>
+                <lm-form-group label="Linkedin URL ">
+                    <input type="text" id="linkedin-url" name="linkedin-url" ng-model="organisation.linkedinUrl"
+                           placeholder="Linkedin Url (e.g https://www.linkedin.com/company/analogue-digital-ltd/)" />
+                </lm-form-group>
+                <lm-form-group label="YouTube URL ">
+                    <input type="text" id="youtube-url" name="youtube-url" ng-model="organisation.youTubeUrl"
+                           placeholder="YouTube URL (e.g https://www.youtube.com/channel/UCbySt38csVzV1oI5k4PoSAw)" />
+                </lm-form-group>
+
+                <!-- action buttons -->
                 <lm-form-group ng-if="errors !== undefined" class="">
                     <div class="alert alert-danger animated fadeInDown">
                         {{errors}}
@@ -134,7 +161,15 @@
     </div>
     <div class="box" ng-if="!isInsertMode">
         <div class="box-title">
-            <h5>Users</h5>
+            <h5 class="pull-left">Users</h5>
+            <div class="pull-right">
+                <div class="btn-group" role="group" aria-label="account filters">
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterUsers('clients')"><i class="fa fa-phone-square"></i> Clients</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterUsers('staff')"><i class="fa fa-laptop"></i> Staff</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterUsers('all')"><i class="fa fa-user-circle"></i> All</button>
+                </div>
+            </div>
+            <div class="clearfix"></div>
         </div>
         <div class="box-content">
             <div st-table="displayedUsers" st-safe-src="users">
@@ -190,7 +225,9 @@
                                     <i class="fa fa-times" ng-if="!user.isMobileUser"></i>
                                 </td>
                                 <td class="text-center">
-                                    <a ng-if="!user.isRootUser" ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="remove(user)">
+                                    <a ng-if="!user.isRootUser && user.organisation.name !== 'OnRecord'" 
+                                       ng-bootbox-confirm="Are you sure you want to remove this user?"
+                                       ng-bootbox-confirm-action="remove(user)">
                                         <i class="fa fa-unlink"></i> <span class="hidden-xs"> remove</span>
                                     </a>
                                 </td>

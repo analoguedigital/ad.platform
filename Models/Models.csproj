@@ -640,6 +640,10 @@
     <Compile Include="Migrations\201904171134522_Update_organizations_base_info.Designer.cs">
       <DependentUpon>201904171134522_Update_organizations_base_info.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904271425049_Add_social_profiles_to_organizations.cs" />
+    <Compile Include="Migrations\201904271425049_Add_social_profiles_to_organizations.Designer.cs">
+      <DependentUpon>201904271425049_Add_social_profiles_to_organizations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -855,6 +859,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904171134522_Update_organizations_base_info.resx">
       <DependentUpon>201904171134522_Update_organizations_base_info.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904271425049_Add_social_profiles_to_organizations.resx">
+      <DependentUpon>201904271425049_Add_social_profiles_to_organizations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

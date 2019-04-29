@@ -20,5 +20,12 @@
         defaultCalendarId: string;
         subscriptionEnabled: boolean;
         subscriptionMonthlyRate?: number;
+
+        facebookId: string;
+        twitterId: string;
+        instagramId: string;
+        skypeId: string;
+        linkedinUrl: string;
+        youTubeUrl: string;
     }
 }

@@ -27,6 +27,12 @@ namespace LightMethods.Survey.Models.DAL
                 LogoUrl = dto.LogoUrl,
                 TermsAndConditions = dto.TermsAndConditions,
                 RequiresAgreement = dto.RequiresAgreement,
+                FacebookId = dto.FacebookId,
+                TwitterId = dto.TwitterId,
+                InstagramId = dto.InstagramId,
+                SkypeId = dto.SkypeId,
+                LinkedinUrl = dto.LinkedinUrl,
+                YouTubeUrl = dto.YouTubeUrl,
                 DefaultLanguageId = dto.DefaultLanguageId,
                 DefaultCalendarId = dto.DefaultCalendarId,
                 IsActive = true

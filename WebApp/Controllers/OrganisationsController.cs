@@ -149,6 +149,12 @@ namespace WebApi.Controllers
             createOrganisation.LogoUrl = value.LogoUrl;
             createOrganisation.TermsAndConditions = value.TermsAndConditions;
             createOrganisation.RequiresAgreement = value.RequiresAgreement;
+            createOrganisation.FacebookId = value.FacebookId;
+            createOrganisation.TwitterId = value.TwitterId;
+            createOrganisation.InstagramId = value.InstagramId;
+            createOrganisation.SkypeId = value.SkypeId;
+            createOrganisation.LinkedinUrl = value.LinkedinUrl;
+            createOrganisation.YouTubeUrl = value.YouTubeUrl;
             createOrganisation.DefaultCalendarId = CalendarsRepository.Gregorian.Id;
             createOrganisation.DefaultLanguageId = LanguagesRepository.English.Id;
 
@@ -191,6 +197,12 @@ namespace WebApi.Controllers
             organisation.LogoUrl = value.LogoUrl;
             organisation.TermsAndConditions = value.TermsAndConditions;
             organisation.RequiresAgreement = value.RequiresAgreement;
+            organisation.FacebookId = value.FacebookId;
+            organisation.TwitterId = value.TwitterId;
+            organisation.InstagramId = value.InstagramId;
+            organisation.SkypeId = value.SkypeId;
+            organisation.LinkedinUrl = value.LinkedinUrl;
+            organisation.YouTubeUrl = value.YouTubeUrl;
 
             try
             {
@@ -292,6 +304,10 @@ namespace WebApi.Controllers
             // root users cannot be removed from an organization!
             if (orgUser.IsRootUser)
                 return BadRequest("Root users cannot be removed from organizations!");
+
+            // users cannot be removed from OnRecord
+            if (org.Name.Equals("OnRecord"))
+                return BadRequest("Users cannot be removed from OnRecord!");
 
             var subscriptionService = new SubscriptionService(UnitOfWork);
             subscriptionService.RemoveUserFromOrganization(org, orgUser);

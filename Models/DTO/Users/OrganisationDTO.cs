@@ -34,6 +34,18 @@ namespace LightMethods.Survey.Models.DTO
 
         public bool RequiresAgreement { get; set; }
 
+        public string FacebookId { get; set; }
+
+        public string TwitterId { get; set; }
+
+        public string InstagramId { get; set; }
+
+        public string SkypeId { get; set; }
+
+        public string LinkedinUrl { get; set; }
+
+        public string YouTubeUrl { get; set; }
+
         public Guid DefaultLanguageId { set; get; }
 
         public Guid DefaultCalendarId { set; get; }

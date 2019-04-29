@@ -26,6 +26,7 @@
                 url: "/edit/:id",
                 templateUrl: "comp/home/organisations/edit/organisationEditView.html",
                 controller: "organisationEditController",
+                controllerAs: "ctrl",
                 ncyBreadcrumb: { label: 'Edit', parent: 'home.organisations.list' },
                 module: "private"
             })

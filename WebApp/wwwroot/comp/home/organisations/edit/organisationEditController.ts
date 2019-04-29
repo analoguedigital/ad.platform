@@ -5,8 +5,12 @@ module App {
     interface IOrganisationEditControllerScope extends ng.IScope {
         title: string;
         organisation: Models.IOrganisation;
+
+        safeUsers: Models.IOrgUser[];
         users: Models.IOrgUser[];
         displayedUsers: Models.IOrgUser[];
+
+        accountTypeFilter: string;
 
         searchTerm: string;
         isInsertMode: boolean;
@@ -33,6 +37,7 @@ module App {
         ) {
 
             $scope.title = "Organisations";
+            $scope.accountTypeFilter = 'all';
 
             $scope.submit = (form: ng.IFormController) => { this.submit(form); }
             $scope.clearErrors = () => { this.clearErrors(); }
@@ -51,8 +56,11 @@ module App {
                 this.$scope.organisation = organisation;
 
                 this.orgUserResource.query({ listType: 2, organisationId: organisationId }).$promise.then((users) => {
+                    this.$scope.safeUsers = users;
                     this.$scope.users = users;
                     this.$scope.displayedUsers = [].concat(users);
+
+                    this.filterUsers(this.$scope.accountTypeFilter);
                 });
             });
         }
@@ -99,7 +107,24 @@ module App {
 
                 this.toastr.success("User removed from organisation");
                 this.toastr.info("Cases and threads moved to OnRecord");
+            }, (err) => {
+                if (err.data.message && err.data.message.length)
+                    this.toastr.error(err.data.message);
             });
+        }
+
+        filterUsers(type: string) {
+            this.$scope.accountTypeFilter = type;
+
+            if (type === 'clients') {
+                this.$scope.users = _.filter(this.$scope.safeUsers, (u) => { return u.accountType === 0; });
+            } else if (type === 'staff') {
+                this.$scope.users = _.filter(this.$scope.safeUsers, (u) => { return u.accountType === 1; });
+            } else if (type === 'all') {
+                this.$scope.users = this.$scope.safeUsers;
+            }
+
+            this.$scope.displayedProjects = [].concat(this.$scope.projects);
         }
     }
 
