@@ -282,7 +282,7 @@ namespace WebApi.Controllers
             var email = new Email
             {
                 To = CurrentOrgUser.Email,
-                Subject = $"Subscription purchase - {plan.Name}",
+                Subject = $"You have purchased a subscription as follows - {plan.Name}",
                 Content = WebHelpers.GenerateEmailTemplate(content, "Subscription Purchased")
             };
 
@@ -291,15 +291,15 @@ namespace WebApi.Controllers
 
         private void NotifyUserAboutOrganisationSubscription(string organisationName)
         {
-            var content = @"<p>You have joined the <strong>" + organisationName + @"</strong> organization.</p>
-                            <p>Your personal case and its threads are now filed under this organization.</p>
-                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
+            var content = @"<p>You have joined <strong>" + organisationName + @"</strong>.</p>
+                            <p>Your records are now available to " + organisationName + @".</p>
+                            <p>You can end their access to your records at any time by going to the mobile app, then going to the Connect to an Organisation section and unlinking using the Unlink button at the bottom of the screen. Your records will still be safely stored and accessible to you as usual.</p>";
 
             var email = new Email
             {
                 To = CurrentOrgUser.Email,
-                Subject = $"Joined organization - {organisationName}",
-                Content = WebHelpers.GenerateEmailTemplate(content, "You've joined an organisation")
+                Subject = $"You have joined {organisationName}",
+                Content = WebHelpers.GenerateEmailTemplate(content, "You have successfully joined an organisation")
             };
 
             UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -318,17 +318,16 @@ namespace WebApi.Controllers
                 var rootIndex = WebHelpers.GetRootIndexPath();
                 var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
 
-                var emailBody = @"<p>A new user has joined your organisation: <strong>" + CurrentOrgUser.UserName + @"</strong>.</p>
-                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
-                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
+                var emailBody = @"<p>A new client, <strong>" + CurrentOrgUser.UserName + @"</strong>, has joined your organisation and their records are now available to you.</p>
+                            <p>You can end your access to any client's records by logging into the OnRecord platform, going to 'Organisation Management' and then 'Clients', finding their user name and clicking on 'Remove'.</p>
                             <p><br></p>
-                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
+                            <p>Go to <a href='" + url + @"'>Clients</a> in the Organisation Management section of the platform menu.</p>";
 
                 var orgAdminEmail = new Email
                 {
                     To = orgAdmin.Email,
-                    Subject = $"User joined organization - {CurrentOrgUser.UserName}",
-                    Content = WebHelpers.GenerateEmailTemplate(emailBody, "A User Has Joined Your Organisation")
+                    Subject = $"A new client, {CurrentOrgUser.UserName}, has joined",
+                    Content = WebHelpers.GenerateEmailTemplate(emailBody, "A New Client Has Joined Your Organisation")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);

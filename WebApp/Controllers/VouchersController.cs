@@ -224,7 +224,7 @@ namespace WebApi.Controllers
         private void NotifyUserAboutVoucherSubscription()
         {
             var message = @"<p>You have redeemed your voucher code and are now subscribed.</p>
-                            <p>This subscription has a fixed monthly quota. If you need more space to continue please purchase a paid plan or join an organization.</p>";
+                            <p>This subscription has a fixed and limited monthly quota. If you need more space to continue please purchase a paid plan or join an organisation.</p>";
 
             var email = new Email
             {

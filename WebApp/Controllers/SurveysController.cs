@@ -4,6 +4,8 @@ using LightMethods.Survey.Models.DTO;
 using LightMethods.Survey.Models.Entities;
 using LightMethods.Survey.Models.MetricFilters;
 using LightMethods.Survey.Models.Services;
+using LightMethods.Survey.Models.Services.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -33,6 +35,18 @@ namespace WebApi.Controllers
         private const string CACHE_KEY = "SURVEYS";
         private const string ADMIN_KEY = "ADMIN";
         private const string ORG_ADMIN_KEY = "ORG_ADMIN";
+
+        private ApplicationUserManager _userManager;
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+
+            private set { _userManager = value; }
+        }
 
         #endregion
 
@@ -170,7 +184,7 @@ namespace WebApi.Controllers
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         [OverrideAuthorization]
         [Authorize(Roles = "System administrator,Organisation user,Restricted user")]
-        public IHttpActionResult GetUserSurveys(Guid projectId)
+        public async Task<IHttpActionResult> GetUserSurveys(Guid projectId)
         {
             if (projectId == Guid.Empty)
                 return BadRequest("project id is empty");
@@ -181,9 +195,17 @@ namespace WebApi.Controllers
 
             if (CurrentUser is OrgUser)
             {
-                var assignment = CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
-                if (assignment == null || !assignment.CanView)
-                    return Unauthorized();
+                if (await UserManager.IsInRoleAsync(CurrentOrgUser.Id, "Organisation administrator"))
+                {
+                    if (project.OrganisationId != CurrentOrgUser.OrganisationId)
+                        return Unauthorized();
+                }
+                else
+                {
+                    var assignment = CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == projectId);
+                    if (assignment == null || !assignment.CanView)
+                        return Unauthorized();
+                }
             }
 
             // we want records from advice threads too, so can't filter by FilledById.
@@ -323,10 +345,10 @@ namespace WebApi.Controllers
                 if (isAdviceResponse)
                 {
                     var project = UnitOfWork.ProjectsRepository.Find(filledForm.ProjectId);
-                    var textValue = filledForm.FormValues.FirstOrDefault(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is FreeTextMetric);
+                    //var textValue = filledForm.FormValues.FirstOrDefault(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is FreeTextMetric);
 
                     filledForm.IsRead = false;
-                    NotifyOrgUserAboutAdviceResponse(project.CreatedBy.Email, thread.Title, textValue.TextValue);
+                    NotifyOrgUserAboutAdviceResponse(project.CreatedBy.Email, thread.Title);
                 }
             }
 
@@ -711,23 +733,23 @@ namespace WebApi.Controllers
             return true;
         }
 
-        private void NotifyOrgUserAboutAdviceResponse(string emailAddress, string threadTitle, string description)
+        private void NotifyOrgUserAboutAdviceResponse(string emailAddress, string threadTitle)
         {
             var rootIndex = WebHelpers.GetRootIndexPath();
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/advice-threads/";
 
             var content = $@"
                     <h3>{threadTitle}</h3>
-                    <p>{description}</p>
+                    <p>You have a new response. Make sure to check it out on the platform or the mobile app.</p>
                     <p><br></p>
-                    <p>View <a href='{url}'>advice threads</a> on the dashboard.</p>
+                    <p>Go to <a href='{url}'>advice</a> in the menu.</p>
                 ";
 
             var email = new Email
             {
                 To = emailAddress,
-                Subject = $"You have an advice record - {threadTitle}",
-                Content = WebHelpers.GenerateEmailTemplate(content, "You have an advice record")
+                Subject = $"You have received some advice under - {threadTitle}",
+                Content = WebHelpers.GenerateEmailTemplate(content, "You have received some advice")
             };
 
             UnitOfWork.EmailsRepository.InsertOrUpdate(email);

@@ -124,7 +124,7 @@ namespace WebApi.Controllers
                 var content = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
                             <p>Organisation: <b>" + model.Name + @"</b></p>
                             <p><br></p>
-                            <p>View <a href='" + url + @"'>organization requests</a> on the dashboard.</p>";
+                            <p>Go to <a href='" + url + @"'>organization requests</a> on the platform menu.</p>";
 
                 if (onRecord.RootUserId.HasValue)
                 {
@@ -135,8 +135,8 @@ namespace WebApi.Controllers
                     var email = new Email
                     {
                         To = onRecordAdmin.Email,
-                        Subject = $"A user has requested an organization",
-                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested an organization")
+                        Subject = $"We have received an application to set up a new organisation",
+                        Content = WebHelpers.GenerateEmailTemplate(content, "Setting up a new organisation")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -153,8 +153,8 @@ namespace WebApi.Controllers
                     var recipientEmail = new Email
                     {
                         To = recipient.OrgUser.Email,
-                        Subject = $"A user has request an organization",
-                        Content = WebHelpers.GenerateEmailTemplate(content, "A user has request an organization")
+                        Subject = $"We have had a request to set up a new organisation",
+                        Content = WebHelpers.GenerateEmailTemplate(content, "Setting up a new organisation")
                     };
 
                     UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);

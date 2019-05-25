@@ -344,6 +344,7 @@
     <Content Include="wwwroot\img\emails\icon-instagram.png" />
     <Content Include="wwwroot\img\emails\icon-twitter.png" />
     <Content Include="wwwroot\img\emails\logo-footer.png" />
+    <Content Include="wwwroot\img\emails\onrecord.png" />
     <Content Include="wwwroot\img\emails\shop.png" />
     <Content Include="wwwroot\img\logo-mulberry.png" />
     <Content Include="wwwroot\img\patterns\1.png" />

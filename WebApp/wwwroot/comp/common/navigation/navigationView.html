@@ -62,13 +62,13 @@
             <!-- Threads -->
             <li lm-access="System administrator,Organisation user" ng-class="{ 'active': $state.includes('home.surveys.list') }">
                 <a ui-sref="home.surveys.list" ui-sref-opts="{reload:true}">
-                    <i class="fa fa-newspaper-o"></i> <span class="nav-label">Threads</span>
+                    <i class="fa fa-newspaper-o"></i> <span class="nav-label">Thread List</span>
                 </a>
             </li>
             <!-- Advice Threads -->
             <li lm-access="System administrator,Organisation user" ng-class="{ 'active': $state.includes('home.adviceThreads.list') }">
                 <a ui-sref="home.adviceThreads.list" ui-sref-opts="{reload:true}">
-                    <i class="fa fa-medkit"></i> <span class="nav-label">Advice Threads</span>
+                    <i class="fa fa-medkit"></i> <span class="nav-label">Advice</span>
                     <span class="badge badge-info pull-right">{{adviceRecordsCount}}</span>
                 </a>
             </li>
