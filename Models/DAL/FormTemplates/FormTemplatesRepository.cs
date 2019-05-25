@@ -29,13 +29,14 @@ namespace LightMethods.Survey.Models.DAL
                 .First();
         }
 
-        public FormTemplate Clone(FormTemplate template, OrgUser user, string newTitle, string newColour, Guid? newProjectId)
+        public FormTemplate Clone(FormTemplate template, Guid creatorId, string newTitle, string newColour, Guid? newProjectId)
         {
             var clone = template.Clone();
             clone.Title = newTitle;
             clone.Colour = newColour;
             clone.ProjectId = newProjectId;
-            clone.CreatedById = user.Id;
+            //clone.CreatedById = user.Id;
+            clone.CreatedById = creatorId;
             clone.IsPublished = true;
 
             using (var tran = Context.Database.BeginTransaction())

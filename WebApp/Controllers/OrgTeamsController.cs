@@ -564,7 +564,7 @@ namespace WebApi.Controllers
             var email = new Email
             {
                 To = userEmail,
-                Subject = $"Joined organization team - {team.Name}",
+                Subject = $"You have joined <b>{team.Name}</b> in <b>{team.Organisation.Name}</b>",
                 Content = WebHelpers.GenerateEmailTemplate(content, "You have joined a team")
             };
 
@@ -573,12 +573,12 @@ namespace WebApi.Controllers
 
         private void NotifyUserAboutLeavingTeam(OrganisationTeam team, string userEmail)
         {
-            var content = @"<p>You have left <strong>" + team.Name + @"</strong> from <strong>" + team.Organisation.Name + @"</strong>.</p>";
+            var content = @"<p>You have left <strong>" + team.Name + @"</strong> in <strong>" + team.Organisation.Name + @"</strong>.</p>";
 
             var email = new Email
             {
                 To = userEmail,
-                Subject = $"Left organization team - {team.Name}",
+                Subject = $"You have left a team - {team.Name} in {team.Organisation.Name}",
                 Content = WebHelpers.GenerateEmailTemplate(content, "You have left a team")
             };
 

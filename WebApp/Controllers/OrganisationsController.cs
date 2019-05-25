@@ -336,14 +336,14 @@ namespace WebApi.Controllers
 
         private void NotifyUserAboutLeavingOrganisation(string organisationName, string userEmail)
         {
-            var userEmailContent = @"<p>You have left the <strong>" + organisationName + @"</strong> organization.</p>
-                            <p>Your personal case has been moved back to OnRecord. And they don't have access to your files anymore, except for any assignments you might have created.</p>";
+            var userEmailContent = @"<p>You have left <strong>" + organisationName + @"</strong>.</p>
+                            <p>Your records have been unlinked from " + organisationName + @" and they don't have access to them anymore. Your records continue to be stored safely and can be accessed by you in the usual way.</p>";
 
             var email = new Email
             {
                 To = userEmail,
-                Subject = $"Left organization - {organisationName}",
-                Content = WebHelpers.GenerateEmailTemplate(userEmailContent, "You have left an organization")
+                Subject = $"You have left {organisationName}",
+                Content = WebHelpers.GenerateEmailTemplate(userEmailContent, "You have left an organisation")
             };
 
             UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -353,14 +353,14 @@ namespace WebApi.Controllers
         {
             if (organisation.RootUser != null)
             {
-                var adminEmailContent = @"<p>A user has left your organization: <strong>" + userName + @"</strong>.</p>
+                var adminEmailContent = @"<p>A client, <strong>" + userName + @"</strong> has left your organisation.</p>
                             <p>And their personal case has been moved back to OnRecord.</p>";
 
                 var adminEmail = new Email
                 {
                     To = organisation.RootUser.Email,
-                    Subject = $"User left organization - {userName}",
-                    Content = WebHelpers.GenerateEmailTemplate(adminEmailContent, "A user has left your organization")
+                    Subject = $"{userName} has left your organisation",
+                    Content = WebHelpers.GenerateEmailTemplate(adminEmailContent, "A client has left your organisation")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(adminEmail);

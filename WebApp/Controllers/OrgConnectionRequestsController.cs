@@ -256,16 +256,16 @@ namespace WebApi.Controllers
                 var rootIndex = WebHelpers.GetRootIndexPath();
                 var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
 
-                var content = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
+                var content = @"<p>The client's name is: <b>" + CurrentOrgUser.UserName + @"</b></p>
                             <p>Organisation: <b>" + organisationName + @"</b></p>
                             <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+                            <p>Go to <a href='" + url + @"'>connection requests</a> on the platform menu.</p>";
 
                 var email = new Email
                 {
                     To = onRecordAdmin.Email,
-                    Subject = $"A user has requested to join an organization",
-                    Content = WebHelpers.GenerateEmailTemplate(content, "A user has requested to join an organization")
+                    Subject = $"Someone has requested to join {organisationName}",
+                    Content = WebHelpers.GenerateEmailTemplate(content, "Someone has requested to join an organisation")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -284,15 +284,15 @@ namespace WebApi.Controllers
                 var rootIndex = WebHelpers.GetRootIndexPath();
                 var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
 
-                var content = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
+                var content = @"<p>The person's username is: <b>" + CurrentOrgUser.UserName + @"</b></p>
                             <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+                            <p>Go to <a href='" + url + @"'>connection requests</a> on the platform menu.</p>";
 
                 var orgAdminEmail = new Email
                 {
                     To = orgAdmin.Email,
-                    Subject = $"A user has requested to join your organization",
-                    Content = WebHelpers.GenerateEmailTemplate(content, "A user has request to join your organization")
+                    Subject = $"Someone has requested to join your organisation",
+                    Content = WebHelpers.GenerateEmailTemplate(content, "Someone has requested to join your organisation")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
@@ -309,18 +309,18 @@ namespace WebApi.Controllers
             var rootIndex = WebHelpers.GetRootIndexPath();
             var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/organisations/connection-requests/";
 
-            var emailContent = @"<p>User name: <b>" + CurrentOrgUser.UserName + @"</b></p>
+            var emailContent = @"<p>The person's user name is: <b>" + CurrentOrgUser.UserName + @"</b></p>
                             <p>Organisation: <b>" + organisationName + @"</b></p>
                             <p><br></p>
-                            <p>View <a href='" + url + @"'>connection requests</a> on the dashboard.</p>";
+                            <p>Go to <a href='" + url + @"'>connection requests</a> on the platform menu.</p>";
 
             foreach (var recipient in recipients)
             {
                 var recipientEmail = new Email
                 {
                     To = recipient.OrgUser.Email,
-                    Subject = $"A user has request to join an organization",
-                    Content = WebHelpers.GenerateEmailTemplate(emailContent, "A user has requested to join an organization")
+                    Subject = $"Someone has requested to join {organisationName}",
+                    Content = WebHelpers.GenerateEmailTemplate(emailContent, "Someone has requested to to join")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(recipientEmail);
@@ -329,15 +329,15 @@ namespace WebApi.Controllers
 
         private void NotifyUserAboutApprovedRequest(string organisationName, string userEmail)
         {
-            var content = @"<p>You have joined the <strong>" + organisationName + @"</strong> organization.</p>
-                            <p>Your personal case and its threads are now filed under this organization.</p>
-                            <p>If you like to opt-out and disconnect from this organization, please contact your administrator.</p>";
+            var content = @"<p>You have joined <strong>" + organisationName + @"</strong>.</p>
+                            <p>Your records are now available to " + organisationName + @".</p>
+                            <p>You can end their access to your records at any time by going to the mobile app, then going to the Connect to an Organisation section and unlinking using the Unlink button at the bottom of the screen. Your records will still be safely stored and accessible to you as usual.</p>";
 
             var email = new Email
             {
                 To = userEmail,
-                Subject = $"Joined organization - {organisationName}",
-                Content = WebHelpers.GenerateEmailTemplate(content, "You have joined an organization")
+                Subject = $"You have joined {organisationName}",
+                Content = WebHelpers.GenerateEmailTemplate(content, "You have joined an organisation")
             };
 
             UnitOfWork.EmailsRepository.InsertOrUpdate(email);
@@ -355,17 +355,16 @@ namespace WebApi.Controllers
                 var rootIndex = WebHelpers.GetRootIndexPath();
                 var url = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}#!/users/mobile/";
 
-                var emailBody = @"<p>A new user has joined your organisation: <strong>" + orgUser.UserName + @"</strong>.</p>
-                            <p>The user's personal case is now filed under your organisation and you have access to it.</p>
-                            <p>You can remove this user whenever you like, and put them back under OnRecord.</p>
+                var emailBody = @"<p>A new client <strong>" + orgUser.UserName + @"</strong>, has joined your organisation and their records are now available to you.</p>
+                            <p>You can end your access to any client's records via the OnRecord platform, by going to 'Organisation Management' and then 'Clients', finding their user name and clicking on 'Remove'.</p>
                             <p><br></p>
-                            <p>View the <a href='" + url + @"'>directory of mobile users</a> on the dashboard.</p>";
+                            <p>Go to <a href='" + url + @"'>Clients</a> in the Organisation Management section of the platform menu.</p>";
 
                 var orgAdminEmail = new Email
                 {
                     To = orgAdmin.Email,
-                    Subject = $"User joined organization - {orgUser.UserName}",
-                    Content = WebHelpers.GenerateEmailTemplate(emailBody, "A user has joined your organization")
+                    Subject = $"A new client, {orgUser.UserName}, has joined {organisation.Name}",
+                    Content = WebHelpers.GenerateEmailTemplate(emailBody, "A new client has joined your organisation")
                 };
 
                 UnitOfWork.EmailsRepository.InsertOrUpdate(orgAdminEmail);
@@ -375,12 +374,12 @@ namespace WebApi.Controllers
         private void NotifyUserAboutDeclinedRequest(string organisationName, string userEmail)
         {
             var content = @"<p>Your request to join the <strong>" + organisationName + @"</strong> organization has been declined.</p>
-                            <p>If you need help or want to learn more, please contact your administrator.</p>";
+                            <p>If you need help or want to learn more, please contact us at admin@analogue.digital.</p>";
 
             var email = new Email
             {
                 To = userEmail,
-                Subject = $"Connection request declined - {organisationName}",
+                Subject = $"Connection request declined by {organisationName}",
                 Content = WebHelpers.GenerateEmailTemplate(content, "Your connection request has been declined")
             };
 

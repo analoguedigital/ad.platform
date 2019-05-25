@@ -50,7 +50,7 @@ namespace WebApi.Controllers
                     var adminEmail = new Email
                     {
                         To = onrecord.RootUser.Email,
-                        Subject = $"New feedback arrived - {CurrentOrgUser.UserName}",
+                        Subject = $"We have had feedback from {CurrentOrgUser.UserName}",
                         Content = WebHelpers.GenerateEmailTemplate(content, "User Feedback")
                     };
 
@@ -68,7 +68,7 @@ namespace WebApi.Controllers
                     var recipientEmail = new Email
                     {
                         To = recipient.OrgUser.Email,
-                        Subject = $"New feedback arrived - {CurrentOrgUser.UserName}",
+                        Subject = $"We have had feedback from {CurrentOrgUser.UserName}",
                         Content = WebHelpers.GenerateEmailTemplate($"<p>{feedback.Comment}</p>", "User Feedback")
                     };
 
@@ -107,7 +107,7 @@ namespace WebApi.Controllers
             var email = new Email
             {
                 To = value.EmailAddress,
-                Subject = string.Format("Message from OnRecord - {0}", CurrentUser.UserName),
+                Subject = string.Format("A message from us at OnRecord - {0}", CurrentUser.UserName),
                 Content = WebHelpers.GenerateEmailTemplate(value.Body, "Message from OnRecord")
             };
 

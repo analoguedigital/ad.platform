@@ -166,6 +166,20 @@ namespace WebApi.Controllers
             //if (id == Guid.Empty)
             //    return BadRequest("id is empty");
 
+            // 0001 - Your recordings
+            Guid baseTemplateId = new Guid("74EADB8F-7434-49C0-AD5A-854B0E77BCBD");
+            if (id == baseTemplateId)
+            {
+                // the user is requesting the base template,
+                // to create (clone) a new thread.
+                var baseTemplate = UnitOfWork.FormTemplatesRepository.Find(id);
+                if (baseTemplate == null)
+                    return NotFound();
+
+                var baseTemplateDto = Mapper.Map<FormTemplateDTO>(baseTemplate);
+                return Ok(baseTemplateDto);
+            }
+
             if (CurrentUser is OrgUser)
             {
                 var orgAdminRole = "Organisation administrator";

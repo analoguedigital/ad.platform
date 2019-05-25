@@ -74,7 +74,7 @@ namespace LightMethods.Survey.Models.Services
             if (id == Guid.Empty)
                 return Mapper.Map<FormTemplateDTO>(new FormTemplate() { });
 
-            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, false);
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, onlyPublished: false);
             var form = surveyProvider.GetAllFormTemplates().Where(f => f.Id == id).SingleOrDefault();
             if (form == null) return null;
 
@@ -457,7 +457,8 @@ namespace LightMethods.Survey.Models.Services
             var result = new OperationResult();
 
             var template = UnitOfWork.FormTemplatesRepository.Find(id);
-            var clone = UnitOfWork.FormTemplatesRepository.Clone(template, OrgUser as OrgUser, request.Title, request.Colour, request.ProjectId);
+            //var clone = UnitOfWork.FormTemplatesRepository.Clone(template, OrgUser as OrgUser, request.Title, request.Colour, request.ProjectId);
+            var clone = UnitOfWork.FormTemplatesRepository.Clone(template, CurrentUser.Id, request.Title, request.Colour, request.ProjectId);
 
             result.Success = true;
             result.Message = "Form Template cloned";

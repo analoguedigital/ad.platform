@@ -247,6 +247,26 @@ namespace WebApi.Controllers
             try
             {
                 UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
+
+                if (CurrentUser is OrgUser)
+                {
+                    // when OrgAdmins create new projects,
+                    // assign them with full access.
+                    var orgAdminAssignment = new Assignment
+                    {
+                        OrgUserId = CurrentUser.Id,
+                        ProjectId = project.Id,
+                        CanView = true,
+                        CanAdd = true,
+                        CanEdit = true,
+                        CanDelete = true,
+                        CanExportPdf = true,
+                        CanExportZip = true
+                    };
+
+                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgAdminAssignment);
+                }
+
                 UnitOfWork.Save();
 
                 MemoryCacher.DeleteStartingWith(CACHE_KEY);

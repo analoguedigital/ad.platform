@@ -621,7 +621,7 @@ namespace WebApi.Models
                 var emailContent = $"<p>First name: {model.FirstName}</p>" +
                     $"<p>Surname: {model.Surname}</p>" +
                     $"<p>Email: {model.Email}</p><br>" +
-                    $"<p>View <a href='{url}'>mobile users</a> on the dashboard.</p>";
+                    $"<p>See <a href='{url}'>mobile users</a> on the dashboard.</p>";
 
                 var recipientEmail = new Email
                 {
@@ -1049,8 +1049,8 @@ namespace WebApi.Models
 
         private void NotifyUserAboutConfirmedAccount(string userEmail)
         {
-            var content = @"<p>Thank you, your account has been verified and you can now sign in.</p>
-                            <p>If you need help or want to learn more, please contact your administrator.</p>";
+            var content = @"<p>Thank you for verifying your email address. You can now get started setting up your account. Sign in by returning to the mobile app and entering your user name and password.</p>
+                            <p>If you need help or want to learn more, please contact us at admin@analogue.digital.</p>";
 
             var email = new Email
             {
