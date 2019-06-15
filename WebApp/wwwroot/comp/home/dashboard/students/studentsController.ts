@@ -11,6 +11,11 @@
         numberOfPages: number;
         pageSize: number;
         accountTypeFilter: string;
+
+        clientsCount: number;
+        staffCount: number;
+        groupsCount: number;
+        totalCount: number;
     }
 
     interface IStudentsController {
@@ -33,7 +38,7 @@
         }
 
         activate() {
-            this.$scope.accountTypeFilter = 'all';
+            this.$scope.accountTypeFilter = 'clients';
             this.load();
         }
 
@@ -52,11 +57,20 @@
                         this.filterProjects(accountTypeFilter);
                     }
 
+                    this.countProjectTypes();
+
                     if (projects.length === 1) {
                         this.$state.go('home.projects.summary', { id: projects[0].id });
                     }
                 });
             }
+        }
+
+        countProjectTypes() {
+            this.$scope.clientsCount = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; }).length;
+            this.$scope.staffCount = _.filter(this.$scope.safeProjects, (p) => { return (p.createdBy === null || p.createdBy.accountType === 1) && !p.isAggregate; }).length;
+            this.$scope.groupsCount = _.filter(this.$scope.safeProjects, (p) => { return p.isAggregate === true; }).length;
+            this.$scope.totalCount = this.$scope.clientsCount + this.$scope.staffCount + this.$scope.groupsCount;
         }
 
         filterProjects(type: string) {
@@ -66,7 +80,9 @@
             if (type === 'clients') {
                 this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; });
             } else if (type === 'staff') {
-                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy === null || p.createdBy.accountType === 1; });
+                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return (p.createdBy === null || p.createdBy.accountType === 1) && !p.isAggregate; });
+            } else if (type === 'groups') {
+                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.isAggregate === true; });
             } else if (type === 'all') {
                 this.$scope.projects = this.$scope.safeProjects;
             }

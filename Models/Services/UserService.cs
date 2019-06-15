@@ -21,6 +21,9 @@ namespace LightMethods.Survey.Models.Services
 
         public List<OrgUserDTO> GetOrgUsers(OrgUserListType listType, Guid? organisationId = null)
         {
+            if (listType == OrgUserListType.InactiveAccounts)
+                return GetInactiveAccounts(organisationId);
+
             IQueryable<OrgUser> dataSource = UnitOfWork.OrgUsersRepository
                 .AllIncluding(u => u.Type)
                 .OrderBy(u => u.Surname)
@@ -39,6 +42,39 @@ namespace LightMethods.Survey.Models.Services
             var result = dataSource
                 .ToList()
                 .Select(u => Mapper.Map<OrgUserDTO>(u))
+                .ToList();
+
+            return result;
+        }
+
+        private List<OrgUserDTO> GetInactiveAccounts(Guid? organisationId = null)
+        {
+            IQueryable<OrgUser> users = UnitOfWork.OrgUsersRepository
+                .AllAsNoTracking
+                .Where(x => !x.IsRootUser)
+                .AsQueryable();
+
+            if (organisationId.HasValue)
+                users = users.Where(x => x.OrganisationId == organisationId);
+
+            List<OrgUser> inactiveAccounts = new List<OrgUser>();
+
+            foreach (var user in users)
+            {
+                var surveysCount = UnitOfWork.FilledFormsRepository
+                    .AllAsNoTracking
+                    .Where(x => x.FilledById == user.Id)
+                    .Count();
+
+                if (surveysCount == 0)
+                    inactiveAccounts.Add(user);
+            }
+
+            var result = inactiveAccounts
+                .OrderBy(x => x.Surname)
+                .ThenBy(x => x.FirstName)
+                .ToList()
+                .Select(x => Mapper.Map<OrgUserDTO>(x))
                 .ToList();
 
             return result;

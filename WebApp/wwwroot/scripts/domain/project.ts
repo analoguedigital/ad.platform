@@ -20,6 +20,7 @@
         lastEntry?: Date;
         assignmentsCount: number;
         teamsCount: number;
+        isAggregate: boolean;
 
         isSelected: boolean;
     }

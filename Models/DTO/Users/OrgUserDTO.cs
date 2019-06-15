@@ -57,6 +57,10 @@ namespace LightMethods.Survey.Models.DTO
 
         public DateTime? RegistrationDate { get; set; }
 
+        public byte SecurityQuestion { get; set; }
+
+        public string SecurityAnswer { get; set; }
+
         public OrgUserDTO()
         {
             this.Assignments = new List<ProjectAssignmentDTO>();

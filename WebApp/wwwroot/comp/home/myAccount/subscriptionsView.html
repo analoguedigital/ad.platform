@@ -1,5 +1,7 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
 <div class="wrapper wrapper-content animated fadeInRight">
+    <lm-security-question-warning></lm-security-question-warning>
+
     <div class="box" ng-if="ctrl.isAdmin">
         <div class="box-title">
             <h5>Admin Subscriptions</h5>
@@ -74,8 +76,11 @@
                     <p>
                         Starting from <strong>{{lastSubscription.startDate | amDateFormat: 'L'}}</strong>
                     </p>
-                    <p>You have a fixed monthly quota for uploading records. If you need more space please purchase a subscription or join an organization.</p>
-                    <!--<p>{{lastSubscription.note}}</p>-->
+                    <p>You have a fixed monthly quota for uploading records. If you need more space please purchase a subscription or join an organizati
+on.
+                    </p>
+                    ti
+                      <!--<p>{{lastSubscription.note}}</p>-->
                 </div>
             </div>
 

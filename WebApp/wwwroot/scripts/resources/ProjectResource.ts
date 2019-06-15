@@ -8,6 +8,7 @@
         unassign(params: Object, success: Function, error?: Function);
         teams(params: Object, success: Function, error?: Function);
         createAdviceThread(params: Object, success: Function, error?: Function);
+        createRecordThread(params: Object, success: Function, error?: Function);
         getSharedProjects(): Models.IProject[];
         getDirect(params: Object): Models.IProject;
         getByUserId(params: Object): Models.IProject;
@@ -23,6 +24,7 @@
             'unassign': { method: 'DELETE', url: '/api/projects/:id/assign/:userId/:accessLevel', params: { id: '@id', userId: '@userId', accessLevel: '@accessLevel' } },
             'teams': { method: 'GET', isArray: true, url: '/api/projects/:id/teams', params: { id: '@id' } },
             'createAdviceThread': { method: 'POST', url: '/api/projects/:id/create-advice-thread', params: { id: '@id' } },
+            'createRecordThread': { method: 'POST', url: '/api/projects/:id/create-record-thread', params: { id: '@id' } },
             'getSharedProjects': { method: 'GET', url: '/api/projects/shared', isArray: true },
             'getDirect': { method: 'GET', url: '/api/projects/direct/:id', params: { id: '@id' } },
             'getByUserId': { method: 'GET', url: '/api/projects/user/:orgUserId', params: { orgUserId: '@orgUserId' } }

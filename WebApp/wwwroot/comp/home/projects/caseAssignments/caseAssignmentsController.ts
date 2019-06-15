@@ -13,6 +13,11 @@ module App {
         pageSize: number;
         accountTypeFilter: string;
 
+        clientsCount: number;
+        staffCount: number;
+        groupsCount: number;
+        totalCount: number;
+
         delete: (id: string) => void;
     }
 
@@ -44,7 +49,7 @@ module App {
         load() {
             var accountTypeFilter = <string>this.localStorageService.get('case_assignments_account_type_filter');
             if (accountTypeFilter == null || !accountTypeFilter.length) {
-                accountTypeFilter = 'staff';
+                accountTypeFilter = 'clients';
             }
 
             var organisationId = this.$stateParams["organisationId"];
@@ -54,6 +59,7 @@ module App {
                     this.$scope.projects = projects;
                     this.$scope.displayedProjects = [].concat(this.$scope.projects);
 
+                    this.countProjectTypes();
                     this.filterProjects(accountTypeFilter);
                 });
             } else {
@@ -62,6 +68,7 @@ module App {
                     this.$scope.projects = projects;
                     this.$scope.displayedProjects = [].concat(this.$scope.projects);
 
+                    this.countProjectTypes();
                     this.filterProjects(accountTypeFilter);
                 });
             }
@@ -78,6 +85,13 @@ module App {
                 });
         }
 
+        countProjectTypes() {
+            this.$scope.clientsCount = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; }).length;
+            this.$scope.staffCount = _.filter(this.$scope.safeProjects, (p) => { return (p.createdBy === null || p.createdBy.accountType === 1) && !p.isAggregate; }).length;
+            this.$scope.groupsCount = _.filter(this.$scope.safeProjects, (p) => { return p.isAggregate === true; }).length;
+            this.$scope.totalCount = this.$scope.clientsCount + this.$scope.staffCount + this.$scope.groupsCount;
+        }
+
         filterProjects(type: string) {
             this.$scope.accountTypeFilter = type;
             this.localStorageService.set('case_assignments_account_type_filter', type);
@@ -85,8 +99,11 @@ module App {
             if (type === 'clients') {
                 this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; });
             } else if (type === 'staff') {
-                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.createdBy === null || p.createdBy.accountType === 1; });
-            } else if (type === 'all') {
+                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return (p.createdBy === null || p.createdBy.accountType === 1) && !p.isAggregate; });
+            } else if (type === 'groups') {
+                this.$scope.projects = _.filter(this.$scope.safeProjects, (p) => { return p.isAggregate === true; });
+            }
+            else if (type === 'all') {
                 this.$scope.projects = this.$scope.safeProjects;
             }
 

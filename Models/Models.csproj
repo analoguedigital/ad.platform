@@ -148,6 +148,7 @@
     <Compile Include="DTO\FilledForms\FormValueDTO.cs" />
     <Compile Include="DTO\FormTemplates\CloneReqDTO.cs" />
     <Compile Include="DTO\FormTemplates\CreateAdviceThreadDTO.cs" />
+    <Compile Include="DTO\FormTemplates\CreateRecordThreadDTO.cs" />
     <Compile Include="DTO\FormTemplates\EditBasicDetailsReqDTO.cs" />
     <Compile Include="DTO\FormTemplates\ThreadAssignmentDTO.cs" />
     <Compile Include="DTO\Metrics\AttachmentMetricDTO.cs" />
@@ -644,6 +645,14 @@
     <Compile Include="Migrations\201904271425049_Add_social_profiles_to_organizations.Designer.cs">
       <DependentUpon>201904271425049_Add_social_profiles_to_organizations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906061623063_Add_IsAggregate_to_projects.cs" />
+    <Compile Include="Migrations\201906061623063_Add_IsAggregate_to_projects.Designer.cs">
+      <DependentUpon>201906061623063_Add_IsAggregate_to_projects.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201906122226488_Add_security_QA_to_users.cs" />
+    <Compile Include="Migrations\201906122226488_Add_security_QA_to_users.Designer.cs">
+      <DependentUpon>201906122226488_Add_security_QA_to_users.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -862,6 +871,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904271425049_Add_social_profiles_to_organizations.resx">
       <DependentUpon>201904271425049_Add_social_profiles_to_organizations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906061623063_Add_IsAggregate_to_projects.resx">
+      <DependentUpon>201906061623063_Add_IsAggregate_to_projects.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906122226488_Add_security_QA_to_users.resx">
+      <DependentUpon>201906122226488_Add_security_QA_to_users.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

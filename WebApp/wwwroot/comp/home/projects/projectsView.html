@@ -5,13 +5,14 @@
             <h5 class="pull-left">Directory of Staff and Clients</h5>
             <div class="pull-right">
                 <div class="btn-group" role="group" aria-label="account filters">
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterProjects('clients')"><i class="fa fa-phone-square"></i> Clients</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterProjects('staff')"><i class="fa fa-laptop"></i> Staff</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterProjects('all')"><i class="fa fa-user-circle"></i> All</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterProjects('clients')"><i class="fa fa-phone-square"></i> Clients ({{clientsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterProjects('staff')"><i class="fa fa-laptop"></i> Staff ({{staffCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'groups' }" ng-click="ctrl.filterProjects('groups')"><i class="fa fa-group"></i> Groups ({{groupsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterProjects('all')"><i class="fa fa-user-circle"></i> All ({{totalCount}})</button>
                 </div>
 
                 <button class="btn btn-default btn-sm" ng-click="ctrl.addNewProject()">
-                    <i class="fa fa-plus-square"></i> Add new
+                    <i class="fa fa-plus-square"></i> Create new group
                 </button>
             </div>
             <div class="clearfix"></div>
@@ -30,28 +31,37 @@
                             <tr>
                                 <th st-sort="name">Name</th>
                                 <!--<th st-sort="notes">Note</th>-->
-                                <th st-sort="createdBy" width="200">Created by</th>
-                                <th width="100" class="text-center">Teams</th>
+                                <th st-sort="createdBy" width="200">Email address/username</th>
+                                <!--<th width="100" class="text-center">Teams</th>
                                 <th width="100" class="text-center">Assignments</th>
-                                <th st-sort="lastEntry" class="text-center" width="100">Last entry</th>
-                                <th width="100"></th>
-                                <th width="140"></th>
-                                <th width="160"></th>
-                                <th width="140"></th>
-                                <th width="150"></th>
+                                <th st-sort="lastEntry" class="text-center" width="100">Last entry</th>-->
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <td></td>
+                                <!--<th width="140"></th>
+                                <th width="150"></th>-->
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="project in displayedProjects">
                                 <td>
                                     <a ui-sref="home.projects.edit({id:project.id})">
-                                        <span ng-if="project.createdBy.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
-                                            <i class="fa fa-phone-square"></i>
+                                        <span ng-switch="project.isAggregate">
+                                            <span ng-switch-when="true" uib-tooltip="Group" tooltip-append-to-body="true">
+                                                <i class="fa fa-group"></i>
+                                            </span>
+                                            <span ng-switch-default>
+                                                <span ng-if="project.createdBy.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
+                                                    <i class="fa fa-phone-square"></i>
+                                                </span>
+                                                <span ng-if="project.createdBy === null || project.createdBy.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
+                                                    <i class="fa fa-laptop"></i>
+                                                </span>
+                                            </span>
                                         </span>
-                                        <span ng-if="project.createdBy === null || project.createdBy.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
-                                            <i class="fa fa-laptop"></i>
-                                        </span>
-                                        &nbsp;{{project.name}}
+                                        
+                                        &nbsp; <span uib-tooltip="Click to see the current permissions/assignments for this user and to add a note" tooltip-append-to-body="true">{{project.name}}</span>
                                     </a>
                                 </td>
                                 <!--<td>{{project.notes}}</td>-->
@@ -59,7 +69,7 @@
                                     <span ng-if="project.createdBy">{{project.createdBy.email}}</span>
                                     <span ng-if="!project.createdBy">NA</span>
                                 </td>
-                                <td class="text-center">
+                                <!--<td class="text-center">
                                     <span ng-if="project.teamsCount > 0">{{project.teamsCount}}</span>
                                     <span ng-if="project.teamsCount < 1">NA</span>
                                 </td>
@@ -70,24 +80,29 @@
                                 <td class="text-center">
                                     <span ng-if="project.lastEntry">{{project.lastEntry | amDateFormat: 'L'}}</span>
                                     <span ng-if="!project.lastEntry">NA</span>
-                                </td>
+                                </td>-->
                                 <td>
                                     <a ui-sref="home.surveys.list.summary({ projectId: project.id })">
-                                        <i class="fa fa-folder-o"></i> <span class="hidden-xs"> threads</span>
+                                        <i class="fa fa-folder-o"></i> <span class="hidden-xs"> Add records</span>
                                     </a>
                                 </td>
                                 <td>
                                     <a ui-sref="home.adviceThreads.list.summary({ projectId: project.id })">
-                                        <i class="fa fa-medkit"></i> <span class="hidden-xs"> advice threads</span>
+                                        <i class="fa fa-medkit"></i> <span class="hidden-xs"> Send advice</span>
                                     </a>
                                 </td>
                                 <td>
                                     <a href="" ng-click="ctrl.addAdviceThread(project.id)">
-                                        <i class="fa fa-plus-square"></i> <span class="hidden-xs"> add advice thread</span>
+                                        <i class="fa fa-plus-square"></i> <span class="hidden-xs"> add new advice thread</span>
                                     </a>
                                 </td>
-                                <td><a ui-sref="home.projects.summary({id: project.id, discriminator: 1})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> advice summary</span></a></td>
-                                <td><a ui-sref="home.projects.summary({id: project.id, discriminator: 0})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> records summary</span></a></td>
+                                <td>
+                                    <a href="" ng-click="ctrl.addRecordThread(project.id)">
+                                        <i class="fa fa-plus-square"></i> <span class="hidden-xs"> add new record thread</span>
+                                    </a>
+                                </td>
+                                <!--<td><a ui-sref="home.projects.summary({id: project.id, discriminator: 1})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> advice summary</span></a></td>
+                                <td><a ui-sref="home.projects.summary({id: project.id, discriminator: 0})"><i class="fa fa-pie-chart"></i><span class="hidden-xs"> records summary</span></a></td>-->
                             </tr>
                             <tr ng-if="!displayedProjects.length">
                                 <td colspan="9">No cases were found</td>

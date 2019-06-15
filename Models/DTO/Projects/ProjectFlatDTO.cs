@@ -32,6 +32,8 @@ namespace LightMethods.Survey.Models.DTO
         public int AssignmentsCount { get; set; }
 
         public int TeamsCount { get; set; }
+
+        public bool IsAggregate { get; set; }
     }
 
     public class ProjectCreatorFlatDTO

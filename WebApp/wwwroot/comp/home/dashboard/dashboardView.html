@@ -1,6 +1,9 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
 <div class="wrapper wrapper-content animated fadeInRight">
-    <div class="row"></div>
-    <div class="col-md-8" ui-view="students"></div>
-    <div class="col-md-4" ui-view="updates"></div>
+    <lm-security-question-warning></lm-security-question-warning>
+
+    <div class="row">
+        <div class="col-md-8" ui-view="students"></div>
+        <div class="col-md-4" ui-view="updates"></div>
+    </div>
 </div>

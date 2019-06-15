@@ -1,38 +1,42 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
-<div class="row wrapper wrapper-content animated fadeInRight project-summary"
+<div class="wrapper wrapper-content animated fadeInRight project-summary"
      ui-tour ui-tour-append-to-body="true" ui-tour-backdrop="true" ui-tour-on-ready="onTourStart()">
-    <div class="col-lg-9">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="alert alert-info alert-dismissable" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <i class="fa fa-info-circle"></i> <a target="_blank" href="assets/summary-guide.pdf" style="text-decoration: underline">Click here</a> for more information on how to use this summary.
+    <lm-security-question-warning></lm-security-question-warning>
+    
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="alert alert-info alert-dismissable" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <i class="fa fa-info-circle"></i> <a target="_blank" href="assets/summary-guide.pdf" style="text-decoration: underline">Click here</a> for more information on how to use this summary.
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div ng-include="'comp/home/projects/summary/_timeline.html'"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div ng-include="'comp/home/projects/summary/_locations.html'"></div>
+                </div>
+                <div class="col-lg-6">
+                    <div ng-include="'comp/home/projects/summary/_chart.html'"></div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div ng-include="'comp/home/projects/summary/_recordings.html'"></div>
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div ng-include="'comp/home/projects/summary/_timeline.html'"></div>
-            </div>
+        <div class="col-lg-3">
+            <div ng-include="'comp/home/projects/summary/_toolbox.html'"></div>
         </div>
-
-        <div class="row">
-            <div class="col-lg-6">
-                <div ng-include="'comp/home/projects/summary/_locations.html'"></div>
-            </div>
-            <div class="col-lg-6">
-                <div ng-include="'comp/home/projects/summary/_chart.html'"></div>
-            </div>
-        </div>
-        
-        <div class="row">
-            <div class="col-lg-12">
-                <div ng-include="'comp/home/projects/summary/_recordings.html'"></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3">
-        <div ng-include="'comp/home/projects/summary/_toolbox.html'"></div>
     </div>
 </div>

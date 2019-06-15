@@ -5,8 +5,14 @@ module App {
     interface IOrgConnectionRequestsControllerScope extends ng.IScope {
         title: string;
         searchTerm: string;
+        approvedConnectionsSearchTerm: string;
+
         connectionRequests: Models.IOrgConnectionRequest[];
         displayedConnectionRequests: Models.IOrgConnectionRequest[];
+
+        approvedConnections: Models.IOrgConnectionRequest[];
+        displayedApprovedConnections: Models.IOrgConnectionRequest[];
+
         currentPage: number;
         numberOfPages: number;
         pageSize: number;
@@ -46,13 +52,19 @@ module App {
             var orgId = this.$stateParams["organisationId"];
             if (orgId !== undefined && orgId.length) {
                 this.orgConnectionRequestResource.query({ organisationId: orgId }).$promise.then((connectionRequests) => {
-                    this.$scope.connectionRequests = connectionRequests;
+                    this.$scope.connectionRequests = _.filter(connectionRequests, (cr) => { return !cr.isApproved; });
                     this.$scope.displayedConnectionRequests = [].concat(this.$scope.connectionRequests);
+
+                    this.$scope.approvedConnections = _.filter(connectionRequests, (cr) => { return cr.isApproved == true; });
+                    this.$scope.displayedApprovedConnections = [].concat(this.$scope.approvedConnections);
                 });
             } else {
                 this.orgConnectionRequestResource.query().$promise.then((connectionRequests) => {
-                    this.$scope.connectionRequests = connectionRequests;
+                    this.$scope.connectionRequests = _.filter(connectionRequests, (cr) => { return !cr.isApproved; });
                     this.$scope.displayedConnectionRequests = [].concat(this.$scope.connectionRequests);
+
+                    this.$scope.approvedConnections = _.filter(connectionRequests, (cr) => { return cr.isApproved == true; });
+                    this.$scope.displayedApprovedConnections = [].concat(this.$scope.approvedConnections);
                 });
             }
         }

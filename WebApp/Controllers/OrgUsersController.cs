@@ -520,6 +520,17 @@ namespace WebApi.Controllers
                     // delete the user account
                     UnitOfWork.OrgUsersRepository.Delete(id);
 
+                    // send an email and notify the user
+                    var emailMessage = $"Your account has been closed but you're welcome to open a new account whenever you want to.";
+                    var accountDeletedEmail = new Email
+                    {
+                        To = orgUser.Email,
+                        Subject = "Account Closed",
+                        Content = WebHelpers.GenerateEmailTemplate(emailMessage, "Account Closed")
+                    };
+
+                    UnitOfWork.EmailsRepository.InsertOrUpdate(accountDeletedEmail);
+
                     UnitOfWork.Save();
                 }
 

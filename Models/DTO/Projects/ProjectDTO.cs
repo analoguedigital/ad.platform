@@ -38,6 +38,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public int TeamsCount { get; set; }
 
+        public bool IsAggregate { get; set; }
+
         public override bool Equals(object obj)
         {
             if (!(obj is ProjectDTO item))

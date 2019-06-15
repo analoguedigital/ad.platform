@@ -48,6 +48,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public Guid? CreatedById { set; get; }
 
+        public bool IsAggregate { get; set; }
+
         public Project()
         {
             StartDate = DateTime.Today;

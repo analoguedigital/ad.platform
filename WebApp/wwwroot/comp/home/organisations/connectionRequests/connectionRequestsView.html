@@ -16,10 +16,10 @@
                     <table class="table table-hover table-mail">
                         <thead>
                             <tr>
-                                <th>User name</th>
-                                <th>Email address</th>
-                                <th>Coming from</th>
-                                <th>Wants to connect to</th>
+                                <th st-sort="[orgUser.firstName,orgUser.surname]">User name</th>
+                                <th st-sort="orgUser.email">Email address</th>
+                                <th st-sort="orgUser.organisation.name">Coming from</th>
+                                <th st-sort="organisation.name">Wants to connect to</th>
                                 <th class="text-center" width="100"></th>
                                 <th class="text-center" width="100"></th>
                             </tr>
@@ -31,17 +31,13 @@
                                 <td>{{connectionRequest.orgUser.organisation.name}}</td>
                                 <td>{{connectionRequest.organisation.name}}</td>
                                 <td>
-                                    <a ng-bootbox-confirm="Are you sure you want to approve this request?" ng-bootbox-confirm-action="approve(connectionRequest.id)" ng-if="!connectionRequest.isApproved">
+                                    <a ng-bootbox-confirm="Are you sure you want to approve this request?" ng-bootbox-confirm-action="approve(connectionRequest.id)">
                                         <i class="fa fa-thumbs-o-up"></i><span class="hidden-xs"> approve</span>
                                     </a>
                                 </td>
                                 <td>
-                                    <a ng-bootbox-confirm="Are you sure you want to decline this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)" ng-if="!connectionRequest.isApproved">
+                                    <a ng-bootbox-confirm="Are you sure you want to decline this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)">
                                         <i class="fa fa-ban"></i><span class="hidden-xs"> decline</span>
-                                    </a>
-
-                                    <a ng-bootbox-confirm="Are you sure you want to delete this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)" ng-if="connectionRequest.isApproved">
-                                        <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
                                     </a>
                                 </td>
                             </tr>
@@ -53,6 +49,57 @@
                 </div>
 
                 <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-title">
+            <h5>Approved Connections</h5>
+        </div>
+        <div class="box-content">
+            <div st-table="displayedApprovedConnections" st-safe-src="approvedConnections">
+                <form name="approved-connections-search-form" class="form-inline">
+                    <lm-form-group label="Search: ">
+                        <input st-search type="text" id="approvedConnectionsSearch" name="approvedConnectionsSearch" ng-model="approvedConnectionsSearchTerm" placeholder="User name, email, organisation" style="width: 250px" />
+                    </lm-form-group>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-mail">
+                            <thead>
+                                <tr>
+                                    <th st-sort="[orgUser.firstName,orgUser.surname]">User name</th>
+                                    <th st-sort="orgUser.email">Email address</th>
+                                    <th st-sort="orgUser.organisation.name">Coming from</th>
+                                    <th st-sort="organisation.name">Wants to connect to</th>
+                                    <th st-sort="approvalDate" class="text-center" width="140">Approval Date</th>
+                                    <th class="text-center" width="100"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="connectionRequest in displayedApprovedConnections">
+                                    <td>{{connectionRequest.orgUser.firstName}} {{connectionRequest.orgUser.surname}}</td>
+                                    <td>{{connectionRequest.orgUser.email}}</td>
+                                    <td>{{connectionRequest.orgUser.organisation.name}}</td>
+                                    <td>{{connectionRequest.organisation.name}}</td>
+                                    <td class="text-center">
+                                        {{connectionRequest.approvalDate | amDateFormat:'MMM DD YYYY'}}
+                                    </td>
+                                    <td>
+                                        <a ng-bootbox-confirm="Are you sure you want to delete this request?" ng-bootbox-confirm-action="decline(connectionRequest.id)">
+                                            <i class="fa fa-remove"></i><span class="hidden-xs"> delete</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr ng-if="!displayedApprovedConnections.length">
+                                    <td colspan="6">No approved connections were found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                </form>
             </div>
         </div>
     </div>

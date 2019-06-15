@@ -1,8 +1,11 @@
 ﻿<div ng-include="'comp/common/pageHeader.html'"></div>
 <div class="wrapper wrapper-content animated fadeInRight">
+
+    <lm-security-question-warning></lm-security-question-warning>
+
     <div class="box">
         <div class="box-title">
-            <h5>Account Settings</h5>
+            <h5>Email and Phone Number</h5>
         </div>
         <div class="box-content">
             <div class="alert alert-warning" role="alert" ng-if="!currentUser.emailConfirmed">
@@ -57,6 +60,49 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    <div class="box">
+        <div class="box-title">
+            <h5>Security Question and Answer</h5>
+        </div>
+        <div class="box-content">
+            <form name="securityForm" novalidate>
+                <lm-form-group label="Question: ">
+                    <select id="security-question" name="security-question" class="form-control" ng-model="securityInfo.question" required>
+                        <option value="1">What was your childhood nickname?</option>
+                        <option value="2">In what city did you meet your spouse/significant other?</option>
+                        <option value="3">What is the name of your favorite childhood friend?</option>
+                        <option value="4">What street did you live on in third grade?</option>
+                        <option value="5">What is your oldest sibling’s birthday month and year? (e.g., January 1900)</option>
+                        <option value="6">What is the middle name of your youngest child?</option>
+                        <option value="7">What is your oldest sibling's middle name?</option>
+                        <option value="8">What school did you attend for sixth grade?</option>
+                        <option value="9">What was your childhood phone number including area code? (e.g., 000-000-0000)</option>
+                        <option value="10">What is your oldest cousin's first and last name?</option>
+                        <option value="11">What was the name of your first stuffed animal?</option>
+                        <option value="12">In what city or town did your mother and father meet?</option>
+                        <option value="13">Where were you when you had your first kiss?</option>
+                        <option value="14">What is the first name of the boy or girl that you first kissed?</option>
+                        <option value="15">What was the last name of your third grade teacher?</option>
+                        <option value="16">In what city does your nearest sibling live?</option>
+                        <option value="17">What is your youngest brother’s birthday month and year? (e.g., January 1900)</option>
+                        <option value="18">What is your maternal grandmother's maiden name?</option>
+                        <option value="19">In what city or town was your first job?</option>
+                        <option value="20">What is the name of the place your wedding reception was held?</option>
+                        <option value="21">What is the name of a college you applied to but didn't attend?</option>
+                        <option value="22">Where were you when you first heard about 9/11?</option>
+                    </select>
+                </lm-form-group>
+                <lm-form-group label="Answer: ">
+                    <input type="text" class="form-control" ng-model="securityInfo.answer" id="securityAnswer" name="securityAnswer" placeholder="Enter your security answer here" required />
+                </lm-form-group>
+
+                <button type="submit" class="btn btn-primary" ng-click="ctrl.saveSecurityInfo()" ng-disabled="securityForm.$invalid">
+                    <i class="fa fa-save"></i> Save changes
+                </button>
+            </form>
         </div>
     </div>
 </div>
