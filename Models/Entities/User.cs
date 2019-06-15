@@ -44,6 +44,12 @@ namespace LightMethods.Survey.Models.Entities
 
         public DateTime? RegistrationDate { get; set; }
 
+        public byte? SecurityQuestion { get; set; }
+
+        [MaxLength(50)]
+        [Display(Name = "Security Answer")]
+        public string SecurityAnswer { get; set; }
+
         [ReadOnly(true)]
         public bool IsActive { set; get; }
 

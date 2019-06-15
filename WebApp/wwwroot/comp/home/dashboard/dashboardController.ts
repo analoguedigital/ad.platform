@@ -17,7 +17,7 @@ module App {
             private $scope: IDashboardControllerScope,
             private userContextService: Services.IUserContextService) {
 
-            $scope.title = "Dashboard";
+            $scope.title = "Summaries";
             this.activate();
         }
 

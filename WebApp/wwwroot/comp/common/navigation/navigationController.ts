@@ -10,6 +10,8 @@ module App {
         connectionRequestsCount?: number;
         adviceRecordsCount?: number;
 
+        adviceMenuLabel: string;
+
         logout: () => void;
         resetPassword: () => void;
     }
@@ -29,6 +31,7 @@ module App {
         ) {
 
             $scope.title = "navigation";
+            $scope.adviceMenuLabel = 'Send advice';
 
             $scope.user = userContextService.current.orgUser == null ?
                 userContextService.current.user.email :
@@ -45,6 +48,11 @@ module App {
             if (user.notifications !== null) {
                 this.$scope.connectionRequestsCount = user.notifications.connectionRequests;
                 this.$scope.adviceRecordsCount = user.notifications.adviceRecords;
+            }
+
+            let orgUser = this.userContextService.current.orgUser;
+            if (orgUser !== null && orgUser.type.name === 'Team user') {
+                this.$scope.adviceMenuLabel = 'Advice';
             }
         }
 

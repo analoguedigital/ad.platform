@@ -64,6 +64,7 @@ namespace LightMethods.Survey.Models.Services
             {
                 var dto = Mapper.Map<ProjectDTO>(project);
                 dto.AssignmentsCount = project.Assignments.Count;
+                dto.IsAggregate = project.IsAggregate;
 
                 // map the user assignment
                 dto = MapUserAssignment(dto, user, project);
@@ -117,7 +118,8 @@ namespace LightMethods.Survey.Models.Services
                     OrganizationName = p.Organisation.Name,
                     LastEntry = GetLastEntry(p.Id)?.SurveyDate,
                     AssignmentsCount = p.Assignments.Count,
-                    TeamsCount = GetTeamsCount(p)
+                    TeamsCount = GetTeamsCount(p),
+                    IsAggregate = p.IsAggregate
                 };
 
                 if (p.CreatedById.HasValue)

@@ -6,6 +6,8 @@
 
         WebAccounts = 1,
 
-        AllAccounts = 2
+        AllAccounts = 2,
+
+        InactiveAccounts = 3
     }
 }

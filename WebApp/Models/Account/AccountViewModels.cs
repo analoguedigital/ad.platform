@@ -59,6 +59,8 @@ namespace WebApi.Models
 
         public bool TwoFactorAuthenticationEnabled { get; set; }
 
+        public bool SecurityQuestionEnabled { get; set; }
+
         public AdminNotificationsDTO Notifications { get; set; }
     }
 

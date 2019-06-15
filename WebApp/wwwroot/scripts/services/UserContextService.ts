@@ -127,6 +127,7 @@
                         phoneNumber: userinfo.phoneNumber,
                         phoneNumberConfirmed: userinfo.phoneNumberConfirmed,
                         roles: userinfo.roles,
+                        securityQuestionEnabled: userinfo.securityQuestionEnabled,
                         notifications: userinfo.notifications
                     };
 

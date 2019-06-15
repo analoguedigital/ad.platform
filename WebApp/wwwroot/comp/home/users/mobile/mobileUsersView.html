@@ -19,40 +19,40 @@
                     <table class="table table-hover table-mail">
                         <thead>
                             <tr>
-                                <th st-sort="email">Email address</th>
                                 <th width="150" st-sort="firstName">First name</th>
                                 <th width="150" st-sort="surname">Surname</th>
+                                <th st-sort="email">Username</th>
                                 <th width="120" st-sort="lastLogin" class="text-center">Last Login</th>
-                                <th class="text-center" st-sort="organisation.name">Organisation</th>
+                                <!--<th class="text-center" st-sort="organisation.name">Organisation</th>-->
                                 <!--<th class="text-center" width="150" st-sort="type.name">Type</th>-->
-                                <th class="text-center" width="100"></th>
-                                <th class="text-center" width="150" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
+                                <th class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
+                                <th class="text-center" width="150"></th>
                                 <th class="text-center" width="100" lm-access="System administrator,Platform administrator"></th>
                                 <th class="text-center" width="100" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="user in displayedUsers">
+                                <td>{{user.firstName}}</td>
+                                <td>{{user.surname}}</td>
                                 <td>
                                     <i class="fa fa-phone-square" uib-tooltip="Client" tooltip-append-to-body="true"></i>&nbsp;
                                     <a ui-sref="home.users.edit({ id: user.id, accountType: 'mobile-account' })">{{user.email}}</a>
                                 </td>
-                                <td>{{user.firstName}}</td>
-                                <td>{{user.surname}}</td>
                                 <td class="text-center">
-                                    <span ng-if="!user.lastLogin">NA</span>
+                                    <span ng-if="!user.lastLogin">None</span>
                                     <span ng-if="user.lastLogin">{{user.lastLogin | amDateFormat:'MMM DD YYYY'}}</span>
                                 </td>
-                                <td class="text-center">{{user.organisation.name}}</td>
+                                <!--<td class="text-center">{{user.organisation.name}}</td>-->
                                 <!--<td class="text-center">{{user.type.name}}</td>-->
-                                <td class="text-center">
-                                    <a ng-click="ctrl.composeEmail(user)">
-                                        <i class="fa fa-paper-plane"></i> <span class="hidden-sm hidden-xs">Compose</span>
-                                    </a>
-                                </td>
                                 <td class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator">
                                     <a ng-click="resetPassword(user)">
-                                        <i class="fa fa-key"></i><span class="hidden-sm hidden-xs"> Reset Password</span>
+                                        <i class="fa fa-key"></i><span class="hidden-sm hidden-xs"> create/reset password</span>
+                                    </a>
+                                </td>
+                                <td class="text-center">
+                                    <a ng-click="ctrl.composeEmail(user)">
+                                        <i class="fa fa-paper-plane"></i> <span class="hidden-sm hidden-xs"> Send email</span>
                                     </a>
                                 </td>
                                 <td class="text-center" lm-access="System administrator,Platform administrator">
@@ -73,7 +73,7 @@
                                 </td>
                             </tr>
                             <tr ng-if="!displayedUsers.length">
-                                <td colspan="9">No mobile users were found</td>
+                                <td colspan="9">No clients were found</td>
                             </tr>
                         </tbody>
                     </table>

@@ -89,6 +89,7 @@ namespace WebApi.Models
                 Calendar = CurrentOrganisation?.DefaultCalendar?.SystemName,
                 Roles = ServiceContext.UserManager.GetRoles(CurrentUser.Id),
                 TwoFactorAuthenticationEnabled = twoFactorAuth,
+                SecurityQuestionEnabled = user.SecurityQuestion.HasValue && !string.IsNullOrEmpty(user.SecurityAnswer)
             };
 
             if (orgUser != null)
@@ -300,7 +301,8 @@ namespace WebApi.Models
             //        <p>If the link didn't work, copy/paste the token below and reset your password manually.</p>
             //        <p style='color: gray; font-weight: italic'>" + encodedToken + @"</p>";
 
-            var content = @"<p>Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.</p>";
+            var content = @"<p>Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.</p>" +
+                "<p>If you were unable to reset your password, please contact us at <a href='mailto:admin@analogue.digital'>admin@analogue.digital</a>.</p>";
 
             var emailBody = WebHelpers.GenerateEmailTemplate(content, "Reset your password");
 
@@ -926,6 +928,114 @@ namespace WebApi.Models
             }
         }
 
+        [HttpPost]
+        [Route("set-security-qa")]
+        public async Task<IHttpActionResult> SetSecurityAnswer(SetSecurityQAModel model)
+        {
+            if (model.Question < 1)
+                return BadRequest("invalid question index");
+
+            if (string.IsNullOrEmpty(model.Answer))
+                return BadRequest("security answer cannot be empty");
+
+            var userId = ServiceContext.CurrentUser.Id;
+            var user = await UserManager.FindByIdAsync(userId);
+
+            try
+            {
+                user.SecurityQuestion = model.Question;
+                user.SecurityAnswer = model.Answer;
+
+                var result = await UserManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return Ok();
+
+                return BadRequest(result.Errors.ToString(","));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        [Authorize]
+        [Route("get-security-qa")]
+        public IHttpActionResult GetSecurityQuestionAndAnswer()
+        {
+            var result = new SecurityQuestionAndAnswerDTO
+            {
+                Question = ServiceContext.CurrentUser.SecurityQuestion,
+                Answer = ServiceContext.CurrentUser.SecurityAnswer
+            };
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("check-security-qa")]
+        public async Task<IHttpActionResult> CheckSecurityQA(CheckSecurityQAModel model)
+        {
+            if (string.IsNullOrEmpty(model.EmailAddress))
+                return BadRequest("Email address cannot be empty");
+
+            var user = await UserManager.FindByEmailAsync(model.EmailAddress);
+            if (user == null)
+                return NotFound();
+
+            var result = new CheckSecurityQAResponse
+            {
+                Enabled = user.SecurityQuestion.HasValue && !string.IsNullOrEmpty(user.SecurityAnswer),
+                QuestionIndex = user.SecurityQuestion
+            };
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("verify-security-answer")]
+        public async Task<IHttpActionResult> VerifySecurityAnswer(VerifySecurityAnswerModel model)
+        {
+            if (string.IsNullOrEmpty(model.EmailAddress))
+                return BadRequest("Email address cannot be empty");
+
+            if (string.IsNullOrEmpty(model.SecurityAnswer))
+                return BadRequest("Security answer cannot be empty");
+
+            var user = await UserManager.FindByEmailAsync(model.EmailAddress);
+            if (user == null)
+                return NotFound();
+
+            if (!user.SecurityQuestion.HasValue && string.IsNullOrEmpty(user.SecurityAnswer))
+                return BadRequest();
+
+            if (model.SecurityAnswer != user.SecurityAnswer)
+                return BadRequest("Invalid security answer");
+
+            await SendForgotPasswordLink(user.Id, user.Email);
+
+            return Ok();
+        }
+
+        private async Task SendForgotPasswordLink(Guid userId, string emailAddress)
+        {
+            // generate the reset token and send the email.
+            string token = await UserManager.GeneratePasswordResetTokenAsync(userId);
+            var encodedToken = HttpUtility.UrlEncode(token);
+
+            var rootIndex = WebHelpers.GetRootIndexPath();
+            var baseUrl = $"{Request.RequestUri.Scheme}://{Request.RequestUri.Authority}/{rootIndex}";
+            var redirectLink = $"{baseUrl}#!/set-password?email={emailAddress}&token={encodedToken}";
+
+            var content = @"<p>Click on <a href='" + redirectLink + @"'>this link</a> to set a new password.</p>" +
+                "<p>If you were unable to reset your password, please contact us at <a href='mailto:admin@analogue.digital'>admin@analogue.digital</a>.</p>";
+
+            var emailBody = WebHelpers.GenerateEmailTemplate(content, "Reset your password");
+
+            await UserManager.SendEmailAsync(userId, "Password reset request", emailBody);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && _userManager != null)
@@ -1062,6 +1172,39 @@ namespace WebApi.Models
             UnitOfWork.EmailsRepository.InsertOrUpdate(email);
         }
 
+    }
+
+    public class VerifySecurityAnswerModel
+    {
+        public string EmailAddress { get; set; }
+
+        public string SecurityAnswer { get; set; }
+    }
+
+    public class CheckSecurityQAModel
+    {
+        public string EmailAddress { get; set; }
+    }
+
+    public class CheckSecurityQAResponse
+    {
+        public bool Enabled { get; set; }
+
+        public byte? QuestionIndex { get; set; }
+    }
+
+    public class SecurityQuestionAndAnswerDTO
+    {
+        public byte? Question { get; set; }
+
+        public string Answer { get; set; }
+    }
+
+    public class SetSecurityQAModel
+    {
+        public byte Question { get; set; }
+
+        public string Answer { get; set; }
     }
 
     public class VerifySecurityCodeModel

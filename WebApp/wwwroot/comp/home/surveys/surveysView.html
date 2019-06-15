@@ -5,6 +5,8 @@
     </div>
 </div>
  <div class="wrapper wrapper-content animated fadeInRight surveys-view">
+     <lm-security-question-warning></lm-security-question-warning>
+
      <div class="box" ng-if="ctrl.projects.length > 1">
          <div class="box-content">
              <ui-select append-to-body="true" ng-model="ctrl.selectedProject" on-select="ctrl.selectedProjectChanged()">

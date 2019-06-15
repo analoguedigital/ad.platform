@@ -25,7 +25,7 @@
                 templateUrl: "comp/home/projects/projectsView.html",
                 controller: "projectsController",
                 controllerAs: "ctrl",
-                ncyBreadcrumb: { label: 'Directory' },
+                ncyBreadcrumb: { label: 'Directory of cases and groups' },
                 module: "private"
             })
             .state("home.caseManagement.caseAssignments", <App.Models.IAppRoute>{

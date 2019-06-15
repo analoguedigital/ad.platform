@@ -244,6 +244,9 @@ namespace WebApi.Controllers
                 project.OrganisationId = Guid.Parse(value.Organisation.Id);
             }
 
+            project.CreatedById = CurrentUser.Id;
+            project.IsAggregate = true; // projects created by admins, are aggregate cases (shared, groups)
+
             try
             {
                 UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
@@ -426,7 +429,7 @@ namespace WebApi.Controllers
 
         #endregion Assignments
 
-        #region Advice Threads
+        #region Advice and Record Threads
 
         // POST api/projects/{id}/create-advice-thread
         [HttpPost]
@@ -483,7 +486,37 @@ namespace WebApi.Controllers
             }
         }
 
-        #endregion Advice Threads
+        [HttpPost]
+        [Route("api/projects/{id:guid}/create-record-thread")]
+        public IHttpActionResult CreateRecordThread(Guid id, [FromBody]CreateRecordThreadDTO model)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("project id is empty");
+
+            var project = UnitOfWork.ProjectsRepository.Find(id);
+            if (project == null)
+                return NotFound();
+
+            var templateId = Guid.Parse("74EADB8F-7434-49C0-AD5A-854B0E77BCBD");    // seed template
+            var template = UnitOfWork.FormTemplatesRepository.Find(templateId);
+
+            var formTemplateService = new FormTemplatesService(UnitOfWork, CurrentOrgUser, CurrentUser);
+            var result = formTemplateService.Clone(templateId, new CloneReqDTO
+            {
+                Code = model.Code,
+                Title = model.Title,
+                Description = model.Description,
+                Colour = model.Colour,
+                ProjectId = id
+            });
+
+            // invalidate form-template cache entries
+            MemoryCacher.DeleteStartingWith("FORM_TEMPLATES");
+
+            return Ok(result);
+        }
+        
+        #endregion Advice and Record Threads
 
         [Route("api/projects/user/{orgUserId:guid}")]
         [OverrideAuthorization]

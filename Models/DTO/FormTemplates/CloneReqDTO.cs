@@ -4,7 +4,11 @@ namespace LightMethods.Survey.Models.DTO
 {
     public class CloneReqDTO
     {
+        public string Code { get; set; }
+
         public string Title { get; set; }
+
+        public string Description { get; set; }
 
         public string Colour { get; set; }
 

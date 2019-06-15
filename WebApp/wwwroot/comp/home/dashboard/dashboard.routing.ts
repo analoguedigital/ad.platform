@@ -15,7 +15,7 @@
                 url: "",
                 templateUrl: "comp/home/dashboard/dashboardView.html",
                 controller: "dashboardController",
-                ncyBreadcrumb: { label: 'Dashboard' }
+                ncyBreadcrumb: { label: 'Summaries' }
             })
             .state("home.dashboard.layout", <App.Models.IAppRoute>{
                 url: "/",
@@ -31,7 +31,7 @@
                         controllerAs: "ctrl",
                     }
                 },
-                ncyBreadcrumb: { label: 'Dashboard' },
+                ncyBreadcrumb: { label: 'Summaries' },
                 module: "private"
             })
             .state("home.studentChart", <App.Models.IAppRoute>{

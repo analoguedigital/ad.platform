@@ -140,6 +140,10 @@
                     this.$scope.today = moment(this.$scope.today).subtract(1, 'days').toDate();
                     break;
                 }
+                case 'week': {
+                    this.$scope.today = moment(this.$scope.today).subtract(1, 'weeks').toDate();
+                    break;
+                }
                 case 'month': {
                     this.$scope.today = moment(this.$scope.today).subtract(1, 'months').toDate();
                     break;
@@ -157,6 +161,10 @@
             switch (this.$scope.calendarView) {
                 case 'day': {
                     this.$scope.today = moment(this.$scope.today).add(1, 'days').toDate();
+                    break;
+                }
+                case 'week': {
+                    this.$scope.today = moment(this.$scope.today).add(1, 'weeks').toDate();
                     break;
                 }
                 case 'month': {

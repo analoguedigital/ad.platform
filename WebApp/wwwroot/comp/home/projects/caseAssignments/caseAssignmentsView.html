@@ -5,9 +5,10 @@
             <h5 class="pull-left">Staff and Client Assignments and Permissions</h5>
             <div class="pull-right">
                 <div class="btn-group" role="group" aria-label="account filters">
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterProjects('clients')"><i class="fa fa-phone-square"></i> Clients</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterProjects('staff')"><i class="fa fa-laptop"></i> Staff</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterProjects('all')"><i class="fa fa-user-circle"></i> All</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterProjects('clients')"><i class="fa fa-phone-square"></i> Clients ({{clientsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterProjects('staff')"><i class="fa fa-laptop"></i> Staff ({{staffCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'groups' }" ng-click="ctrl.filterProjects('groups')"><i class="fa fa-group"></i> Groups ({{groupsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterProjects('all')"><i class="fa fa-user-circle"></i> All ({{totalCount}})</button>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -39,11 +40,18 @@
                             <tr ng-repeat="project in displayedProjects">
                                 <td>
                                     <a ui-sref="home.projects.edit({id:project.id})">
-                                        <span ng-if="project.createdBy.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
-                                            <i class="fa fa-phone-square"></i>
-                                        </span>
-                                        <span ng-if="project.createdBy === null || project.createdBy.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
-                                            <i class="fa fa-laptop"></i>
+                                        <span ng-switch="project.isAggregate">
+                                            <span ng-switch-when="true" uib-tooltip="Group" tooltip-append-to-body="true">
+                                                <i class="fa fa-group"></i>
+                                            </span>
+                                            <span ng-switch-default>
+                                                <span ng-if="project.createdBy.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
+                                                    <i class="fa fa-phone-square"></i>
+                                                </span>
+                                                <span ng-if="project.createdBy === null || project.createdBy.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
+                                                    <i class="fa fa-laptop"></i>
+                                                </span>
+                                            </span>
                                         </span>
                                         &nbsp;{{project.name}}
                                     </a>

@@ -458,7 +458,7 @@ namespace LightMethods.Survey.Models.Services
 
             var template = UnitOfWork.FormTemplatesRepository.Find(id);
             //var clone = UnitOfWork.FormTemplatesRepository.Clone(template, OrgUser as OrgUser, request.Title, request.Colour, request.ProjectId);
-            var clone = UnitOfWork.FormTemplatesRepository.Clone(template, CurrentUser.Id, request.Title, request.Colour, request.ProjectId);
+            var clone = UnitOfWork.FormTemplatesRepository.Clone(template, CurrentUser.Id, request.Title, request.Description, request.Colour, request.ProjectId);
 
             result.Success = true;
             result.Message = "Form Template cloned";

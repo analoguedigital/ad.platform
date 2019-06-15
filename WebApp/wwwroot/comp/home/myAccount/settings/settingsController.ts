@@ -2,8 +2,14 @@
 module App {
     "use strict";
 
+    interface ISecurityInfoModel {
+        question: string;
+        answer: string;
+    }
+
     interface ISettingsControllerScope extends ng.IScope {
         currentUser: Models.IUser;
+        securityInfo: ISecurityInfoModel;
     }
 
     interface ISettingsController {
@@ -26,6 +32,20 @@ module App {
 
         activate() {
             this.$scope.currentUser = this.userContext.current.user;
+            this.$scope.securityInfo = { question: '', answer: '' };
+
+            this.$resource("/api/account/get-security-qa").get().$promise.then(
+                (res) => {
+                    var question = res.question;
+                    var answer = res.answer;
+
+                    if (question !== null)
+                        this.$scope.securityInfo.question = question.toString();
+                    if (answer !== null)
+                        this.$scope.securityInfo.answer = answer;
+                }, (err) => {
+                    console.error(err);
+                });
         }
 
         confirmEmailAddress() {
@@ -111,6 +131,17 @@ module App {
                     if (err.status === 400) {
                         this.toastr.error(err.data.message);
                     }
+                });
+        }
+
+        saveSecurityInfo() {
+            this.$resource("/api/account/set-security-qa").save(this.$scope.securityInfo).$promise.then(
+                (res) => {
+                    console.info(res);
+
+                    this.toastr.success('Security information saved');
+                }, (err) => {
+                    console.error(err);
                 });
         }
     }

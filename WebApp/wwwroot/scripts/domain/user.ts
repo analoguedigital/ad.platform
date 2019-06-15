@@ -10,7 +10,7 @@
         phoneNumberConfirmed: boolean;
         confirmPassword: string;
         roles: string[];
-
+        securityQuestionEnabled: boolean;
         notifications: IAdminNotifications;
     }
 
