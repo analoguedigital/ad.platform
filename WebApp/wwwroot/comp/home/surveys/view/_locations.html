@@ -1,5 +1,7 @@
 ﻿<div class="box">
-    <div class="box-title">Locations</div>
+    <div class="box-title">
+        <h5><i class="fa fa-map-marker"></i> Locations</h5>
+    </div>
     <div class="box-content">
         <div class="map-wrap" ng-repeat="location in ctrl.locations track by $index" ng-if="ctrl.locations.length">
             <ui-gmap-google-map center="location.center" zoom="location.zoom" options="location.options" draggable="false">

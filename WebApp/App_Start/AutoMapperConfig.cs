@@ -37,7 +37,9 @@ namespace WebApi
             Mapper.CreateMap<FormTemplateCategory, FormTemplateCategoryDTO>().ReverseMap();
             Mapper.CreateMap<FormTemplate, FormTemplateDTO>().ReverseMap();
             Mapper.CreateMap<FormTemplateDTO, FormTemplate>()
-                .ForMember(f => f.MetricGroups, opt => opt.Ignore());
+                .ForMember(f => f.MetricGroups, opt => opt.Ignore())
+                .ForMember(f => f.Project, opt => opt.Ignore());
+
             Mapper.CreateMap<EditBasicDetailsReqDTO, FormTemplate>();
 
             Mapper.CreateMap<ThreadAssignmentDTO, FormTemplateDTO>();

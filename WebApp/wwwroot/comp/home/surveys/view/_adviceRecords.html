@@ -1,0 +1,28 @@
+﻿<div class="box" ng-if="ctrl.adviceRecords.length">
+    <div class="box-title">
+        <h5><i class="fa fa-medkit"></i> Advice Records ({{ctrl.adviceRecords.length}})</h5>
+    </div>
+    <div class="box-content">
+        <div class="advice-records-wrap">
+            <div class="advice-record-item" ng-repeat="advice in ctrl.adviceRecords">
+                <form class="form" name="advice-record-form-{{advice.serial}}">
+                    <lm-form-group label="Completed by:">
+                        {{advice.filledBy}}
+                    </lm-form-group>
+
+                    <lm-form-group label="Date uploaded:">
+                        {{advice.surveyDate | amDateFormat: 'lll'}}
+                    </lm-form-group>
+
+                    <lm-form-group label="Serial no:">
+                        {{advice.serial}}
+                    </lm-form-group>
+
+                    <a ui-sref="home.surveys.view({surveyId: advice.id})" title="View advice">
+                        <i class="fa fa-long-arrow-right"></i> View record
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

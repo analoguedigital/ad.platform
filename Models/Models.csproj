@@ -653,6 +653,10 @@
     <Compile Include="Migrations\201906122226488_Add_security_QA_to_users.Designer.cs">
       <DependentUpon>201906122226488_Add_security_QA_to_users.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201906171859021_Add_serial_references_to_surveys.cs" />
+    <Compile Include="Migrations\201906171859021_Add_serial_references_to_surveys.Designer.cs">
+      <DependentUpon>201906171859021_Add_serial_references_to_surveys.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Entities\SuperUser.cs" />
@@ -877,6 +881,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201906122226488_Add_security_QA_to_users.resx">
       <DependentUpon>201906122226488_Add_security_QA_to_users.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201906171859021_Add_serial_references_to_surveys.resx">
+      <DependentUpon>201906171859021_Add_serial_references_to_surveys.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />

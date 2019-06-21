@@ -20,7 +20,7 @@
                                 ng-model="ctrl.formTemplate.formTemplateCategory"
                                 ng-options="category as category.title for category in ctrl.categories track by category.id" required></select>
                         <span class="input-group-btn">
-                            <button class="btn btn-info" type="button" ng-click="ctrl.addCategory()"><i class="fa fa-plus"></i> Add new</button>
+                            <button class="btn btn-info" type="button" ng-click="ctrl.addCategory()" ng-disabled="!ctrl.insertMode"><i class="fa fa-plus"></i> Add new</button>
                         </span>
                     </div>
                 </lm-form-group>

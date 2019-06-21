@@ -48,6 +48,8 @@ namespace LightMethods.Survey.Models.Services
 
             if (projectId.HasValue && projectId != Guid.Empty)
             {
+                var project = UnitOfWork.ProjectsRepository.Find(projectId.Value);
+
                 if (orgUser.Type != OrgUserTypesRepository.Administrator)
                 {
                     var threadAssignments = UnitOfWork.ThreadAssignmentsRepository
@@ -66,6 +68,9 @@ namespace LightMethods.Survey.Models.Services
                 }
 
                 surveys = surveys.Where(s => s.ProjectId == projectId);
+
+                if (project.IsAggregate)
+                    surveys = surveys.Where(x => x.FilledById == orgUser.Id);
 
                 result = surveys
                     .ToList()

@@ -68,6 +68,11 @@
             <h5>Security Question and Answer</h5>
         </div>
         <div class="box-content">
+            <div class="alert alert-info alert-dismissable" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <strong>Important</strong> security answers are case sensitive. Choose an answer you can remember and keep it somewhere safe.
+            </div>
+
             <form name="securityForm" novalidate>
                 <lm-form-group label="Question: ">
                     <select id="security-question" name="security-question" class="form-control" ng-model="securityInfo.question" required>
