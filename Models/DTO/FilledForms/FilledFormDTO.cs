@@ -32,5 +32,7 @@ namespace LightMethods.Survey.Models.DTO
         public string Description { get; set; }
 
         public DateTime Date { get; set; }
+
+        public string SerialReferences { get; set; }
     }
 }

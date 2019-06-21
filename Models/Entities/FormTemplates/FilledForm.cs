@@ -40,6 +40,9 @@ namespace LightMethods.Survey.Models.Entities
 
         public virtual ICollection<FormValue> FormValues { set; get; }
 
+        [StringLength(50)]
+        public string SerialReferences { get; set; }
+
         [NotMapped]
         private string _description = string.Empty;
 

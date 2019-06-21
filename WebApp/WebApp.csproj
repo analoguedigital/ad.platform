@@ -280,6 +280,7 @@
     <Content Include="wwwroot\comp\home\subscriptionPlans\subscriptionPlansView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\_dataTable.html" />
     <Content Include="wwwroot\comp\home\surveys\all\_searchForm.html" />
+    <Content Include="wwwroot\comp\home\surveys\view\_adviceRecords.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_formDetails.html" />
     <Content Include="wwwroot\comp\home\surveys\view\_locations.html" />
     <Content Include="wwwroot\comp\home\myAccount\redeemCode\redeemCode.html" />
@@ -454,6 +455,7 @@
     <Content Include="wwwroot\scripts\directives\lmLocations\template.html" />
     <Content Include="wwwroot\scripts\directives\lmPieChart\template.html" />
     <Content Include="wwwroot\scripts\directives\lmSecurityQuestionWarning\template.html" />
+    <Content Include="wwwroot\scripts\directives\lmSerialReferences\template.html" />
     <Content Include="wwwroot\scripts\directives\lmTimeline\template.html" />
     <Content Include="wwwroot\scss\index.scss" />
     <Content Include="wwwroot\scss\Template\_badgets_labels.scss" />
@@ -489,7 +491,6 @@
     <Content Include="wwwroot\comp\home\dashboard\updates\_updates.scss" />
     <Content Include="wwwroot\comp\home\dashboard\students\chart\_studentChart.scss" />
     <Content Include="wwwroot\comp\home\dataLists\edit\_dataListEdit.scss" />
-    <Content Include="wwwroot\comp\home\surveys\view\_survey.scss" />
     <Content Include="wwwroot\comp\common\formControlsViews\attachmentMetric\_attachmentMetric.scss" />
     <Content Include="wwwroot\comp\common\formControlsViews\multipleChoiceMetric\_multipleChoiceMetric.scss" />
     <Content Include="wwwroot\comp\home\surveys\print\_print.scss" />
@@ -691,6 +692,7 @@
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmParticles\lmParticles.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmPieChart\lmPieChart.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSecurityQuestionWarning\lmSecurityQuestionWarning.ts" />
+    <TypeScriptCompile Include="wwwroot\scripts\directives\lmSerialReferences\lmSerialReferences.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmMinimalizeSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmSideNavigation\lmSideBar.ts" />
     <TypeScriptCompile Include="wwwroot\scripts\directives\lmTimeline\lmTimeline.ts" />

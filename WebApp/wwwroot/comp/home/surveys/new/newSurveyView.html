@@ -27,6 +27,14 @@
                         </div>
                     </div>
 
+                    <div id="serial-references" ng-if="ctrl.formTemplate.discriminator === 1">
+                        <lm-form-group label="Serial References (optional)">
+                            <lm-serial-references id="serial-refs-input" data="ctrl.availableSerialNumbers"
+                                                  placeholder="to link to specific records start typing with # to add serial numbers"
+                                                  ng-model="ctrl.survey.serialReferences"></lm-serial-references>
+                        </lm-form-group>
+                    </div>
+
                     <uib-tabset active="ctrl.activeTabIndex">
                         <uib-tab ng-repeat="tab in ctrl.tabs">
                             <div class="metric-groups">

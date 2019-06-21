@@ -29,6 +29,8 @@ module App {
         activeTabIndex: number;
         activate: () => void;
         addFormValue: (metric, rowDataListItem, rowNumber) => Models.IFormValue;
+
+        adviceRecords: Models.ISurvey[];
     }
 
     class NewSurveyController implements INewSurveyController {
@@ -38,6 +40,10 @@ module App {
         locations: any[];
         //survey: Models.ISurvey;
         activeTabIndex: number = 0;
+
+        adviceRecords: Models.ISurvey[] = [];
+        availableSerialNumbers: string[] = [];
+        serialReferencesCount: number;
 
         static $inject: string[] = ["$scope", "$q", "$rootScope", "$state", "$stateParams", "$timeout",
             "toastr", "surveyResource", "formTemplate", "project", "survey", "localStorageService", "userContextService"];
@@ -81,40 +87,75 @@ module App {
         }
 
         activate() {
+            var surveyId = this.$stateParams["surveyId"];
+            this.$scope.isInsertMode = surveyId === undefined;
+
+            // extract location information.
+            this.getLocations();
+
+            // populate page groups and tabs.
             var pageGroups = _.groupBy(this.formTemplate.metricGroups, (mg) => { return mg.page });
             this.tabs = _.map(Object.keys(pageGroups), (pageNumber) => { return { number: pageNumber, title: "Page " + pageNumber }; });
             this.tabs[0].active = true;
 
+            // store the previous state information.
+            var prevState = this.$rootScope.previousState;
+            var prevParams = this.$rootScope.previousStateParams;
+            if (prevState && prevState.name.length && prevParams) {
+                this.localStorageService.set('survey.prevState', prevState);
+                this.localStorageService.set('survey.prevParams', prevParams);
+            }
+
+            // refresh the rzSlider component.
             this.$scope.$on('$viewContentLoaded', () => {
                 this.$timeout(() => {
                     this.$scope.$broadcast('rzSliderForceRender');
                 }, 500);
             });
 
-            var prevState = this.$rootScope.previousState;
-            var prevParams = this.$rootScope.previousStateParams;
+            // parse serial references in edit mode
+            let editStateName = 'home.surveys.edit';
+            if (this.$state.current.name === editStateName && this.survey.serialReferences !== null && this.survey.serialReferences.length) {
+                let _references = this.survey.serialReferences.split(',');
+                this.survey.serialReferences = '';
 
-            if (prevState && prevState.name.length && prevParams) {
-                this.localStorageService.set('survey.prevState', prevState);
-                this.localStorageService.set('survey.prevParams', prevParams);
+                _.forEach(_references, (item) => {
+                    this.survey.serialReferences += '#' + item + ',';
+                });
             }
 
-            var surveyId = this.$stateParams["surveyId"];
-            this.$scope.isInsertMode = surveyId === undefined;
+            // fetch referenced advice records
+            let viewStateName = 'home.surveys.view';
+            if (this.$state.current.name === viewStateName && this.formTemplate.discriminator === 0) {
+                this.surveyResource.getAdviceRecords({ id: this.survey.id }, (result) => {
+                    this.adviceRecords = result;
+                }, (err) => {
+                    console.error(err);
+                });
+            }
+
+            let newStateName = 'home.surveys.new';
+            let stateName = this.$state.current.name;
+            if ((stateName === newStateName || stateName === editStateName) && this.formTemplate.discriminator === 1) {
+                this.surveyResource.getAvailableSerialNumbers({ id: this.formTemplate.projectId },
+                    (result) => {
+                        this.availableSerialNumbers = result;
+                    }, (err) => {
+                        console.error(err);
+                    });
+            }
 
             // check for advice responses
             if (this.formTemplate.discriminator === 1 && !this.$scope.isInsertMode && this.survey.isRead === false) {
                 var orgUser = this.userContextService.current.orgUser;
                 if (orgUser !== null && this.survey.projectId === orgUser.currentProjectId) {
                     this.surveyResource.markAsRead({ id: this.survey.id }, (res) => {
-                        console.log(res);
+                        // advice response marked as read.
                     }, (err) => {
                         console.error(err);
                     });
                 }
             }
-
-            this.getLocations();
         }
 
         getLocations() {

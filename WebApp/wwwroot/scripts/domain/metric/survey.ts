@@ -19,6 +19,8 @@
         isChecked: boolean;
         description: string;
         isRead?: boolean;
+
+        serialReferences: string;
     }
 
     export interface IPosition {

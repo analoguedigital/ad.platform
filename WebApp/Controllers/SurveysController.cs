@@ -55,6 +55,7 @@ namespace WebApi.Controllers
         // GET api/surveys
         [DeflateCompression]
         [Route("api/surveys")]
+
         [ResponseType(typeof(IEnumerable<FilledFormDTO>))]
         [OverrideAuthorization]
         [Authorize(Roles = "System administrator,Organisation user,Restricted user")]
@@ -332,26 +333,33 @@ namespace WebApi.Controllers
             var thread = UnitOfWork.FormTemplatesRepository.Find(filledForm.FormTemplateId);
             if (thread.Discriminator == FormTemplateDiscriminators.AdviceThread)
             {
-                bool isAdviceResponse = false;
+                if (!string.IsNullOrEmpty(survey.SerialReferences))
+                {
+                    // serial references will come in this way: #593,#594,
+                    var _references = survey.SerialReferences.Replace("#", "");
+                    if (_references.EndsWith(","))
+                        _references = _references.Remove(_references.Length - 1, 1);
 
+                    filledForm.SerialReferences = _references;
+                }
+
+                // if this is an advice response (posted by an admin), notify the end-user via email.
+                bool isAdviceResponse = false;
+                
                 if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
                     isAdviceResponse = true;
-                else if (CurrentUser is OrgUser)
-                {
-                    if (await ServiceContext.UserManager.IsInRoleAsync(CurrentUser.Id, "Organisation administrator"))
-                        isAdviceResponse = true;
-                }
+                else if (CurrentUser is OrgUser && await ServiceContext.UserManager.IsInRoleAsync(CurrentUser.Id, "Organisation administrator"))
+                    isAdviceResponse = true;
 
                 if (isAdviceResponse)
                 {
                     var project = UnitOfWork.ProjectsRepository.Find(filledForm.ProjectId);
-                    //var textValue = filledForm.FormValues.FirstOrDefault(v => UnitOfWork.MetricsRepository.Find(v.MetricId.Value) is FreeTextMetric);
-
-                    filledForm.IsRead = false;
                     NotifyOrgUserAboutAdviceResponse(project.CreatedBy.Email, thread.Title);
+                    // mark the record as unread.
+                    filledForm.IsRead = false;
                 }
             }
-
+            
             try
             {
                 UnitOfWork.FilledFormsRepository.InsertOrUpdate(filledForm);
@@ -405,8 +413,21 @@ namespace WebApi.Controllers
 
             try
             {
-                var dbForm = UnitOfWork.FilledFormsRepository.Find(id);
+                var dbForm = UnitOfWork.FilledFormsRepository.Find(id);                
                 dbForm.SurveyDate = survey.SurveyDate;
+
+                if (dbForm.FormTemplate.Discriminator == FormTemplateDiscriminators.AdviceThread)
+                {
+                    if (!string.IsNullOrEmpty(survey.SerialReferences))
+                    {
+                        var _references = survey.SerialReferences.Replace("#", "");
+                        if (_references.EndsWith(","))
+                            _references = _references.Remove(_references.Length - 1, 1);
+
+                        dbForm.SerialReferences = _references;
+                    }
+                }
+
                 UnitOfWork.FilledFormsRepository.InsertOrUpdate(dbForm);
 
                 foreach (var val in surveyDTO.FormValues)
@@ -561,6 +582,63 @@ namespace WebApi.Controllers
             {
                 return InternalServerError(ex);
             }
+        }
+
+        [Route("api/surveys/{id:guid}/get-advice-records")]
+        public IHttpActionResult GetAdviceRecords(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("survey id is empty");
+
+            var survey = UnitOfWork.FilledFormsRepository.Find(id);
+            if (survey == null)
+                return NotFound();
+
+            if (CurrentUser is OrgUser)
+            {
+                if (!HasAccessToViewRecords(survey.FormTemplateId, survey.ProjectId))
+                    return Unauthorized();
+            }
+
+            var adviceRecords = UnitOfWork.FilledFormsRepository
+                .AllAsNoTracking
+                .Where(x => x.FormTemplate.Discriminator == FormTemplateDiscriminators.AdviceThread)
+                .Where(x => x.ProjectId == survey.ProjectId)
+                .Where(x => x.SerialReferences.Contains(survey.Serial.ToString()))
+                .OrderByDescending(x => x.DateCreated);
+
+            var result = adviceRecords
+                .ToList()
+                .Select(x => Mapper.Map<FilledFormDTO>(x))
+                .ToList();
+
+            return Ok(result);
+        }
+
+        [Route("api/surveys/{id:guid}/get-available-serial-numbers")]
+        public IHttpActionResult GetAvailableSerialNumbers(Guid id)
+        {
+            if (id == Guid.Empty)
+                return BadRequest("project id is empty");
+
+            var project = UnitOfWork.ProjectsRepository.Find(id);
+            if (project == null)
+                return NotFound();
+
+            // TODO: validate permissions. does the current user has access to this?
+
+            var records = UnitOfWork.FilledFormsRepository
+                .AllAsNoTracking
+                .Where(x => x.ProjectId == id)
+                .Where(x => x.FormTemplate.Discriminator == FormTemplateDiscriminators.RegularThread)
+                .OrderByDescending(x => x.DateCreated);
+
+            var serialNumbers = records
+                .ToList()
+                .Select(x => x.Serial)
+                .ToList();
+
+            return Ok(serialNumbers);
         }
 
         #endregion CRUD

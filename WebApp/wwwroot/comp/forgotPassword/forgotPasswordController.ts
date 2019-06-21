@@ -21,7 +21,6 @@
 
         goNext: (form: ng.IFormController) => void;
         verifyAnswer: (form: ng.IFormController) => void;
-        resetPassword: (form: ng.IFormController) => void;
     }
 
     class ForgotPasswordController implements IForgotPasswordController {
@@ -41,7 +40,6 @@
 
             this.$scope.goNext = (form: ng.IFormController) => { this.goNext(form); };
             this.$scope.verifyAnswer = (form: ng.IFormController) => { this.verifyAnswer(form); };
-            this.$scope.resetPassword = (form: ng.IFormController) => { this.resetPassword(form); };
 
             this.populateQuestions();
         }

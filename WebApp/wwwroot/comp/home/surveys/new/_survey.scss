@@ -38,4 +38,18 @@
         display: inline-block;
         border-radius: 3px;
     }
+
+    .advice-records-wrap {
+        .advice-record-item {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+
+        .advice-record-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+    }
 }
