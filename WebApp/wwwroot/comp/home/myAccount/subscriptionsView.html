@@ -30,6 +30,7 @@
         </div>
         <div class="box-content">
             <div ng-if="lastSubscription.id">
+                <!-- paid subscription -->
                 <div ng-if="lastSubscription.type === 0">
                     <p class="lead">{{lastSubscription.note}}</p>
                     <p>
@@ -63,24 +64,28 @@
                     </p>
                 </div>
 
+                <!-- organisation subscription -->
                 <div ng-if="lastSubscription.type === 1">
                     <p class="lead">Your subscription is managed by your organisation.</p>
-                    <p>
-                        Starting from <strong>{{lastSubscription.startDate | amDateFormat: 'L'}}</strong>
-                    </p>
+                    <p>Starting from <strong>{{lastSubscription.startDate | amDateFormat: 'L'}}</strong></p>
                     <p>{{lastSubscription.note}}</p>
+
+                    <button type="button" class="btn btn-primary" ng-if="ctrl.canUnlinkFromOrganization"
+                            ng-bootbox-confirm="Are you sure you want to unlink from your organisation?"
+                            ng-bootbox-confirm-action="ctrl.unlinkFromOrganisation()">
+                        <i class="fa fa-unlink"></i> Unlink from organisation
+                    </button>
                 </div>
 
+                <!-- voucher subscription -->
                 <div ng-if="lastSubscription.type === 2">
                     <p class="lead">You are subscribed using a voucher.</p>
                     <p>
                         Starting from <strong>{{lastSubscription.startDate | amDateFormat: 'L'}}</strong>
                     </p>
-                    <p>You have a fixed monthly quota for uploading records. If you need more space please purchase a subscription or join an organizati
-on.
+                    <p>You have a fixed monthly quota for uploading records. If you need more space please purchase a subscription or join an organization.
                     </p>
-                    ti
-                      <!--<p>{{lastSubscription.note}}</p>-->
+                    <!--<p>{{lastSubscription.note}}</p>-->
                 </div>
             </div>
 
@@ -92,7 +97,7 @@ on.
 
             <div class="row">
                 <div class="col-md-6">
-                    <div>
+                    <div id="records-quota">
                         <p><strong>Monthly quota</strong></p>
                         <uib-progressbar class="progress-striped active" max="quota.quota" type="info"
                                          ng-if="quota.quota && quota.used === 0"><i>0 / {{quota.quota}}</i></uib-progressbar>
@@ -105,7 +110,7 @@ on.
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div>
+                    <div id="disk-space-quota">
                         <p><strong>Monthly disk space</strong></p>
                         <uib-progressbar class="progress-striped active" max="quota.quota" type="success"
                                          ng-if="quota.maxDiskSpace && quota.usedDiskSpace === 0"><i>0 / {{quota.maxDiskSpace}}</i></uib-progressbar>
@@ -148,48 +153,60 @@ on.
 
             <div ng-if="subscriptions.length">
                 <hr />
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th class="text-center" width="100">Start Date</th>
-                                <th class="text-center" width="100">End Date</th>
-                                <th class="text-center" width="100">Price</th>
-                                <th class="text-center" width="100">Length</th>
-                                <th>Note</th>
-                                <th class="text-center" width="120">Type</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="entry in subscriptions track by $index" ng-class="{ 'success': entry.isActive }">
-                                <td class="text-center">{{entry.startDate | amDateFormat: 'DD/MM/YYYY'}}</td>
-                                <td class="text-center">
-                                    <span ng-if="entry.endDate">{{entry.endDate | amDateFormat: 'DD/MM/YYYY'}}</span>
-                                    <span ng-if="!entry.endDate">NA</span>
-                                </td>
-                                <td class="text-center">
-                                    <span ng-if="entry.price">{{entry.price | currency : '&pound;'}}</span>
-                                    <span ng-if="!entry.price">NA</span>
-                                </td>
-                                <td class="text-center">
-                                    <span ng-if="entry.subscriptionPlan">
-                                        <span ng-if="entry.subscriptionPlan.length == 1">a month</span>
-                                        <span ng-if="entry.subscriptionPlan.length > 1">{{entry.subscriptionPlan.length}} months</span>
-                                    </span>
-                                    <span ng-if="!entry.subscriptionPlan">NA</span>
-                                </td>
-                                <td>{{entry.note}}</td>
-                                <td class="text-center">
-                                    <span ng-if="entry.type == 1">Organisation</span>
-                                    <span ng-if="entry.type == 0">Paid plan</span>
-                                    <span ng-if="entry.type == 2">Voucher</span>
-                                </td>
-                            </tr>
-                            <tr ng-if="!subscriptions.length">
-                                <td colspan="6">No subscriptions were found</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div st-table="displayedSubscriptions" st-safe-src="subscriptions">
+                    <form name="search-form" class="form-inline">
+                        <lm-form-group label="Search: ">
+                            <input st-search type="text" id="search" name="search" ng-model="subscriptionsSearchTerm" placeholder="Date, price, length or note" style="min-width: 200px" />
+                        </lm-form-group>
+                    </form>
+
+                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th class="text-center" width="100">Start Date</th>
+                                    <th class="text-center" width="100">End Date</th>
+                                    <th class="text-center" width="100">Price</th>
+                                    <th class="text-center" width="100">Length</th>
+                                    <th>Note</th>
+                                    <th class="text-center" width="120">Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="entry in displayedSubscriptions track by $index" ng-class="{ 'success': entry.isActive }">
+                                    <td class="text-center">{{entry.startDate | amDateFormat: 'DD/MM/YYYY'}}</td>
+                                    <td class="text-center">
+                                        <span ng-if="entry.endDate">{{entry.endDate | amDateFormat: 'DD/MM/YYYY'}}</span>
+                                        <span ng-if="!entry.endDate">NA</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-if="entry.price">{{entry.price | currency : '&pound;'}}</span>
+                                        <span ng-if="!entry.price">NA</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span ng-if="entry.subscriptionPlan">
+                                            <span ng-if="entry.subscriptionPlan.length == 1">a month</span>
+                                            <span ng-if="entry.subscriptionPlan.length > 1">{{entry.subscriptionPlan.length}} months</span>
+                                        </span>
+                                        <span ng-if="!entry.subscriptionPlan">NA</span>
+                                    </td>
+                                    <td>{{entry.note}}</td>
+                                    <td class="text-center">
+                                        <span ng-if="entry.type == 1">Organisation</span>
+                                        <span ng-if="entry.type == 0">Paid plan</span>
+                                        <span ng-if="entry.type == 2">Voucher</span>
+                                    </td>
+                                </tr>
+                                <tr ng-if="!subscriptions.length">
+                                    <td colspan="6">No subscriptions were found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
                 </div>
             </div>
         </div>

@@ -2,7 +2,7 @@
 <button class="btn btn-default hidden-print" ng-click="ctrl.resetView()">
     <i class="fa fa-refresh"></i> Reset View
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.toggleTimeline()">
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleTimeline()" ng-if="ctrl.discriminator == 0">
     <span ng-if="ctrl.showTimeline">
         <i class="fa fa-toggle-on"></i> Hide Timeline
     </span>
@@ -10,7 +10,7 @@
         <i class="fa fa-toggle-off"></i> Show Timeline
     </span>
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.toggleSnapshotView()" ng-if="ctrl.showTimeline">
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleSnapshotView()" ng-if="ctrl.showTimeline && ctrl.discriminator == 0">
     <span ng-if="ctrl.enableSnapshotView">
         <i class="fa fa-toggle-on"></i> Compressed View
     </span>
@@ -18,7 +18,7 @@
         <i class="fa fa-toggle-off"></i> Monthly View
     </span>
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.toggleMap()">
+<button class="btn btn-default hidden-print" ng-click="ctrl.toggleMap()" ng-if="ctrl.discriminator == 0">
     <span ng-if="ctrl.showMap">
         <i class="fa fa-toggle-on"></i> Hide Map
     </span>
@@ -26,10 +26,10 @@
         <i class="fa fa-toggle-off"></i> Show Map
     </span>
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.setMapBounds()">
+<button class="btn btn-default hidden-print" ng-click="ctrl.setMapBounds()" ng-if="ctrl.discriminator == 0">
     <i class="fa fa-map-o"></i> Set Map Bounds
 </button>
-<button class="btn btn-default hidden-print" ng-click="ctrl.togglePieChart()">
+<button class="btn btn-default hidden-print" ng-click="ctrl.togglePieChart()" ng-if="ctrl.discriminator == 0">
     <span ng-if="ctrl.showPieChart">
         <i class="fa fa-toggle-on"></i> Hide Pie Chart
     </span>

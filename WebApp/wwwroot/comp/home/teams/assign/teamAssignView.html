@@ -2,10 +2,12 @@
 <div class="wrapper wrapper-content animated fadeInRight organisation-teams">
     <div class="box">
         <div class="box-title">
-            <h5>Assign Users</h5>
+            <h5>Assign Staff Members</h5>
             <div class="box-tools">
-                <a ng-bootbox-confirm="Are you sure you want to do this?" ng-bootbox-confirm-action="ctrl.submit()" style="color: inherit">
-                    <i class="fa fa-check"></i><span class="hidden-xs"> Click here to confirm your selection</span>
+                <a class="btn btn-default btn-xs"
+                   ng-bootbox-confirm="Are you sure you want to do this?"
+                   ng-bootbox-confirm-action="ctrl.submit()" style="color: inherit">
+                    <i class="fa fa-check"></i><span class="hidden-xs"> Submit your selection</span>
                 </a>
             </div>
         </div>
@@ -59,7 +61,7 @@
                                 </td>
                             </tr>
                             <tr ng-if="!displayedAssignments.length">
-                                <td colspan="4">No user assignments were found</td>
+                                <td colspan="4">No staff members to add</td>
                             </tr>
                         </tbody>
                     </table>

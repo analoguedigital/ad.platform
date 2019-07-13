@@ -34,7 +34,9 @@ module App {
     }
 
     class NewSurveyController implements INewSurveyController {
-        title: string = "Forms";
+        title: string;
+        subtitle: string;
+
         pages: _.Dictionary<Models.IMetricGroup[]>;
         tabs: any[];
         locations: any[];
@@ -87,8 +89,14 @@ module App {
         }
 
         activate() {
+            this.title = this.project.name;
             var surveyId = this.$stateParams["surveyId"];
             this.$scope.isInsertMode = surveyId === undefined;
+            if (this.$scope.isInsertMode) {
+                this.subtitle = this.formTemplate.discriminator == 0 ? 'New Record' : 'New Advice Record';
+            } else {
+                this.subtitle = this.formTemplate.discriminator == 0 ? 'Edit Record' : 'Edit Advice Record';
+            }
 
             // extract location information.
             this.getLocations();
@@ -120,7 +128,7 @@ module App {
                 this.survey.serialReferences = '';
 
                 _.forEach(_references, (item) => {
-                    this.survey.serialReferences += '#' + item + ',';
+                    this.survey.serialReferences += '#' + item + ', ';
                 });
             }
 
@@ -148,12 +156,14 @@ module App {
             // check for advice responses
             if (this.formTemplate.discriminator === 1 && !this.$scope.isInsertMode && this.survey.isRead === false) {
                 var orgUser = this.userContextService.current.orgUser;
-                if (orgUser !== null && this.survey.projectId === orgUser.currentProjectId) {
-                    this.surveyResource.markAsRead({ id: this.survey.id }, (res) => {
-                        // advice response marked as read.
-                    }, (err) => {
-                        console.error(err);
-                    });
+                if (orgUser !== null) {
+                    if (this.survey.projectId === orgUser.currentProjectId) {
+                        this.surveyResource.markAsRead({ id: this.survey.id }, (res) => {
+                            // advice response marked as read.
+                        }, (err) => {
+                            console.error(err);
+                        });
+                    }
                 }
             }
         }
@@ -419,7 +429,7 @@ module App {
 
         setSurveyLocation() {
             var self = this;
-            var deferred = this.$q.defer();         
+            var deferred = this.$q.defer();
 
             if (this.$scope.geocoding.hasLocation) {
                 this.survey.locations = [];
@@ -440,53 +450,63 @@ module App {
             return deferred.promise;
         }
 
+        postSurvey() {
+            this.surveyResource.save(this.survey).$promise
+                .then(
+                () => {
+                    if (this.$rootScope.previousState.name.length) {
+                        this.$state.go(this.$rootScope.previousState.name, this.$rootScope.previousStateParams);
+                    } else {
+                        this.$state.go('home.surveys.list.summary', { projectId: this.project.id });
+                    }
+                },
+                (err) => {
+                    console.error(err);
+                    if (err.status == 400) {
+                        this.toastr.error(err.data.message);
+                    } else {
+                        this.toastr.error('An error has occured, sorry');
+                    }
+                });
+        }
+
+        updateSurvey() {
+            this.surveyResource.update(this.survey,
+                () => {
+                    if (this.$rootScope.previousState.name) {
+                        this.$state.go(this.$rootScope.previousState.name, this.$rootScope.previousStateParams);
+                    } else {
+                        this.$state.go('home.surveys.list.summary', { projectId: this.survey.projectId });
+                    }
+                },
+                (err) => {
+                    console.log(err);
+                    this.toastr.error(err.data);
+                });
+        }
+
+        submitSurvey() {
+            if (this.survey.id == null)
+                this.postSurvey();
+            else
+                this.updateSurvey();
+        }
+
         submit(form: ng.IFormController) {
             if (form.$invalid) {
                 this.toastr.error('Validation failed, please try again');
                 return;
             }
 
-            var prevState = this.$rootScope.previousState;
-            var prevParams = this.$rootScope.previousStateParams;
-
-            this.setSurveyLocation().then(() => {
-                if (this.survey.id == null) {
-                    this.surveyResource.save(this.survey).$promise
-                        .then(
-                        () => {
-                            if (prevState.name.length) {
-                                this.$state.go(prevState.name, prevParams);
-                            } else {
-                                this.$state.go('home.surveys.list.summary', { projectId: this.project.id });
-                            }
-                        },
-                        (err) => {
-                            console.error(err);
-                            if (err.status == 400) {
-                                this.toastr.error(err.data.message);
-                            } else {
-                                this.toastr.error('An error has occured, sorry');
-                            }
-                        });
-                }
-                else {
-                    this.surveyResource.update(this.survey,
-                        () => {
-                            if (prevState.name) {
-                                this.$state.go(prevState.name, prevParams);
-                            } else {
-                                this.$state.go('home.surveys.list.summary', { projectId: this.survey.projectId });
-                            }
-                        },
-                        (err) => {
-                            console.log(err);
-                            this.toastr.error(err.data);
-                        });
-                }
-
-            }, (err) => {
-                console.error('SET LOCATION ERROR', err);
-            });
+            if (this.formTemplate.discriminator === 0) {
+                this.setSurveyLocation().then(() => {
+                    this.submitSurvey();
+                }, (err) => {
+                    console.error('SET LOCATION ERROR', err);
+                });
+            } else if (this.formTemplate.discriminator === 1) {
+                this.submitSurvey();
+            }
         }
     }
 

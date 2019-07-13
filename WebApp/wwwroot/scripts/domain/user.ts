@@ -4,6 +4,7 @@
     export interface IUserBase {
         id: string;
         email: string;
+        userName: string;
         emailConfirmed: boolean;
         password: string;
         phoneNumber: string;
@@ -41,6 +42,7 @@
         isMember: boolean;
         isManager: boolean;
         isSelected: boolean;
+        isAuthorizedStaff: boolean;
         quota: IMonthlyQuota;
     }
 }

@@ -1,9 +1,9 @@
 ﻿<form role="form" class="form-horizontal">
-    <div class="form-group">
+    <div class="form-group" ng-style="ctrl.surveys.length > 10 && { 'margin-bottom': '0' }">
         <div class="col-md-3">
             <input type="text" class="form-control" placeholder="search through titles, descriptions and records" maxlength="50" ng-model="ctrl.searchTerm" />
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2" style="padding-left: 0">
             <div class="input-group">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="ctrl.openStartDateCalendar()"><i class="fa fa-calendar"></i></button>
@@ -13,7 +13,7 @@
                        ng-model="ctrl.startDate" placeholder="start (upload date)" />
             </div>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2" style="padding-left: 0">
             <div class="input-group">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="ctrl.openEndDateCalendar()"><i class="fa fa-calendar"></i></button>
@@ -21,7 +21,7 @@
                 <input uib-datepicker-popup="{{INPUT_DATE_FORMAT}}" is-open="ctrl.endDateCalendar.isOpen" class="form-control" type="text" name="start-date" ng-model="ctrl.endDate" placeholder="end (upload date)" />
             </div>
         </div>
-        <div class="col-md-3 pull-right" style="direction: rtl">
+        <div class="col-md-3 pull-right" style="direction: rtl; padding-left: 0">
             <button type="button" class="btn btn-primary" ng-click="ctrl.search()">
                 <i class="fa fa-search"></i> Search
             </button>
@@ -55,4 +55,3 @@
         </div>
     </div>
 </form>
-<hr />

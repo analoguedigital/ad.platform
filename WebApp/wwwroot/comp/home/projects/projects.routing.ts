@@ -90,6 +90,7 @@
                 controller: "projectSummaryPrintController",
                 controllerAs: "ctrl",
                 params: {
+                    'discriminator': 0,
                     'mapCenter': {},
                     'mapZoomLevel': 0,
                     'mapType': ''

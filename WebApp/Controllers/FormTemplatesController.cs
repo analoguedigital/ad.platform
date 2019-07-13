@@ -75,7 +75,14 @@ namespace WebApi.Controllers
                 var cacheEntry = MemoryCacher.GetValue(cacheKey);
                 if (cacheEntry == null)
                 {
-                    var templates = FormTemplatesService.Get(projectId, discriminator).ToList();
+                    //var templates = FormTemplatesService.Get(projectId, discriminator).ToList();
+
+                    List<FormTemplateDTO> templates = new List<FormTemplateDTO>();
+                    if (isOrgAdmin)
+                        templates = FormTemplatesService.GetFormTemplatesForOrgAdmin(projectId, discriminator);
+                    else
+                        templates = FormTemplatesService.GetFormTemplatesForOrgUser(projectId, discriminator);
+
                     MemoryCacher.Add(cacheKey, templates, DateTimeOffset.UtcNow.AddMinutes(1));
 
                     return Ok(templates);
@@ -95,7 +102,8 @@ namespace WebApi.Controllers
             var _cacheEntry = MemoryCacher.GetValue(_cacheKey);
             if (_cacheEntry == null)
             {
-                var templates = FormTemplatesService.Get(projectId, discriminator).ToList();
+                //var templates = FormTemplatesService.Get(projectId, discriminator).ToList();
+                var templates = FormTemplatesService.GetFormTemplatesForAdmins(projectId, discriminator);
                 MemoryCacher.Add(_cacheKey, templates, DateTimeOffset.UtcNow.AddMinutes(1));
 
                 return Ok(templates);

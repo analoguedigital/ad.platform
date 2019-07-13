@@ -15,7 +15,7 @@ module App {
     function lmMinimalizeSideBar($timeout: ng.ITimeoutService, localStorageService: ng.local.storage.ILocalStorageService): IlmMinimalizeSideBar {
         return {
             restrict: "A",
-            template: '<a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="" ng-click="minimalize()">'
+            template: '<a class="navbar-minimalize minimalize-styl-2 btn btn-primary" href="" ng-click="minimalize()">'
             + '<i class="fa fa-bars"></i></a>',
             controller: function ($scope, $element) {
                 $scope.minimalize = function () {

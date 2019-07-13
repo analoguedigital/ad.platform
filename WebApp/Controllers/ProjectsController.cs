@@ -251,24 +251,26 @@ namespace WebApi.Controllers
             {
                 UnitOfWork.ProjectsRepository.InsertOrUpdate(project);
 
-                if (CurrentUser is OrgUser)
-                {
-                    // when OrgAdmins create new projects,
-                    // assign them with full access.
-                    var orgAdminAssignment = new Assignment
-                    {
-                        OrgUserId = CurrentUser.Id,
-                        ProjectId = project.Id,
-                        CanView = true,
-                        CanAdd = true,
-                        CanEdit = true,
-                        CanDelete = true,
-                        CanExportPdf = true,
-                        CanExportZip = true
-                    };
+                // no need to create an assignment for the OrgAdmin.
+                // OrgAdmins have access to all projects under their organization.
+                //if (CurrentUser is OrgUser)
+                //{
+                //    // when OrgAdmins create new projects,
+                //    // assign them with full access.
+                //    var orgAdminAssignment = new Assignment
+                //    {
+                //        OrgUserId = CurrentUser.Id,
+                //        ProjectId = project.Id,
+                //        CanView = true,
+                //        CanAdd = true,
+                //        CanEdit = true,
+                //        CanDelete = true,
+                //        CanExportPdf = true,
+                //        CanExportZip = true
+                //    };
 
-                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgAdminAssignment);
-                }
+                //    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgAdminAssignment);
+                //}
 
                 UnitOfWork.Save();
 
@@ -370,10 +372,18 @@ namespace WebApi.Controllers
             if (orgUser == null)
                 return NotFound();
 
+            // reject client to client assignments
+            bool isCaseOwnerAClient = project.CreatedBy is OrgUser caseOwner && caseOwner.AccountType == AccountType.MobileAccount;
+            if (orgUser.AccountType == AccountType.MobileAccount && !project.IsAggregate && isCaseOwnerAClient)
+            {
+                return BadRequest("Client to client assignments are not allowed");
+            }
+
             var assignment = UnitOfWork.AssignmentsRepository.AssignAccessLevel(id, userId, accessLevel, grant: true);
             var result = Mapper.Map<ProjectAssignmentDTO>(assignment);
 
             MemoryCacher.DeleteStartingWith("ORG_TEAMS_ASSIGNMENTS");
+            MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
             return Ok(result);
         }
@@ -403,6 +413,7 @@ namespace WebApi.Controllers
                 return Ok(Mapper.Map<ProjectAssignmentDTO>(updatedAssignment));
 
             MemoryCacher.DeleteStartingWith("ORG_TEAMS_ASSIGNMENTS");
+            MemoryCacher.DeleteStartingWith(CACHE_KEY);
 
             return Ok(new ProjectAssignmentDTO());
         }
@@ -420,9 +431,26 @@ namespace WebApi.Controllers
             if (project == null)
                 return NotFound();
 
-            var result = project.Assignments
+            var assignments = project.Assignments;
+
+            if (CurrentUser is OrgUser)
+            {
+                // if an OrgAdmin is requesting this,
+                // filter the assignments to the current organization.
+                assignments = assignments
+                    .Where(x => x.OrgUser.Organisation.Id == CurrentOrgUser.Organisation.Id)
+                    .ToList();
+            }
+
+            var result = assignments
                 .Select(a => Mapper.Map<ProjectAssignmentDTO>(a))
                 .ToList();
+
+            foreach (var item in result)
+            {
+                if (project.CreatedBy != null && project.CreatedBy.Id == item.OrgUserId)
+                    item.IsOwner = true;
+            }
 
             return Ok(result);
         }
@@ -452,7 +480,7 @@ namespace WebApi.Controllers
             //var title = $"{model.Title} {random.Next(1, 10000)}";
             //var color = String.Format("#{0:X6}", random.Next(0x1000000)); // = "#A197B9"
 
-            var adviceThread = UnitOfWork.FormTemplatesRepository.CreateAdviceThread(template, CurrentUser.Id, model.Title, model.Colour, id);
+            var adviceThread = UnitOfWork.FormTemplatesRepository.CreateAdviceThread(template, CurrentUser.Id, model.Title, model.Colour, id, project.OrganisationId);
             var returnValue = Mapper.Map<FormTemplateDTO>(adviceThread);
 
             // create a thread assignment for the project owner.
@@ -474,10 +502,7 @@ namespace WebApi.Controllers
             try
             {
                 UnitOfWork.Save();
-
-                // TODO: we've created a new form-template, so i think
-                // we need to invalidate FORM_TEMPLATES from cache.
-
+                MemoryCacher.DeleteStartingWith("FORM_TEMPLATES");
                 return Ok(returnValue);
             }
             catch (Exception ex)
@@ -500,22 +525,30 @@ namespace WebApi.Controllers
             var templateId = Guid.Parse("74EADB8F-7434-49C0-AD5A-854B0E77BCBD");    // seed template
             var template = UnitOfWork.FormTemplatesRepository.Find(templateId);
 
-            var formTemplateService = new FormTemplatesService(UnitOfWork, CurrentOrgUser, CurrentUser);
-            var result = formTemplateService.Clone(templateId, new CloneReqDTO
+            //var formTemplateService = new FormTemplatesService(UnitOfWork, CurrentOrgUser, CurrentUser);
+            //var result = formTemplateService.Clone(templateId, new CloneReqDTO
+            //{
+            //    Code = model.Code,
+            //    Title = model.Title,
+            //    Description = model.Description,
+            //    Colour = model.Colour,
+            //    ProjectId = id
+            //});
+
+            try
             {
-                Code = model.Code,
-                Title = model.Title,
-                Description = model.Description,
-                Colour = model.Colour,
-                ProjectId = id
-            });
+                var newThread = UnitOfWork.FormTemplatesRepository.CreateRegularThread(template, CurrentUser.Id, model.Title, model.Description, model.Colour, id, project.OrganisationId);
+                var returnValue = Mapper.Map<FormTemplateDTO>(newThread);
 
-            // invalidate form-template cache entries
-            MemoryCacher.DeleteStartingWith("FORM_TEMPLATES");
-
-            return Ok(result);
+                MemoryCacher.DeleteStartingWith("FORM_TEMPLATES");
+                return Ok(returnValue);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
-        
+
         #endregion Advice and Record Threads
 
         [Route("api/projects/user/{orgUserId:guid}")]

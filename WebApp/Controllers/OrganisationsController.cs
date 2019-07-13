@@ -319,8 +319,14 @@ namespace WebApi.Controllers
                 NotifyOrgAdminAboutUserLeaving(org, orgUser.UserName);
 
                 UnitOfWork.Save();
+
+                // invalidate organizations and OrgUsers from cache
                 MemoryCacher.DeleteStartingWith(CACHE_KEY);
                 MemoryCacher.DeleteStartingWith("ORG_USERS");
+
+                // invalidate projects from cache
+                MemoryCacher.DeleteStartingWith("PROJECTS_ADMIN");
+                MemoryCacher.DeleteStartingWith("PROJECTS_ORG_ADMIN");
 
                 return Ok();
             }

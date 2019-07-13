@@ -21,6 +21,7 @@
         isRead?: boolean;
 
         serialReferences: string;
+        discriminator: string;
     }
 
     export interface IPosition {

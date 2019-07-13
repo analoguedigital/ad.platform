@@ -167,6 +167,19 @@ module App {
                 }
             });
         }
+
+        updateStatus(userId: string, isAuthorized: boolean) {
+            var payload = {
+                userId: userId,
+                isAuthorizedStaff: isAuthorized
+            };
+
+            this.orgUserResource.updateStatus(payload, (result) => {
+                // user status updated.
+            }, (err) => {
+                console.error(err);
+            });
+        }
     }
 
     angular.module("app").controller("usersController", UsersController);

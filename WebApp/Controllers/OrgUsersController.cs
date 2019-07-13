@@ -51,7 +51,7 @@ namespace WebApi.Controllers
         [DeflateCompression]
         [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
         [Route("api/orgusers/{listType:int}/{organisationId?}")]
-        public IHttpActionResult Get(OrgUserListType listType, Guid? organisationId = null)
+        public async Task<IHttpActionResult> Get(OrgUserListType listType, Guid? organisationId = null)
         {
             if (CurrentUser is OrgUser)
             {
@@ -60,7 +60,7 @@ namespace WebApi.Controllers
 
                 if (cacheEntry == null)
                 {
-                    var users = UserService.GetOrgUsers(listType, CurrentOrgUser.OrganisationId);
+                    var users = await UserService.GetOrgUsers(listType, CurrentOrgUser.OrganisationId);
                     MemoryCacher.Add(cacheKey, users, DateTimeOffset.UtcNow.AddMinutes(1));
 
                     return Ok(users);
@@ -78,7 +78,7 @@ namespace WebApi.Controllers
 
             if (_cacheEntry == null)
             {
-                var users = UserService.GetOrgUsers(listType, organisationId);
+                var users = await UserService.GetOrgUsers(listType, organisationId);
                 MemoryCacher.Add(_cacheKey, users, DateTimeOffset.UtcNow.AddMinutes(1));
 
                 return Ok(users);
@@ -112,6 +112,29 @@ namespace WebApi.Controllers
                 var result = (List<OrgUserDTO>)cacheEntry;
                 return new CachedResult<List<OrgUserDTO>>(result, TimeSpan.FromMinutes(1), this);
             }
+        }
+
+        [DeflateCompression]
+        [ResponseType(typeof(IEnumerable<OrgUserDTO>))]
+        [Route("api/orgusers/staff-members")]
+        public IHttpActionResult GetStaffMembers(Guid? organisationId = null)
+        {
+            var staffMembers = UnitOfWork.OrgUsersRepository
+                .AllIncludingNoTracking(x => x.Type)
+                .Where(x => x.AccountType == AccountType.WebAccount && !x.IsRootUser)
+                .OrderBy(x => x.Surname)
+                .ThenBy(x => x.FirstName)
+                .AsQueryable();
+
+            if (organisationId.HasValue)
+                staffMembers = staffMembers.Where(x => x.OrganisationId == organisationId);
+
+            var result = staffMembers
+                .ToList()
+                .Select(x => Mapper.Map<OrgUserDTO>(x))
+                .ToList();
+
+            return Ok(result);
         }
 
         // GET /api/orgUsers/{id}
@@ -157,6 +180,13 @@ namespace WebApi.Controllers
 
             if (value.AccountType == AccountType.MobileAccount)
             {
+                if (CurrentUser is OrgUser && CurrentOrgUser.Type == OrgUserTypesRepository.Administrator)
+                {
+                    // OrgAdmins are not able to create clients.
+                    // mobile accounts are registered via the mobile app.
+                    return Unauthorized();
+                }
+
                 // the OrgUserType property is hidden in mobile-users' edit form.
                 // so the Type is null at this point. fetch and populate.
                 // TeamUser Type ID: 379c989a-9919-4338-a468-a7c20eb76e28
@@ -194,33 +224,36 @@ namespace WebApi.Controllers
 
             var organisation = UnitOfWork.OrganisationRepository.Find(orguser.OrganisationId.Value);
 
-            if (value.Type.Name.ToLower() == "administrator")
-            {
-                var projects = UnitOfWork.ProjectsRepository
-                    .AllAsNoTracking
-                    .Where(p => p.OrganisationId == orguser.OrganisationId.Value)
-                    .Select(x => x.Id)
-                    .ToList();
+            // NOTE: it's no longer necessary to assign OrgAdmins.
+            // they don't need assignment and have access to everything
+            // under their own organization. this block is obsolete.
+            //if (value.Type.Name.ToLower() == "administrator")
+            //{
+            //    var projects = UnitOfWork.ProjectsRepository
+            //        .AllAsNoTracking
+            //        .Where(p => p.OrganisationId == orguser.OrganisationId.Value)
+            //        .Select(x => x.Id)
+            //        .ToList();
 
-                foreach (var projectId in projects)
-                {
-                    var orgUserAssignment = new Assignment
-                    {
-                        ProjectId = projectId,
-                        OrgUserId = orguser.Id,
-                        CanView = true,
-                        CanAdd = true,
-                        CanEdit = true,
-                        CanDelete = true,
-                        CanExportPdf = true,
-                        CanExportZip = true
-                    };
+            //    foreach (var projectId in projects)
+            //    {
+            //        var orgUserAssignment = new Assignment
+            //        {
+            //            ProjectId = projectId,
+            //            OrgUserId = orguser.Id,
+            //            CanView = true,
+            //            CanAdd = true,
+            //            CanEdit = true,
+            //            CanDelete = true,
+            //            CanExportPdf = true,
+            //            CanExportZip = true
+            //        };
 
-                    UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
-                }
+            //        UnitOfWork.AssignmentsRepository.InsertOrUpdate(orgUserAssignment);
+            //    }
 
-                UnitOfWork.Save();
-            }
+            //    UnitOfWork.Save();
+            //}
 
             // create a project for this user
             var project = new Project()
@@ -250,20 +283,20 @@ namespace WebApi.Controllers
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
 
             // assign organisation admin to this project
-            if (organisation.RootUser != null)
-            {
-                UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
-                {
-                    ProjectId = project.Id,
-                    OrgUserId = organisation.RootUserId.Value,
-                    CanView = true,
-                    CanAdd = true,
-                    CanEdit = true,
-                    CanDelete = true,
-                    CanExportPdf = true,
-                    CanExportZip = true
-                });
-            }
+            //if (organisation.RootUser != null)
+            //{
+            //    UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
+            //    {
+            //        ProjectId = project.Id,
+            //        OrgUserId = organisation.RootUserId.Value,
+            //        CanView = true,
+            //        CanAdd = true,
+            //        CanEdit = true,
+            //        CanDelete = true,
+            //        CanExportPdf = true,
+            //        CanExportZip = true
+            //    });
+            //}
 
             UnitOfWork.Save();
 
@@ -329,8 +362,60 @@ namespace WebApi.Controllers
             if (orguser == null)
                 return NotFound();
 
-            orguser.Email = value.Email;
-            orguser.EmailConfirmed = value.EmailConfirmed;
+            if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
+            {
+                orguser.EmailConfirmed = value.EmailConfirmed;
+
+                if (value.Email != orguser.Email || value.UserName != orguser.UserName)
+                {
+                    if (value.Email != value.UserName)
+                        return BadRequest("Email address and username do not match");
+
+                    orguser.Email = value.Email;
+                    orguser.UserName = value.UserName;
+                }
+
+                if (value.CurrentProject != null && orguser.CurrentProjectId != value.CurrentProject.Id)
+                {
+                    // value.CurrentProject.Organisation resolves to NULL here.
+                    //if (Guid.Parse(value.CurrentProject.Organisation.Id) != orguser.Organisation.Id)
+
+                    var selectedProject = UnitOfWork.ProjectsRepository
+                        .AllAsNoTracking
+                        .Where(x => x.Id == value.CurrentProject.Id)
+                        .SingleOrDefault();
+                    
+                    // NOTE: if the selectedProject is not found,
+                    // do we return NotFound or BadRequest, or 
+                    // just ignore it silently and carry on?
+
+                    if (selectedProject != null)
+                    {
+                        if (selectedProject.OrganisationId != orguser.OrganisationId)
+                            return BadRequest("The selected current project does not belong to this user's organisation");
+
+                        orguser.CurrentProjectId = value.CurrentProject.Id;
+                    }
+                }
+            }
+
+            if (CurrentUser is OrgUser && CurrentOrgUser.Type == OrgUserTypesRepository.Administrator)
+            {
+                if (value.Email != orguser.Email || value.UserName != orguser.UserName)
+                {
+                    if (value.AccountType == AccountType.MobileAccount)
+                        return BadRequest("OrgAdmins cannot change emails/usernames for clients");
+
+                    if (value.Email != value.UserName)
+                        return BadRequest("Email address and username do not match");
+
+                    orguser.Email = value.Email;
+                    orguser.UserName = value.UserName;
+                }
+            }
+
+            //orguser.Email = value.Email;
+            //orguser.EmailConfirmed = value.EmailConfirmed;
             orguser.FirstName = value.FirstName;
             orguser.Surname = value.Surname;
             orguser.TypeId = value.Type.Id;
@@ -342,17 +427,6 @@ namespace WebApi.Controllers
 
             if (!orguser.PhoneNumberConfirmed)
                 orguser.PhoneNumber = string.IsNullOrEmpty(value.PhoneNumber) ? null : value.PhoneNumber;
-
-            if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
-            {
-                if (value.CurrentProject != null)
-                {
-                    if (Guid.Parse(value.CurrentProject.Organisation.Id) != orguser.Organisation.Id)
-                        return BadRequest("The selected current project does not belong to this user's organisation");
-
-                    orguser.CurrentProjectId = value.CurrentProject.Id;
-                }
-            }
 
             try
             {
@@ -548,5 +622,31 @@ namespace WebApi.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("api/orgUsers/{userId:guid}/updateStatus/{isAuthorizedStaff:bool}")]
+        public async Task<IHttpActionResult> UpdateStatus(Guid userId, bool isAuthorizedStaff)
+        {
+            if (userId == Guid.Empty)
+                return BadRequest("User Id is empty");
+
+            var orgUser = UnitOfWork.OrgUsersRepository.Find(userId);
+            if (orgUser == null)
+                return NotFound();
+
+            if (orgUser.IsRootUser)
+                return BadRequest("Root users cannot become authorized staff");
+
+            if (orgUser.AccountType == AccountType.MobileAccount)
+                return BadRequest("Clients cannot become authorized staff");
+
+            if (isAuthorizedStaff)
+                await UnitOfWork.UserManager.AddToRoleAsync(userId, Role.ORG_AUTHORIZED_STAFF);
+            else
+                await UnitOfWork.UserManager.RemoveFromRoleAsync(userId, Role.ORG_AUTHORIZED_STAFF);
+
+            MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+            return Ok();
+        }
     }
 }

@@ -63,11 +63,11 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="Hangfire.Core, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hangfire.Core.1.7.3\lib\net46\Hangfire.Core.dll</HintPath>
+    <Reference Include="Hangfire.Core, Version=1.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.Core.1.7.4\lib\net46\Hangfire.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Hangfire.SqlServer, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hangfire.SqlServer.1.7.3\lib\net45\Hangfire.SqlServer.dll</HintPath>
+    <Reference Include="Hangfire.SqlServer, Version=1.7.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.SqlServer.1.7.4\lib\net45\Hangfire.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.2\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -207,6 +207,8 @@
     <Content Include="wwwroot\comp\home\calendar\calendarView.html" />
     <Content Include="wwwroot\comp\home\emailRecipients\emailRecipientsView.html" />
     <Content Include="wwwroot\comp\home\projects\addRecordThread\addRecordThreadModalView.html" />
+    <Content Include="wwwroot\comp\home\projects\assignments\_dataTable.html" />
+    <Content Include="wwwroot\comp\home\projects\summary\advice-references\advice-references-view.html" />
     <Content Include="wwwroot\comp\home\projects\summary\slideshow\slideshow-view.html" />
     <Content Include="wwwroot\comp\home\projects\summary\timeline-datepicker\timeline-datepicker-view.html" />
     <Content Include="wwwroot\comp\home\sharedThreads\sharedThreadsView.html" />
@@ -319,13 +321,19 @@
     <Content Include="wwwroot\comp\home\administrators\editSuperUser\superUserEditView.html" />
     <Content Include="wwwroot\comp\home\users\edit\userEditView.html" />
     <Content Include="wwwroot\comp\home\administrators\addSuperUser\addSuperUserView.html" />
+    <Content Include="wwwroot\comp\home\users\edit\_stats.html" />
+    <Content Include="wwwroot\comp\home\users\edit\_subscriptions.html" />
+    <Content Include="wwwroot\comp\home\users\edit\_teams.html" />
+    <Content Include="wwwroot\comp\home\users\edit\_userForm.html" />
     <Content Include="wwwroot\comp\home\users\inactive\inactiveUsersView.html" />
     <Content Include="wwwroot\comp\home\users\mobile\mobileUsersView.html" />
+    <Content Include="wwwroot\comp\home\users\mobile\_clientsTable.html" />
     <Content Include="wwwroot\comp\home\users\usersView.html" />
     <Content Include="wwwroot\comp\home\surveys\all\allSurveysView.html" />
     <Content Include="wwwroot\comp\home\surveys\new\newSurveyView.html" />
     <Content Include="wwwroot\comp\home\surveys\summary\surveysSummaryView.html" />
     <Content Include="wwwroot\comp\home\surveys\surveysView.html" />
+    <Content Include="wwwroot\comp\home\users\_usersTable.html" />
     <Content Include="wwwroot\comp\login\loginView.html" />
     <Content Include="wwwroot\comp\login\_loginForm.html" />
     <Content Include="wwwroot\comp\login\_verificationForm.html" />
@@ -427,6 +435,7 @@
     <Compile Include="Providers\ApplicationOAuthProvider.cs" />
     <Compile Include="Results\CachedResult.cs" />
     <Compile Include="Results\ChallengeResult.cs" />
+    <Compile Include="Services\AccountDataExportsCleanupService.cs" />
     <Compile Include="Services\EmailService.cs" />
     <Compile Include="Services\MemoryCacher.cs" />
     <Compile Include="Services\ProjectSummaryPrintSessionService.cs" />
@@ -529,6 +538,7 @@
     <Content Include="wwwroot\comp\home\surveys\all\_allSurveysView.scss" />
     <Content Include="wwwroot\assets\summary-guide.pdf" />
     <Content Include="wwwroot\comp\home\statistics\_statisticsView.scss" />
+    <Content Include="wwwroot\scss\_dark_mode.scss" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -576,6 +586,7 @@
     <TypeScriptCompile Include="wwwroot\comp\home\emailRecipients\emailRecipients.routing.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\emailRecipients\emailRecipientsController.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\addRecordThread\addRecordThreadModalController.ts" />
+    <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\advice-references\advice-references-controller.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\slideshow\slideshow-controller.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\projects\summary\timeline-datepicker\timeline-datepicker-controller.ts" />
     <TypeScriptCompile Include="wwwroot\comp\home\sharedThreads\sharedThreads.routing.ts" />

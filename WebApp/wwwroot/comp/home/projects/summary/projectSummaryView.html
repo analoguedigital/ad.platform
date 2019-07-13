@@ -14,13 +14,13 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" ng-if="ctrl.discriminator == 0">
                 <div class="col-md-12">
                     <div ng-include="'comp/home/projects/summary/_timeline.html'"></div>
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row" ng-if="ctrl.discriminator == 0">
                 <div class="col-lg-6">
                     <div ng-include="'comp/home/projects/summary/_locations.html'"></div>
                 </div>

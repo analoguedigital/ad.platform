@@ -12,6 +12,7 @@
         surveys: Array<Models.ISurvey>;
         uniqFormTemplates: Models.IFormTemplate[];
         locationCount: number;
+        discriminator: number;
 
         activate: () => void;
         downloadPdf: () => void;
@@ -34,6 +35,8 @@
         surveys: Array<Models.ISurvey> = [];
         uniqFormTemplates: Models.IFormTemplate[];
         locationCount: number;
+        discriminator: number;
+
         showMap: boolean = false;
         showPieChart: boolean = false;
         showTimeline: boolean = true;
@@ -73,13 +76,15 @@
         }
 
         activate() {
+            var self = this;
+
             if (this.session == null) {
                 // session has timed out. redirect to home.
                 this.$state.go('home.dashboard.layout');
                 return;
             }
 
-            var self = this;
+            this.discriminator = this.$stateParams.discriminator;
 
             var _timeline = this.$location.search().timeline;
             var _locations = this.$location.search().locations;
@@ -275,6 +280,15 @@
 
         resetView() {
             this.session.removedItemIds = [];
+
+            _.forEach(this.surveys, (survey: Models.ISurvey) => {
+                _.forEach(survey.formValues, (fv: Models.IFormValue) => {
+                    _.forEach(fv.attachments, (a: Models.IAttachment) => {
+                        a.isDeleted = false;
+                    });
+                });
+            });
+
             //this.showTimeline = true;
             //this.showMap = true;
             //this.showPieChart = true;
@@ -391,7 +405,6 @@
         setMapBounds() {
             this.$rootScope.$broadcast('update_locations_map_bounds');
         }
-
     }
 
     angular.module("app").controller("projectSummaryPrintController", ProjectSummaryPrintController);

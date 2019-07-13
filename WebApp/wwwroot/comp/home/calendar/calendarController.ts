@@ -26,9 +26,10 @@
         projects: Models.IProject[] = [];
         selectedProject: Models.IProject;
         isCurrentUserAnAdmin: boolean;
+        noRecordsFound: boolean;
 
         static $inject: string[] = ["$scope", "$state", "$stateParams", "$uibModal", "$q",
-            "projectResource", "formTemplateResource", "surveyResource", "userContextService"];
+            "projectResource", "formTemplateResource", "surveyResource", "userContextService", "toastr"];
         constructor(
             private $scope: ICalendarControllerScope,
             private $state: ng.ui.IStateService,
@@ -38,7 +39,8 @@
             private projectResource: Resources.IProjectResource,
             private formTemplateResource: Resources.IFormTemplateResource,
             private surveyResource: Resources.ISurveyResource,
-            private userContextService: Services.IUserContextService) {
+            private userContextService: Services.IUserContextService,
+            private toastr: any) {
 
             this.activate();
         }
@@ -76,12 +78,14 @@
                 this.formTemplates = data[0];
                 this.surveys = data[1];
                 this.$scope.events = [];
+                this.noRecordsFound = this.surveys.length < 1;
 
                 _.forEach(this.surveys, (survey) => {
                     var template = _.filter(this.formTemplates, (t) => { return t.id === survey.formTemplateId; });
                     if (template.length) {
                         var event = {
                             surveyId: survey.id,
+                            projectId: survey.projectId,
                             title: survey.description,
                             startsAt: survey.date,
                             color: {
@@ -93,14 +97,16 @@
                                 cssClass: 'view-action',
                                 onClick: function (args) {
                                     var surveyId = args.calendarEvent.surveyId;
-                                    self.$state.go('home.surveys.view', { surveyId: surveyId });
+                                    var projectId = args.calendarEvent.projectId;
+                                    self.$state.go('home.surveys.view', { projectId: projectId, surveyId: surveyId });
                                 },
                             }, {
                                 label: '<i class=\'fa fa-pencil\'></i>',
                                 cssClass: 'edit-action',
                                 onClick: function (args) {
                                     var surveyId = args.calendarEvent.surveyId;
-                                    self.$state.go('home.surveys.edit', { surveyId: surveyId });
+                                    var projectId = args.calendarEvent.projectId;
+                                    self.$state.go('home.surveys.edit', { projectId: projectId, surveyId: surveyId });
                                 }
                             }],
                             draggable: false,
@@ -181,9 +187,6 @@
         }
 
         onViewChangeClick(calendarDate: any, calendarNextView: any) {
-            console.log('selected date', calendarDate);
-            console.log('next view', calendarNextView);
-
             this.$scope.today = moment(calendarDate).toDate();
             this.$scope.viewDate = this.$scope.today;
             this.$scope.calendarView = calendarNextView;

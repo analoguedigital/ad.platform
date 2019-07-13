@@ -6,7 +6,8 @@
                 <i class="fa fa-chevron-left "></i> back
             </a>
         </h2>
-        <div ncy-breadcrumb></div>
+        <h4>{{ctrl.subtitle}}</h4>
+        <!--<div ncy-breadcrumb></div>-->
     </div>
 </div>
 <div class="wrapper wrapper-content animated fadeInRight survey-form">
@@ -15,8 +16,8 @@
     <div class="box">
         <div class="box-title">
             <span class="color-block" ng-style="{'background-color': ctrl.formTemplate.colour}"></span>
-            <span style="vertical-align: middle">{{ctrl.formTemplate.title}}</span>
-            <span style="vertical-align: middle" ng-show="ctrl.survey.serial !== null"> (#{{ctrl.survey.serial}})</span>
+            <span style="vertical-align: middle; font-weight: 700">{{ctrl.formTemplate.title}}</span>
+            <span style="vertical-align: middle; font-weight: 700" ng-show="ctrl.survey.serial !== null"> / #{{ctrl.survey.serial}}</span>
         </div>
         <div class="box-content">
             <div class="steps">
@@ -46,15 +47,15 @@
                         </uib-tab>
                     </uib-tabset>
 
-                    <div id="location-content">
+                    <div id="location-content" ng-if="ctrl.formTemplate.discriminator === 0">
                         <h2 style="margin-top: 0">Location</h2>
 
-                        <input type="text" class="form-control" placeholder="Address or post/zip code"
+                        <input type="text" class="form-control" placeholder="Enter an address or post/zip code"
                                ng-model="geocoding.address"
                                ng-disabled="geocoderWorking || geolocationWorking"
                                style="max-width: 400px; display: inline-block; vertical-align: middle" /> &nbsp;
 
-                        <button type="button" class="btn btn-info" ng-click="ctrl.getAddress()" ng-disabled="geocoderWorking || geolocationWorking">
+                        <button type="button" class="btn btn-info" ng-click="ctrl.getAddress()" ng-disabled="!geocoding.address.length || geocoderWorking || geolocationWorking">
                             <span ng-if="!geocoderWorking">
                                 <i class="fa fa-map-o"></i> Input Address
                             </span>
@@ -78,8 +79,9 @@
 
                         <br /><br />
                         <div id="map_canvas" ng-show="geocoding.hasLocation" style="width: 100%; height: 400px"></div>
+
+                        <div class="hr-line-dashed"></div>
                     </div>
-                    <div class="hr-line-dashed"></div>
 
                     <div class="actions">
                         <ul>

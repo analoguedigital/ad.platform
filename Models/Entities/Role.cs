@@ -11,6 +11,8 @@ namespace LightMethods.Survey.Models.Entities
 
         public const string ORG_ADMINSTRATOR = "Organisation administrator";
 
+        public const string ORG_AUTHORIZED_STAFF = "Authorized staff";
+
         public const string ORG_TEAM_USER = "Organisation team user";
 
         public const string ORG_TEAM_MANAGER = "Organisation team manager";

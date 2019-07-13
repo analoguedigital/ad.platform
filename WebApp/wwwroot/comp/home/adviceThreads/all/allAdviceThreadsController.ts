@@ -273,6 +273,11 @@
 
             return authorized;
         }
+
+        isProjectOwner(survey: Models.ISurvey) {
+            var createdBy = this.formTemplate.project.createdBy;
+            return survey.filledById == createdBy.id;
+        }
     }
 
     angular.module("app").controller("allAdviceThreadsController", AllAdviceThreadsController);

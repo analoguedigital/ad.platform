@@ -181,6 +181,8 @@
                     </form>
                 </div>
 
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -225,7 +227,7 @@
                                     <i class="fa fa-times" ng-if="!user.isMobileUser"></i>
                                 </td>
                                 <td class="text-center">
-                                    <a ng-if="!user.isRootUser && user.organisation.name !== 'OnRecord'" 
+                                    <a ng-if="!user.isRootUser && user.organisation.name !== 'OnRecord'"
                                        ng-bootbox-confirm="Are you sure you want to remove this user?"
                                        ng-bootbox-confirm-action="remove(user)">
                                         <i class="fa fa-unlink"></i> <span class="hidden-xs"> remove</span>

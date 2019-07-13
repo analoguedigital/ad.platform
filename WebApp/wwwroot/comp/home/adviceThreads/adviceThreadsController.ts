@@ -23,7 +23,8 @@
         projects: Models.IProject[];
         surveys: Models.ISurvey[];
 
-        static $inject: string[] = ['$scope', '$stateParams', '$state', 'toastr', 'projectResource', 'formTemplateResource', 'surveyResource'];
+        static $inject: string[] = ['$scope', '$stateParams', '$state', 'toastr', 'projectResource',
+            'formTemplateResource', 'surveyResource', 'userContextService'];
 
         constructor(
             private $scope: IAdviceThreadsControllerScope,
@@ -32,7 +33,8 @@
             private toastr: any,
             private projectResource: Resources.IProjectResource,
             private formTemplateResource: Resources.IFormTemplateResource,
-            private surveyResource: Resources.ISurveyResource) {
+            private surveyResource: Resources.ISurveyResource,
+            private userContextService: Services.IUserContextService) {
 
             this.activate();
         }
@@ -59,6 +61,14 @@
                         if (this.projects.length === 1) {
                             this.selectedProject = this.projects[0];
                             this.selectedProjectChanged();
+                        } else {
+                            var orgUser = this.userContextService.current.orgUser;
+                            if (orgUser !== null && orgUser.currentProject !== null) {
+                                var userProject = _.filter(this.projects, (p) => { return p.id === orgUser.currentProject.id; });
+                                if (userProject.length)
+                                    this.selectedProject = userProject[0];
+                                this.selectedProjectChanged();
+                            }
                         }
                     }
                 }

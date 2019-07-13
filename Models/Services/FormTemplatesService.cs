@@ -33,7 +33,7 @@ namespace LightMethods.Survey.Models.Services
         public FormTemplatesService(UnitOfWork uow, OrgUser user, User currentUser)
         {
             UnitOfWork = uow;
-            OrgUser = user as OrgUser;
+            OrgUser = user;
             CurrentUser = currentUser;
         }
 
@@ -41,7 +41,7 @@ namespace LightMethods.Survey.Models.Services
 
         public IEnumerable<FormTemplateDTO> Get(Guid? projectId, FormTemplateDiscriminators discriminator)
         {
-            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, false);
+            var surveyProvider = new SurveyProvider(OrgUser, UnitOfWork, onlyPublished: false);
             var templates = surveyProvider.GetAllProjectTemplates(projectId, discriminator);
 
             var result = new List<FormTemplateDTO>();
@@ -67,6 +67,135 @@ namespace LightMethods.Survey.Models.Services
             }
 
             return result;
+        }
+
+        public List<FormTemplateDTO> GetFormTemplatesForAdmins(Guid? projectId, FormTemplateDiscriminators discriminator)
+        {
+            var dataSource = UnitOfWork.FormTemplatesRepository
+                    .AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics))
+                    .Where(t => t.Discriminator == discriminator)
+                    .Where(t => projectId == null || t.ProjectId == projectId);
+
+            var templates = dataSource.ToList();
+            foreach (var template in templates)
+            {
+                template.MetricGroups = template.MetricGroups
+                    .OrderBy(g => g.PageOrder)
+                    .ToList();
+
+                foreach (var group in template.MetricGroups)
+                {
+                    group.Metrics = group.Metrics
+                        .Where(m => !m.IsArchived())
+                        .OrderBy(m => m.Order)
+                        .ToList();
+                }
+            }
+
+            var result = new List<FormTemplateDTO>();
+            foreach (var template in templates)
+            {
+                var dto = Mapper.Map<FormTemplateDTO>(template);
+                dto.CanView = true;
+                dto.CanEdit = true;
+                dto.CanAdd = true;
+                dto.CanDelete = true;
+
+                result.Add(dto);
+            }
+
+            return result;
+        }
+
+        public List<FormTemplateDTO> GetFormTemplatesForOrgAdmin(Guid? projectId, FormTemplateDiscriminators discriminator)
+        {
+            var dataSource = UnitOfWork.FormTemplatesRepository
+                  .AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics))
+                  .Where(t => t.OrganisationId == OrgUser.OrganisationId)
+                  .Where(t => t.Discriminator == discriminator)
+                  .Where(t => projectId == null || t.ProjectId == projectId);
+
+            var templates = dataSource.ToList();
+            foreach (var template in templates)
+            {
+                template.MetricGroups = template.MetricGroups
+                    .OrderBy(g => g.PageOrder)
+                    .ToList();
+
+                foreach (var group in template.MetricGroups)
+                {
+                    group.Metrics = group.Metrics
+                        .Where(m => !m.IsArchived())
+                        .OrderBy(m => m.Order)
+                        .ToList();
+                }
+            }
+
+            var result = new List<FormTemplateDTO>();
+            foreach (var template in templates)
+            {
+                var dto = Mapper.Map<FormTemplateDTO>(template);
+                dto.CanView = true;
+                dto.CanEdit = true;
+                dto.CanAdd = true;
+                dto.CanDelete = true;
+
+                result.Add(dto);
+            }
+
+            return result;
+        }
+
+        public List<FormTemplateDTO> GetFormTemplatesForOrgUser(Guid? projectId, FormTemplateDiscriminators discriminator)
+        {
+            var dataSource = UnitOfWork.FormTemplatesRepository
+                .AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics));
+
+            var threads = dataSource.Where(t => t.ProjectId == null || !t.Project.Archived && t.Project.Assignments.Select(a => a.OrgUserId).Contains(OrgUser.Id));
+            var looseThreads = dataSource.Where(t => t.Assignments.Any(a => a.OrgUserId == OrgUser.Id));
+
+            var listOfThreads = new List<FormTemplate>();
+            listOfThreads.AddRange(threads.ToList());
+            listOfThreads.AddRange(looseThreads.ToList());
+
+            var templates = listOfThreads.Distinct().AsQueryable();
+            var assignments = UnitOfWork.AssignmentsRepository.AllAsNoTracking;
+
+            if (projectId == null)
+                assignments = assignments.Where(a => a.OrgUserId == OrgUser.Id);
+            else
+                assignments = assignments.Where(a => a.ProjectId == projectId && a.OrgUserId == OrgUser.Id);
+
+            templates = templates.Where(t => assignments.Any(a => a.ProjectId == t.ProjectId));
+
+            var result = templates.Where(t => t.Discriminator == discriminator).ToList();
+            foreach (var template in result)
+            {
+                template.MetricGroups = template.MetricGroups
+                    .OrderBy(g => g.PageOrder)
+                    .ToList();
+
+                foreach (var group in template.MetricGroups)
+                {
+                    group.Metrics = group.Metrics
+                        .Where(m => !m.IsArchived())
+                        .OrderBy(m => m.Order)
+                        .ToList();
+                }
+            }
+
+            List<FormTemplateDTO> returnValue = new List<FormTemplateDTO>();
+
+            foreach (var template in result)
+            {
+                var dto = Mapper.Map<FormTemplateDTO>(template);
+                var assignment = UnitOfWork.FormTemplatesRepository.GetUserAssignment(template, OrgUser.Id);
+                Mapper.Map(assignment, dto);
+
+                returnValue.Add(dto);
+            }
+
+            return returnValue;
         }
 
         public FormTemplateDTO Get(Guid id)

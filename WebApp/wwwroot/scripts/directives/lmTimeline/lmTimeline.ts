@@ -613,7 +613,9 @@
                     if (scope.timelineChart)
                         scope.timelineChart.destroy();
 
-                    document.getElementsByClassName('timeline-box').item(0).removeAttribute('style');
+                    var timelineBox = document.getElementsByClassName('timeline-box').item(0);
+                    if (timelineBox !== null)
+                        timelineBox.removeAttribute('style');
                 }
             });
 

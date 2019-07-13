@@ -7,7 +7,7 @@
                 <hr />
             </div>
         </div>
-        <div class="row" ng-if="ctrl.showTimeline">
+        <div class="row" ng-if="ctrl.showTimeline && ctrl.discriminator == 0">
             <div class="col-md-12">
                 <!--<h2 class="inline mr-15">
                     <i class="fa fa-folder-o"></i> Threads: {{ctrl.totalFormTemplates}}
@@ -23,12 +23,12 @@
                 </h2>
             </div>
         </div>
-        <div class="row timeline-row" ng-if="ctrl.showTimeline">
+        <div class="row timeline-row" ng-if="ctrl.showTimeline && ctrl.discriminator == 0">
             <div class="col-md-12">
                 <lm-timeline form-templates="ctrl.formTemplates" surveys="ctrl.surveys" height="250" render-mode="web" enable-snapshot-view="ctrl.enableSnapshotView"></lm-timeline>
             </div>
         </div>
-        <div class="row charts-row" ng-style="!ctrl.showTimeline && { 'margin-top': '0' }">
+        <div class="row charts-row" ng-if="ctrl.discriminator == 0" ng-style="!ctrl.showTimeline && { 'margin-top': '0' }">
             <div ng-class="{ 'col-md-6': ctrl.showMap && ctrl.showPieChart, 'col-md-12': ctrl.showMap && !ctrl.showPieChart }" ng-if="ctrl.showMap">
                 <lm-locations form-templates="ctrl.uniqFormTemplates"
                               surveys="ctrl.surveys"
@@ -55,7 +55,8 @@
                             <th class="text-center" width="80"><i class="fa fa-hashtag"></i></th>
                             <th>Thread</th>
                             <!--<th width="200">Completed by</th>-->
-                            <th class="text-center" width="80">Impact</th>
+                            <th class="text-center" width="80" ng-if="ctrl.discriminator == 0">Impact</th>
+                            <th class="text-center" ng-if="ctrl.discriminator == 1">Refs.</th>
                             <!--<th>Record</th>-->
                             <th width="700">Attachments</th>
                         </tr>
@@ -70,7 +71,8 @@
                                 <span class="color-block" ng-style="{'background-color': formTemplate.colour}"></span> <span style="vertical-align: middle">{{formTemplate.title}}</span>
                             </td>
                             <!--<td>{{survey.filledBy}}</td>-->
-                            <td class="text-center">{{ctrl.getSurveyImpact(survey)}}</td>
+                            <td class="text-center" ng-if="ctrl.discriminator == 0">{{ctrl.getSurveyImpact(survey)}}</td>
+                            <td ng-if="ctrl.discriminator == 1">{{survey.serialReferences}}</td>
                             <!--<td>{{survey.description}}</td>-->
                             <td style="padding-top: 0">
                                 <table style="width: 100%">

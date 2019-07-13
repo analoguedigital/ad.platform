@@ -10,7 +10,6 @@ namespace LightMethods.Survey.Models.Services
 {
     public class TeamService
     {
-
         private UnitOfWork UnitOfWork { get; set; }
 
         public TeamService(UnitOfWork unitOfWork)
@@ -65,17 +64,17 @@ namespace LightMethods.Survey.Models.Services
 
         public List<OrgUserDTO> GetAssignableUsers(OrganisationTeam team)
         {
-            var users = UnitOfWork.OrgUsersRepository
-                .AllIncluding(u => u.Type)
+            var staffMembers = UnitOfWork.OrgUsersRepository
+                .AllIncludingNoTracking(u => u.Type)
                 .Where(u => u.OrganisationId == team.OrganisationId)
+                .Where(u => u.AccountType == AccountType.WebAccount && !u.IsRootUser)
                 .OrderBy(u => u.Surname)
                 .ThenBy(u => u.FirstName)
-                .ToList()
-                .Select(u => Mapper.Map<OrgUserDTO>(u))
                 .ToList();
 
-            var result = users
+            var result = staffMembers
                 .Where(x => !team.Users.Any(u => u.OrgUserId == x.Id))
+                .Select(u => Mapper.Map<OrgUserDTO>(u))
                 .ToList();
 
             return result;
@@ -83,21 +82,30 @@ namespace LightMethods.Survey.Models.Services
 
         public List<ProjectDTO> GetTeamProjects(OrganisationTeam team)
         {
-            var projects = new List<ProjectDTO>();
+            //var projects = new List<ProjectDTO>();
+            //foreach (var user in team.Users)
+            //{
+            //    var userProjects = user.OrgUser.Assignments
+            //        .Where(a => a.Project.OrganisationId == team.OrganisationId)
+            //        .Select(x => Mapper.Map<ProjectDTO>(x.Project))
+            //        .ToList();
 
-            foreach (var user in team.Users)
-            {
-                var userProjects = user.OrgUser.Assignments
-                    .Where(a => a.Project.OrganisationId == team.OrganisationId)
-                    .Select(x => Mapper.Map<ProjectDTO>(x.Project))
-                    .ToList();
+            //    projects.AddRange(userProjects);
+            //}
 
-                projects.AddRange(userProjects);
-            }
+            var projects = UnitOfWork.ProjectsRepository
+                .AllAsNoTracking
+                .Where(x => x.OrganisationId == team.OrganisationId)
+                .ToList()
+                .Select(x => Mapper.Map<ProjectDTO>(x))
+                .ToList();
 
-            var result = projects.Distinct().ToList();
+            //var result = projects.Distinct().ToList();
+            var result = projects
+                .Where(x => x.CreatedBy != null && x.CreatedBy.AccountType == AccountType.MobileAccount)
+                .ToList();
 
-            foreach(var p in result)
+            foreach (var p in result)
             {
                 var lastEntry = UnitOfWork.FilledFormsRepository
                     .AllAsNoTracking
@@ -132,6 +140,5 @@ namespace LightMethods.Survey.Models.Services
 
             return result;
         }
-
     }
 }

@@ -96,6 +96,8 @@ namespace WebApi.Controllers
         // POST api/feedbacks/sendEmail
         [HttpPost]
         [Route("api/feedbacks/sendEmail")]
+        [OverrideAuthorization]
+        [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
         public IHttpActionResult SendEmail(SendEmailDTO value)
         {
             if (string.IsNullOrEmpty(value.EmailAddress))
