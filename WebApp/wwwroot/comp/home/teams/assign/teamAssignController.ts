@@ -26,7 +26,7 @@
     }
 
     class OrganisationTeamAssignController implements IOrganisationTeamAssignController {
-        static $inject: string[] = ["$scope", "$state", "$stateParams", "orgTeamResource", "orgUserResource", "toastr"];
+        static $inject: string[] = ["$scope", "$state", "$stateParams", "orgTeamResource", "orgUserResource", "userContextService", "toastr"];
 
         constructor(
             private $scope: IOrganisationTeamAssignControllerScope,
@@ -34,6 +34,7 @@
             private $stateParams: ng.ui.IStateParamsService,
             private orgTeamResource: Resources.IOrgTeamResource,
             private orgUserResource: Resources.IOrgUserResource,
+            private userContextService: App.Services.IUserContextService,
             private toastr: any
         ) {
             $scope.title = "Organisation Teams";
@@ -70,6 +71,12 @@
         submit() {
             var res = [];
             var selectedUsers = _.filter(this.$scope.assignments, (assg) => { return assg.isMember; });
+
+            if (selectedUsers.length < 1) {
+                this.toastr.error('Please select staff members first');
+                return;
+            }
+
             _.forEach(selectedUsers, (assignment) => {
                 res.push({
                     orgUserId: assignment.userId,

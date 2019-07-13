@@ -1,8 +1,10 @@
 ﻿<div class="modal-header">
-    <h3 class="modal-title">Create a new record thread</h3>
+    <h3 class="modal-title">{{ctrl.project.name}} - Create a new record thread </h3>
 </div>
 <div class="modal-body">
-    <p>Choose a title and colour and create a new record thread.</p>
+    <!--<p>Choose a title and colour and create a new record thread.</p>-->
+    <!--<h3>{{ctrl.project.name}}</h3>-->
+
     <form name="recordThreadForm">
         <lm-form-group label="Code:">
             <input type="text" name="code" id="code" class="form-control" ng-model="ctrl.model.code" placeholder="Thread code (optional)" />

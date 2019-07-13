@@ -4,83 +4,13 @@
         <div class="box-title">
             <h5>Directory of Clients</h5>
             <div class="box-tools">
-                <a ui-sref="home.users.edit({ accountType: 'mobile-account'})" style="color: inherit"><i class="fa fa-plus-square-o"></i> Add mobile user</a>
+                <a ui-sref="home.users.edit({ accountType: 'mobile-account'})" style="color: inherit" lm-access="System administrator,Platform administrator">
+                    <i class="fa fa-plus-square-o"></i> Add mobile user
+                </a>
             </div>
         </div>
         <div class="box-content">
-            <div st-table="displayedUsers" st-safe-src="users">
-                <form name="search-form" class="form-inline">
-                    <lm-form-group label="Search: ">
-                        <input st-search type="text" id="search" name="search" ng-model="searchTerm" placeholder="Email, first name or surname" style="width: 250px" />
-                    </lm-form-group>
-                </form>
-
-                <div class="table-responsive">
-                    <table class="table table-hover table-mail">
-                        <thead>
-                            <tr>
-                                <th width="150" st-sort="firstName">First name</th>
-                                <th width="150" st-sort="surname">Surname</th>
-                                <th st-sort="email">Username</th>
-                                <th width="120" st-sort="lastLogin" class="text-center">Last Login</th>
-                                <!--<th class="text-center" st-sort="organisation.name">Organisation</th>-->
-                                <!--<th class="text-center" width="150" st-sort="type.name">Type</th>-->
-                                <th class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
-                                <th class="text-center" width="150"></th>
-                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator"></th>
-                                <th class="text-center" width="100" lm-access="System administrator,Platform administrator,Organisation administrator"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="user in displayedUsers">
-                                <td>{{user.firstName}}</td>
-                                <td>{{user.surname}}</td>
-                                <td>
-                                    <i class="fa fa-phone-square" uib-tooltip="Client" tooltip-append-to-body="true"></i>&nbsp;
-                                    <a ui-sref="home.users.edit({ id: user.id, accountType: 'mobile-account' })">{{user.email}}</a>
-                                </td>
-                                <td class="text-center">
-                                    <span ng-if="!user.lastLogin">None</span>
-                                    <span ng-if="user.lastLogin">{{user.lastLogin | amDateFormat:'MMM DD YYYY'}}</span>
-                                </td>
-                                <!--<td class="text-center">{{user.organisation.name}}</td>-->
-                                <!--<td class="text-center">{{user.type.name}}</td>-->
-                                <td class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator">
-                                    <a ng-click="resetPassword(user)">
-                                        <i class="fa fa-key"></i><span class="hidden-sm hidden-xs"> create/reset password</span>
-                                    </a>
-                                </td>
-                                <td class="text-center">
-                                    <a ng-click="ctrl.composeEmail(user)">
-                                        <i class="fa fa-paper-plane"></i> <span class="hidden-sm hidden-xs"> Send email</span>
-                                    </a>
-                                </td>
-                                <td class="text-center" lm-access="System administrator,Platform administrator">
-                                    <a ng-if="!user.isRootUser" ng-click="ctrl.selectedUserChanged(user)"
-                                       ng-bootbox-title="Are you sure you want to do this?"
-                                       ng-bootbox-custom-dialog="Deleting a user tries to remove the user account. If there are related records in the database you'll get an error. Deleting the account tries to remove everything from the database. I hope you know what you're doing!"
-                                       ng-bootbox-buttons="customDialogButtons">
-                                        <i class="fa fa-remove"></i><span class="hidden-sm hidden-xs"> delete</span>
-                                    </a>
-                                </td>
-                                <td class="text-center">
-                                    <div lm-access="System administrator,Platform administrator,Organisation administrator">
-                                        <a ng-bootbox-confirm="Are you sure you want to remove this user?" ng-bootbox-confirm-action="revoke(user)"
-                                           ng-if="user.organisation.name !== 'OnRecord' && !user.isRootUser">
-                                            <i class="fa fa-unlink"></i><span class="hidden-sm hidden-xs"> remove</span>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr ng-if="!displayedUsers.length">
-                                <td colspan="9">No clients were found</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
-            </div>
+            <div ng-include="'comp/home/users/mobile/_clientsTable.html'"></div>
         </div>
     </div>
 </div>

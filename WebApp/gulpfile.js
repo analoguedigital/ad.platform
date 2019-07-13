@@ -101,17 +101,13 @@ gulp.task('indexHtml', function () {
             $('link').remove();
 
             $('head').append('<link rel="shortcut icon" type="image/x-icon" href="favicon.png" />');
-
             $('head').append('<link rel="stylesheet" href="css/app.full.min.css"/>');
-            $('head').append('<link href="https://cdn.jsdelivr.net/npm/angular-wizard@latest/dist/angular-wizard.min.css" rel="stylesheet"/>');
 
             $('body').append('<script src="js/app.full.min.js"></script>');
             $('body').append('<script src="js/app.components-tpl.min.js"></script>');
             $('body').append('<script src="js/app.directives-tpl.min.js"></script>');
 
             $('body').append('<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>');
-            $('body').append('<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>');
-            $('body').append('<script src="https://cdn.jsdelivr.net/npm/angular-wizard@latest/dist/angular-wizard.min.js"></script>');
 
             $('body').append("<script src='//maps.googleapis.com/maps/api/js?key=AIzaSyCESw4TSMh0XnrLzrdpoBgxNX_iZiVKqSk'></script>");
             $('body').append('<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>');

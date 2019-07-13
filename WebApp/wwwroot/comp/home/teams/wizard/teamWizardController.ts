@@ -87,6 +87,11 @@
                 this.$scope.teamProjects = [];
             }).$promise;
 
+            //var projectsPromise = this.projectResource.query((projects) => {
+            //    this.$scope.projects = projects;
+            //    this.$scope.teamProjects = [];
+            //}).$promise;
+
             this.$q.all([teamPromise, projectsPromise]).then(() => {
                 this.$scope.clients = _.filter(this.$scope.projects, (p) => { return p.createdBy !== null && p.createdBy.accountType === 0; });
                 this.$scope.displayedClients = [].concat(this.$scope.clients);

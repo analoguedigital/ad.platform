@@ -233,7 +233,7 @@ module App {
             $rootScope.$on('update_locations_map_bounds', (event, args: any) => {
                 $timeout(() => {
                     scope.$apply(() => {
-                        if (scope.markers.length) {
+                        if (scope.markers && scope.markers.length) {
                             var bounds = new google.maps.LatLngBounds();
                             _.forEach(scope.markers, (marker) => {
                                 var position = new google.maps.LatLng(marker.coords.latitude, marker.coords.longitude);

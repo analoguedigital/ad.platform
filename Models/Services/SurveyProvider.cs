@@ -102,10 +102,12 @@ namespace LightMethods.Survey.Models.Services
                 templates = templates.Where(t => assignments.Any(a => a.ProjectId == t.ProjectId));
             }
             else
+            {
                 templates = UOW.FormTemplatesRepository
                     .AllIncludingNoTracking(f => f.Project, t => t.MetricGroups.Select(g => g.Metrics))
                     .Where(t => projectId == null || t.ProjectId == projectId);
-
+            }
+            
             var result = templates.Where(t => t.Discriminator == discriminator).ToList();
 
             return PostLoadFilters(result);

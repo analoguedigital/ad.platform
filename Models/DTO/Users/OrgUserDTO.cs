@@ -11,6 +11,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public string Email { get; set; }
 
+        public string UserName { get; set; }
+
         public bool EmailConfirmed { get; set; }
 
         public string FirstName { get; set; }
@@ -60,6 +62,8 @@ namespace LightMethods.Survey.Models.DTO
         public byte SecurityQuestion { get; set; }
 
         public string SecurityAnswer { get; set; }
+
+        public bool? IsAuthorizedStaff { get; set; }
 
         public OrgUserDTO()
         {

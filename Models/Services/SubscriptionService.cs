@@ -262,14 +262,26 @@ namespace LightMethods.Survey.Models.Services
 
         public void MoveUserToOrganization(Organisation organisation, OrgUser orgUser)
         {
-            // remove this user from any teams in current organisation.
+            // remove this user from any teams in the current organisation.
             RemoveUserFromCurrentTeams(orgUser);
+
+            // remove this user from any assignments in the current organization.
+            RemoveUserFromCurrentAssignments(orgUser);
+
+            // remove the assignment from current organisation's root user
+            // NOTE: this could be removed too. we're not assigning root users
+            // so there's no need to unassign them. doesn't hurt to confirm though.
+            UnassignRootUserFromProject(orgUser, orgUser.Organisation);
+
+            // remove any staff/client assignments from current organization
+            UnassignStaffAndClientsFromProject(orgUser, orgUser.Organisation);
 
             // move the user and their personal case to the new organisation.
             MoveUserCaseToOrganization(orgUser, organisation);
 
             // assign Org root user to the project
-            AssignRootUserToProject(orgUser.CurrentProjectId.Value, organisation.RootUserId.Value);
+            // NOTE: not necessary, because OrgAdmins don't need assignments.
+            //AssignRootUserToProject(orgUser.CurrentProjectId.Value, organisation.RootUserId.Value);
 
             // close last subscription
             CloseLastSubscription(orgUser);
@@ -293,24 +305,49 @@ namespace LightMethods.Survey.Models.Services
             // remove user from any teams in current organisation.
             RemoveUserFromCurrentTeams(orgUser);
 
-            // move user back to OnRecord
-            MoveUserCaseToOrganization(orgUser, OnRecord);
+            // remove this user from any assignments in the current organization.
+            RemoveUserFromCurrentAssignments(orgUser);
 
             // remove the assignment from current organisation's root user
-            UnassignRootUserFromProject(orgUser, organisation, OnRecord);
+            UnassignRootUserFromProject(orgUser, organisation);
+
+            // remove any staff/client assignments from current organization
+            UnassignStaffAndClientsFromProject(orgUser, organisation);
+
+            // assign OnRecord admin to user's project
+            // NOTE: not necessary, since OrgAdmins don't need assignments.
+            //if (OnRecord.RootUser != null)
+            //    AssignRootUserToProject(orgUser.CurrentProjectId.Value, OnRecord.RootUser.Id);
+
+            // move user back to OnRecord
+            MoveUserCaseToOrganization(orgUser, OnRecord);
 
             // close the last organisation subscription.
             CloseLastOrganisationSubscription(orgUser);
 
             // subscribe user to OnRecord again.
             SubscribeUserToOrganization(orgUser, OnRecord);
+
+            // NOTE: I think we should disable export permissions here.
+            // and also set IsSubscribed = false.
         }
 
         #endregion
 
         #region Helpers
 
-        public void UnassignRootUserFromProject(OrgUser user, Organisation organisation, Organisation OnRecord)
+        public void RemoveUserFromCurrentAssignments(OrgUser user)
+        {
+            var assignments = UnitOfWork.AssignmentsRepository
+                .AllAsNoTracking
+                .Where(x => x.OrgUserId == user.Id && x.ProjectId != user.CurrentProjectId)
+                .Where(x => x.Project.OrganisationId == user.OrganisationId)
+                .ToList();
+
+            UnitOfWork.AssignmentsRepository.Delete(assignments);
+        }
+
+        public void UnassignRootUserFromProject(OrgUser user, Organisation organisation)
         {
             if (user.CurrentProject != null && user.CurrentProject.CreatedById == user.Id)
             {
@@ -318,39 +355,52 @@ namespace LightMethods.Survey.Models.Services
                 var rootUserAssignment = UnitOfWork.AssignmentsRepository
                     .AllAsNoTracking
                     .Where(x => x.OrgUserId == organisation.RootUserId && x.ProjectId == user.CurrentProject.Id)
-                    .FirstOrDefault();
+                    .SingleOrDefault();
 
-                UnitOfWork.AssignmentsRepository.Delete(rootUserAssignment);
+                if (rootUserAssignment != null)
+                    UnitOfWork.AssignmentsRepository.Delete(rootUserAssignment);
+            }
+        }
 
-                // assign project to OnRecord admin again
-                if (OnRecord.RootUser != null)
-                {
-                    var OnRecordRootAssignment = UnitOfWork.AssignmentsRepository
-                        .AllAsNoTracking
-                        .Where(x => x.OrgUserId == OnRecord.RootUserId && x.ProjectId == user.CurrentProject.Id)
-                        .FirstOrDefault();
+        public void UnassignStaffAndClientsFromProject(OrgUser user, Organisation organisation)
+        {
+            if (user.CurrentProject != null && user.CurrentProject.CreatedById == user.Id)
+            {
+                var assignments = UnitOfWork.AssignmentsRepository
+                    .AllAsNoTracking
+                    .Where(x => x.ProjectId == user.CurrentProject.Id)
+                    .Where(x => x.OrgUserId != user.Id)
+                    .Where(x => !x.OrgUser.IsRootUser)
+                    .Where(x => x.OrgUser.Organisation.Id == organisation.Id)
+                    .ToList();
 
-                    if (OnRecordRootAssignment == null)
-                        AssignRootUserToProject(user.CurrentProject.Id, OnRecord.RootUser.Id);
-                }
+                UnitOfWork.AssignmentsRepository.Delete(assignments);
             }
         }
 
         public void AssignRootUserToProject(Guid projectId, Guid rootUserId)
         {
-            var rootUserAssignment = new Assignment
-            {
-                ProjectId = projectId,
-                OrgUserId = rootUserId,
-                CanView = true,
-                CanAdd = true,
-                CanEdit = true,
-                CanDelete = true,
-                CanExportPdf = true,
-                CanExportZip = true
-            };
+            var assignment = UnitOfWork.AssignmentsRepository
+                .AllAsNoTracking
+                .Where(x => x.ProjectId == projectId && x.OrgUserId == rootUserId)
+                .SingleOrDefault();
 
-            UnitOfWork.AssignmentsRepository.InsertOrUpdate(rootUserAssignment);
+            if (assignment == null)
+            {
+                var rootUserAssignment = new Assignment
+                {
+                    ProjectId = projectId,
+                    OrgUserId = rootUserId,
+                    CanView = true,
+                    CanAdd = true,
+                    CanEdit = true,
+                    CanDelete = true,
+                    CanExportPdf = true,
+                    CanExportZip = true
+                };
+
+                UnitOfWork.AssignmentsRepository.InsertOrUpdate(rootUserAssignment);
+            }
         }
 
         public void RemoveUserFromCurrentTeams(OrgUser user)

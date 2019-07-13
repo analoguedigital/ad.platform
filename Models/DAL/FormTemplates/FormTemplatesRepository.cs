@@ -42,6 +42,10 @@ namespace LightMethods.Survey.Models.DAL
             //clone.CreatedById = user.Id;
             clone.CreatedById = creatorId;
             clone.IsPublished = true;
+            clone.Discriminator = FormTemplateDiscriminators.RegularThread;
+
+            var project = this.CurrentUOW.ProjectsRepository.Find(newProjectId.Value);
+            clone.OrganisationId = project.OrganisationId;
 
             using (var tran = Context.Database.BeginTransaction())
             {
@@ -68,12 +72,53 @@ namespace LightMethods.Survey.Models.DAL
             return clone;
         }
 
-        public FormTemplate CreateAdviceThread(FormTemplate template, Guid userId, string title, string colour, Guid projectId)
+        public FormTemplate CreateRegularThread(FormTemplate template, Guid creatorId, string newTitle, string newDescription, string newColour, Guid newProjectId, Guid organisationId)
+        {
+            var clone = template.Clone();
+            clone.Title = newTitle;
+
+            if (!string.IsNullOrEmpty(newDescription))
+                clone.Description = newDescription;
+
+            clone.Colour = newColour;
+            clone.ProjectId = newProjectId;
+            clone.OrganisationId = organisationId;
+            clone.CreatedById = creatorId;
+            clone.IsPublished = true;
+            clone.Discriminator = FormTemplateDiscriminators.RegularThread;
+
+            using (var tran = Context.Database.BeginTransaction())
+            {
+                InsertOrUpdate(clone);
+                Save();
+
+                if (template.CalendarDateMetricId != null)
+                {
+                    clone.CalendarDateMetricId = clone.MetricGroups.SelectMany(g => g.Metrics)
+                        .Single(m => m.ShortTitle == template.CalendarDateMetric.ShortTitle).Id;
+                }
+
+                if (template.TimelineBarMetricId != null)
+                {
+                    clone.TimelineBarMetricId = clone.MetricGroups.SelectMany(g => g.Metrics)
+                        .Single(m => m.ShortTitle == template.TimelineBarMetric.ShortTitle).Id;
+                }
+
+                InsertOrUpdate(clone);
+                Save();
+                tran.Commit();
+            }
+
+            return clone;
+        }
+
+        public FormTemplate CreateAdviceThread(FormTemplate template, Guid userId, string title, string colour, Guid projectId, Guid organisationId)
         {
             var clone = template.Clone();
             clone.Title = title;
             clone.Colour = colour;
             clone.ProjectId = projectId;
+            clone.OrganisationId = organisationId;
             clone.CreatedById = userId;
             clone.IsPublished = true;
             clone.Discriminator = FormTemplateDiscriminators.AdviceThread;

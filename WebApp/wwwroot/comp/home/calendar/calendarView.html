@@ -13,7 +13,7 @@
                         <span ng-bind="$select.selected.name"></span>
                     </ui-select-match>
                     <ui-select-choices repeat="project in (ctrl.projects | filter: $select.search) track by project.id">
-                        <span ng-bind="project.name"></span>
+                        <span ng-bind="project.name"></span> <span ng-if="project.createdBy.email.length">({{project.createdBy.email}})</span>
                     </ui-select-choices>
                 </ui-select>
             </div>
@@ -60,7 +60,7 @@
         </div>
     </div>
 
-    <div ng-if="!events.length && !ctrl.isCurrentUserAnAdmin">
+    <div ng-if="ctrl.noRecordsFound">
         <div class="alert alert-info">No records to show</div>
     </div>
 </div>

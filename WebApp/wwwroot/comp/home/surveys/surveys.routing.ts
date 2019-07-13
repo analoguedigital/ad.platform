@@ -69,7 +69,47 @@
                         }],
                     survey: () => { return null; }
                 },
-                ncyBreadcrumb: { label: 'New' },
+                ncyBreadcrumb: { label: 'New survey' },
+                module: "private"
+            })
+            .state("home.surveys.edit", <App.Models.IAppRoute>{
+                url: "/:projectId/edit/:surveyId",
+                templateUrl: "comp/home/surveys/new/newSurveyView.html",
+                controller: "newSurveyController",
+                controllerAs: "ctrl",
+                resolve: {
+                    formTemplate:
+                    ['$stateParams', 'formTemplateResource', 'surveyResource',
+                        ($stateParams,
+                            formTemplateResource: App.Resources.IFormTemplateResource,
+                            surveyResource: App.Resources.ISurveyResource) => {
+
+                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise
+                                .then((survey) => {
+                                    return formTemplateResource.get({ id: survey.formTemplateId }).$promise.then((data) => {
+                                        return data;
+                                    });
+                                });
+                        }],
+                    survey:
+                    ['$stateParams', 'surveyResource',
+                        ($stateParams,
+                            surveyResource: App.Resources.ISurveyResource) => {
+
+                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise.then((data) => {
+                                return data;
+                            });
+                        }],
+                    project:
+                    ['$stateParams', 'projectResource',
+                        ($stateParams, projectResource: App.Resources.IProjectResource) => {
+                            return projectResource.getDirect({ id: $stateParams['projectId'] }).$promise.then((data) => {
+                                return data;
+                            });
+                        }]
+
+                },
+                ncyBreadcrumb: { label: 'Edit survey' },
                 module: "private"
             })
             .state("home.surveys.list.all", <App.Models.IAppRoute>{
@@ -97,42 +137,8 @@
                 ncyBreadcrumb: { label: 'All records' },
                 module: "private"
             })
-            .state("home.surveys.edit", <App.Models.IAppRoute> {
-                url: "/edit/:surveyId",
-                templateUrl: "comp/home/surveys/new/newSurveyView.html",
-                controller: "newSurveyController",
-                controllerAs: "ctrl",
-                resolve: {
-                    formTemplate:
-                    ['$stateParams', 'formTemplateResource', 'surveyResource',
-                        ($stateParams,
-                            formTemplateResource: App.Resources.IFormTemplateResource,
-                            surveyResource: App.Resources.ISurveyResource) => {
-
-                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise
-                                .then((survey) => {
-                                    return formTemplateResource.get({ id: survey.formTemplateId }).$promise.then((data) => {
-                                        return data;
-                                    });
-                                });
-                        }],
-                    survey:
-                    ['$stateParams', 'surveyResource',
-                        ($stateParams,
-                            surveyResource: App.Resources.ISurveyResource) => {
-
-                            return surveyResource.get({ id: $stateParams['surveyId'] }).$promise.then((data) => {
-                                return data;
-                            });
-                        }],
-                    project: () => { return null; }
-
-                },
-                ncyBreadcrumb: { label: 'Edit' },
-                module: "private"
-            })
             .state("home.surveys.view", <App.Models.IAppRoute>{
-                url: "/view/:surveyId",
+                url: "/:projectId/view/:surveyId",
                 templateUrl: "comp/home/surveys/view/survey.html",
                 controller: "newSurveyController",
                 controllerAs: "ctrl",
@@ -159,9 +165,14 @@
                                 return data;
                             });
                         }],
-                    project: () => { return null; }
+                    project: ['$stateParams', 'projectResource',
+                        ($stateParams, projectResource: App.Resources.IProjectResource) => {
+                            return projectResource.get({ id: $stateParams['projectId'] }).$promise.then((data) => {
+                                return data;
+                            });
+                        }]
                 },
-                ncyBreadcrumb: { label: 'View' },
+                ncyBreadcrumb: { label: 'View record' },
                 module: "private"
             })
 

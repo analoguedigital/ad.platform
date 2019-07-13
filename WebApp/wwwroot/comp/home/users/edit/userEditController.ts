@@ -75,6 +75,7 @@ module App {
         projects: Models.IProject[];
         organisations: Models.IOrganisation[];
         subscriptions: Models.ISubscriptionEntry[];
+        displayedSubscriptions: Models.ISubscriptionEntry[];
 
         submit: (form: ng.IFormController) => void;
         clearErrors: () => void;
@@ -94,6 +95,7 @@ module App {
         projects: Models.IProject[];
         organisations: Models.IOrganisation[];
         subscriptions: Models.ISubscriptionEntry[];
+        displayedSubscriptions: Models.ISubscriptionEntry[];
 
         static $inject: string[] = ["$scope", "orgUserResource", "orgUserTypeResource", "$state", "$stateParams", "organisationResource",
             "orgTeamResource", "userContextService", "projectResource", "toastr", "userResource", "subscriptionResource", "$resource"];
@@ -124,13 +126,32 @@ module App {
         }
 
         activate() {
+            var userId = this.$stateParams['id'];
+            if (userId == undefined || userId == '') {
+                this.isInsertMode = true;
+                userId = '00000000-0000-0000-0000-000000000000';
+            } else {
+                this.isInsertMode = false;
+            }
+
             var accountType = this.$stateParams["accountType"];
-            if (accountType === undefined || !accountType.length) {
-                console.warn('accountType param is undefined!');
+            if (accountType == undefined || !accountType.length) {
                 accountType = 'web-account';
             }
 
+            var allowedAccountTypes = ['web-account', 'mobile-account'];
+            if (allowedAccountTypes.indexOf(accountType) == -1)
+                this.$state.go('home.dashboard.layout');
+
             this.$scope.accountType = accountType;
+
+            if (this.isInsertMode && this.userContextService.userIsInAnyRoles(['Organisation administrator']) && accountType == 'mobile-account') {
+                this.$state.go('home.dashboard.layout');
+            }
+
+            var roles = ["System administrator", "Platform administrator"];
+            this.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
+            
             if (accountType === 'web-account')
                 this.$state.current.ncyBreadcrumb.parent = 'home.users.list';
             else if (accountType === 'mobile-account')
@@ -142,11 +163,7 @@ module App {
                 });
             }
 
-            var userId = this.$stateParams['id'];
-            if (userId === '') {
-                this.isInsertMode = true;
-                userId = '00000000-0000-0000-0000-000000000000';
-            } else {
+            if (!this.isInsertMode) {
                 this.orgUserResource.get({ id: userId }).$promise.then((user) => {
                     this.user = user;
 
@@ -161,7 +178,6 @@ module App {
                     if (user.currentProject !== null) {
                         // get user statistics
                         this.$resource("/api/stats/user/" + userId, null).get().$promise.then((data: any) => {
-                            console.log('stats', data);
                             this.$scope.userStats = data;
                             this.loadCharts();
                         }, (err) => {
@@ -170,9 +186,6 @@ module App {
                     }
                 });
             }
-
-            var roles = ["System administrator", "Platform administrator"];
-            this.currentUserIsSuperUser = this.userContextService.userIsInAnyRoles(roles);
 
             if (this.currentUserIsSuperUser) {
                 this.organisationResource.query().$promise.then((organisations) => {
@@ -191,6 +204,7 @@ module App {
             if (isAdmin && !this.isInsertMode && accountType === 'mobile-account') {
                 this.subscriptionResource.getUserSubscriptions({ id: userId }, (data) => {
                     this.subscriptions = data;
+                    this.displayedSubscriptions = data;
                 }, (err) => {
                     console.error(err);
                 });

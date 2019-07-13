@@ -1,0 +1,84 @@
+﻿<div class="box" ng-if="!ctrl.isInsertMode && ctrl.user.accountType === 0">
+    <div class="box-title">
+        <h5>Subscriptions</h5>
+    </div>
+    <div class="box-content">
+        <div st-table="ctrl.displayedSubscriptions" st-safe-src="ctrl.subscriptions">
+            <form name="search-form" class="form-inline">
+                <lm-form-group label="Search: ">
+                    <input st-search type="text" id="search" name="search" ng-model="subscriptionsSearchTerm" placeholder="Date, price, length or note" style="min-width: 200px" />
+                </lm-form-group>
+            </form>
+
+            <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center" width="100">Start Date</th>
+                            <th class="text-center" width="100">End Date</th>
+                            <th class="text-center" width="100">Price</th>
+                            <th class="text-center" width="100">Length</th>
+                            <th>Note</th>
+                            <th class="text-center" width="120">Type</th>
+                            <th class="text-center" width="80"></th>
+                            <th class="text-center" width="80"></th>
+                        </tr>
+                    </thead>
+                    <tbody ng-if="ctrl.subscriptions.length">
+                        <tr ng-repeat="entry in ctrl.displayedSubscriptions track by $index" ng-class="{ 'success': entry.isActive }">
+                            <td class="text-center">{{entry.startDate | amDateFormat: 'DD/MM/YYYY'}}</td>
+                            <td class="text-center">{{entry.endDate | amDateFormat: 'DD/MM/YYYY'}}</td>
+                            <td class="text-center">
+                                <span ng-if="entry.price">{{entry.price | currency : '&pound;'}}</span>
+                                <span ng-if="!entry.price">NA</span>
+                            </td>
+                            <td class="text-center">
+                                <span ng-if="entry.subscriptionPlan">
+                                    <span ng-if="entry.subscriptionPlan.length == 1">a month</span>
+                                    <span ng-if="entry.subscriptionPlan.length > 1">{{entry.subscriptionPlan.length}} months</span>
+                                </span>
+                                <span ng-if="!entry.subscriptionPlan">NA</span>
+                            </td>
+                            <td>{{entry.note}}</td>
+                            <td class="text-center">
+                                <span ng-if="entry.type == 1">Organisation</span>
+                                <span ng-if="entry.type == 0">Paid plan</span>
+                                <span ng-if="entry.type == 2">Voucher</span>
+                            </td>
+                            <td class="text-center">
+                                <div lm-access="System administrator,Platform administrator" ng-if="entry.isActive">
+                                    <a ng-bootbox-confirm="Are you sure you want to close this record?"
+                                       ng-bootbox-confirm-action="ctrl.closeSubscription(entry)">
+                                        <i class="fa fa-ban"></i><span class="hidden-xs"> close</span>
+                                    </a>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div lm-access="System administrator,Platform administrator">
+                                    <a ng-bootbox-confirm="Are you sure you want to delete this record?"
+                                       ng-bootbox-confirm-action="ctrl.removeSubscription(entry)">
+                                        <i class="fa fa-remove"></i><span class="hidden-xs"> remove</span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody ng-if="!ctrl.subscriptions.length">
+                        <tr>
+                            <td colspan="8" lm-access="System administrator,Platform administrator">
+                                No subscriptions found. This user is unsubscribed. <a href="" ng-click="ctrl.joinOnRecord()">Click here</a> to subscribe this user to OnRecord.
+                            </td>
+                            <td colspan="8" lm-access="Organisation administrator">
+                                No subscriptions found. This user is unsubscribed.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+        </div>
+    </div>
+</div>

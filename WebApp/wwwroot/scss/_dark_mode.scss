@@ -1,0 +1,78 @@
+﻿$dark-bg: #333;
+$border-color: #222;
+
+html.dark-mode {
+    .border-bottom {
+        border-bottom: 1px solid #333 !important;
+    }
+
+    .page-heading {
+        background-color: inherit;
+
+        .breadcrumb {
+            background-color: inherit;
+        }
+
+        .breadcrumb > li + li:before {
+            color: inherit;
+        }
+    }
+
+    footer.footer {
+        background-color: inherit;
+        border-top-color: $border-color;
+    }
+
+    .box {
+        .box-title, .box-content {
+            background-color: $dark-bg;
+            color: #bbb;
+            border-color: $border-color;
+        }
+
+        .box-title > .box-tools > .dropdown-menu {
+            background-color: #666;
+        }
+    }
+
+    .dropdown-menu > li > a:hover, .dropdown-menu > li > a:focus {
+        background-color: #888;
+    }
+
+    .form-control {
+        background-color: #272727;
+        border-color: $border-color;
+    }
+
+    .form-group {
+        .input-group > .input-group-addon {
+            background-color: inherit;
+            border-color: $border-color;
+            color: #666;
+        }
+    }
+
+    button.btn.btn-default {
+        background-color: #ddd;
+        border-color: #ccc;
+        color: #555;
+    }
+
+    .table-hover > tbody > tr:hover {
+        background-color: #444;
+    }
+
+    .pagination > li > a, .pagination > li > span {
+        background-color: #444;
+        border-color: #333;
+    }
+
+    .pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus, .pagination > .active > span:focus {
+        background-color: #666;
+        border-color: #333;
+    }
+
+    .pagination > li > a:hover, .pagination > li > a:focus, .pagination > li > span:hover, .pagination > li > span:focus {
+        color: #fff;
+    }
+}

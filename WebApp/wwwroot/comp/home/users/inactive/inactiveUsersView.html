@@ -20,6 +20,8 @@
                     </lm-form-group>
                 </form>
 
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
+
                 <div class="table-responsive">
                     <table class="table table-hover table-mail">
                         <thead>
@@ -55,7 +57,7 @@
                                 <!--<td class="text-center">{{user.type.name}}</td>-->
                                 <td class="text-center" lm-access="System administrator,Platform administrator,Organisation administrator">
                                     <a ng-click="resetPassword(user)">
-                                        <i class="fa fa-key"></i><span class="hidden-sm hidden-xs"> create/reset password</span>
+                                        <i class="fa fa-key"></i><span class="hidden-sm hidden-xs"> reset password</span>
                                     </a>
                                 </td>
                                 <td class="text-center">

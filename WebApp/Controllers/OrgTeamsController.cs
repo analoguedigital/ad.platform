@@ -379,7 +379,7 @@ namespace WebApi.Controllers
                 UnitOfWork.OrgTeamUsersRepository.Delete(userId);
 
                 // notify the orgUser by email.
-                NotifyUserAboutLeavingTeam(orgTeam, teamUser.OrgUser.Email);
+                NotifyUserAboutLeavingTeam(orgTeam, orgUser.Email);
                 UnitOfWork.Save();
 
                 MemoryCacher.DeleteStartingWith(CACHE_KEY);
@@ -407,7 +407,7 @@ namespace WebApi.Controllers
             foreach (var assignment in model.Users)
             {
                 var orgUser = UnitOfWork.OrgUsersRepository.Find(assignment.OrgUserId);
-                if (orgUser != null)
+                if (orgUser != null && orgUser.AccountType == AccountType.WebAccount && !orgUser.IsRootUser)
                 {
                     if (orgUser.Organisation.Id == orgTeam.Organisation.Id)
                     {

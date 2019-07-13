@@ -162,7 +162,6 @@ namespace WebApi.Controllers.MBS
             return Ok(result);
         }
 
-
         private UpdateDTO GetUpdate(FilledForm survey)
         {
             var desc = string.Empty;

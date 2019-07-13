@@ -5,6 +5,10 @@ module App {
     interface IProjectAssignmentsControllerScope extends ng.IScope {
         title: string;
         accountTypeFilter: string;
+
+        clientsCount: number;
+        staffMembersCount: number;
+        totalUsersCount: number;
     }
 
     interface IProjectAssignmentsController {
@@ -23,6 +27,7 @@ module App {
         email: string;
         accountType: number;
         isRootUser: boolean;
+        isOwner: boolean;
         isWebUser: boolean;
         isMobileUser: boolean;
         canAdd: boolean;
@@ -43,8 +48,9 @@ module App {
         displayedAssignments: IAssignmentUser[];
         searchTerm: string;
         errors: string;
+        isSystemAdmin: boolean;
 
-        static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams", "localStorageService"];
+        static $inject: string[] = ["$scope", "projectResource", "orgUserResource", "$q", "toastr", "$state", "$stateParams", "localStorageService", "userContextService"];
         constructor(
             private $scope: IProjectAssignmentsControllerScope,
             private projectResource: Resources.IProjectResource,
@@ -53,7 +59,8 @@ module App {
             private toastr: any,
             private $state: ng.ui.IStateService,
             private $stateParams: ng.ui.IStateParamsService,
-            private localStorageService: ng.local.storage.ILocalStorageService) {
+            private localStorageService: ng.local.storage.ILocalStorageService,
+            private userContextService: App.Services.IUserContextService) {
 
             this.activate();
         }
@@ -61,54 +68,67 @@ module App {
         activate() {
             this.$scope.title = "Case Assignments"
             this.$scope.accountTypeFilter = 'all';
+            this.isSystemAdmin = _.includes(this.userContextService.current.user.roles, "System administrator");
 
+            this.load();
+        }
+
+        load() {
             this.projectId = this.$stateParams['id'];
-            var projectPromise = this.projectResource.get({ id: this.projectId }, (project) => {
+            this.projectResource.get({ id: this.projectId }, (project) => {
                 this.project = project;
 
-                this.projectResource.assignments({ id: this.projectId }, (assignments) => {
-                    this.assignments = assignments;
-                    this.load();
+                this.orgUserResource.query({ listType: 2, organisationId: this.project.organisation.id }, (users) => {
+                    this.users = users;
+                    this.countUserTypes();
+                    this.reloadAssignments();
                 });
             });
         }
 
-        load() {
-            this.orgUserResource.query({ listType: 2, organisationId: this.project.organisation.id }, (users) => {
-                this.users = users;
-                this.safeUserAssignments = [];
-                this.userAssignments = [];
-
-                _.forEach(this.users, (user) => {
-                    var userName = user.email;
-                    if (user.firstName || user.surname)
-                        userName = `${user.firstName} ${user.surname}`;
-
-                    var assgn = _.find(this.assignments, { 'orgUserId': user.id });
-                    var userAssignment = <Models.IProjectAssignment>assgn;
-
-                    var record: IAssignmentUser = {
-                        userId: user.id,
-                        name: userName,
-                        email: user.email,
-                        accountType: user.accountType,
-                        isRootUser: user.isRootUser,
-                        isWebUser: user.isWebUser,
-                        isMobileUser: user.isMobileUser,
-                        canAdd: userAssignment ? userAssignment.canAdd : false,
-                        canEdit: userAssignment ? userAssignment.canEdit : false,
-                        canView: userAssignment ? userAssignment.canView : false,
-                        canDelete: userAssignment ? userAssignment.canDelete : false,
-                        canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
-                        canExportZip: userAssignment ? userAssignment.canExportZip : false
-                    };
-
-                    this.safeUserAssignments.push(record);
-                });
-
-                this.userAssignments = this.safeUserAssignments;
-                this.displayedAssignments = [].concat(this.userAssignments);
+        reloadAssignments() {
+            this.projectResource.assignments({ id: this.projectId }, (assignments) => {
+                this.assignments = assignments;
+                this.populateAssignments();
             });
+        }
+
+        populateAssignments() {
+            this.safeUserAssignments = [];
+            this.userAssignments = [];
+
+            _.forEach(this.users, (user) => {
+                var userName = user.email;
+                if (user.firstName || user.surname)
+                    userName = `${user.firstName} ${user.surname}`;
+
+                var assgn = _.find(this.assignments, { 'orgUserId': user.id });
+                var userAssignment = <Models.IProjectAssignment>assgn;
+
+                var record: IAssignmentUser = {
+                    userId: user.id,
+                    name: userName,
+                    email: user.email,
+                    accountType: user.accountType,
+                    isRootUser: user.isRootUser,
+                    isOwner: userAssignment ? userAssignment.isOwner : false,
+                    isWebUser: user.isWebUser,
+                    isMobileUser: user.isMobileUser,
+                    canAdd: userAssignment ? userAssignment.canAdd : false,
+                    canEdit: userAssignment ? userAssignment.canEdit : false,
+                    canView: userAssignment ? userAssignment.canView : false,
+                    canDelete: userAssignment ? userAssignment.canDelete : false,
+                    canExportPdf: userAssignment ? userAssignment.canExportPdf : false,
+                    canExportZip: userAssignment ? userAssignment.canExportZip : false
+                };
+
+                this.safeUserAssignments.push(record);
+            });
+
+            this.userAssignments = this.safeUserAssignments;
+            this.displayedAssignments = [].concat(this.userAssignments);
+
+            this.filterAccounts(this.$scope.accountTypeFilter);
         }
 
         updateAssignment(assignment: IAssignmentUser, accessLevel: string) {
@@ -148,11 +168,14 @@ module App {
 
             if (toggled) {
                 this.projectResource.assign(params, (result: Models.IProjectAssignment) => {
-                    this.refreshAssignment(assignment, result);
-                }, (error) => { });
+                    this.reloadAssignments();
+                }, (error) => {
+                    if (error.status == 400)
+                        this.toastr.error(error.data.message);
+                });
             } else {
                 this.projectResource.unassign(params, (result: Models.IProjectAssignment) => {
-                    this.refreshAssignment(assignment, result);
+                    this.reloadAssignments();
                 }, (error) => { });
             }
         }
@@ -168,6 +191,12 @@ module App {
 
         clearErrors() {
             this.errors = undefined;
+        }
+
+        countUserTypes() {
+            this.$scope.clientsCount = _.filter(this.users, (u) => { return u.accountType == 0; }).length;
+            this.$scope.staffMembersCount = _.filter(this.users, (u) => { return u.accountType == 1; }).length;
+            this.$scope.totalUsersCount = this.$scope.clientsCount + this.$scope.staffMembersCount;
         }
 
         filterAccounts(type: string) {

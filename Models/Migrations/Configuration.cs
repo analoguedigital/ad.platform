@@ -29,13 +29,13 @@ namespace LightMethods.Survey.Models.Migrations
 
         public void AddBasicData(SurveyContext context)
         {
-
             var userManager = new ApplicationUserManager(new ApplicationUserStore(context));
             var roleManager = new ApplicationRoleManager(new ApplicationRoleStore(context));
 
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("cadbeb33-4c7a-428c-9520-6756a00c8697"), Name = Role.SYSTEM_ADMINSTRATOR });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("6d923482-7907-422a-b054-1b58b1bbbc81"), Name = Role.PLATFORM_ADMINISTRATOR });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("c452e933-dc83-44f2-a3ab-59cf2eb7b0a2"), Name = Role.ORG_ADMINSTRATOR });
+            roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("a1628528-f2e1-4567-b666-f76fb57ad40a"), Name = Role.ORG_AUTHORIZED_STAFF });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("09898aea-0925-4472-9124-11026a17302a"), Name = Role.ORG_TEAM_USER });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("f7bb6773-d74a-42aa-8686-333f5a753d24"), Name = Role.ORG_TEAM_MANAGER });
             roleManager.AddOrUpdateRole(new Role { Id = Guid.Parse("1ee7f025-0c19-4cb8-a7c9-e24497833df3"), Name = Role.ORG_USER });
@@ -101,7 +101,6 @@ namespace LightMethods.Survey.Models.Migrations
             context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("d87266db-6fd1-4f9b-8afa-28b1af6bb5c6"), Name = "Audio", MaxFileSize = 2048, AllowedExtensions = "wav,mp3,m4a,wma,amr,aac,ogg" });
             context.AttachmentTypes.AddOrUpdate(new AttachmentType() { Id = Guid.Parse("8022c0d5-ecc7-4ad0-be45-3cfc6c12f0a3"), Name = "Video", MaxFileSize = 8192, AllowedExtensions = "avi,mpg,mpeg,mp4,mov,wmv" });
             context.SaveChanges();
-
 
             context.Settings.AddOrUpdate(new Settings());
             context.SaveChanges();

@@ -9,10 +9,10 @@
 
             <div class="pull-right">
                 <div class="btn-group" role="group" aria-label="account filters">
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'clients' }" ng-click="ctrl.filterPastMonthAccounts('clients')"><i class="fa fa-phone-square"></i> Clients</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'staff' }" ng-click="ctrl.filterPastMonthAccounts('staff')"><i class="fa fa-laptop"></i> Staff</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'admins' }" ng-click="ctrl.filterPastMonthAccounts('admins')"><i class="fa fa-user-secret"></i> Admins</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'all' }" ng-click="ctrl.filterPastMonthAccounts('all')"><i class="fa fa-user-circle"></i> All</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'clients' }" ng-click="ctrl.filterPastMonthAccounts('clients')"><i class="fa fa-phone-square"></i> Clients {{ctrl.pastMonthAccountsClientsCount}}</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'staff' }" ng-click="ctrl.filterPastMonthAccounts('staff')"><i class="fa fa-laptop"></i> Staff ({{ctrl.pastMonthAccountsStaffCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'admins' }" ng-click="ctrl.filterPastMonthAccounts('admins')"><i class="fa fa-user-secret"></i> Admins ({{ctrl.pastMonthAccountsAdminsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': pastMonthAccountsFilter === 'all' }" ng-click="ctrl.filterPastMonthAccounts('all')"><i class="fa fa-user-circle"></i> All ({{ctrl.sourcePastMonthAccounts.length}})</button>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -26,6 +26,8 @@
                         </lm-form-group>
                     </form>
                 </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
 
                 <div class="table-responsive">
                     <table class="table table-hover table-mail">
@@ -80,10 +82,10 @@
 
             <div class="pull-right">
                 <div class="btn-group" role="group" aria-label="account filters">
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterUnconfirmedAccounts('clients')"><i class="fa fa-phone-square"></i> Clients</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterUnconfirmedAccounts('staff')"><i class="fa fa-laptop"></i> Staff</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'admins' }" ng-click="ctrl.filterUnconfirmedAccounts('admins')"><i class="fa fa-user-secret"></i> Admins</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterUnconfirmedAccounts('all')"><i class="fa fa-user-circle"></i> All</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterUnconfirmedAccounts('clients')"><i class="fa fa-phone-square"></i> Clients ({{ctrl.unconfirmedAccountsClientsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterUnconfirmedAccounts('staff')"><i class="fa fa-laptop"></i> Staff ({{ctrl.unconfirmedAccountsStaffCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'admins' }" ng-click="ctrl.filterUnconfirmedAccounts('admins')"><i class="fa fa-user-secret"></i> Admins ({{ctrl.unconfirmedAccountsAdminsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterUnconfirmedAccounts('all')"><i class="fa fa-user-circle"></i> All ({{ctrl.sourceUnconfirmedAccounts.length}})</button>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -97,6 +99,8 @@
                         </lm-form-group>
                     </form>
                 </div>
+
+                <div st-pagination st-items-by-page="10" st-displayed-pages="10"></div>
 
                 <div class="table-responsive">
                     <table class="table table-hover table-mail">

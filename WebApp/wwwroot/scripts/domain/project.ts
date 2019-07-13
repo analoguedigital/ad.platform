@@ -29,6 +29,7 @@
         orgUserId: string;
         orgUserName: string;
         isRootUser: boolean;
+        isOwner: boolean;
         projectId: string;
         canAdd: boolean;
         canEdit: boolean;

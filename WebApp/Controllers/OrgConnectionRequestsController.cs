@@ -13,7 +13,7 @@ using WebApi.Services;
 namespace WebApi.Controllers
 {
     [RoutePrefix("api/orgConnectionRequests")]
-    [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator")]
+    [Authorize(Roles = "System administrator,Platform administrator,Organisation administrator,Authorized staff")]
     public class OrgConnectionRequestsController : BaseApiController
     {
 
@@ -127,7 +127,7 @@ namespace WebApi.Controllers
 
             var requestCount = UnitOfWork.OrgConnectionRequestsRepository
                 .AllAsNoTracking
-                .Count(x => x.OrgUserId == CurrentOrgUser.Id && x.OrganisationId == organisationId);
+                .Count(x => x.OrgUserId == CurrentOrgUser.Id && x.OrganisationId == organisationId && !x.IsApproved);
 
             if (requestCount > 0)
                 return BadRequest("you have already requested to connect to this organisation");
@@ -178,7 +178,9 @@ namespace WebApi.Controllers
             var orgUser = UnitOfWork.OrgUsersRepository.Find(request.OrgUserId);
 
             UnitOfWork.OrgConnectionRequestsRepository.Delete(id);
-            NotifyUserAboutDeclinedRequest(organization.Name, orgUser.Email);
+
+            if (!request.IsApproved)
+                NotifyUserAboutDeclinedRequest(organization.Name, orgUser.Email);
 
             try
             {
@@ -225,7 +227,13 @@ namespace WebApi.Controllers
             try
             {
                 UnitOfWork.Save();
+
+                // invalidate connection requests from cache
                 MemoryCacher.DeleteStartingWith(CACHE_KEY);
+
+                // invalidate projects from cache
+                MemoryCacher.DeleteStartingWith("PROJECTS_ADMIN");
+                MemoryCacher.DeleteStartingWith("PROJECTS_ORG_ADMIN");
 
                 return Ok();
             }

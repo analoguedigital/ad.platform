@@ -124,11 +124,11 @@ $fa-font-path: "../lib/Font-Awesome/fonts";
 
 //Animate
 @import "_animate";
-
 @import "_variables";
 @import "_boxStyles";
 @import "_standard";
 @import "_formTemplate";
+/*@import "_dark_mode";*/
 
 // MODULES
 @import "../comp/login/_login";

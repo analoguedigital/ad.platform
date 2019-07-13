@@ -26,12 +26,10 @@ module App {
     }
 
     class AttachmentMetricController implements IAttachmentMetricController {
-
         uploadInstance: any;
         uploadIndex: number;
 
         static $inject: string[] = ['$scope', 'Upload', 'toastr', 'userContextService'];
-
         constructor(private $scope: IAttachmentMetricControllerScope,
             private Upload: any,
             private toastr: any,

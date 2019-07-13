@@ -121,7 +121,7 @@ module App {
 
             if (this.$stateParams.discriminator) {
                 this.discriminator = this.$stateParams.discriminator;
-                this.$scope.summaryStateLabel = this.$stateParams.discriminator === '0' ? 'Records Summary' : 'Advice Summary';
+                this.$scope.summaryStateLabel = this.$stateParams.discriminator == '0' ? 'Records Summary' : 'Advice Summary';
             }
             else {
                 this.discriminator = 0;
@@ -232,6 +232,7 @@ module App {
             this.projectSummaryPrintSessionResource.save(printSession).$promise.then((session) => {
                 this.$state.go("home.projects.summaryPrint", {
                     sessionId: session.id,
+                    discriminator: this.discriminator,
                     mapCenter: this.mapCenter,
                     mapZoomLevel: this.mapZoomLevel,
                     mapType: this.mapType
@@ -646,6 +647,33 @@ module App {
                 (err) => {
                     //console.error(err);
                 });
+        }
+
+        openAdviceReferences(survey: Models.ISurvey) {
+            this.surveyResource.getAdviceRecords({ id: survey.id }, (result) => {
+                var modalInstance = this.$uibModal.open({
+                    animation: true,
+                    templateUrl: 'comp/home/projects/summary/advice-references/advice-references-view.html',
+                    controller: 'adviceReferencesController',
+                    controllerAs: 'ctrl',
+                    resolve: {
+                        survey: () => {
+                            return survey;
+                        },
+                        adviceRecords: () => {
+                            return result;
+                        }
+                    }
+                }).result.then(
+                    (res) => {
+                        // nothing
+                    },
+                    (err) => {
+                        // nothing
+                    });
+            }, (err) => {
+                console.error(err);
+            });
         }
 
     }

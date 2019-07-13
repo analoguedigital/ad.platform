@@ -35,9 +35,6 @@
         }
 
         activate() {
-            console.log('surveys', this.surveys);
-            console.log('threads', this.formTemplates);
-
             this.recordCount = this.surveys.length;
             this.currentIndex = 1;
 
@@ -84,7 +81,7 @@
                 { value: 0, legend: 'None' },
                 { value: 1, legend: 'Slight' },
                 { value: 2, legend: 'Moderate' },
-                { value: 3, legend: 'Hight' }
+                { value: 3, legend: 'High' }
             ];
 
             this.$scope.rateSliderOpts = {
@@ -163,9 +160,6 @@
                         }
                     }
                 };
-
-                console.log(this.$scope.map);
-                console.log(this.$scope.marker);
             }
         }
 

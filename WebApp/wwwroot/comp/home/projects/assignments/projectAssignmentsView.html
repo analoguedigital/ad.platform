@@ -6,9 +6,9 @@
 
             <div class="pull-right">
                 <div class="btn-group" role="group" aria-label="account filters">
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterAccounts('clients')"><i class="fa fa-phone-square"></i> Clients</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterAccounts('staff')"><i class="fa fa-laptop"></i> Staff</button>
-                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterAccounts('all')"><i class="fa fa-user-circle"></i> All</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'clients' }" ng-click="ctrl.filterAccounts('clients')"><i class="fa fa-phone-square"></i> Clients ({{clientsCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'staff' }" ng-click="ctrl.filterAccounts('staff')"><i class="fa fa-laptop"></i> Staff ({{staffMembersCount}})</button>
+                    <button type="button" class="btn btn-sm btn-default" ng-class="{ 'active': accountTypeFilter === 'all' }" ng-click="ctrl.filterAccounts('all')"><i class="fa fa-user-circle"></i> All {{totalUsersCount}})</button>
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -23,91 +23,8 @@
                     </form>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th st-sort="accountType" class="text-center" width="40">Type</th>
-                                <th st-sort="name">User name</th>
-                                <th st-sort="email">Email address</th>
-                                <th class="text-center" width="100">Web User</th>
-                                <th class="text-center" width="100">Mobile User</th>
-                                <th class="text-center" width="40" uib-tooltip="View records" tooltip-append-to-body="true"><i class="fa fa-eye"></i></th>
-                                <th class="text-center" width="40" uib-tooltip="Add records" tooltip-append-to-body="true"><i class="fa fa-plus-square-o"></i></th>
-                                <th class="text-center" width="40" uib-tooltip="Edit records" tooltip-append-to-body="true"><i class="fa fa-edit"></i></th>
-                                <th class="text-center" width="40" uib-tooltip="Delete records" tooltip-append-to-body="true"><i class="fa fa-trash-o"></i></th>
-                                <th class="text-center" width="40" uib-tooltip="Export Pdf" tooltip-append-to-body="true"><i class="fa fa-file-pdf-o"></i></th>
-                                <th class="text-center" width="40" uib-tooltip="Export Zip" tooltip-append-to-body="true"><i class="fa fa-file-zip-o"></i></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="user in ctrl.displayedAssignments">
-                                <td class="text-center">
-                                    <span ng-if="user.accountType === 0" uib-tooltip="Client" tooltip-append-to-body="true">
-                                        <i class="fa fa-phone-square"></i>
-                                    </span>
-
-                                    <span ng-if="user.accountType === 1" uib-tooltip="Staff" tooltip-append-to-body="true">
-                                        <i class="fa fa-laptop"></i>
-                                    </span>
-                                </td>
-                                <td>
-                                    <i class="fa fa-user-secret" ng-if="user.isRootUser"></i>
-                                    <i class="fa fa-user-o" ng-if="!user.isRootUser"></i> {{user.name}}
-                                </td>
-                                <td>{{user.email}}</td>
-                                <td class="text-center">
-                                    <i class="fa fa-check" ng-if="user.isWebUser"></i>
-                                    <i class="fa fa-times" ng-if="!user.isWebUser"></i>
-                                </td>
-                                <td class="text-center">
-                                    <i class="fa fa-check" ng-if="user.isMobileUser"></i>
-                                    <i class="fa fa-times" ng-if="!user.isMobileUser"></i>
-                                </td>
-                                <td class="text-center">
-                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                        <input type="checkbox" id="can-view-{{user.userId}}" ng-model="user.canView" ng-change="ctrl.updateAssignment(user, 'allowView')" />
-                                        <label for="can-view-{{user.userId}}"></label>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                        <input type="checkbox" id="can-add-{{user.userId}}" ng-model="user.canAdd" ng-change="ctrl.updateAssignment(user, 'allowAdd')" />
-                                        <label for="can-add-{{user.userId}}"></label>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                        <input type="checkbox" id="can-edit-{{user.userId}}" ng-model="user.canEdit" ng-change="ctrl.updateAssignment(user, 'allowEdit')" />
-                                        <label for="can-edit-{{user.userId}}"></label>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                        <input type="checkbox" id="can-del-{{user.userId}}" ng-model="user.canDelete" ng-change="ctrl.updateAssignment(user, 'allowDelete')" />
-                                        <label for="can-del-{{user.userId}}"></label>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                        <input type="checkbox" id="can-pdf-{{user.userId}}" ng-model="user.canExportPdf" ng-change="ctrl.updateAssignment(user, 'allowExportPdf')" />
-                                        <label for="can-pdf-{{user.userId}}"></label>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="checkbox checkbox-circle checkbox-primary no-margins">
-                                        <input type="checkbox" id="can-zip-{{user.userId}}" ng-model="user.canExportZip" ng-change="ctrl.updateAssignment(user, 'allowExportZip')" />
-                                        <label for="can-zip-{{user.userId}}"></label>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr ng-if="!ctrl.displayedAssignments.length">
-                                <td colspan="11">No users were found</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+                <ng-include src="'comp/home/projects/assignments/_dataTable.html'"></ng-include>
                 <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
             </div>
 

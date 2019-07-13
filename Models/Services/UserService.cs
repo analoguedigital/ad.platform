@@ -6,6 +6,7 @@ using LightMethods.Survey.Models.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace LightMethods.Survey.Models.Services
 {
@@ -19,7 +20,7 @@ namespace LightMethods.Survey.Models.Services
             UnitOfWork = unitOfWork;
         }
 
-        public List<OrgUserDTO> GetOrgUsers(OrgUserListType listType, Guid? organisationId = null)
+        public async Task<List<OrgUserDTO>> GetOrgUsers(OrgUserListType listType, Guid? organisationId = null)
         {
             if (listType == OrgUserListType.InactiveAccounts)
                 return GetInactiveAccounts(organisationId);
@@ -43,6 +44,11 @@ namespace LightMethods.Survey.Models.Services
                 .ToList()
                 .Select(u => Mapper.Map<OrgUserDTO>(u))
                 .ToList();
+
+            foreach (var user in result)
+            {
+                user.IsAuthorizedStaff = await UnitOfWork.UserManager.IsInRoleAsync(user.Id, Role.ORG_AUTHORIZED_STAFF);
+            }
 
             return result;
         }

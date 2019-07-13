@@ -1,4 +1,6 @@
 ﻿<div ng-hide="ctrl.isDataView" st-table="ctrl.displayedSurveys" st-safe-src="ctrl.surveys">
+    <div st-pagination st-items-by-page="10" st-displayed-pages=""></div>
+
     <div class="table-responsive">
         <table class="table table-hover table-mail">
             <thead>
@@ -23,12 +25,12 @@
                         <span ng-if="ctrl.getAttachmentsCount(survey) > 0"><i class="fa fa-paperclip"></i> {{ctrl.getAttachmentsCount(survey)}}</span>
                     </td>
                     <td class="text-center" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'view')">
-                        <a ui-sref="home.surveys.view({surveyId: survey.id})" title="View record">
+                        <a ui-sref="home.surveys.view({projectId: survey.projectId, surveyId: survey.id})" title="View record">
                             <i class="fa fa-eye"></i>
                         </a>
                     </td>
                     <td class="text-center" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'edit')">
-                        <a ui-sref="home.surveys.edit({surveyId: survey.id})" title="Edit record"><i class="fa fa-pencil"></i></a>
+                        <a ui-sref="home.surveys.edit({projectId: survey.projectId, surveyId: survey.id})" title="Edit record"><i class="fa fa-pencil"></i></a>
                     </td>
                     <td class="text-center" ng-if="ctrl.hasAccess(ctrl.formTemplate, 'delete')">
                         <a ng-bootbox-confirm="Are you sure you want to delete this?" ng-bootbox-confirm-action="ctrl.delete(survey.id)" title="Delete record">

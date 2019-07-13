@@ -17,6 +17,8 @@ namespace LightMethods.Survey.Models.DTO
 
         public bool IsRootUser { get; set; }
 
+        public bool IsOwner { get; set; }
+
         public bool CanAdd { get; set; }
 
         public bool CanEdit { get; set; }

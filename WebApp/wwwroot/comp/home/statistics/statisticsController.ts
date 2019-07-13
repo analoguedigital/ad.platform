@@ -100,6 +100,14 @@
         pastMonthAccounts: IOrgUserFlatDTO[] = [];
         displayedPastMonthAccounts: IOrgUserFlatDTO[] = [];
 
+        unconfirmedAccountsClientsCount: number;
+        unconfirmedAccountsStaffCount: number;
+        unconfirmedAccountsAdminsCount: number;
+
+        pastMonthAccountsClientsCount: number;
+        pastMonthAccountsStaffCount: number;
+        pastMonthAccountsAdminsCount: number;
+
         static $inject: string[] = ['$scope', "$resource", "localStorageService"];
         constructor(
             private $scope: IStatisticsControllerScope,
@@ -119,6 +127,7 @@
             this.$resource("/api/stats/platform", null).get().$promise.then((data: any) => {
                 this.$scope.stats = data;
                 this.loadCharts();
+                this.loadCounters();
             }, (err) => {
                 console.error(err);
             });
@@ -247,6 +256,16 @@
 
             this.filterUnconfirmedAccounts(unconfirmedAccountsFilter);
             this.filterPastMonthAccounts(pastMonthAccountsFilter);
+        }
+
+        loadCounters() {
+            this.unconfirmedAccountsClientsCount = _.filter(this.sourceUnconfirmedAccounts, (item) => { return item.accountType == 0; }).length;
+            this.unconfirmedAccountsStaffCount = _.filter(this.sourceUnconfirmedAccounts, (item) => { return item.accountType == 1 && !item.isRootUser; }).length;
+            this.unconfirmedAccountsAdminsCount = _.filter(this.sourceUnconfirmedAccounts, (item) => { return item.isRootUser == true; }).length;
+
+            this.pastMonthAccountsClientsCount = _.filter(this.sourcePastMonthAccounts, (item) => { return item.accountType == 0; }).length;
+            this.pastMonthAccountsStaffCount = _.filter(this.sourcePastMonthAccounts, (item) => { return item.accountType == 1 && !item.isRootUser; }).length;
+            this.pastMonthAccountsAdminsCount = _.filter(this.sourcePastMonthAccounts, (item) => { return item.isRootUser == true; }).length;
         }
 
         formatBytes(a, b) {

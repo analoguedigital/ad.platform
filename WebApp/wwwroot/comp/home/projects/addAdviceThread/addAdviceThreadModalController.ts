@@ -9,6 +9,7 @@
 
     interface IAddAdviceThreadModalController {
         model: IAddAdviceThreadModel;
+        project: Models.IProject;
 
         activate: () => void;
         close: () => void;
@@ -17,6 +18,7 @@
 
     class AddAdviceThreadModalController implements IAddAdviceThreadModalController {
         model: IAddAdviceThreadModel;
+        project: Models.IProject;
 
         static $inject: string[] = ["$uibModalInstance", "projectResource", "toastr", "projectId"];
         constructor(
@@ -33,6 +35,10 @@
                 description: '',
                 colour: ''
             };
+
+            this.projectResource.getDirect({ id: this.projectId }).$promise.then((data) => {
+                this.project = data;
+            });
         }
 
         generateColor() {

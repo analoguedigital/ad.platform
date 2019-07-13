@@ -12,6 +12,8 @@
                     </lm-form-group>
                 </form>
 
+                <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
+
                 <div class="table-responsive">
                     <table class="table table-hover table-mail">
                         <thead>
@@ -63,6 +65,8 @@
                     <lm-form-group label="Search: ">
                         <input st-search type="text" id="approvedConnectionsSearch" name="approvedConnectionsSearch" ng-model="approvedConnectionsSearchTerm" placeholder="User name, email, organisation" style="width: 250px" />
                     </lm-form-group>
+
+                    <div st-pagination st-items-by-page="10" st-displayed-pages="7"></div>
 
                     <div class="table-responsive">
                         <table class="table table-hover table-mail">

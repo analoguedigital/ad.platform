@@ -16,6 +16,8 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -142,8 +144,16 @@ namespace WebApi.Controllers
                     if (survey == null)
                         return NotFound();
 
-                    if (!HasAccessToViewRecords(survey.FormTemplateId, survey.ProjectId))
-                        return Unauthorized();
+                    if (CurrentOrgUser.Type == OrgUserTypesRepository.Administrator)
+                    {
+                        if (CurrentOrgUser.OrganisationId != survey.Project.OrganisationId)
+                            return Unauthorized();
+                    }
+                    else
+                    {
+                        if (!HasAccessToViewRecords(survey.FormTemplateId, survey.ProjectId))
+                            return Unauthorized();
+                    }
 
                     var result = Mapper.Map<FilledFormDTO>(survey);
                     MemoryCacher.Add(cacheKey, result, DateTimeOffset.UtcNow.AddMinutes(1));
@@ -222,13 +232,26 @@ namespace WebApi.Controllers
 
             if (cacheEntry == null)
             {
-                var surveys = UnitOfWork.FilledFormsRepository
+                var records = UnitOfWork.FilledFormsRepository
                     .AllAsNoTracking
-                    .Where(s => s.ProjectId == projectId)
-                    .OrderByDescending(s => s.DateCreated)
-                    .ToList()
-                    .Select(s => Mapper.Map<FilledFormDTO>(s))
-                    .ToList();
+                    .Where(x => x.ProjectId == projectId)
+                    .Where(x => x.FormTemplate.Discriminator == FormTemplateDiscriminators.RegularThread)
+                    .OrderByDescending(x => x.DateCreated)
+                    .AsQueryable();
+
+                var adviceRecords = UnitOfWork.FilledFormsRepository
+                    .AllAsNoTracking
+                    .Where(x => x.ProjectId == projectId)
+                    .Where(x => x.FormTemplate.Discriminator == FormTemplateDiscriminators.AdviceThread)
+                    .OrderByDescending(x => x.DateCreated)
+                    .AsQueryable();
+
+                if (CurrentUser is OrgUser && CurrentOrgUser.Type != OrgUserTypesRepository.Administrator)
+                    records = records.Where(x => x.FilledById == CurrentOrgUser.Id);
+
+                var surveys = new List<FilledFormDTO>();
+                surveys.AddRange(records.ToList().Select(x => Mapper.Map<FilledFormDTO>(x)));
+                surveys.AddRange(adviceRecords.ToList().Select(x => Mapper.Map<FilledFormDTO>(x)));
 
                 MemoryCacher.Add(cacheKey, surveys, DateTimeOffset.UtcNow.AddMinutes(1));
 
@@ -260,18 +283,26 @@ namespace WebApi.Controllers
 
             if (CurrentUser is OrgUser)
             {
-                var threadAssignments = UnitOfWork.ThreadAssignmentsRepository
+                if (CurrentOrgUser.Type == OrgUserTypesRepository.Administrator)
+                {
+                    if (CurrentOrgUser.OrganisationId != project.OrganisationId)
+                        return Unauthorized();
+                }
+                else
+                {
+                    var threadAssignments = UnitOfWork.ThreadAssignmentsRepository
                     .AllAsNoTracking
                     .Where(x => x.OrgUserId == CurrentOrgUser.Id)
                     .ToList();
 
-                var projectFound = threadAssignments.Any(x => x.FormTemplate.Project.Id == model.ProjectId);
-                var assignment = CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == model.ProjectId);
+                    var projectFound = threadAssignments.Any(x => x.FormTemplate.Project.Id == model.ProjectId);
+                    var assignment = CurrentOrgUser.Assignments.SingleOrDefault(a => a.ProjectId == model.ProjectId);
 
-                if (!projectFound)
-                {
-                    if (assignment == null || !assignment.CanView)
-                        return Unauthorized();
+                    if (!projectFound)
+                    {
+                        if (assignment == null || !assignment.CanView)
+                            return Unauthorized();
+                    }
                 }
             }
 
@@ -336,30 +367,54 @@ namespace WebApi.Controllers
                 if (!string.IsNullOrEmpty(survey.SerialReferences))
                 {
                     // serial references will come in this way: #593,#594,
-                    var _references = survey.SerialReferences.Replace("#", "");
-                    if (_references.EndsWith(","))
-                        _references = _references.Remove(_references.Length - 1, 1);
+                    // extract the matches using a Regex pattern.
+                    string inputValue = survey.SerialReferences;
+                    string serialPattern = @"(#\d+)";
+                    MatchCollection serialMatches = Regex.Matches(inputValue, serialPattern, RegexOptions.Singleline);
 
-                    filledForm.SerialReferences = _references;
+                    if (serialMatches.Count > 0)
+                    {
+                        List<string> serialNumbers = new List<string>();
+                        foreach (Match match in serialMatches)
+                            serialNumbers.Add(match.ToString().Replace("#", ""));
+
+                        List<string> result = serialNumbers.Distinct().ToList();
+
+                        StringBuilder serialBuilder = new StringBuilder();
+                        foreach (string serial in result)
+                            serialBuilder.Append(serial + ",");
+
+                        var references = serialBuilder.ToString().Trim(',');
+                        filledForm.SerialReferences = references;
+                    }
+                    else
+                    {
+                        // if the input string is invalid, nullify.
+                        filledForm.SerialReferences = null;
+                    }
                 }
 
                 // if this is an advice response (posted by an admin), notify the end-user via email.
+                var project = UnitOfWork.ProjectsRepository.Find(filledForm.ProjectId);
                 bool isAdviceResponse = false;
-                
+
                 if (CurrentUser is SuperUser || CurrentUser is PlatformUser)
                     isAdviceResponse = true;
-                else if (CurrentUser is OrgUser && await ServiceContext.UserManager.IsInRoleAsync(CurrentUser.Id, "Organisation administrator"))
-                    isAdviceResponse = true;
+                else if (CurrentUser is OrgUser)
+                {
+                    if (await ServiceContext.UserManager.IsInRoleAsync(CurrentUser.Id, "Organisation administrator"))
+                        isAdviceResponse = true;
+                    else if (CurrentOrgUser.AccountType == AccountType.WebAccount)
+                        isAdviceResponse = true;
+                }
 
                 if (isAdviceResponse)
                 {
-                    var project = UnitOfWork.ProjectsRepository.Find(filledForm.ProjectId);
-                    NotifyOrgUserAboutAdviceResponse(project.CreatedBy.Email, thread.Title);
-                    // mark the record as unread.
                     filledForm.IsRead = false;
+                    NotifyOrgUserAboutAdviceResponse(project.CreatedBy.Email, thread.Title);
                 }
             }
-            
+
             try
             {
                 UnitOfWork.FilledFormsRepository.InsertOrUpdate(filledForm);
@@ -388,6 +443,10 @@ namespace WebApi.Controllers
 
                 throw dbEx;
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         // PUT api/surveys/{id}
@@ -413,18 +472,39 @@ namespace WebApi.Controllers
 
             try
             {
-                var dbForm = UnitOfWork.FilledFormsRepository.Find(id);                
+                var dbForm = UnitOfWork.FilledFormsRepository.Find(id);
                 dbForm.SurveyDate = survey.SurveyDate;
 
                 if (dbForm.FormTemplate.Discriminator == FormTemplateDiscriminators.AdviceThread)
                 {
                     if (!string.IsNullOrEmpty(survey.SerialReferences))
                     {
-                        var _references = survey.SerialReferences.Replace("#", "");
-                        if (_references.EndsWith(","))
-                            _references = _references.Remove(_references.Length - 1, 1);
+                        // serial references will come in this way: #593,#594,
+                        // extract the matches using a Regex pattern.
+                        string inputValue = survey.SerialReferences;
+                        string serialPattern = @"(#\d+)";
+                        MatchCollection serialMatches = Regex.Matches(inputValue, serialPattern, RegexOptions.Singleline);
 
-                        dbForm.SerialReferences = _references;
+                        if (serialMatches.Count > 0)
+                        {
+                            List<string> serialNumbers = new List<string>();
+                            foreach (Match match in serialMatches)
+                                serialNumbers.Add(match.ToString().Replace("#", ""));
+
+                            List<string> result = serialNumbers.Distinct().ToList();
+
+                            StringBuilder serialBuilder = new StringBuilder();
+                            foreach (string serial in result)
+                                serialBuilder.Append(serial + ",");
+
+                            var references = serialBuilder.ToString().Trim(',');
+                            dbForm.SerialReferences = references;
+                        }
+                        else
+                        {
+                            // if the input string is invalid, nullify.
+                            dbForm.SerialReferences = null;
+                        }
                     }
                 }
 
@@ -596,8 +676,16 @@ namespace WebApi.Controllers
 
             if (CurrentUser is OrgUser)
             {
-                if (!HasAccessToViewRecords(survey.FormTemplateId, survey.ProjectId))
-                    return Unauthorized();
+                if (CurrentOrgUser.Type == OrgUserTypesRepository.Administrator)
+                {
+                    if (CurrentOrgUser.OrganisationId != survey.Project.OrganisationId)
+                        return Unauthorized();
+                }
+                else
+                {
+                    if (!HasAccessToViewRecords(survey.FormTemplateId, survey.ProjectId))
+                        return Unauthorized();
+                }
             }
 
             var adviceRecords = UnitOfWork.FilledFormsRepository

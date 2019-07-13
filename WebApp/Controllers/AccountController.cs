@@ -140,13 +140,25 @@ namespace WebApi.Models
                 }
                 else
                 {
-                    // get unread advice records
-                    userInfo.Notifications = new AdminNotificationsDTO
+                    if (orgUser.AccountType == AccountType.MobileAccount)
                     {
-                        AdviceRecords = UnitOfWork.FilledFormsRepository
-                            .AllAsNoTracking
-                            .Count(x => x.ProjectId == orgUser.CurrentProjectId && x.FormTemplate.Discriminator == FormTemplateDiscriminators.AdviceThread && x.IsRead == false)
-                    };
+                        // get unread advice records
+                        userInfo.Notifications = new AdminNotificationsDTO
+                        {
+                            AdviceRecords = UnitOfWork.FilledFormsRepository
+                                .AllAsNoTracking
+                                .Count(x => x.ProjectId == orgUser.CurrentProjectId && x.FormTemplate.Discriminator == FormTemplateDiscriminators.AdviceThread && x.IsRead == false)
+                        };
+                    }
+                    else if (UserManager.IsInRole(orgUser.Id, "Authorized staff"))
+                    {
+                        userInfo.Notifications = new AdminNotificationsDTO
+                        {
+                            ConnectionRequests = UnitOfWork.OrgConnectionRequestsRepository
+                                .AllAsNoTracking
+                                .Count(x => !x.IsApproved && x.OrganisationId == orgUser.OrganisationId)
+                        };
+                    }
                 }
             }
 
@@ -549,20 +561,23 @@ namespace WebApi.Models
             UnitOfWork.AssignmentsRepository.InsertOrUpdate(assignment);
 
             // assign organisation admin to this project
-            if (organisation.RootUser != null)
-            {
-                UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
-                {
-                    ProjectId = project.Id,
-                    OrgUserId = organisation.RootUserId.Value,
-                    CanView = true,
-                    CanAdd = true,
-                    CanEdit = true,
-                    CanDelete = true,
-                    CanExportPdf = true,
-                    CanExportZip = true
-                });
-            }
+            // NOTE: we don't want to assign the OnRecord admin to new cases.
+            // new users won't be assigned to anyone, only god can see them.
+            // PLUS OrgAdmins don't need assignments anyways.
+            //if (organisation.RootUser != null)
+            //{
+            //    UnitOfWork.AssignmentsRepository.InsertOrUpdate(new Assignment
+            //    {
+            //        ProjectId = project.Id,
+            //        OrgUserId = organisation.RootUserId.Value,
+            //        CanView = true,
+            //        CanAdd = true,
+            //        CanEdit = true,
+            //        CanDelete = true,
+            //        CanExportPdf = true,
+            //        CanExportZip = true
+            //    });
+            //}
 
             UnitOfWork.Save();
 
@@ -990,6 +1005,31 @@ namespace WebApi.Models
             };
 
             return Ok(result);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("remove-security-qa")]
+        public async Task<IHttpActionResult> RemoveSecurityQA()
+        {
+            var userId = ServiceContext.CurrentUser.Id;
+            var user = await UserManager.FindByIdAsync(userId);
+
+            try
+            {
+                user.SecurityQuestion = null;
+                user.SecurityAnswer = null;
+
+                var result = await UserManager.UpdateAsync(user);
+                if (result.Succeeded)
+                    return Ok();
+
+                return BadRequest(result.Errors.ToString(","));
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
         }
 
         [HttpPost]
